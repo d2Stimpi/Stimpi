@@ -1,0 +1,7 @@
+#ignore folders
+*\.vs
+*\bin
+*\bin-int
+
+#ignore files
+*.user
