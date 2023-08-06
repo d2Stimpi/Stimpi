@@ -6,7 +6,7 @@
 namespace Stimpi
 {
 
-	class STIMPI_API Engine
+	class ST_API Engine
 	{
 	public:
 		Engine();

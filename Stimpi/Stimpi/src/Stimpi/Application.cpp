@@ -1,12 +1,13 @@
 #include "Application.h"
 
-#include <stdio.h>
+
+#include "Log.h"
 
 namespace Stimpi
 {
 	Application::Application()
 	{
-
+		Init();
 	}
 
 	Application::~Application()
@@ -14,9 +15,15 @@ namespace Stimpi
 
 	}
 
+	void Application::Init()
+	{
+		Stimpi::Log::Init();
+	}
+
 	void Application::Run()
 	{
-		printf("Application::Run()\n");
-		while (1) {};
+		ST_CORE_TRACE("Application Run!");
+
+		//while (1) {};
 	}
 }

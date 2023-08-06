@@ -4,12 +4,13 @@
 
 namespace Stimpi
 {
-	class STIMPI_API Application
+	class ST_API Application
 	{
 	public:
 		Application();
 		virtual ~Application();
 
+		void Init();
 		void Run();
 	};
 

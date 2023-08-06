@@ -10,7 +10,7 @@ public:
 
 	~TestApp()
 	{
-
+		ST_TRACE("~TestApp()");
 	}
 };
 

@@ -10,7 +10,13 @@
     <ClCompile Include="src\Stimpi\Engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\EntryPoint.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\Stimpi\Application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -23,5 +29,6 @@
     </ClInclude>
     <ClInclude Include="src\Stimpi\Application.h" />
     <ClInclude Include="src\Stimpi.h" />
+    <ClInclude Include="src\Stimpi\Log.h" />
   </ItemGroup>
 </Project>

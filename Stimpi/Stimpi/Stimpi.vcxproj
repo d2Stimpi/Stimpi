@@ -47,6 +47,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\bin\$(Configuration)-$(Platform)\$(ProjectName)</OutDir>
     <IntDir>$(SolutionDir)\bin-int\$(Configuration)-$(Platform)\$(ProjectName)</IntDir>
+    <IncludePath>D:\libs\spdlog\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -87,12 +88,14 @@
     <ClCompile Include="src\Stimpi\Application.cpp" />
     <ClCompile Include="src\Stimpi\Engine.cpp" />
     <ClCompile Include="src\Stimpi\EntryPoint.h" />
+    <ClCompile Include="src\Stimpi\Log.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi.h" />
     <ClInclude Include="src\Stimpi\Application.h" />
     <ClInclude Include="src\Stimpi\Core.h" />
     <ClInclude Include="src\Stimpi\Engine.h" />
+    <ClInclude Include="src\Stimpi\Log.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
