@@ -1,11 +1,22 @@
 #include "Stimpi.h"
 
+class TestLayer : public Stimpi::Layer
+{
+public:
+	TestLayer() : Layer("TestLayer") {}
+
+	void OnAttach() override { ST_TRACE("{0}: OnAttach", m_DebugName); }
+	void OnDetach() override { ST_TRACE("{0}: OnDetach", m_DebugName); }
+	void Render() override { ST_TRACE("{0}: Render", m_DebugName); }
+	void Update() override { ST_TRACE("{0}: Update", m_DebugName); }
+};
+
 class TestApp : public Stimpi::Application
 {
 public:
 	TestApp()
 	{
-
+		PushLayer(new TestLayer());
 	}
 
 	~TestApp()

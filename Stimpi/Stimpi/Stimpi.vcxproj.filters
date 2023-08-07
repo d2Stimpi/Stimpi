@@ -7,28 +7,32 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Stimpi\Engine.cpp">
+    <ClCompile Include="src\Stimpi\Core\Engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Stimpi\EntryPoint.h">
+    <ClCompile Include="src\Stimpi\Core\EntryPoint.h">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Stimpi\Application.cpp">
+    <ClCompile Include="src\Stimpi\Core\Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Core\Layer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Stimpi\Engine.h">
+    <ClInclude Include="src\Stimpi\Core\Engine.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Stimpi\Core.h">
+    <ClInclude Include="src\Stimpi\Core\Core.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Stimpi\Application.h" />
+    <ClInclude Include="src\Stimpi\Core\Application.h" />
     <ClInclude Include="src\Stimpi.h" />
     <ClInclude Include="src\Stimpi\Log.h" />
+    <ClInclude Include="src\Stimpi\Core\Layer.h" />
   </ItemGroup>
 </Project>

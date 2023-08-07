@@ -59,6 +59,8 @@
       <PreprocessorDefinitions>STIMPI_BUILD_DLL;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AdditionalIncludeDirectories>D:\GitHub\Stimpi\Stimpi\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -85,16 +87,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Stimpi\Application.cpp" />
-    <ClCompile Include="src\Stimpi\Engine.cpp" />
-    <ClCompile Include="src\Stimpi\EntryPoint.h" />
+    <ClCompile Include="src\Stimpi\Core\Application.cpp" />
+    <ClCompile Include="src\Stimpi\Core\Engine.cpp" />
+    <ClCompile Include="src\Stimpi\Core\EntryPoint.h" />
+    <ClCompile Include="src\Stimpi\Core\Layer.cpp" />
     <ClCompile Include="src\Stimpi\Log.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi.h" />
-    <ClInclude Include="src\Stimpi\Application.h" />
-    <ClInclude Include="src\Stimpi\Core.h" />
-    <ClInclude Include="src\Stimpi\Engine.h" />
+    <ClInclude Include="src\Stimpi\Core\Application.h" />
+    <ClInclude Include="src\Stimpi\Core\Core.h" />
+    <ClInclude Include="src\Stimpi\Core\Engine.h" />
+    <ClInclude Include="src\Stimpi\Core\Layer.h" />
     <ClInclude Include="src\Stimpi\Log.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

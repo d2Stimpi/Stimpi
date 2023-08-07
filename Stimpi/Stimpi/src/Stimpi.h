@@ -2,9 +2,10 @@
 // For Client application use only 
 
 
-#include "Stimpi/Application.h"
 #include "Stimpi/Log.h"
+#include "Stimpi/Core/Application.h"
+#include "Stimpi/Core/Layer.h"
 
 // Enrty point
-#include "Stimpi/EntryPoint.h"
+#include "Stimpi/Core/EntryPoint.h"
 
