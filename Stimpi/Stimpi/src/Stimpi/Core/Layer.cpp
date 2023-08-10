@@ -67,11 +67,15 @@ namespace Stimpi
 		}
 	}
 
-	void LayerStack::Render()
+	void LayerStack::OnEvent(Event e)
 	{
 		for (auto layer : m_Layers)
 		{
-			layer->Render();
+			if (e.IsHandled())
+			{
+				break;
+			}
+			layer->OnEvent(e);
 		}
 	}
 }

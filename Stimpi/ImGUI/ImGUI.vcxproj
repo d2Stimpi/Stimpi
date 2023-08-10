@@ -13,13 +13,13 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{83a2b7b3-0949-42ae-a78e-9a2ccf84929a}</ProjectGuid>
-    <RootNamespace>Application</RootNamespace>
+    <ProjectGuid>{bfb52b4b-e634-41bd-a975-39a218e9665d}</ProjectGuid>
+    <RootNamespace>ImGUI</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -45,10 +45,10 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)\bin\$(Configuration)-$(Platform)\$(ProjectName)</OutDir>
-    <IntDir>$(SolutionDir)\bin-int\$(Configuration)-$(Platform)\$(ProjectName)</IntDir>
-    <IncludePath>D:\SDL2-devel-2.0.20-VC\SDL2-2.0.20\include;D:\libs\spdlog\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\libs\glad\include;D:\SDL2-devel-2.0.20-VC\SDL2-2.0.20\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\SDL2-devel-2.0.20-VC\SDL2-2.0.20\lib\x64;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)\lib\$(Configuration)-$(Platform)\$(ProjectName)</OutDir>
+    <IntDir>$(SolutionDir)\lib-int\$(Configuration)-$(Platform)\$(ProjectName)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -59,12 +59,10 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\GitHub\Stimpi\Stimpi\src;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -84,12 +82,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Sandbox.cpp" />
+    <ClInclude Include="ImGui\src\backend\imgui_impl_opengl3.h" />
+    <ClInclude Include="ImGui\src\backend\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="ImGui\src\backend\imgui_impl_sdl2.h" />
+    <ClInclude Include="ImGui\src\imconfig.h" />
+    <ClInclude Include="ImGui\src\imgui.h" />
+    <ClInclude Include="ImGui\src\imgui_internal.h" />
+    <ClInclude Include="ImGui\src\imstb_rectpack.h" />
+    <ClInclude Include="ImGui\src\imstb_textedit.h" />
+    <ClInclude Include="ImGui\src\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Stimpi\Stimpi.vcxproj">
-      <Project>{8a1aeeef-25ba-48f2-97e0-5d6722d82a8f}</Project>
-    </ProjectReference>
+    <ClCompile Include="ImGui\src\backend\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="ImGui\src\backend\imgui_impl_sdl2.cpp" />
+    <ClCompile Include="ImGui\src\imgui.cpp" />
+    <ClCompile Include="ImGui\src\imgui_demo.cpp" />
+    <ClCompile Include="ImGui\src\imgui_draw.cpp" />
+    <ClCompile Include="ImGui\src\imgui_tables.cpp" />
+    <ClCompile Include="ImGui\src\imgui_widgets.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ImGui\src\LICENSE.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

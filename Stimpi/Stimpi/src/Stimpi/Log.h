@@ -28,9 +28,13 @@ namespace Stimpi
 #define ST_CORE_ERROR(...)		Stimpi::Log::GetCoreLogger()->error(__VA_ARGS__)
 #define ST_CORE_CRITICAL(...)	Stimpi::Log::GetCoreLogger()->critical(__VA_ARGS__)
 
+#define ST_CORE_ASSERT(x, ...) if(x) { Stimpi::Log::GetCoreLogger()->error(__VA_ARGS__); }
+
 // Client - engine log macros
 #define ST_TRACE(...)		Stimpi::Log::GetClientLogger()->trace(__VA_ARGS__)
 #define ST_INFO(...)		Stimpi::Log::GetClientLogger()->info(__VA_ARGS__)
 #define ST_WARN(...)		Stimpi::Log::GetClientLogger()->warn(__VA_ARGS__)
 #define ST_ERROR(...)		Stimpi::Log::GetClientLogger()->error(__VA_ARGS__)
 #define ST_CRITICAL(...)	Stimpi::Log::GetClientLogger()->critical(__VA_ARGS__)
+
+#define ST_ASSERT(x, ...) if(x) { Stimpi::Log::GetClientLogger()->error(__VA_ARGS__); }

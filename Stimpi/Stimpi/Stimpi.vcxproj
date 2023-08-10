@@ -47,7 +47,9 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\bin\$(Configuration)-$(Platform)\$(ProjectName)</OutDir>
     <IntDir>$(SolutionDir)\bin-int\$(Configuration)-$(Platform)\$(ProjectName)</IntDir>
-    <IncludePath>D:\libs\spdlog\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\libs\glad\include;D:\SDL2-devel-2.0.20-VC\SDL2-2.0.20\include;D:\libs\spdlog\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\GitHub\Stimpi\lib\Debug-x64\ImGUI;D:\SDL2-devel-2.0.20-VC\SDL2-2.0.20\lib\x64;$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -60,11 +62,12 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>D:\GitHub\Stimpi\Stimpi\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\GitHub\Stimpi\ImGUI;D:\GitHub\Stimpi\Stimpi\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>OpenGL32.lib;ImGUI.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)\bin\$(Configuration)-$(Platform)\$(ProjectName)\$(ProjectName).dll $(SolutionDir)\bin\$(Configuration)-$(Platform)\Application\$(ProjectName).dll </Command>
@@ -90,7 +93,10 @@
     <ClCompile Include="src\Stimpi\Core\Application.cpp" />
     <ClCompile Include="src\Stimpi\Core\Engine.cpp" />
     <ClCompile Include="src\Stimpi\Core\EntryPoint.h" />
+    <ClCompile Include="src\Stimpi\Core\glad.c" />
     <ClCompile Include="src\Stimpi\Core\Layer.cpp" />
+    <ClCompile Include="src\Stimpi\Core\Window.cpp" />
+    <ClCompile Include="src\Stimpi\Gui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Stimpi\Log.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -98,7 +104,10 @@
     <ClInclude Include="src\Stimpi\Core\Application.h" />
     <ClInclude Include="src\Stimpi\Core\Core.h" />
     <ClInclude Include="src\Stimpi\Core\Engine.h" />
+    <ClInclude Include="src\Stimpi\Core\Event.h" />
     <ClInclude Include="src\Stimpi\Core\Layer.h" />
+    <ClInclude Include="src\Stimpi\Core\Window.h" />
+    <ClInclude Include="src\Stimpi\GUI\ImGuiLayer.h" />
     <ClInclude Include="src\Stimpi\Log.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -2,6 +2,8 @@
 *\.vs
 *\bin
 *\bin-int
+*\lib
+*\lib-int
 
 #ignore files
 *.user

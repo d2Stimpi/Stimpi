@@ -22,6 +22,15 @@
     <ClCompile Include="src\Stimpi\Core\Layer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Gui\ImGuiLayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Core\Window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Core\glad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi\Core\Engine.h">
@@ -34,5 +43,8 @@
     <ClInclude Include="src\Stimpi.h" />
     <ClInclude Include="src\Stimpi\Log.h" />
     <ClInclude Include="src\Stimpi\Core\Layer.h" />
+    <ClInclude Include="src\Stimpi\Core\Event.h" />
+    <ClInclude Include="src\Stimpi\GUI\ImGuiLayer.h" />
+    <ClInclude Include="src\Stimpi\Core\Window.h" />
   </ItemGroup>
 </Project>
