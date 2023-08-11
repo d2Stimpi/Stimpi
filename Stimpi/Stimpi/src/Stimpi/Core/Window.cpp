@@ -1,12 +1,9 @@
 #include "Window.h"
 
-
 namespace Stimpi
 {
 	// Atm here window type is selected
 	auto s_WindowImplType = WindowType::SDL;
-
-	SDL_GLContext WindowSDL::s_GLcontext;
 
 	Window* Window::CreateAppWindow()
 	{
@@ -55,16 +52,12 @@ namespace Stimpi
 		SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 		SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 		m_Window = SDL_CreateWindow("Stimpi Editor v1.0", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_Width, m_Height, window_flags);
-		s_GLcontext = SDL_GL_CreateContext(m_Window);
-		SDL_GL_MakeCurrent(m_Window, s_GLcontext);
-		SDL_GL_SetSwapInterval(1); // Enable vsync
 
 		m_ID = SDL_GetWindowID(m_Window);
 	}
 
 	void WindowSDL::Deinit()
 	{
-		SDL_GL_DeleteContext(s_GLcontext);
 		SDL_DestroyWindow(m_Window);
 		SDL_Quit();
 	}
@@ -76,5 +69,18 @@ namespace Stimpi
 		e->SetEvent(event);
 
 		return pending;
+	}
+
+	SDL_Window* GetSDLWindow(Window* window)
+	{
+		if (s_WindowImplType == WindowType::SDL)
+		{
+			return ((WindowSDL*)window)->GetSDLWindow();
+		}
+		else
+		{
+			ST_CORE_CRITICAL("GetSDLWindow: wrong window implementation type!");
+			return nullptr;
+		}
 	}
 }

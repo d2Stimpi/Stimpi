@@ -44,10 +44,9 @@ namespace Stimpi
 		bool PollEvent(Event* e) override;
 
 		SDL_Window* GetSDLWindow() { return m_Window; }
-		static SDL_GLContext& GetGLContext() { return s_GLcontext; }
 	private:
 		SDL_Window* m_Window;
-		// TODO: consider movig GL context outside to its own class
-		static SDL_GLContext s_GLcontext;
 	};
+
+	SDL_Window* GetSDLWindow(Window* window);
 }

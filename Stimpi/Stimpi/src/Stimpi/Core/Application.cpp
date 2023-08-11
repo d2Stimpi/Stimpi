@@ -23,7 +23,8 @@ namespace Stimpi
 	{
 		Stimpi::Log::Init();
 		m_Window.reset(Window::CreateAppWindow());
-		m_LayerStack.AttachOverlay(new ImGuiLayer(m_Window.get(), &WindowSDL::GetGLContext()));
+		m_Context.CreateContext(m_Window.get());
+		m_LayerStack.AttachOverlay(new ImGuiLayer(m_Window.get(), &m_Context.GetContext()));
 	}
 
 	void Application::Run()

@@ -28,7 +28,7 @@
     <ClCompile Include="src\Stimpi\Core\Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Stimpi\Core\glad.c">
+    <ClCompile Include="src\Stimpi\Graphics\OpenGL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -46,5 +46,6 @@
     <ClInclude Include="src\Stimpi\Core\Event.h" />
     <ClInclude Include="src\Stimpi\GUI\ImGuiLayer.h" />
     <ClInclude Include="src\Stimpi\Core\Window.h" />
+    <ClInclude Include="src\Stimpi\Graphics\OpenGL.h" />
   </ItemGroup>
 </Project>

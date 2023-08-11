@@ -84,6 +84,8 @@ namespace Stimpi
 		//ImGui::DockSpace();
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
+		// TODO: add UI elements here
+
 		// Rendering
 		ImGui::Render();
 		glViewport(0, 0, (int)m_IO->DisplaySize.x, (int)m_IO->DisplaySize.y);

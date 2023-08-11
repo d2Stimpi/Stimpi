@@ -5,6 +5,7 @@
 #include "Stimpi/Core/Core.h"
 #include "Stimpi/Core/Layer.h"
 #include "Stimpi/Core/Window.h"
+#include "Stimpi/Graphics/OpenGL.h"
 
 namespace Stimpi
 {
@@ -24,6 +25,7 @@ namespace Stimpi
 		LayerStack m_LayerStack;
 		bool m_Running{ true };
 		std::unique_ptr<Window> m_Window;
+		GLContext m_Context;
 
 	};
 
