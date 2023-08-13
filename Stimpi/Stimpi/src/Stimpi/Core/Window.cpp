@@ -1,5 +1,7 @@
 #include "Window.h"
 
+#include <memory>
+
 namespace Stimpi
 {
 	// Atm here window type is selected
@@ -67,6 +69,14 @@ namespace Stimpi
 		SDL_Event event;
 		bool pending = SDL_PollEvent(&event);
 		e->SetEvent(event);
+
+		if (pending)
+		{
+			std::shared_ptr<BaseEvent> newEvent;
+			newEvent.reset(EventFactory::EventCreate(event));
+			if (newEvent != nullptr)
+				newEvent->LogEvent();
+		}
 
 		return pending;
 	}
