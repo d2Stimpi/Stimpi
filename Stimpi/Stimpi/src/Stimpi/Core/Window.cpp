@@ -64,18 +64,18 @@ namespace Stimpi
 		SDL_Quit();
 	}
 
-	bool WindowSDL::PollEvent(Event* e)
+	bool WindowSDL::PollEvent(BaseEvent** e)
 	{
 		SDL_Event event;
 		bool pending = SDL_PollEvent(&event);
-		e->SetEvent(event);
 
 		if (pending)
 		{
-			std::shared_ptr<BaseEvent> newEvent;
-			newEvent.reset(EventFactory::EventCreate(event));
-			if (newEvent != nullptr)
-				newEvent->LogEvent();
+			*e = EventFactory::EventCreate(event);
+			if (*e != nullptr)
+			{
+				(*e)->SetRawSDLEvent(event);
+			}
 		}
 
 		return pending;

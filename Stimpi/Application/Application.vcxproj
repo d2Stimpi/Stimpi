@@ -47,7 +47,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\bin\$(Configuration)-$(Platform)\$(ProjectName)</OutDir>
     <IntDir>$(SolutionDir)\bin-int\$(Configuration)-$(Platform)\$(ProjectName)</IntDir>
-    <IncludePath>D:\SDL2-devel-2.0.20-VC\SDL2-2.0.20\include;D:\libs\spdlog\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\libs\glm-0.9.9.7\glm;D:\SDL2-devel-2.0.20-VC\SDL2-2.0.20\include;D:\libs\spdlog\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\SDL2-devel-2.0.20-VC\SDL2-2.0.20\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

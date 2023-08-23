@@ -33,19 +33,22 @@ namespace Stimpi
 
 		while (m_Running)
 		{
+			BaseEvent* event;
 			// Read and consume all events
-			Event event;
-
 			while (m_Window->PollEvent(&event))
 			{
-				// Check exit events
-				if ((event.GetRawEvent().type == SDL_WINDOWEVENT && event.GetRawEvent().window.event == SDL_WINDOWEVENT_CLOSE && event.GetRawEvent().window.windowID == m_Window->GetID())
-					|| (event.GetRawEvent().type == SDL_QUIT))
+				if (event != nullptr)
 				{
-					Stop();
-					event.Handled();
+					EventDispatcher<WindowEvent> dispatcher;
+					dispatcher.Dispatch(event, [&](WindowEvent* e) -> bool {
+							if (e->GetType() == WindowEventType::WINDOW_EVENT_QUIT)
+							{
+								Stop();
+								return true;
+							}
+						});
 				}
-				// Pass events to layer stack
+
 				m_LayerStack.OnEvent(event);
 			}
 			m_LayerStack.Update();

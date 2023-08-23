@@ -31,6 +31,12 @@
     <ClCompile Include="src\Stimpi\Graphics\OpenGL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Core\Event.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\Shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi\Core\Engine.h">
@@ -47,5 +53,9 @@
     <ClInclude Include="src\Stimpi\GUI\ImGuiLayer.h" />
     <ClInclude Include="src\Stimpi\Core\Window.h" />
     <ClInclude Include="src\Stimpi\Graphics\OpenGL.h" />
+    <ClInclude Include="src\Stimpi\Graphics\Shader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shader.shader" />
   </ItemGroup>
 </Project>

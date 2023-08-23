@@ -8,6 +8,7 @@
 #include <SDL_opengl.h>
 
 #include "Stimpi/Log.h"
+#include "Stimpi/Graphics/Shader.h"
 
 namespace Stimpi
 {
@@ -60,6 +61,9 @@ namespace Stimpi
 	void ImGuiLayer::OnAttach()
 	{
 		ST_CORE_TRACE("{0}: OnAttach", m_DebugName);
+
+		// test shader code
+		Shader shader("shader.shader");
 	}
 
 	void ImGuiLayer::OnDetach()
@@ -67,9 +71,21 @@ namespace Stimpi
 		ST_CORE_TRACE("{0}: OnDetach", m_DebugName);
 	}
 
-	void ImGuiLayer::OnEvent(Event e)
+	static bool show_another_window = true;
+
+	void ImGuiLayer::OnEvent(BaseEvent* e)
 	{
-		ImGui_ImplSDL2_ProcessEvent(&e.GetRawEvent());
+		ImGui_ImplSDL2_ProcessEvent(e->GetRawSDLEvent());
+		//e->LogEvent();
+
+		EventDispatcher<KeyboardEvent> keyDispatcher;
+		keyDispatcher.Dispatch(e, [](KeyboardEvent* keyEvent) -> bool {
+				if (keyEvent->GetKeyCode() == SDL_SCANCODE_A && keyEvent->GetType() == KeyboardEventType::KEY_EVENT_DOWN)
+				{
+					show_another_window = !show_another_window;
+					return true;
+				}
+			});
 	}
 
 	void ImGuiLayer::Update()
@@ -85,6 +101,16 @@ namespace Stimpi
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
 		// TODO: add UI elements here
+
+		if (show_another_window)
+		{
+			ImGui::Begin("Another Window", &show_another_window);
+			ImGui::Text("Hello from another window!");
+			if (ImGui::Button("Close Me"))
+				show_another_window = false;
+			ImGui::End();
+		}
+
 
 		// Rendering
 		ImGui::Render();

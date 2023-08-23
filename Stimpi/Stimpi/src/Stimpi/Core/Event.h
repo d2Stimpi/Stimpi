@@ -55,17 +55,21 @@ namespace Stimpi
 	class ST_API BaseEvent
 	{
 	public:
-		BaseEvent(EventType type) : m_EventType(type), m_RawEvent(nullptr) {}
+		BaseEvent(EventType type) : m_EventType(type), m_RawSDLEvent(), m_Handled(false) {}
 		virtual ~BaseEvent() {}
 
 		virtual void LogEvent() = 0;
 
-		void SetRawEvent(void* raw) { m_RawEvent = raw; }
+		void Handled() { m_Handled = true; }
+		bool IsHandled() { return m_Handled; }
+
+		void SetRawSDLEvent(SDL_Event raw) { m_RawSDLEvent = raw; }
+		SDL_Event* GetRawSDLEvent() { return &m_RawSDLEvent; }
 		EventType GetEventType() { return m_EventType; }
-		void* GetRawEvent() { return m_RawEvent; }
 	private:
 		EventType m_EventType;
-		void* m_RawEvent; // For example SDLEvent type - for specific use not covered with SubTypes
+		SDL_Event m_RawSDLEvent; // For example SDLEvent type - for specific use not covered with SubTypes
+		bool m_Handled;
 	};
 
 	/******************************************************************************************/
@@ -79,35 +83,12 @@ namespace Stimpi
 		
 		void LogEvent() { ST_CORE_TRACE("KeyboardEvent: {0}, KeyCode: {1}", GetStringKeyboardEvent(m_Type), m_KeyCode); }
 
-		static KeyboardEvent* CreateKeyboardEvent(SDL_Event e)
-		{
-			KeyboardEventType type{};
-			uint32_t repeat = 0;
+		static KeyboardEvent* CreateKeyboardEvent(SDL_Event e);
 
-			switch (e.key.type)
-			{
-			case SDL_KEYDOWN:
-				if (e.key.repeat != 0) 
-				{
-					type = KeyboardEventType::KEY_EVENT_REPEAT;
-					repeat = e.key.repeat;
-				}
-				else
-				{
-					type = KeyboardEventType::KEY_EVENT_DOWN;
-				}
-				break;
-			case SDL_KEYUP: 
-				type = KeyboardEventType::KEY_EVENT_UP; 
-				break;
-			default:
-				ST_CORE_WARN("Unprocessed Keyboard event: {0}", e.key.type);
-				type = KeyboardEventType::NONE;
-			}
-
-			return new KeyboardEvent(type, repeat, e.key.keysym.scancode);
-		}
-
+		KeyboardEventType GetType() { return m_Type; }
+		uint32_t GetRepeat() { return m_Repeat; }
+		uint32_t GetKeyCode() { return m_KeyCode; }
+		static EventType GetStaticType() { return EventType::KeyboardEvent; }
 	private:
 		KeyboardEventType m_Type;
 		uint32_t m_Repeat;
@@ -133,52 +114,13 @@ namespace Stimpi
 		}
 
 		// TODO: confirm event type before creating it
-		static MouseEvent* CreateMouseEvent(SDL_Event e)
-		{
-			MouseEventType type{};
-			uint32_t x = 0;
-			uint32_t y = 0;
-			uint8_t button = 0;
+		static MouseEvent* CreateMouseEvent(SDL_Event e);
 
-			switch (e.key.type)
-			{
-				case SDL_MOUSEBUTTONDOWN: 
-					type = MouseEventType::MOUSE_EVENT_BUTTONDOWN;
-					break;
-				case SDL_MOUSEBUTTONUP: 
-					type = MouseEventType::MOUSE_EVENT_BUTTONUP; 
-					break;
-				case SDL_MOUSEWHEEL: 
-					if (e.wheel.y > 0) 
-					{
-						type = MouseEventType::MOUSE_EVENT_WHEELUP;
-					} 
-					else if (e.wheel.y < 0) 
-					{
-						type = MouseEventType::MOUSE_EVENT_WHEELDOWN;
-					} 
-					else 
-					{
-						ST_CORE_WARN("Unprocessed Mouse event: {0}", e.key.type);
-						type = MouseEventType::NONE;
-					}
-					break;
-				case SDL_MOUSEMOTION: type = MouseEventType::MOUSE_EVENT_MOTION; break;
-				default:
-					ST_CORE_WARN("Unprocessed Mouse event: {0}", e.key.type);
-					type = MouseEventType::NONE;
-			}
-			if ((e.key.type == SDL_MOUSEBUTTONDOWN) || (e.key.type == SDL_MOUSEBUTTONUP) || (e.key.type == SDL_MOUSEMOTION))
-			{
-				x = e.button.x;
-				y = e.button.y;
-			}
-			if ((e.key.type == SDL_MOUSEBUTTONDOWN) || (e.key.type == SDL_MOUSEBUTTONUP))
-			{
-				button = e.button.button;
-			}
-			return new MouseEvent(type, x, y, button);
-		}
+		MouseEventType GetType() { return m_Type; }
+		uint32_t GetX() { return m_X; }
+		uint32_t GetY() { return m_Y; }
+		uint8_t GetButton() { return m_Button; }
+		static EventType GetStaticType() { return EventType::MouseEvent; }
 	private:
 		MouseEventType m_Type;
 		uint32_t m_X;
@@ -194,22 +136,10 @@ namespace Stimpi
 
 		void LogEvent() { ST_CORE_TRACE("WindowEventType: {0}", GetStringWindowEvent(m_Type)); }
 
-		static WindowEvent* CreateWindowEvnet(SDL_Event e)
-		{
-			WindowEventType type{};
+		static WindowEvent* CreateWindowEvnet(SDL_Event e);
 
-			switch (e.window.event)
-			{
-			case SDL_WINDOWEVENT_CLOSE: type = WindowEventType::WINDOW_EVENT_QUIT; break;
-			case SDL_WINDOWEVENT_RESIZED: type = WindowEventType::WINDOW_EVENT_RESIZE; break;
-			default:
-				ST_CORE_WARN("Unprocessed Window event: {0}", e.window.event);
-				type = WindowEventType::NONE;
-				break;
-			}
-
-			return new WindowEvent(type);
-		}
+		WindowEventType GetType() { return m_Type; }
+		static EventType GetStaticType() { return EventType::WindowEvent; }
 	private:
 		WindowEventType m_Type;
 	};
@@ -217,53 +147,24 @@ namespace Stimpi
 	class EventFactory
 	{
 	public:
-		static BaseEvent* EventCreate(SDL_Event e)
-		{
-			switch (GetEventType(e))
-			{
-			case EventType::KeyboardEvent: return KeyboardEvent::CreateKeyboardEvent(e);
-			case EventType::MouseEvent: return MouseEvent::CreateMouseEvent(e);
-			case EventType::WindowEvent: return WindowEvent::CreateWindowEvnet(e);
-			default: ST_CORE_WARN("EventCreate: Unknow event!"); return nullptr;
-			}
-		}
-
-		static EventType GetEventType(SDL_Event e)
-		{
-			switch (e.type)
-			{
-			case SDL_KEYDOWN:
-			case SDL_KEYUP:
-				return EventType::KeyboardEvent;
-			case SDL_MOUSEBUTTONDOWN:
-			case SDL_MOUSEBUTTONUP:
-			case SDL_MOUSEWHEEL:
-			case SDL_MOUSEMOTION:
-				return EventType::MouseEvent;
-			case SDL_WINDOWEVENT:
-				return EventType::WindowEvent;
-			default:
-				return EventType::None;
-				break;
-			}
-		}
+		static BaseEvent* EventCreate(SDL_Event e);
+		static EventType GetEventType(SDL_Event e);
 	};
 
-	class ST_API Event
+	// Mainly used as filter of events based on sub-type 
+	template <typename T>
+	class EventDispatcher
 	{
+		using EventFunc = std::function<bool(T*)>;
 	public:
-		Event() : m_Handled(false), m_Event({}) {};
-		Event(SDL_Event e) : m_Handled(false), m_Event(e) {};
-		virtual ~Event() {};
 
-		void Handled() { m_Handled = true; }
-		bool IsHandled() { return m_Handled; }
-		void SetEvent(SDL_Event e) { m_Event = e; }
-
-		inline const SDL_Event& GetRawEvent() { return m_Event; }
-	private:
-		bool m_Handled;
-		// Temp encapsualtion of SDL event
-		SDL_Event m_Event;
+		void Dispatch(BaseEvent* event, EventFunc func)
+		{
+			if (event->GetEventType() == T::GetStaticType())
+			{
+				bool handled = false;
+				handled = func((T*)event);
+			}
+		}
 	};
 }

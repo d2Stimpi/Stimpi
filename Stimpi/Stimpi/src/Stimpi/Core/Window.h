@@ -19,7 +19,7 @@ namespace Stimpi
 
 		virtual void Init() = 0;
 		virtual void Deinit() = 0;
-		virtual bool PollEvent(Event* e) = 0;
+		virtual bool PollEvent(BaseEvent** e) = 0;
 
 		static Window* CreateAppWindow();
 
@@ -41,7 +41,7 @@ namespace Stimpi
 
 		void Init() override;
 		void Deinit() override;
-		bool PollEvent(Event* e) override;
+		bool PollEvent(BaseEvent** e) override;
 
 		SDL_Window* GetSDLWindow() { return m_Window; }
 	private:
