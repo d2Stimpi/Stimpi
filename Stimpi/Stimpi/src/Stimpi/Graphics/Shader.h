@@ -17,17 +17,16 @@ namespace Stimpi
 	class ST_API Shader
 	{
 	public:
-		Shader(const std::string& fileName);
-		~Shader();
+		virtual ~Shader();
 
-		void Use();
-		void SetUniform(const std::string& name, int value);
-		void SetUniform(const std::string& name, glm::vec3 value);
-		void SetUniform(const std::string& name, glm::mat4 value);
+		virtual void Use() = 0;
+		virtual void SetUniform(const std::string& name, int value) = 0;
+		virtual void SetUniform(const std::string& name, glm::vec3 value) = 0;
+		virtual void SetUniform(const std::string& name, glm::vec4 value) = 0;
+		virtual void SetUniform(const std::string& name, glm::mat4 value) = 0;
 
-	private:
-		void CheckForErrors(unsigned int shader, std::string type);
+		virtual void CheckForErrors(unsigned int shader, std::string type) = 0;
 
-		unsigned int m_ID;
+		static Shader* CreateShader(const std::string& fileName);
 	};
 }

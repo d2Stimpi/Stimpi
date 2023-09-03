@@ -61,9 +61,6 @@ namespace Stimpi
 	void ImGuiLayer::OnAttach()
 	{
 		ST_CORE_TRACE("{0}: OnAttach", m_DebugName);
-
-		// test shader code
-		Shader shader("shader.shader");
 	}
 
 	void ImGuiLayer::OnDetach()
@@ -97,8 +94,7 @@ namespace Stimpi
 		ImGui_ImplSDL2_NewFrame();
 		ImGui::NewFrame();
 
-		//ImGui::DockSpace();
-		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+		//ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
 		// TODO: add UI elements here
 
@@ -110,7 +106,6 @@ namespace Stimpi
 				show_another_window = false;
 			ImGui::End();
 		}
-
 
 		// Rendering
 		ImGui::Render();

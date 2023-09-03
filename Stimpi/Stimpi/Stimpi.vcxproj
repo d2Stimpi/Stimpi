@@ -47,7 +47,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\bin\$(Configuration)-$(Platform)\$(ProjectName)</OutDir>
     <IntDir>$(SolutionDir)\bin-int\$(Configuration)-$(Platform)\$(ProjectName)</IntDir>
-    <IncludePath>D:\libs\glfw-3.3.8.bin.WIN64\include;D:\libs\glm-0.9.9.7\glm;D:\libs\glad\include;D:\SDL2-devel-2.0.20-VC\SDL2-2.0.20\include;D:\libs\spdlog\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\libs\stbimg;D:\libs\glfw-3.3.8.bin.WIN64\include;D:\libs\glm-0.9.9.7\glm;D:\libs\glad\include;D:\SDL2-devel-2.0.20-VC\SDL2-2.0.20\include;D:\libs\spdlog\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\libs\glfw-3.3.8.bin.WIN64\lib-vc2019;D:\GitHub\Stimpi\lib\Debug-x64\GLAD;D:\GitHub\Stimpi\lib\Debug-x64\ImGUI;D:\SDL2-devel-2.0.20-VC\SDL2-2.0.20\lib\x64;$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
@@ -96,10 +96,21 @@
     <ClCompile Include="src\Stimpi\Core\Event.cpp" />
     <ClCompile Include="src\Stimpi\Core\Layer.cpp" />
     <ClCompile Include="src\Stimpi\Core\Window.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\Camera.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\FrameBuffer.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\OpenGL.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\Renderer2D.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\Shader.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\Texture.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\VertexArrayObject.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\BufferObject.cpp" />
     <ClCompile Include="src\Stimpi\Gui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Stimpi\Log.cpp" />
+    <ClCompile Include="src\Stimpi\Platform\OpenGLBufferObject.cpp" />
+    <ClCompile Include="src\Stimpi\Platform\OpenGLFrameBuffer.cpp" />
+    <ClCompile Include="src\Stimpi\Platform\OpenGLShader.cpp" />
+    <ClCompile Include="src\Stimpi\Platform\OpenGLTexture.cpp" />
+    <ClCompile Include="src\Stimpi\Platform\OpenGLVertexArrayObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi.h" />
@@ -109,10 +120,22 @@
     <ClInclude Include="src\Stimpi\Core\Event.h" />
     <ClInclude Include="src\Stimpi\Core\Layer.h" />
     <ClInclude Include="src\Stimpi\Core\Window.h" />
+    <ClInclude Include="src\Stimpi\Graphics\Camera.h" />
+    <ClInclude Include="src\Stimpi\Graphics\FrameBuffer.h" />
     <ClInclude Include="src\Stimpi\Graphics\OpenGL.h" />
+    <ClInclude Include="src\Stimpi\Graphics\Graphics.h" />
+    <ClInclude Include="src\Stimpi\Graphics\Renderer2D.h" />
     <ClInclude Include="src\Stimpi\Graphics\Shader.h" />
+    <ClInclude Include="src\Stimpi\Graphics\Texture.h" />
+    <ClInclude Include="src\Stimpi\Graphics\VertexArrayObject.h" />
+    <ClInclude Include="src\Stimpi\Graphics\BufferObject.h" />
     <ClInclude Include="src\Stimpi\GUI\ImGuiLayer.h" />
     <ClInclude Include="src\Stimpi\Log.h" />
+    <ClInclude Include="src\Stimpi\Platform\OpenGLBufferObject.h" />
+    <ClInclude Include="src\Stimpi\Platform\OpenGLFrameBuffer.h" />
+    <ClInclude Include="src\Stimpi\Platform\OpenGLShader.h" />
+    <ClInclude Include="src\Stimpi\Platform\OpenGLTexture.h" />
+    <ClInclude Include="src\Stimpi\Platform\OpenGLVertexArrayObject.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader.shader" />

@@ -2,6 +2,9 @@
 
 #ifndef STIMPI_BUILD_DLL
 
+#ifndef ENTRY_DEF
+#define ENTRY_DEF
+
 extern Stimpi::Application* Stimpi::CreateApplication();
 
 int main(int argc, char** argv)
@@ -11,5 +14,7 @@ int main(int argc, char** argv)
 	delete app;
 	return 0;
 }
+
+#endif
 
 #endif

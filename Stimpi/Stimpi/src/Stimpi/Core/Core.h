@@ -8,6 +8,9 @@
 #include <functional>
 #include <vector>
 
+#define STB_IMAGE_IMPLEMENTATION
+//#include <stb_image.h>
+
 #ifdef STIMPI_BUILD_DLL
 #define ST_API	__declspec (dllexport)
 #else
