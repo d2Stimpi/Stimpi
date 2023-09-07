@@ -10,9 +10,11 @@ namespace Stimpi
 		OpenGLVertexArrayObject(const DataLayout& layout);
 		~OpenGLVertexArrayObject();
 
-		void BindArray(unsigned int id) override;
+		void BindArray() override;
+		void Unbind() override;
 		void EnableVertexAttribArray() override;
 
 	private:
+		unsigned int m_ID;
 	};
 }

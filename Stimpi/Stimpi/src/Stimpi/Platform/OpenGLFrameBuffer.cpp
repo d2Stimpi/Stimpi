@@ -9,9 +9,10 @@ namespace Stimpi
 		: FrameBuffer(width, height)
 	{
 		glGenFramebuffers(1, &m_ID);
-		glGenTextures(1, &m_TextureID);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_ID);
 
 		// Init texture FBO stuff
+		glGenTextures(1, &m_TextureID);
 		glBindTexture(GL_TEXTURE_2D, m_TextureID);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -33,6 +34,10 @@ namespace Stimpi
 	void OpenGLFrameBuffer::BindBuffer()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, m_ID);
-		glBindTexture(GL_TEXTURE_2D, m_TextureID);
+	}
+
+	void OpenGLFrameBuffer::Unbind()
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }

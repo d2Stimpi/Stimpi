@@ -9,6 +9,7 @@
 
 #include "Stimpi/Log.h"
 #include "Stimpi/Graphics/Shader.h"
+#include "Stimpi/Graphics/Renderer2D.h"
 
 namespace Stimpi
 {
@@ -94,9 +95,28 @@ namespace Stimpi
 		ImGui_ImplSDL2_NewFrame();
 		ImGui::NewFrame();
 
-		//ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
 		// TODO: add UI elements here
+
+		// FBO Veiw sample begin
+		static ImGuiWindowFlags flags = ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoCollapse;
+		static bool closeWidget = true;
+		static bool use_work_area = false;
+
+		ImGui::Begin("OpenGL Main Scene View", &closeWidget);
+		static bool use_text_color_for_tint = true;
+		// Flip the FBO texture img
+		ImVec2 uv_min = ImVec2(0.0f, 1.0f);
+		ImVec2 uv_max = ImVec2(1.0f, 0.0f);
+		ImVec4 tint_col = use_text_color_for_tint ? ImGui::GetStyleColorVec4(ImGuiCol_Text) : ImVec4(0.0f, 0.0f, 1.0f, 1.0f);   // No tint
+		ImVec4 border_col = ImGui::GetStyleColorVec4(ImGuiCol_Border);
+		int wWidth = ImGui::GetWindowWidth();
+		int wHeight = ImGui::GetWindowHeight();
+		auto frameBuffer = Renderer2D::Instace()->GetFrameBuffer();
+		ImGui::Image((void*)(intptr_t)frameBuffer->GetTextureID(), ImVec2(wWidth, wHeight), uv_min, uv_max, tint_col, border_col);
+		ImGui::End();
+		// FBO Veiw sample end
 
 		if (show_another_window)
 		{
@@ -106,12 +126,25 @@ namespace Stimpi
 				show_another_window = false;
 			ImGui::End();
 		}
-
+		
+		static bool closeWidget2 = true;
+		ImGui::Begin("Another Window 2", &closeWidget2);
+		ImGui::Text("Hello from another window!");
+		//if (ImGui::Button("Close Me"))
+		//	closeWidget2 = false;
+		ImGui::End();
+		
 		// Rendering
 		ImGui::Render();
 		glViewport(0, 0, (int)m_IO->DisplaySize.x, (int)m_IO->DisplaySize.y);
 		glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		// Custom Rendering stuff
+		auto renderer = Renderer2D::Instace();
+		renderer->StartFrame();
+		renderer->DrawFrame();
+		renderer->EndFrame();
 
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

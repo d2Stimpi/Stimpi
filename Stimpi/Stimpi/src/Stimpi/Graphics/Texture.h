@@ -11,6 +11,8 @@ namespace Stimpi
 
 		virtual void LoadTexture(std::string file) = 0;
 		virtual void UseTexture() = 0;
+		virtual void Unbind() = 0;
+		virtual unsigned int GetTextureID() = 0;
 
 		int GetWidth() { return mWidth; }
 		int GetHeight() { return mHeight; }

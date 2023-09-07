@@ -15,6 +15,12 @@ namespace Stimpi
 
 		void BindToShader(Shader& shader);
 
+		void Translate(glm::vec3 vector);
+		void Zoom(float factor);
+		void Resize(float sceneWidth, float sceneHeight);
+
+		glm::mat4 GetMvpMatrix() { return m_Mvp; }
+
 	private:
 		float m_SceneWidth;
 		float m_SceneHeihgt;

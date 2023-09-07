@@ -14,18 +14,16 @@ namespace Stimpi
 		BufferObject(BufferObjectType type);
 		virtual ~BufferObject();
 
-		void SetData(float* data, uint32_t size);
-		float* GetData() { return m_Data; }
-
 		// Called from Renderer with proper BufferObject ID
-		virtual void BindBuffer(unsigned int id) = 0;
+		virtual void InitBuffer(uint32_t capacity) = 0;
+		virtual void BindBuffer() = 0;
+		virtual void Unbind() = 0;
 		// Called from Renderer with correct data offset
-		virtual void BufferSubData(uint32_t offset) = 0;
+		virtual void BufferSubData(uint32_t offset, uint32_t size, float* data) = 0;
 
 		static BufferObject* CreateBufferObject(BufferObjectType type);
 	protected:
 		BufferObjectType m_Type;
-		float* m_Data;
-		uint32_t m_Size;
+		uint32_t m_Capacity;
 	};
 }

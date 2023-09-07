@@ -7,9 +7,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Stimpi\Core\Engine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Stimpi\Core\EntryPoint.h">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -70,11 +67,17 @@
     <ClCompile Include="src\Stimpi\Graphics\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\RenderAPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Platform\OpenGLRenderAPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\RenderCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Stimpi\Core\Engine.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Stimpi\Core\Core.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -99,6 +102,9 @@
     <ClInclude Include="src\Stimpi\Graphics\Texture.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLTexture.h" />
     <ClInclude Include="src\Stimpi\Graphics\Camera.h" />
+    <ClInclude Include="src\Stimpi\Platform\OpenGLRenderAPI.h" />
+    <ClInclude Include="src\Stimpi\Graphics\RenderAPI.h" />
+    <ClInclude Include="src\Stimpi\Graphics\RenderCommand.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader.shader" />

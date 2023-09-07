@@ -7,7 +7,7 @@
 namespace Stimpi
 {
 	BufferObject::BufferObject(BufferObjectType type)
-		: m_Type(type), m_Data(nullptr), m_Size(0)
+		: m_Type(type)
 	{
 
 	}
@@ -15,12 +15,6 @@ namespace Stimpi
 	BufferObject::~BufferObject()
 	{
 
-	}
-
-	void BufferObject::SetData(float* data, uint32_t size)
-	{
-		m_Data = data;
-		m_Size = size;
 	}
 
 	BufferObject* BufferObject::CreateBufferObject(BufferObjectType type)

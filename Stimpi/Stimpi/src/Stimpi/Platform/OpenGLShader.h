@@ -10,6 +10,8 @@ namespace Stimpi
 		OpenGLShader(const std::string& fileName);
 		~OpenGLShader();
 
+		unsigned int GetShaderID() override;
+
 		void Use() override;
 		void SetUniform(const std::string& name, int value) override;
 		void SetUniform(const std::string& name, glm::vec3 value) override;

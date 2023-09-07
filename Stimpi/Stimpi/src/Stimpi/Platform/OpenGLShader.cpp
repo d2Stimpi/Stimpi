@@ -84,6 +84,11 @@ namespace Stimpi
 		glDeleteShader(m_ID);
 	}
 
+	unsigned int OpenGLShader::GetShaderID()
+	{
+		return m_ID;
+	}
+
 	void OpenGLShader::Use()
 	{
 		glUseProgram(m_ID);

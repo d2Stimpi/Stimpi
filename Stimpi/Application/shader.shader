@@ -4,15 +4,12 @@ layout(location = 1) in vec3 aColor;
 layout(location = 2) in vec2 aTexCoord;
 
 out vec2 TexCoord;
-out vec3 vertexColor;
 
-uniform mat4 model;
-uniform mat4 projection;
 uniform mat4 mvp;
 
 void main()
 {
-	gl_Position = vec4(aPos, 1.0);
+	gl_Position = mvp * vec4(aPos, 1.0);
 	TexCoord = vec2(aTexCoord.x, aTexCoord.y);
 }
 
@@ -24,10 +21,10 @@ in vec2 TexCoord;
 in vec3 vertexColor;
 
 // texture samplers
-uniform sampler2D texture1;
+uniform sampler2D u_texture;
 
 void main()
 {
-	//FragColor = texture(texture1, TexCoord);
-	FragColor = vec4(vertexColor, 1.0);
+	FragColor = texture(u_texture, TexCoord);
+	//FragColor = vec4(vertexColor, 1.0);
 }

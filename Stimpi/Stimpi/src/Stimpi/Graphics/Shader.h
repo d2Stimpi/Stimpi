@@ -19,6 +19,8 @@ namespace Stimpi
 	public:
 		virtual ~Shader();
 
+		virtual unsigned int GetShaderID() = 0;
+
 		virtual void Use() = 0;
 		virtual void SetUniform(const std::string& name, int value) = 0;
 		virtual void SetUniform(const std::string& name, glm::vec3 value) = 0;

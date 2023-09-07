@@ -3,16 +3,10 @@
 OpenGLTestLayer::OpenGLTestLayer() 
 	: Layer("OpenGL TestLayer") 
 {
-	/*m_Shader = std::make_shared<Stimpi::Shader>("shader.shader");
-
-	m_VAO.reset(Stimpi::VertexArrayObject::CreateVertexArrayObject());
-	m_VBO.reset(Stimpi::VertexBufferObject::CreateVertexBufferObject(Stimpi::DrawType::STATIC_DRAW));
-	m_EBO.reset(Stimpi::ElementBufferObject::CreateElementBufferObject(Stimpi::DrawType::STATIC_DRAW));
-
-	m_VAO->Bind();
-	m_VBO->SetData(m_Vertices, sizeof(m_Vertices));
-	m_EBO->SetData(m_Indices, sizeof(m_Indices));
-	m_VAO->SetData({3, 3, 2});*/
+	m_Shader.reset(Stimpi::Shader::CreateShader("shader.shader"));
+	m_SceneCamera = std::make_shared<Stimpi::Camera>(1920.0f, 1080.0f);
+	m_Texture.reset(Stimpi::Texture::CreateTexture("Capture.jpg"));
+	m_Texture2.reset(Stimpi::Texture::CreateTexture("Picture1.jpg"));
 }
 
 void OpenGLTestLayer::OnAttach() 
@@ -27,9 +21,16 @@ void OpenGLTestLayer::OnDetach()
 
 void OpenGLTestLayer::Update()
 {
-	/*m_Shader->Use();
-	m_VAO->Bind();
-	Stimpi::Renderer2D::DrawElements(sizeof(m_Indices)/sizeof(float));*/
+	// Test Scene render
+	Stimpi::Renderer2D::Instace()->BeginScene(m_SceneCamera.get(), m_Shader.get());
+
+	Stimpi::Renderer2D::Instace()->UseTexture(m_Texture.get());
+	//Stimpi::Renderer2D::Instace()->UseTexture(m_Texture2.get());
+	Stimpi::Renderer2D::Instace()->PushQuad(0.0f, 0.0f, 250.f, 200.0f, 1.0f, 1.0f);
+	Stimpi::Renderer2D::Instace()->PushQuad(550.0f, 550.0f, 250.f, 200.0f, 1.0f, 1.0f);
+	Stimpi::Renderer2D::Instace()->PushQuad(850.0f, 850.0f, 250.f, 200.0f, 1.0f, 1.0f);
+
+	Stimpi::Renderer2D::Instace()->EndScene();
 }
 
 void OpenGLTestLayer::OnEvent(Stimpi::BaseEvent* e)

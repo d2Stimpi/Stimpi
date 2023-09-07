@@ -19,20 +19,20 @@ namespace Stimpi
 
 	struct ST_API DataLayout
 	{
-		uint32_t posSize;
-		uint32_t colorSize;
-		uint32_t texSize;
-		uint32_t stride;
-		uint32_t posOffset;
-		uint32_t colorOffset;
-		uint32_t texOffset;
+		uint32_t m_PosSize;
+		uint32_t m_ColorSize;
+		uint32_t m_TexSize;
+		uint32_t m_Stride;
+		uint32_t m_PosOffset;
+		uint32_t m_ColorOffset;
+		uint32_t m_TexOffset;
 		
-		DataLayout(uint32_t posLen, uint32_t colorLen, uint32_t textLen) : posSize(posLen), colorSize(colorLen), texSize(textLen)
+		DataLayout(uint32_t posLen, uint32_t colorLen, uint32_t textLen) : m_PosSize(posLen), m_ColorSize(colorLen), m_TexSize(textLen)
 		{
-			stride = (uint32_t)sizeof(float) * (posSize + colorSize + texSize);
-			posOffset = 0;
-			colorOffset = sizeof(float) * posSize;
-			texOffset = (uint32_t)sizeof(float) * (posSize + colorSize);
+			m_Stride = (uint32_t)sizeof(float) * (m_PosSize + m_ColorSize + m_TexSize);
+			m_PosOffset = 0;
+			m_ColorOffset = sizeof(float) * m_PosSize;
+			m_TexOffset = (uint32_t)sizeof(float) * (m_PosSize + m_ColorSize);
 		}
 	};
 
@@ -43,7 +43,8 @@ namespace Stimpi
 		virtual ~VertexArrayObject();
 
 		// Called from Renderer with proper VertexArray ID
-		virtual void BindArray(unsigned int id) = 0;
+		virtual void BindArray() = 0;
+		virtual void Unbind() = 0;
 		// Called from Renderer
 		virtual void EnableVertexAttribArray() = 0;
 

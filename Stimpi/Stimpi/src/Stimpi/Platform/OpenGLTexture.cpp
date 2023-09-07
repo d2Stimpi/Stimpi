@@ -66,4 +66,9 @@ namespace Stimpi
 			ST_CORE_ERROR("Binding invalid texture!");
 		}
 	}
+
+	void OpenGLTexture::Unbind()
+	{
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 }

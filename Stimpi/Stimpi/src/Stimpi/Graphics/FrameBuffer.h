@@ -12,8 +12,11 @@ namespace Stimpi
 		virtual ~FrameBuffer();
 
 		virtual void BindBuffer() = 0;
+		virtual void Unbind() = 0;
 
 		unsigned int GetTextureID() { return m_TextureID; }
+		uint32_t GetWidth() { return m_Width; }
+		uint32_t GetHeight() { return m_Height; }
 
 		static FrameBuffer* CreateFrameBuffer(uint32_t width, uint32_t height);
 	protected:

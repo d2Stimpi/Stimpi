@@ -11,6 +11,7 @@ namespace Stimpi
 		~OpenGLFrameBuffer();
 
 		void BindBuffer() override;
+		void Unbind() override;
 
 	private:
 		unsigned int m_ID;
