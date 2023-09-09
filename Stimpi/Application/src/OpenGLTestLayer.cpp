@@ -25,9 +25,10 @@ void OpenGLTestLayer::Update()
 	Stimpi::Renderer2D::Instace()->BeginScene(m_SceneCamera.get(), m_Shader.get());
 
 	Stimpi::Renderer2D::Instace()->UseTexture(m_Texture.get());
-	//Stimpi::Renderer2D::Instace()->UseTexture(m_Texture2.get());
 	Stimpi::Renderer2D::Instace()->PushQuad(0.0f, 0.0f, 250.f, 200.0f, 1.0f, 1.0f);
+	Stimpi::Renderer2D::Instace()->UseTexture(m_Texture2.get());
 	Stimpi::Renderer2D::Instace()->PushQuad(550.0f, 550.0f, 250.f, 200.0f, 1.0f, 1.0f);
+	Stimpi::Renderer2D::Instace()->UseTexture(m_Texture.get());
 	Stimpi::Renderer2D::Instace()->PushQuad(850.0f, 850.0f, 250.f, 200.0f, 1.0f, 1.0f);
 
 	Stimpi::Renderer2D::Instace()->EndScene();

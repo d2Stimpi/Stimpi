@@ -46,7 +46,8 @@ namespace Stimpi
 
 	void Renderer2D::EndScene()
 	{
-
+		//TODO: combine same Texture ID data buffers
+		//add current cmd to vector
 	}
 
 	// TODO: hande u,v coords
@@ -66,7 +67,7 @@ namespace Stimpi
 		m_ActiveCmd->PushVertexBufferData({ right, bottom, 0.0f, 1.0f, 0.0f });
 		m_ActiveCmd->PushVertexBufferData({ right, top, 0.0f, 1.0f, 1.0f });
 
-		//TODO: Push Quad index data
+		//TODO: Support Vertex indexing (ElementArray)
 	}
 
 	void Renderer2D::UseTexture(Texture* texture)
@@ -106,7 +107,7 @@ namespace Stimpi
 			m_VBO->BufferSubData(0, cmd->m_Data.size() * sizeof(float), cmd->m_Data.data());
 			m_RenderAPI->DrawArrays(DrawElementsMode::TRIANGLES, 0, cmd->m_VertexCount);
 		}
-
+		if (RENDERER_DBG) ST_CORE_INFO("Renderer2D - Draw calls: {0}", cmds.size());
 	}
 
 	void Renderer2D::EndFrame()

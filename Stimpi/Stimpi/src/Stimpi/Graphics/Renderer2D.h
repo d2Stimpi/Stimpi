@@ -13,6 +13,7 @@
 #include "Stimpi/Graphics/VertexArrayObject.h"
 
 #define VERTEX_ARRAY_SIZE	4096
+#define RENDERER_DBG	(true)
 
 namespace Stimpi
 {
@@ -26,7 +27,7 @@ namespace Stimpi
 
 		void BeginScene(Camera* camera, Shader* shader);
 		void EndScene();
-		void PushQuad(float x, float y, float width, float height, float u, float v); // x,y,w,h,u,v
+		void PushQuad(float x, float y, float width, float height, float u, float v);
 		void UseTexture(Texture* texture);
 
 		//Internal - by frame

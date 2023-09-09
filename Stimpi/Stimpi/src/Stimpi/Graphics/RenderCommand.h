@@ -20,7 +20,7 @@ namespace Stimpi
 
 		TextureData() : m_Texture(nullptr), m_Data({}), m_VertexCount(0)
 		{
-			//std::fill(m_Data, m_Data + VERTEX_ARRAY_SIZE, 0.0f);
+
 		}
 	};
 
@@ -30,8 +30,6 @@ namespace Stimpi
 		RenderCommand(Camera* camera, Shader* shader);
 		~RenderCommand();
 
-		void Render();
-
 		void PushVertexBufferData(std::initializer_list<float> list);
 		void PushIndexDufferData(std::initializer_list<unsigned int> list);
 		void UseTexture(Texture* texture);
@@ -40,11 +38,13 @@ namespace Stimpi
 		Shader* GetShader() { return m_Shader; }
 		std::vector<std::shared_ptr<TextureData>>& GetData() { return m_TextureDataVec; }
 
+
 	private:
+		std::vector<std::shared_ptr<TextureData>>::iterator TextureDataHasTexture(Texture* texture);
+
 		Camera* m_Camera;
+		Shader* m_Shader;
 		std::vector<std::shared_ptr<TextureData>> m_TextureDataVec;
 		std::vector<std::shared_ptr<TextureData>>::iterator m_CurrentTextureData;
-
-		Shader* m_Shader;
 	};
 }
