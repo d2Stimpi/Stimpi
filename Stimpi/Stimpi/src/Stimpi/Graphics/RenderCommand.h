@@ -8,6 +8,7 @@
 #include "Stimpi/Graphics/Texture.h"
 #include "Stimpi/Graphics/Shader.h"
 #include "Stimpi/Graphics/Camera.h"
+#include "Stimpi/Graphics/FrameBuffer.h"
 
 
 namespace Stimpi
@@ -27,6 +28,7 @@ namespace Stimpi
 	class RenderCommand
 	{
 	public:
+		RenderCommand();
 		RenderCommand(Camera* camera, Shader* shader);
 		~RenderCommand();
 

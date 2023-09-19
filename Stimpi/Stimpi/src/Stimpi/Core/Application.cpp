@@ -4,8 +4,10 @@
 
 #include "Stimpi/Log.h"
 #include "Stimpi/Core/Layer.h"
-#include "Stimpi/Core/Engine.h"
 #include "Stimpi/Gui/ImGuiLayer.h"
+
+#include "Stimpi/Core/InputManager.h"
+#include "Stimpi/Core/Time.h"
 
 namespace Stimpi
 {
@@ -33,6 +35,9 @@ namespace Stimpi
 
 		while (m_Running)
 		{
+			// Time measure - Start of frame
+			Time::Instance()->FrameBegin();
+
 			BaseEvent* event;
 			// Read and consume all events
 			while (m_Window->PollEvent(&event))
@@ -47,11 +52,25 @@ namespace Stimpi
 								return true;
 							}
 						});
+
+					EventDispatcher<KeyboardEvent> keyboardDispatcher;
+					keyboardDispatcher.Dispatch(event, [&](KeyboardEvent* e) -> bool {
+							InputManager::Instance()->AddEvent(*e);
+							return InputManager::Instance()->HandleKeyboardEvent(*e);
+						});
 				}
 
 				m_LayerStack.OnEvent(event);
 			}
 			m_LayerStack.Update();
+
+			//Clear all KeyboardEvents this game loop
+			InputManager::Instance()->ClearEvents();
+			
+			// Time measure - End of frame
+
+			Time::Instance()->FPSCapDelay();
+			Time::Instance()->FrameEnd();
 		};
 	}
 

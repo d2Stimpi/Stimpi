@@ -11,16 +11,11 @@ namespace Stimpi
 		glGenFramebuffers(1, &m_ID);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_ID);
 
-		// Init texture FBO stuff
-		glGenTextures(1, &m_TextureID);
-		glBindTexture(GL_TEXTURE_2D, m_TextureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		m_Texture.reset(Texture::CreateFrameBufferTexture());
+		m_Texture->InitEmptyTexture(width, height);
 
 		// Attact texture to fbo
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_TextureID, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Texture->GetTextureID(), 0);
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			ST_CORE_ERROR("Framebuffer is not complete!");
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -38,6 +33,18 @@ namespace Stimpi
 
 	void OpenGLFrameBuffer::Unbind()
 	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height)
+	{
+		m_Width = width;
+		m_Height = height;
+		//ST_CORE_INFO("Framebuffer size: {0}, {1}", m_Width, m_Height);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, m_ID);
+		m_Texture->Resize(m_Width, m_Height);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Texture->GetTextureID(), 0);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }

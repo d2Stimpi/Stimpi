@@ -22,4 +22,16 @@ namespace Stimpi
 		ST_CORE_CRITICAL("Unknown GraphicsAPI");
 		return nullptr;
 	}
+
+	Texture* Texture::CreateFrameBufferTexture()
+	{
+		switch (Graphics::GetAPI())
+		{
+		case GraphicsAPI::OpenGL: return new OpenGLTexture();
+		case GraphicsAPI::None: ST_CORE_CRITICAL("GraphicsAPI: not supported!"); return nullptr;
+		}
+
+		ST_CORE_CRITICAL("Unknown GraphicsAPI");
+		return nullptr;
+	}
 }

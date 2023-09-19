@@ -10,6 +10,7 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Graphics/Shader.h"
 #include "Stimpi/Graphics/Renderer2D.h"
+#include "Stimpi/Core/Time.h"
 
 namespace Stimpi
 {
@@ -46,8 +47,6 @@ namespace Stimpi
 		// Setup Platform/Renderer backends
 		ImGui_ImplSDL2_InitForOpenGL(m_Window->GetSDLWindow(), glContext);
 		ImGui_ImplOpenGL3_Init(glsl_version);
-
-		gladLoadGL();
 	}
 
 	ImGuiLayer::~ImGuiLayer()
@@ -69,7 +68,10 @@ namespace Stimpi
 		ST_CORE_TRACE("{0}: OnDetach", m_DebugName);
 	}
 
+	static bool show_demo_window = true;
 	static bool show_another_window = true;
+	static ImVec2 wsLog;
+	static ImVec2 uvLog;
 
 	void ImGuiLayer::OnEvent(BaseEvent* e)
 	{
@@ -83,12 +85,27 @@ namespace Stimpi
 					show_another_window = !show_another_window;
 					return true;
 				}
+				if (keyEvent->GetKeyCode() == SDL_SCANCODE_D && keyEvent->GetType() == KeyboardEventType::KEY_EVENT_DOWN)
+				{
+					show_demo_window = !show_demo_window;
+					return true;
+				}
 			});
+
+		if (e->GetEventType() == Stimpi::EventType::WindowEvent)
+		{
+			auto* we = (Stimpi::WindowEvent*)e;
+			if (we->GetType() == Stimpi::WindowEventType::WINDOW_EVENT_RESIZE)
+			{
+				//ST_CORE_INFO("ImGui window size: {0}, {1}", wsLog.x, wsLog.y);
+				//ST_CORE_INFO("ImGui texture uv: {0}, {1}", uvLog.x, uvLog.y);
+			}
+		}
 	}
 
 	void ImGuiLayer::Update()
 	{
-		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+		ImVec4 clear_color = ImVec4(0.0f, 0.55f, 0.60f, 1.00f);
 
 		// Start the Dear ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
@@ -104,41 +121,116 @@ namespace Stimpi
 		static bool closeWidget = true;
 		static bool use_work_area = false;
 
-		ImGui::Begin("OpenGL Main Scene View", &closeWidget);
+		/* Main Menu */
+		if (ImGui::BeginMainMenuBar())
+		{
+			if (ImGui::BeginMenu("Menu"))
+			{
+				if (ImGui::MenuItem("Load Scene")) {}
+				if (ImGui::MenuItem("Save Scene", "CTRL+S")) {}
+				ImGui::Separator();
+				if (ImGui::MenuItem("Quit")) 
+				{
+					// TODO: Event queue
+					ST_CORE_INFO("Quit triggered from Menu!");
+					static SDL_Event event;
+					event.window.type = SDL_WINDOWEVENT;
+					event.window.event = SDL_WINDOWEVENT_CLOSE;
+					event.window.windowID = 1;
+					SDL_PushEvent(&event);
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::EndMainMenuBar();
+		}
+
+		ImGui::SetNextWindowSize(ImVec2(1280, 720), ImGuiCond_Once);
+		ImGui::SetNextWindowSizeConstraints(ImVec2(0, 0), ImVec2(1280, 720));
+
+		ImGui::Begin("OpenGL Main Scene View", &closeWidget, flags);
+
 		static bool use_text_color_for_tint = true;
 		// Flip the FBO texture img
-		ImVec2 uv_min = ImVec2(0.0f, 1.0f);
-		ImVec2 uv_max = ImVec2(1.0f, 0.0f);
 		ImVec4 tint_col = use_text_color_for_tint ? ImGui::GetStyleColorVec4(ImGuiCol_Text) : ImVec4(0.0f, 0.0f, 1.0f, 1.0f);   // No tint
 		ImVec4 border_col = ImGui::GetStyleColorVec4(ImGuiCol_Border);
+
+		ImVec2 pos = ImGui::GetCursorScreenPos();
+		ImVec2 ws = ImGui::GetContentRegionAvail();
+
 		int wWidth = ImGui::GetWindowWidth();
 		int wHeight = ImGui::GetWindowHeight();
 		auto frameBuffer = Renderer2D::Instace()->GetFrameBuffer();
-		ImGui::Image((void*)(intptr_t)frameBuffer->GetTextureID(), ImVec2(wWidth, wHeight), uv_min, uv_max, tint_col, border_col);
+
+		wsLog = ImVec2(wWidth, wHeight);//ws;
+		uvLog = ImVec2(ws.x / frameBuffer->GetWidth(), ws.y / frameBuffer->GetHeight());
+
+		static ImVec2 test = wsLog;
+
+		if ((test.x != wsLog.x) || test.y != wsLog.y)
+		{
+			ST_CORE_INFO("Resize - ImGui window size: {0}, {1}", wsLog.x, wsLog.y);
+			ST_CORE_INFO("Resize - ImGui texture uv: {0}, {1}", uvLog.x, uvLog.y);
+			//Renderer2D::Instace()->ResizeCanvas(ws.x, ws.y);
+		}
+
+		test = wsLog;
+
+		ImVec2 uv_min = ImVec2(0.0f, ws.y / frameBuffer->GetHeight());
+		ImVec2 uv_max = ImVec2(ws.x / frameBuffer->GetWidth(), 0.0f);
+		//ImVec2 uv_min = ImVec2(0.0f, 1.0f);
+		//ImVec2 uv_max = ImVec2(1.0f, 0.0f);
+		//ImGui::Image((void*)(intptr_t)frameBuffer->GetTextureID(), ImVec2(frameBuffer->GetWidth(), frameBuffer->GetHeight()), uv_min, uv_max, tint_col, border_col);
+		//ImGui::Image((void*)(intptr_t)frameBuffer->GetTextureID(), ImVec2(wWidth, wHeight), uv_min, uv_max, tint_col, border_col);
+		ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)frameBuffer->GetTextureID(), ImVec2(pos), ImVec2(pos.x + ws.x, pos.y + ws.y), uv_min, uv_max);
 		ImGui::End();
 		// FBO Veiw sample end
 
 		if (show_another_window)
 		{
-			ImGui::Begin("Another Window", &show_another_window);
-			ImGui::Text("Hello from another window!");
-			if (ImGui::Button("Close Me"))
-				show_another_window = false;
+
+			ImGui::Begin("Scene Config", &show_another_window);
+			ImGui::Text("Resolution");
+			const char* resolution_items[] = { "1920x1080", "1280x720" };
+			static int current_resolution = 1;
+			const float combo_width = ImGui::GetWindowWidth() * 0.80f;
+			ImGui::SetNextItemWidth(combo_width);
+			if (ImGui::Combo("##Resolution", &current_resolution, resolution_items, IM_ARRAYSIZE(resolution_items)))
+			{
+				ST_CORE_INFO("Combo - Resolution: Secleted index {0}", current_resolution);
+				//Resize Scene Canvas
+				if (current_resolution == 0) Renderer2D::Instace()->ResizeCanvas(1920, 1080);
+				if (current_resolution == 1) Renderer2D::Instace()->ResizeCanvas(1280, 720);
+			};
+			ImGui::Separator();
+			ImGui::Text("Application FPS");
+			const char* fps_items[] = { "60fps", "48fps", "24fps" };
+			static int current_fps = 0;
+			ImGui::SetNextItemWidth(combo_width);
+			if (ImGui::Combo("##FPS", &current_fps, fps_items, 3))
+			{
+				if (current_fps == 0) Time::Instance()->SetFPS(60);
+				if (current_fps == 1) Time::Instance()->SetFPS(48);
+				if (current_fps == 2) Time::Instance()->SetFPS(24);
+			};
+			ImGui::Separator();
+
 			ImGui::End();
 		}
 		
 		static bool closeWidget2 = true;
-		ImGui::Begin("Another Window 2", &closeWidget2);
-		ImGui::Text("Hello from another window!");
+		ImGui::Begin("Game Stats", &closeWidget2);
+		ImGui::Text("Application FPS %.1f", Time::Instance()->GetActiveFPS());
+		ImGui::Text("Average %.1f ms/frame", 1000.0f / Time::Instance()->GetActiveFPS());
 		//if (ImGui::Button("Close Me"))
 		//	closeWidget2 = false;
 		ImGui::End();
+
+		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+		if (show_demo_window)
+			ImGui::ShowDemoWindow(&show_demo_window);
 		
 		// Rendering
 		ImGui::Render();
-		glViewport(0, 0, (int)m_IO->DisplaySize.x, (int)m_IO->DisplaySize.y);
-		glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
-		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Custom Rendering stuff
 		auto renderer = Renderer2D::Instace();

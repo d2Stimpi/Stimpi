@@ -15,6 +15,10 @@
 #define VERTEX_ARRAY_SIZE	4096
 #define RENDERER_DBG	(true)
 
+/* TODO:
+* - Finish configuring of non-ui (editor) rendering. Rendering of FrameBuffer
+*/
+
 namespace Stimpi
 {
 	class ST_API Renderer2D
@@ -29,6 +33,14 @@ namespace Stimpi
 		void EndScene();
 		void PushQuad(float x, float y, float width, float height, float u, float v);
 		void UseTexture(Texture* texture);
+		void RenderTarget(FrameBuffer* target); // TODO: needed?
+
+		//Event Callbacks
+		void ResizeCanvas(uint32_t width, uint32_t height);
+
+		// Canvas - FB size
+		uint32_t GetCanvasWidth() { if (m_FrameBuffer != nullptr) return m_FrameBuffer->GetWidth(); };
+		uint32_t GetCanvasHeight() { if (m_FrameBuffer != nullptr) return m_FrameBuffer->GetHeight(); };
 
 		//Internal - by frame
 		void StartFrame();
@@ -39,13 +51,18 @@ namespace Stimpi
 		FrameBuffer* GetFrameBuffer();
 
 	private:
+		void DrawRenderCmd(std::shared_ptr<RenderCommand>& renderCmd);
+		void ShowDebugData();
+
 		RenderAPI* m_RenderAPI;
 		std::vector<std::shared_ptr<RenderCommand>> m_RenderCmds;
+		std::vector<std::shared_ptr<RenderCommand>>::iterator m_ActiveRenderCmdIter;
 		std::shared_ptr<FrameBuffer> m_FrameBuffer;
 		std::shared_ptr<VertexArrayObject> m_VAO;
 		std::shared_ptr<BufferObject> m_VBO;
 
-		//Active scene tracking data
-		std::shared_ptr<RenderCommand> m_ActiveCmd;
+		//Dbg data per frame
+		uint32_t m_DrawCallCnt;
+		uint32_t m_RenderedCmdCnt;
 	};
 }

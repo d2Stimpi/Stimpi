@@ -20,4 +20,6 @@ private:
 	std::shared_ptr<Stimpi::Camera> m_SceneCamera;
 	std::shared_ptr<Stimpi::Texture> m_Texture;
 	std::shared_ptr<Stimpi::Texture> m_Texture2;
+
+	std::shared_ptr<Stimpi::KeyboardEventHandler> m_KeyboardHandler;
 };

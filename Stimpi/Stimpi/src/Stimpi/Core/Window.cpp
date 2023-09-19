@@ -1,6 +1,9 @@
 #include "Window.h"
 
 #include <memory>
+#include <glad/glad.h>
+
+#include "Stimpi/Graphics/Renderer2D.h"
 
 namespace Stimpi
 {
@@ -56,6 +59,7 @@ namespace Stimpi
 		m_Window = SDL_CreateWindow("Stimpi Editor v1.0", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_Width, m_Height, window_flags);
 
 		m_ID = SDL_GetWindowID(m_Window);
+
 	}
 
 	void WindowSDL::Deinit()
@@ -79,6 +83,11 @@ namespace Stimpi
 		}
 
 		return pending;
+	}
+
+	void WindowSDL::OnResizeEvent(uint32_t width, uint32_t height)
+	{
+		
 	}
 
 	SDL_Window* GetSDLWindow(Window* window)

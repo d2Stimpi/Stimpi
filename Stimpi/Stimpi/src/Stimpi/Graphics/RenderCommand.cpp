@@ -2,6 +2,12 @@
 
 namespace Stimpi
 {
+	RenderCommand::RenderCommand()
+		: RenderCommand(nullptr, nullptr)
+	{
+
+	}
+
 	RenderCommand::RenderCommand(Camera* camera, Shader* shader) :
 		m_Camera(camera),
 		m_Shader(shader),
@@ -16,15 +22,6 @@ namespace Stimpi
 	{
 
 	}
-
-
-
-
-
-
-
-
-
 
 	void RenderCommand::PushVertexBufferData(std::initializer_list<float> list)
 	{
@@ -42,8 +39,6 @@ namespace Stimpi
 
 	void RenderCommand::UseTexture(Texture* texture)
 	{
-		//TODO: check all TextureData entries if Texture is already in use
-
 		// If no Texture set in active data; set texture, otherwise create new data obj
 		auto data = *m_CurrentTextureData;
 		if ((data->m_Texture == nullptr) || (data->m_Texture == texture))

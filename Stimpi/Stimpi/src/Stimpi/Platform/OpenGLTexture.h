@@ -7,18 +7,22 @@ namespace Stimpi
 	class OpenGLTexture : public Texture
 	{
 	public:
-		OpenGLTexture() {};
+		OpenGLTexture();
 		OpenGLTexture(std::string file);
 		~OpenGLTexture();
 
 		void Delete();
+
+		void InitEmptyTexture(uint32_t width, uint32_t height) override;
 		void LoadTexture(std::string file) override;
-		void UseTexture() override;
+		void UseTexture() override; 
+		void Bind() override;
 		void Unbind() override;
-		unsigned int GetTextureID() override { return mTextureID; }
+		void Resize(uint32_t width, uint32_t height) override;
+		unsigned int GetTextureID() override { return m_TextureID; }
 
 	private:
-		unsigned int mTextureID{ 0 };
-		int mNumChannels{ 0 }; // for stb_img loading
+		unsigned int m_TextureID{ 0 };
+		uint32_t m_NumChannels{ 0 }; // for stb_img loading
 	};
 }

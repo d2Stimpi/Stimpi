@@ -19,15 +19,4 @@ namespace Stimpi
 	private:
 		SDL_GLContext s_GLcontext;
 	};
-
-	/*************************************************************************************************/
-	/******************************** Generic OpenGL Calls *******************************************/
-	/*************************************************************************************************/
-	
-	// TODO: remove this; will be in RendererAPI
-	class OpenGLRenderer
-	{
-	public:
-		static void DrawElements(uint32_t size);
-	};
 }

@@ -6,6 +6,10 @@
 #include "Stimpi/Core/Application.h"
 #include "Stimpi/Core/Layer.h"
 #include "Stimpi/Core/Event.h"
+#include "Stimpi/Core/Time.h"
+
+#include "Stimpi/Core/KeyCodes.h"
+#include "Stimpi/Core/InputManager.h"
 
 #include "Stimpi/Graphics/BufferObject.h"
 #include "Stimpi/Graphics/Camera.h"

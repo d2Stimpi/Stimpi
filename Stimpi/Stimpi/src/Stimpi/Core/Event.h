@@ -79,7 +79,7 @@ namespace Stimpi
 	{
 	public:
 		KeyboardEvent(KeyboardEventType type, uint32_t repeat, uint32_t keyCode) : BaseEvent(EventType::KeyboardEvent), m_Type(type), m_Repeat(repeat), m_KeyCode(keyCode){}
-		~KeyboardEvent() { ST_CORE_TRACE("~KeyboardEvent: {0}, KeyCode: {1}", GetStringKeyboardEvent(m_Type), m_KeyCode); };
+		~KeyboardEvent() { /*ST_CORE_TRACE("~KeyboardEvent: {0}, KeyCode: {1}", GetStringKeyboardEvent(m_Type), m_KeyCode);*/ };
 		
 		void LogEvent() { ST_CORE_TRACE("KeyboardEvent: {0}, KeyCode: {1}", GetStringKeyboardEvent(m_Type), m_KeyCode); }
 
@@ -131,7 +131,7 @@ namespace Stimpi
 	class ST_API WindowEvent : public BaseEvent
 	{
 	public:
-		WindowEvent(WindowEventType type) : BaseEvent(EventType::WindowEvent), m_Type(type) {}
+		WindowEvent(WindowEventType type, uint32_t width, uint32_t height) : BaseEvent(EventType::WindowEvent), m_Type(type), m_Width(width), m_Height(height) {}
 		~WindowEvent() {}
 
 		void LogEvent() { ST_CORE_TRACE("WindowEventType: {0}", GetStringWindowEvent(m_Type)); }
@@ -139,9 +139,13 @@ namespace Stimpi
 		static WindowEvent* CreateWindowEvnet(SDL_Event e);
 
 		WindowEventType GetType() { return m_Type; }
+		uint32_t GetWidth() { return m_Width; }
+		uint32_t GetHeight() { return m_Height; }
 		static EventType GetStaticType() { return EventType::WindowEvent; }
 	private:
 		WindowEventType m_Type;
+		uint32_t m_Width;
+		uint32_t m_Height;
 	};
 
 	class EventFactory
@@ -164,6 +168,8 @@ namespace Stimpi
 			{
 				bool handled = false;
 				handled = func((T*)event);
+				if (handled)
+					event->Handled();
 			}
 		}
 	};

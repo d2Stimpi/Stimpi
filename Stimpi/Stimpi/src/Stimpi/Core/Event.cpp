@@ -98,18 +98,24 @@ namespace Stimpi
 	WindowEvent* WindowEvent::CreateWindowEvnet(SDL_Event e)
 	{
 		WindowEventType type{};
+		uint32_t width = 0;
+		uint32_t height = 0;
 
 		switch (e.window.event)
 		{
 		case SDL_WINDOWEVENT_CLOSE: type = WindowEventType::WINDOW_EVENT_QUIT; break;
-		case SDL_WINDOWEVENT_RESIZED: type = WindowEventType::WINDOW_EVENT_RESIZE; break;
+		case SDL_WINDOWEVENT_RESIZED: 
+			type = WindowEventType::WINDOW_EVENT_RESIZE;
+			width = e.window.data1;
+			height = e.window.data2;
+			break;
 		default:
 			if (ST_EVENT_DBG) ST_CORE_WARN("Unprocessed Window event: {0}", e.window.event);
 			type = WindowEventType::NONE;
 			break;
 		}
 
-		return new WindowEvent(type);
+		return new WindowEvent(type, width, height);
 	}
 
 	/******************************************************************************************/

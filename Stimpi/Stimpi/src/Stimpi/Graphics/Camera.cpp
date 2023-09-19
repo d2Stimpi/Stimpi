@@ -51,5 +51,6 @@ namespace Stimpi
 		m_SceneHeihgt = sceneHeight;
 
 		m_Projection = glm::ortho(0.0f, m_SceneWidth, 0.0f, m_SceneHeihgt, -1.0f, 1.0f);
+		m_Mvp = m_Projection * m_Model;
 	}
 }

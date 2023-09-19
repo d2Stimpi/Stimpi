@@ -7,6 +7,10 @@
 #define ST_WINDOW_WIDTH 1280
 #define ST_WINDOW_HEIGHT 720
 
+/* TODO: 
+* - Finish configuring of non-ui (editor) rendering.
+*/
+
 namespace Stimpi
 {
 	enum class WindowType{ None = 0, SDL };
@@ -20,6 +24,9 @@ namespace Stimpi
 		virtual void Init() = 0;
 		virtual void Deinit() = 0;
 		virtual bool PollEvent(BaseEvent** e) = 0;
+
+		//OnEvent Callbacks
+		virtual void OnResizeEvent(uint32_t width, uint32_t height) = 0;
 
 		static Window* CreateAppWindow();
 
@@ -42,6 +49,9 @@ namespace Stimpi
 		void Init() override;
 		void Deinit() override;
 		bool PollEvent(BaseEvent** e) override;
+
+		//OnEvent Callbacks
+		void OnResizeEvent(uint32_t width, uint32_t height) override;
 
 		SDL_Window* GetSDLWindow() { return m_Window; }
 	private:
