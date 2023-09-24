@@ -2,8 +2,11 @@
 
 #include <spdlog/spdlog.h>
 #include <memory>
+#include <assert.h>
 
 #include "Core/Core.h"
+
+//#define NDEBUG 
 
 namespace Stimpi
 {
@@ -28,7 +31,19 @@ namespace Stimpi
 #define ST_CORE_ERROR(...)		Stimpi::Log::GetCoreLogger()->error(__VA_ARGS__)
 #define ST_CORE_CRITICAL(...)	Stimpi::Log::GetCoreLogger()->critical(__VA_ARGS__)
 
-#define ST_CORE_ASSERT(x, ...) if(x) { Stimpi::Log::GetCoreLogger()->error(__VA_ARGS__); }
+#ifndef NDEBUG
+	#define ST_CORE_ASSERT(x, ...) \
+	do { \
+	if (x) \
+		{ \
+			Stimpi::Log::GetCoreLogger()->error(__VA_ARGS__); \
+			std::terminate(); \
+		} \
+	} while (false)
+	
+#else
+	#define ST_CORE_ASSERT(x, ...) if(x) { Stimpi::Log::GetCoreLogger()->error(__VA_ARGS__); }
+#endif
 
 // Client - engine log macros
 #define ST_TRACE(...)		Stimpi::Log::GetClientLogger()->trace(__VA_ARGS__)

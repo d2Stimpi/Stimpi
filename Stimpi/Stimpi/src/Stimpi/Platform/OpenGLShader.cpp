@@ -1,8 +1,6 @@
 #include "Stimpi/Platform/OpenGLShader.h"
 
 #include <iostream>
-#include <glad/glad.h>
-#include <glm/gtc/type_ptr.hpp>
 
 #include "Stimpi/Log.h"
 
@@ -94,22 +92,27 @@ namespace Stimpi
 		glUseProgram(m_ID);
 	}
 
-	void OpenGLShader::SetUniform(const std::string& name, int value)
+	void OpenGLShader::SetUniformImpl(const std::string& name, int value)
 	{
 		glUniform1i(glGetUniformLocation(m_ID, name.c_str()), value);
 	}
 
-	void OpenGLShader::SetUniform(const std::string& name, glm::vec3 value)
+	void OpenGLShader::SetUniformImpl(const std::string& name, glm::vec2 value)
+	{
+		glUniform2fv(glGetUniformLocation(m_ID, name.c_str()), 1, &value[0]);
+	}
+
+	void OpenGLShader::SetUniformImpl(const std::string& name, glm::vec3 value)
 	{
 		glUniform3fv(glGetUniformLocation(m_ID, name.c_str()), 1, &value[0]);
 	}
 
-	void OpenGLShader::SetUniform(const std::string& name, glm::vec4 value)
+	void OpenGLShader::SetUniformImpl(const std::string& name, glm::vec4 value)
 	{
-		glUniform3fv(glGetUniformLocation(m_ID, name.c_str()), 1, &value[0]);
+		glUniform4fv(glGetUniformLocation(m_ID, name.c_str()), 1, &value[0]);
 	}
 
-	void OpenGLShader::SetUniform(const std::string& name, glm::mat4 value)
+	void OpenGLShader::SetUniformImpl(const std::string& name, glm::mat4 value)
 	{
 		glUniformMatrix4fv(glGetUniformLocation(m_ID, name.c_str()), 1, GL_FALSE, &value[0][0]);
 	}

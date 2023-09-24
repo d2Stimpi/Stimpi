@@ -17,4 +17,7 @@
   <ItemGroup>
     <ClInclude Include="src\OpenGLTestLayer.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\checkerboard.shader" />
+  </ItemGroup>
 </Project>

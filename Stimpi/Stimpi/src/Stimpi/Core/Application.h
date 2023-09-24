@@ -22,6 +22,8 @@ namespace Stimpi
 		void PushLayer(Layer* layer);
 		void PopLayer(Layer* layer);
 	private:
+		void ProcessEvents();
+	private:
 		LayerStack m_LayerStack;
 		bool m_Running{ true };
 		std::unique_ptr<Window> m_Window;

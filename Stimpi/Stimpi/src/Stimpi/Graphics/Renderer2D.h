@@ -31,11 +31,17 @@ namespace Stimpi
 
 		void BeginScene(Camera* camera, Shader* shader);
 		void EndScene();
-		void PushQuad(float x, float y, float width, float height, float u, float v);
+		void PushQuad(float x, float y, float width, float height, float u = 1.0f, float v = 1.0f);
+		
+		// TODO: add various Submitt methods
+		void Submit(glm::vec4 quad);
+		// TODO: Submit(quad, color)
+		// TODO: Submit(quad, texture)
+
 		void UseTexture(Texture* texture);
 		void RenderTarget(FrameBuffer* target); // TODO: needed?
 
-		//Event Callbacks
+		// Event Callbacks
 		void ResizeCanvas(uint32_t width, uint32_t height);
 
 		// Canvas - FB size

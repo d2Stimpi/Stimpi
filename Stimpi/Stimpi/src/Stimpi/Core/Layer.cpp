@@ -59,11 +59,11 @@ namespace Stimpi
 		}
 	}
 
-	void LayerStack::Update()
+	void LayerStack::Update(Timestep ts)
 	{
 		for (auto layer : m_Layers)
 		{
-			layer->Update();
+			layer->Update(ts);
 		}
 	}
 

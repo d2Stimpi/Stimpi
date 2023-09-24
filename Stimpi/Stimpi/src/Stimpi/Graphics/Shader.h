@@ -1,8 +1,11 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
 #include "Stimpi/Core/Core.h"
+
+#include <type_traits>
+#include <unordered_map>
+
+#include <glm/glm.hpp>
 
 /*
 * Shader shader(fileName):
@@ -14,6 +17,8 @@
 
 namespace Stimpi
 {
+	using shader_variant = std::variant<int, glm::vec2, glm::vec3, glm::vec4, glm::mat4>;
+
 	class ST_API Shader
 	{
 	public:
@@ -21,14 +26,25 @@ namespace Stimpi
 
 		virtual unsigned int GetShaderID() = 0;
 
+		// Also pass all "buffered" uniform data to shader program
 		virtual void Use() = 0;
-		virtual void SetUniform(const std::string& name, int value) = 0;
-		virtual void SetUniform(const std::string& name, glm::vec3 value) = 0;
-		virtual void SetUniform(const std::string& name, glm::vec4 value) = 0;
-		virtual void SetUniform(const std::string& name, glm::mat4 value) = 0;
+
+		void SetUniform(const std::string name, shader_variant value);
+		void SetBufferedUniforms();
+		void ClearBufferedUniforms();
+
+		static Shader* CreateShader(const std::string& fileName);
+
+	private:
+		virtual void SetUniformImpl(const std::string& name, int value) = 0;
+		virtual void SetUniformImpl(const std::string& name, glm::vec2 value) = 0;
+		virtual void SetUniformImpl(const std::string& name, glm::vec3 value) = 0;
+		virtual void SetUniformImpl(const std::string& name, glm::vec4 value) = 0;
+		virtual void SetUniformImpl(const std::string& name, glm::mat4 value) = 0;
 
 		virtual void CheckForErrors(unsigned int shader, std::string type) = 0;
 
-		static Shader* CreateShader(const std::string& fileName);
+		// name : value for buffering Uniforms
+		std::unordered_map<std::string, shader_variant> m_UniformList;
 	};
 }

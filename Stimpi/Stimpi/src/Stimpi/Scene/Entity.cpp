@@ -8,4 +8,9 @@ namespace Stimpi
 	{
 
 	}
+
+	void Entity::Serialize()
+	{
+
+	}
 }

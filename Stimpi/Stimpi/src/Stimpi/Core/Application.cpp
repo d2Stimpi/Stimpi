@@ -37,32 +37,12 @@ namespace Stimpi
 		{
 			// Time measure - Start of frame
 			Time::Instance()->FrameBegin();
+			Timestep ts = Time::Instance()->DeltaTime();
 
-			BaseEvent* event;
 			// Read and consume all events
-			while (m_Window->PollEvent(&event))
-			{
-				if (event != nullptr)
-				{
-					EventDispatcher<WindowEvent> dispatcher;
-					dispatcher.Dispatch(event, [&](WindowEvent* e) -> bool {
-							if (e->GetType() == WindowEventType::WINDOW_EVENT_QUIT)
-							{
-								Stop();
-								return true;
-							}
-						});
+			ProcessEvents();
 
-					EventDispatcher<KeyboardEvent> keyboardDispatcher;
-					keyboardDispatcher.Dispatch(event, [&](KeyboardEvent* e) -> bool {
-							InputManager::Instance()->AddEvent(*e);
-							return InputManager::Instance()->HandleKeyboardEvent(*e);
-						});
-				}
-
-				m_LayerStack.OnEvent(event);
-			}
-			m_LayerStack.Update();
+			m_LayerStack.Update(ts);
 
 			//Clear all KeyboardEvents this game loop
 			InputManager::Instance()->ClearEvents();
@@ -88,5 +68,33 @@ namespace Stimpi
 	void Application::PopLayer(Layer* layer)
 	{
 		m_LayerStack.DetachLayer(layer);
+	}
+
+	/* Private methods */
+	void Application::ProcessEvents()
+	{
+		BaseEvent* event;
+		while (m_Window->PollEvent(&event))
+		{
+			if (event != nullptr)
+			{
+				EventDispatcher<WindowEvent> dispatcher;
+				dispatcher.Dispatch(event, [&](WindowEvent* e) -> bool {
+					if (e->GetType() == WindowEventType::WINDOW_EVENT_QUIT)
+					{
+						Stop();
+						return true;
+					}
+					});
+
+				EventDispatcher<KeyboardEvent> keyboardDispatcher;
+				keyboardDispatcher.Dispatch(event, [&](KeyboardEvent* e) -> bool {
+					InputManager::Instance()->AddEvent(*e);
+					return InputManager::Instance()->HandleKeyboardEvent(*e);
+					});
+			}
+
+			m_LayerStack.OnEvent(event);
+		}
 	}
 }

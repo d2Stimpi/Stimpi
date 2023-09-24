@@ -23,4 +23,26 @@ namespace Stimpi
 		case GraphicsAPI::None: ST_CORE_CRITICAL("GraphicsAPI: not supported!"); return nullptr;
 		}
 	}
+
+	void Shader::SetUniform(const std::string name, shader_variant value)
+	{
+		m_UniformList.emplace(name, value);
+	}
+
+	void Shader::SetBufferedUniforms()
+	{
+		for (auto uniform : m_UniformList)
+		{
+			auto name = uniform.first;
+			auto value = uniform.second;
+			std::visit([&, name](auto&& arg) {
+				SetUniformImpl(name, arg);
+				}, value);
+		}
+	}
+
+	void Shader::ClearBufferedUniforms()
+	{
+		m_UniformList.clear();
+	}
 }

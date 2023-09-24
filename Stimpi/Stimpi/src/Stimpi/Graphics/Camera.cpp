@@ -32,6 +32,7 @@ namespace Stimpi
 	{
 		// Translate with invers matrix to "move" the scene (ignore z for now)
 		m_Model = glm::translate(m_Model, glm::vec3(-vector.x, -vector.y, vector.z));
+		m_Mvp = m_Projection * m_Model;
 	}
 
 	void Camera::Zoom(float factor)

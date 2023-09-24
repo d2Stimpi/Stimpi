@@ -19,7 +19,7 @@ namespace Stimpi
 
 		void OnAttach() override;
 		void OnDetach() override;
-		void Update() override;
+		void Update(Timestep ts) override;
 		void OnEvent(BaseEvent* e) override;
 	private:
 		ImGuiIO* m_IO{ nullptr };

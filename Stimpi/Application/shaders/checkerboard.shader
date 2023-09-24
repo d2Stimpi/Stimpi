@@ -10,7 +10,7 @@ uniform mat4 mvp;
 void main()
 {
 	gl_Position = mvp * vec4(aPos, 1.0);
-	TexCoord = vec2(aTexCoord.x, aTexCoord.y);
+	TexCoord = aTexCoord;
 }
 
 #fragment
@@ -18,12 +18,16 @@ void main()
 out vec4 FragColor;
 
 in vec2 TexCoord;
-in vec3 vertexColor;
 
 // texture samplers
 uniform sampler2D u_texture;
+uniform vec2 u_resolution;
 
 void main()
 {
-	FragColor = texture(u_texture, TexCoord);
+	const float scale = 40.0;
+	const float brightness = 0.6;
+	vec2 pos = vec2(u_resolution.x * TexCoord.x, u_resolution.y * TexCoord.y);
+	vec2 b = step(fract(pos / scale), vec2(0.5));
+	FragColor = vec4(vec3(fract(dot(b, vec2(1.0)) * 0.5)) + brightness, 1.0);
 }

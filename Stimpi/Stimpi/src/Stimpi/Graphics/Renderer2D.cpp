@@ -78,6 +78,11 @@ namespace Stimpi
 		//TODO: Support Vertex indexing (ElementArray)
 	}
 
+	void Renderer2D::Submit(glm::vec4 quad)
+	{
+		PushQuad(quad.x, quad.y, quad.z, quad.w);
+	}
+
 	void Renderer2D::UseTexture(Texture* texture)
 	{
 		(*m_ActiveRenderCmdIter)->UseTexture(texture);
@@ -101,7 +106,6 @@ namespace Stimpi
 		// Select FBO to render to
 		m_FrameBuffer->BindBuffer();
 		m_RenderAPI->SetViewport(0, 0, m_FrameBuffer->GetWidth(), m_FrameBuffer->GetHeight());
-		//m_RenderAPI->SetViewport(0, 0, 1280, 720);
 		m_RenderAPI->Clear(0.5f, 0.5f, 0.5f, 1.0f);	 // TODO: make as param / configurable
 	}
 
@@ -120,8 +124,7 @@ namespace Stimpi
 		auto camera = renderCmd->GetCamera();
 
 		shader->Use();
-		shader->SetUniform("mvp", camera->GetMvpMatrix());
-		shader->SetUniform("u_texture", 0);
+		shader->SetBufferedUniforms();
 
 		m_VAO->BindArray();
 		m_VBO->BindBuffer();
@@ -140,6 +143,8 @@ namespace Stimpi
 			m_RenderAPI->DrawArrays(DrawElementsMode::TRIANGLES, 0, cmd->m_VertexCount);
 			m_DrawCallCnt++;
 		}
+
+		shader->ClearBufferedUniforms();
 	}
 
 	void Renderer2D::EndFrame()

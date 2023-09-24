@@ -103,7 +103,7 @@ namespace Stimpi
 		}
 	}
 
-	void ImGuiLayer::Update()
+	void ImGuiLayer::Update(Timestep ts)
 	{
 		ImVec4 clear_color = ImVec4(0.0f, 0.55f, 0.60f, 1.00f);
 
@@ -114,7 +114,6 @@ namespace Stimpi
 
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
-		// TODO: add UI elements here
 
 		// FBO Veiw sample begin
 		static ImGuiWindowFlags flags = ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoCollapse;

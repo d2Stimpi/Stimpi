@@ -4,7 +4,8 @@ OpenGLTestLayer::OpenGLTestLayer()
 	: Layer("OpenGL TestLayer") 
 {
 	m_Shader.reset(Stimpi::Shader::CreateShader("shader.shader"));
-	m_SceneCamera = std::make_shared<Stimpi::Camera>(1280.0f, 720.0f); //TODO debug, smth to do with screen size and sub window size...
+	m_ShaderChecker.reset(Stimpi::Shader::CreateShader("shaders\/checkerboard.shader"));
+	m_SceneCamera = std::make_shared<Stimpi::Camera>(1280.0f, 720.0f);
 	m_Texture.reset(Stimpi::Texture::CreateTexture("Capture.jpg"));
 	m_Texture2.reset(Stimpi::Texture::CreateTexture("Picture1.jpg"));
 
@@ -15,6 +16,14 @@ OpenGLTestLayer::OpenGLTestLayer()
 		});
 	//Register handler
 	Stimpi::InputManager::Instance()->AddKeyboardEventHandler(m_KeyboardHandler.get());
+
+	// TODO: temp test stuff
+	auto resourceManager = Stimpi::ResourceManager::Instance();
+	resourceManager->ClearFile("TestFile.data");
+	//resourceManager->WriteToFile("TestFile.data", "This is a test string");
+	resourceManager->Test();
+
+	m_Scene = std::make_shared<Stimpi::Scene>();
 }
 
 void OpenGLTestLayer::OnAttach() 
@@ -27,45 +36,57 @@ void OpenGLTestLayer::OnDetach()
 	ST_TRACE("{0}: OnDetach", m_DebugName); 
 }
 
-void OpenGLTestLayer::Update()
+void OpenGLTestLayer::Update(Stimpi::Timestep ts)
 {
 	// Match camrea display area to framebuffer size
 	auto canvasWidth = Stimpi::Renderer2D::Instace()->GetCanvasWidth();
 	auto canvasHeight = Stimpi::Renderer2D::Instace()->GetCanvasHeight();
+	static float moveSpeed = 400.f;
 
 	m_SceneCamera->Resize(canvasWidth, canvasHeight);
 
-	if (Stimpi::InputManager::IsKeyPressed(ST_KEY_I))
-		m_SceneCamera->Translate({0.0f, 10.0f, 0.0f});
-	if (Stimpi::InputManager::IsKeyPressed(ST_KEY_K))
-		m_SceneCamera->Translate({ 0.0f, -10.0f, 0.0f });
-	if (Stimpi::InputManager::IsKeyPressed(ST_KEY_L))
-		m_SceneCamera->Translate({ 10.0f, 0.0f, 0.0f });
-	if (Stimpi::InputManager::IsKeyPressed(ST_KEY_J))
-		m_SceneCamera->Translate({ -10.0f, 0.0f, 0.0f });
+	m_Shader->SetUniform("mvp", m_SceneCamera->GetMvpMatrix());
+	m_Shader->SetUniform("u_texture", 0);
 	
-	Stimpi::Renderer2D::Instace()->BeginScene(m_SceneCamera.get(), m_Shader.get());
+	m_ShaderChecker->SetUniform("mvp", m_SceneCamera->GetMvpMatrix());
+	m_ShaderChecker->SetUniform("u_resolution", glm::vec2(canvasWidth, canvasHeight));
+
+	if (Stimpi::InputManager::IsKeyPressed(ST_KEY_I))
+		m_SceneCamera->Translate({0.0f, moveSpeed * ts, 0.0f});
+	if (Stimpi::InputManager::IsKeyPressed(ST_KEY_K))
+		m_SceneCamera->Translate({ 0.0f, -moveSpeed * ts, 0.0f });
+	if (Stimpi::InputManager::IsKeyPressed(ST_KEY_L))
+		m_SceneCamera->Translate({ moveSpeed * ts, 0.0f, 0.0f });
+	if (Stimpi::InputManager::IsKeyPressed(ST_KEY_J))
+		m_SceneCamera->Translate({ -moveSpeed * ts, 0.0f, 0.0f });
+	
+	Stimpi::Renderer2D::Instace()->BeginScene(m_SceneCamera.get(), m_ShaderChecker.get());
 	{
-		Stimpi::Renderer2D::Instace()->UseTexture(m_Texture.get());
 		Stimpi::Renderer2D::Instace()->PushQuad(0.0f, 0.0f, canvasWidth, canvasHeight, 1.0f, 1.0f);
-		/*Stimpi::Renderer2D::Instace()->UseTexture(m_Texture.get());
-		Stimpi::Renderer2D::Instace()->PushQuad(0.0f, 0.0f, 250.f, 200.0f, 1.0f, 1.0f);
-		Stimpi::Renderer2D::Instace()->UseTexture(m_Texture2.get());
-		Stimpi::Renderer2D::Instace()->PushQuad(550.0f, 550.0f, 250.f, 200.0f, 1.0f, 1.0f);
-		Stimpi::Renderer2D::Instace()->UseTexture(m_Texture.get());
-		Stimpi::Renderer2D::Instace()->PushQuad(750.0f, 850.0f, 250.f, 200.0f, 1.0f, 1.0f);*/
 	}
 	Stimpi::Renderer2D::Instace()->EndScene();
 
-
-	/*Stimpi::Renderer2D::Instace()->BeginScene(m_SceneCamera.get(), m_Shader.get());
+	Stimpi::Renderer2D::Instace()->BeginScene(m_SceneCamera.get(), m_Shader.get());
 	{
 		Stimpi::Renderer2D::Instace()->UseTexture(m_Texture.get());
-		Stimpi::Renderer2D::Instace()->PushQuad(1000.0f, 500.0f, 680.f, 520.0f, 1.0f, 1.0f);
-		Stimpi::Renderer2D::Instace()->UseTexture(m_Texture2.get());
-		Stimpi::Renderer2D::Instace()->PushQuad(320.0f, 180.0f, 640.f, 360.0f, 1.0f, 1.0f);
+		Stimpi::Renderer2D::Instace()->PushQuad(200.0f, 100.0f, canvasWidth/2, canvasHeight/2, 1.0f, 1.0f);
+		//Stimpi::Renderer2D::Instace()->UseTexture(m_Texture.get());
+		//Stimpi::Renderer2D::Instace()->PushQuad(0.0f, 0.0f, 250.f, 200.0f, 1.0f, 1.0f);
+		//Stimpi::Renderer2D::Instace()->UseTexture(m_Texture2.get());
+		//Stimpi::Renderer2D::Instace()->PushQuad(550.0f, 550.0f, 250.f, 200.0f, 1.0f, 1.0f);
+		//Stimpi::Renderer2D::Instace()->UseTexture(m_Texture.get());
+		//Stimpi::Renderer2D::Instace()->PushQuad(750.0f, 850.0f, 250.f, 200.0f, 1.0f, 1.0f);
 	}
-	Stimpi::Renderer2D::Instace()->EndScene();*/
+	Stimpi::Renderer2D::Instace()->EndScene();
+
+	//Setup scene here for now
+	Stimpi::Renderer2D::Instace()->BeginScene(m_SceneCamera.get(), m_Shader.get());
+	{
+		Stimpi::Renderer2D::Instace()->UseTexture(m_Texture.get());
+		//Update test scene
+		m_Scene->OnUpdate(ts);
+	}
+	Stimpi::Renderer2D::Instace()->EndScene();
 }
 
 void OpenGLTestLayer::OnEvent(Stimpi::BaseEvent* e)

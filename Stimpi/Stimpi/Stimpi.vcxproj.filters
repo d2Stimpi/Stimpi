@@ -88,6 +88,9 @@
     <ClCompile Include="src\Stimpi\Core\Time.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Scene\ResourceManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi\Core\Core.h">
@@ -123,8 +126,8 @@
     <ClInclude Include="src\Stimpi\Core\InputManager.h" />
     <ClInclude Include="src\Stimpi\Core\KeyCodes.h" />
     <ClInclude Include="src\Stimpi\Core\Time.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shader.shader" />
+    <ClInclude Include="src\Stimpi\Scene\Serializer.h" />
+    <ClInclude Include="src\Stimpi\Scene\ResourceManager.h" />
+    <ClInclude Include="src\Stimpi\Core\Timestep.h" />
   </ItemGroup>
 </Project>

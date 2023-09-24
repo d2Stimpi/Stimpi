@@ -1,6 +1,8 @@
 #pragma once
 
-//#include "Entity.h"
+#include "Stimpi/Core/Core.h"
+
+#include "Stimpi/Core/Timestep.h"
 
 #include <entt/entt.hpp>
 
@@ -9,13 +11,13 @@ namespace Stimpi
 {
 	class Entity;
 
-	class Scene
+	class ST_API Scene
 	{
 	public:
 		Scene();
 		~Scene();
 
-		void OnUpdate();
+		void OnUpdate(Timestep ts);
 
 		Entity CreateEntity();
 
