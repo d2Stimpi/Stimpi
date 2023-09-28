@@ -21,6 +21,8 @@ namespace Stimpi
 		void Resize(uint32_t width, uint32_t height) override;
 		unsigned int GetTextureID() override { return m_TextureID; }
 
+		bool Loaded() override { return m_TextureID != 0; }
+
 	private:
 		unsigned int m_TextureID{ 0 };
 		uint32_t m_NumChannels{ 0 }; // for stb_img loading

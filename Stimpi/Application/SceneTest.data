@@ -1,0 +1,39 @@
+Scene:
+  Entity:
+    TagComponent:
+      Tag: Entity
+    QuadComponent:
+      - 0
+      - 0
+      - 50
+      - 40
+  Entity:
+    TagComponent:
+      Tag: Texture1
+    QuadComponent:
+      - 100
+      - 20
+      - 50
+      - 40
+    TextureComponent:
+      FilePath: Capture.jpg
+  Entity:
+    TagComponent:
+      Tag: Texture2
+    QuadComponent:
+      - 200
+      - 20
+      - 50
+      - 40
+    TextureComponent:
+      FilePath: Capture.jpg
+  Entity:
+    TagComponent:
+      Tag: Texture3
+    QuadComponent:
+      - 300
+      - 20
+      - 50
+      - 40
+    TextureComponent:
+      FilePath: Picture1.jpg

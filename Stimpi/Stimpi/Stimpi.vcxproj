@@ -154,7 +154,6 @@
     <ClInclude Include="src\Stimpi\Scene\Entity.h" />
     <ClInclude Include="src\Stimpi\Scene\ResourceManager.h" />
     <ClInclude Include="src\Stimpi\Scene\Scene.h" />
-    <ClInclude Include="src\Stimpi\Scene\Serializer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

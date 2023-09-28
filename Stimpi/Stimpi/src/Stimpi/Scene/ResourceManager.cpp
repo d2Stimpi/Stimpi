@@ -1,9 +1,20 @@
 #include "Stimpi/Scene/ResourceManager.h"
 
 #include "Stimpi/Scene/Component.h"
+#include "Stimpi/Log.h"
 
 namespace Stimpi
 {
+	ResourceManager::ResourceManager()
+	{
+
+	}
+
+	ResourceManager::~ResourceManager()
+	{
+		UnloadTextures();
+	}
+
 	ResourceManager* ResourceManager::Instance()
 	{
 		static auto m_Instance = std::make_unique<ResourceManager>();
@@ -18,6 +29,14 @@ namespace Stimpi
 	}
 
 	void ResourceManager::WriteToFile(const std::string& fileName, const char* data)
+	{
+		std::ofstream outFile;
+		outFile.open(fileName);
+		outFile << data << std::endl;
+		outFile.close();
+	}
+
+	void ResourceManager::WriteToFile(const std::string& fileName, const YAML::Node& data)
 	{
 		std::ofstream outFile;
 		outFile.open(fileName);
@@ -42,14 +61,39 @@ namespace Stimpi
 		outFile.close();
 	}
 
+
+	// Texture resource managment
+	Texture* ResourceManager::LoadTexture(const std::string& fileName)
+	{
+		if (auto search = m_TextureMap.find(fileName); search != m_TextureMap.end())
+		{
+			ST_CORE_INFO("[ResMgr] Texture {0} already loaded!", fileName);
+			return search->second.get();
+		}
+
+		auto texture = Texture::CreateTexture(fileName);
+		if (texture->Loaded())
+		{
+			std::shared_ptr<Texture> ptr;
+			ptr.reset(texture);
+			m_TextureMap.emplace(std::make_pair(fileName, ptr));
+			return texture;
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	void ResourceManager::UnloadTextures()
+	{
+		m_TextureMap.clear();
+	}
+
+
+	// TEMP test functions
 	void ResourceManager::Test()
 	{
-		YAML::Node node;
-		auto tag = TagComponent{ "Camera" };
-		auto transorm = TransformComponent{ glm::vec4(1.5f, 1.2f, 1.1f, 1.0f) };
 
-		node["TagComponent"] = tag;
-		node["TransformComponent"] = transorm;
-		WriteToFileAppend("TestFile.data", node);
 	}
 }

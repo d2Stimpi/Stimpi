@@ -5,7 +5,7 @@
 #include "Stimpi/Log.h"
 
 #include <entt/entt.hpp>
-
+#include <yaml-cpp/yaml.h>
 
 namespace Stimpi
 {
@@ -13,10 +13,11 @@ namespace Stimpi
 	{
 	public:
 		Entity() = default;
+		Entity(Scene* scene) : m_Scene(scene) {}
 		Entity(entt::entity handle, Scene* scene);
 		Entity(const Entity& other) = default;
 
-		void Serialize();
+		void Serialize(YAML::Emitter& out);
 
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args)

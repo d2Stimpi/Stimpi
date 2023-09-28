@@ -126,7 +126,6 @@
     <ClInclude Include="src\Stimpi\Core\InputManager.h" />
     <ClInclude Include="src\Stimpi\Core\KeyCodes.h" />
     <ClInclude Include="src\Stimpi\Core\Time.h" />
-    <ClInclude Include="src\Stimpi\Scene\Serializer.h" />
     <ClInclude Include="src\Stimpi\Scene\ResourceManager.h" />
     <ClInclude Include="src\Stimpi\Core\Timestep.h" />
   </ItemGroup>

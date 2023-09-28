@@ -21,7 +21,6 @@
 
 #include "Stimpi/Scene/Scene.h"
 #include "Stimpi/Scene/ResourceManager.h"
-#include "Stimpi/Scene/Serializer.h"
 
 // Enrty point
 //#include "Stimpi/Core/EntryPoint.h"

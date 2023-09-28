@@ -18,6 +18,7 @@ namespace Stimpi
 
 	OpenGLTexture::~OpenGLTexture()
 	{
+		ST_CORE_INFO("Texture {0} deleted", m_TextureID);
 		Delete();
 	}
 

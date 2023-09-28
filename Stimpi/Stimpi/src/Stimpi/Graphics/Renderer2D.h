@@ -35,6 +35,7 @@ namespace Stimpi
 		
 		// TODO: add various Submitt methods
 		void Submit(glm::vec4 quad);
+		void Submit(glm::vec4 quad, Texture* texture);
 		// TODO: Submit(quad, color)
 		// TODO: Submit(quad, texture)
 

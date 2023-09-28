@@ -83,6 +83,12 @@ namespace Stimpi
 		PushQuad(quad.x, quad.y, quad.z, quad.w);
 	}
 
+	void Renderer2D::Submit(glm::vec4 quad, Texture* texture)
+	{
+		UseTexture(texture);
+		PushQuad(quad.x, quad.y, quad.z, quad.w);
+	}
+
 	void Renderer2D::UseTexture(Texture* texture)
 	{
 		(*m_ActiveRenderCmdIter)->UseTexture(texture);

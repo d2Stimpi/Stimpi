@@ -1,5 +1,6 @@
 #include "OpenGLTestLayer.h"
 
+
 OpenGLTestLayer::OpenGLTestLayer() 
 	: Layer("OpenGL TestLayer") 
 {
@@ -7,6 +8,7 @@ OpenGLTestLayer::OpenGLTestLayer()
 	m_ShaderChecker.reset(Stimpi::Shader::CreateShader("shaders\/checkerboard.shader"));
 	m_SceneCamera = std::make_shared<Stimpi::Camera>(1280.0f, 720.0f);
 	m_Texture.reset(Stimpi::Texture::CreateTexture("Capture.jpg"));
+	//m_TextureRaw = Stimpi::ResourceManager::Instance()->LoadTexture("Picture1.jpg");
 	m_Texture2.reset(Stimpi::Texture::CreateTexture("Picture1.jpg"));
 
 	// Just for test, no need to use here since Layer::OnEvent exists
@@ -23,7 +25,10 @@ OpenGLTestLayer::OpenGLTestLayer()
 	//resourceManager->WriteToFile("TestFile.data", "This is a test string");
 	resourceManager->Test();
 
-	m_Scene = std::make_shared<Stimpi::Scene>();
+	//m_Scene = std::make_shared<Stimpi::Scene>();
+	m_Scene = std::make_shared<Stimpi::Scene>("SceneTest.data");
+	m_Scene->LoadSnece("SceneTest.data");
+	//m_Scene->SaveScene("SceneTest.data");
 }
 
 void OpenGLTestLayer::OnAttach() 
