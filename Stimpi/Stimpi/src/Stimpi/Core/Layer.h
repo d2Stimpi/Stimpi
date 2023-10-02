@@ -19,7 +19,7 @@ namespace Stimpi
 		virtual void OnAttach() = 0;
 		virtual void OnDetach() = 0;
 		virtual void Update(Timestep ts) = 0;
-		virtual void OnEvent(BaseEvent* e) = 0;
+		virtual void OnEvent(Event* e) = 0;
 
 		inline const std::string& GetName() { return m_DebugName; }
 	protected:
@@ -45,7 +45,7 @@ namespace Stimpi
 		void DetachLayer(Layer* layer);
 
 		void Update(Timestep ts);
-		void OnEvent(BaseEvent* e);
+		void OnEvent(Event* e);
 
 		std::vector<Layer*>::iterator begin() { return m_Layers.begin(); }
 		std::vector<Layer*>::iterator end() { return m_Layers.end(); }

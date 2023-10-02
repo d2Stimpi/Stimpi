@@ -73,7 +73,7 @@ namespace Stimpi
 	/* Private methods */
 	void Application::ProcessEvents()
 	{
-		BaseEvent* event;
+		Event* event;
 		while (m_Window->PollEvent(&event))
 		{
 			if (event != nullptr)
@@ -85,6 +85,7 @@ namespace Stimpi
 						Stop();
 						return true;
 					}
+					return false;
 					});
 
 				EventDispatcher<KeyboardEvent> keyboardDispatcher;
@@ -92,9 +93,9 @@ namespace Stimpi
 					InputManager::Instance()->AddEvent(*e);
 					return InputManager::Instance()->HandleKeyboardEvent(*e);
 					});
-			}
 
-			m_LayerStack.OnEvent(event);
+				m_LayerStack.OnEvent(event);
+			}
 		}
 	}
 }

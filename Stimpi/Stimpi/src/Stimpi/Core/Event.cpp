@@ -118,17 +118,25 @@ namespace Stimpi
 		return new WindowEvent(type, width, height);
 	}
 
+
+	/******************************************************************************************/
+	/******************************** UnknowEvent *********************************************/
+	UnknownEvent* UnknownEvent::CreateUnknownEvent(SDL_Event e)
+	{
+		return new UnknownEvent();
+	}
+
 	/******************************************************************************************/
 	/******************************** EventFactory ********************************************/
 
-	BaseEvent* EventFactory::EventCreate(SDL_Event e)
+	Event* EventFactory::EventCreate(SDL_Event e)
 	{
 		switch (GetEventType(e))
 		{
 		case EventType::KeyboardEvent:  return KeyboardEvent::CreateKeyboardEvent(e);
 		case EventType::MouseEvent:		return MouseEvent::CreateMouseEvent(e);
 		case EventType::WindowEvent:	return WindowEvent::CreateWindowEvnet(e);
-		default: if (ST_EVENT_DBG) ST_CORE_WARN("EventCreate: Unknow event!"); return nullptr;
+		default: if (ST_EVENT_DBG) ST_CORE_WARN("EventCreate: Unknow event!"); return UnknownEvent::CreateUnknownEvent(e);
 		}
 	}
 

@@ -6,10 +6,10 @@
 
 namespace Stimpi
 {
-	// TODO: clean - dont create stuff here
+	// TODO: clean - don't create stuff here
 	Scene::Scene()
 	{
-		auto entity = CreateEntity();
+		/*auto entity = CreateEntity();
 		entity.AddComponent<QuadComponent>(glm::vec4(0.0f, 0.0f, 50.0f, 40.0f));
 
 		auto view = m_Registry.view<TagComponent>();
@@ -29,7 +29,7 @@ namespace Stimpi
 
 		textureObj = CreateEntity("Texture3");
 		textureObj.AddComponent<TextureComponent>("Picture1.jpg");
-		textureObj.AddComponent<QuadComponent>(glm::vec4(300.0f, 20.0f, 50.0f, 40.0f));
+		textureObj.AddComponent<QuadComponent>(glm::vec4(300.0f, 20.0f, 50.0f, 40.0f));*/
 	}
 
 	// TODO: fix?
@@ -69,6 +69,11 @@ namespace Stimpi
 				}
 			}
 		}
+	}
+
+	void Scene::OnEvent(Event* event)
+	{
+
 	}
 
 	Entity Scene::CreateEntity(const std::string& name)
@@ -113,8 +118,8 @@ namespace Stimpi
 
 		YAML::Emitter emitter;
 		emitter << scene;
-		ST_CORE_TRACE("Loading scene: {0}", name);
-		ST_CORE_TRACE("Entities:\n {0}", emitter.c_str());
+		//ST_CORE_TRACE("Loading scene: {0}", name);
+		//ST_CORE_TRACE("Entities:\n {0}", emitter.c_str());
 
 		for (YAML::const_iterator it = scene.begin(); it != scene.end(); it++)
 		{

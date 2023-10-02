@@ -62,7 +62,7 @@ namespace Stimpi
 	}
 
 
-	// Texture resource managment
+	// Texture resource management
 	Texture* ResourceManager::LoadTexture(const std::string& fileName)
 	{
 		if (auto search = m_TextureMap.find(fileName); search != m_TextureMap.end())

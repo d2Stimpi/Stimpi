@@ -1,0 +1,5 @@
+[SDL_TEXTINPUT not processed in ImGui]
+- Event does not get to ImGui, it is not supported by app and not created/passed to ImGui
+Currently an UNKNOWN event
+- Fixed: add event type to support this kind of event
+	or simply wrap unknown events in an event type 

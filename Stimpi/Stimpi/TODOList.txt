@@ -1,3 +1,25 @@
 UI Stuff:
 - Play button 
 	* Open fixed sized window with live game code running
+
+
+Events:
+- Move Events to separate files by type
+- Refine event types and sub-classes for easeir use
+
+
+
+
+
+
+
+
+
+=========== ImGui example searches ==============
+
+7348:
+[SECTION] Example App: Property Editor / ShowExampleAppPropertyEditor()
+
+
+IMGUI_DEMO_MARKER("Widgets/Trees/Advanced, with Selectable nodes");
+if (ImGui::TreeNode("Advanced, with Selectable nodes"))

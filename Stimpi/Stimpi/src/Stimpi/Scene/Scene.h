@@ -2,7 +2,10 @@
 
 #include "Stimpi/Core/Core.h"
 
+#include "Stimpi/Core/Event.h"
 #include "Stimpi/Core/Timestep.h"
+
+#include "Stimpi/Gui/SceneConfigWindow.h"
 
 #include <entt/entt.hpp>
 #include <yaml-cpp/yaml.h>
@@ -19,6 +22,7 @@ namespace Stimpi
 		~Scene();
 
 		void OnUpdate(Timestep ts);
+		void OnEvent(Event* event);
 
 		Entity CreateEntity(const std::string& name = "");
 
@@ -33,5 +37,6 @@ namespace Stimpi
 		std::vector<Entity> m_Entities;
 
 		friend class Entity;
+		friend class SceneConfigWindow;
 	};
 }

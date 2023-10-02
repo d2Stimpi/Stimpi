@@ -52,11 +52,11 @@ namespace Stimpi
 
 	void Renderer2D::EndScene()
 	{
-		//TODO: combine same Shader/Cammera data
+		//TODO: combine same Shader/Camera data
 		//TODO: support multiple render targets here (other FBO)
 	}
 
-	// TODO: hande u,v coords
+	// TODO: handle u,v coords
 	void Renderer2D::PushQuad(float x, float y, float width, float height, float u, float v)
 	{
 		auto left = x;
@@ -144,7 +144,7 @@ namespace Stimpi
 				cmd->m_Texture->UseTexture();
 			}
 			
-			// TODO: check if VBO max size iz surpassed
+			// TODO: check if VBO max size is surpassed
 			m_VBO->BufferSubData(0, cmd->m_Data.size() * sizeof(float), cmd->m_Data.data());
 			m_RenderAPI->DrawArrays(DrawElementsMode::TRIANGLES, 0, cmd->m_VertexCount);
 			m_DrawCallCnt++;

@@ -20,6 +20,7 @@
 #include "Stimpi/Graphics/Texture.h"
 
 #include "Stimpi/Scene/Scene.h"
+#include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/ResourceManager.h"
 
 // Enrty point

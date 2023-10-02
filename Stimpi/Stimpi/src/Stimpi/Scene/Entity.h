@@ -47,6 +47,9 @@ namespace Stimpi
 		}
 
 		operator bool() const { return (uint32_t)m_Handle != 0; }
+
+		// TODO: remove when GUID is implemented
+		operator uint32_t() const { return (uint32_t)m_Handle; }
 	private:
 		entt::entity m_Handle{ 0 };
 		Scene* m_Scene{ nullptr };

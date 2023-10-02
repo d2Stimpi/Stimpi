@@ -91,6 +91,12 @@
     <ClCompile Include="src\Stimpi\Scene\ResourceManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Gui\SceneConfigWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Scene\SceneManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi\Core\Core.h">
@@ -128,5 +134,7 @@
     <ClInclude Include="src\Stimpi\Core\Time.h" />
     <ClInclude Include="src\Stimpi\Scene\ResourceManager.h" />
     <ClInclude Include="src\Stimpi\Core\Timestep.h" />
+    <ClInclude Include="src\Stimpi\Gui\SceneConfigWindow.h" />
+    <ClInclude Include="src\Stimpi\Scene\SceneManager.h" />
   </ItemGroup>
 </Project>

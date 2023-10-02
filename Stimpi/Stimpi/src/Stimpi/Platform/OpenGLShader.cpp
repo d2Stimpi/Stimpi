@@ -34,12 +34,12 @@ namespace Stimpi
 				if (!readingFragmentShader)
 				{
 					vertexStream << line << std::endl;
-					std::cout << line << std::endl;
+					//std::cout << line << std::endl;
 				}
 				else
 				{
 					fragmentStream << line << std::endl;
-					std::cout << line << std::endl;
+					//std::cout << line << std::endl;
 				}
 			}
 			vertexShaderCode = vertexStream.str();

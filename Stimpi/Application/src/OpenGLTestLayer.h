@@ -12,7 +12,7 @@ public:
 	void OnAttach() override;
 	void OnDetach() override;
 	void Update(Stimpi::Timestep ts) override;
-	void OnEvent(Stimpi::BaseEvent* e) override;
+	void OnEvent(Stimpi::Event* e) override;
 
 private:
 

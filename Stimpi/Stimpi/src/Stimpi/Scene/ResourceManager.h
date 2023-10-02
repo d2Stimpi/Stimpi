@@ -21,7 +21,7 @@ namespace Stimpi
 		void WriteToFileAppend(const std::string& fileName, const char* data);
 		void WriteToFileAppend(const std::string& fileName, const YAML::Node& data);
 
-		// Texture resource managment
+		// Texture resource management
 		Texture* LoadTexture(const std::string& fileName);
 		void UnloadTextures();
 

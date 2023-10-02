@@ -10,8 +10,9 @@ namespace Stimpi
 		: m_SceneWidth(sceneWidth), m_SceneHeihgt(sceneHeight)
 	{
 		m_Projection = glm::ortho(0.0f, m_SceneWidth, 0.0f, m_SceneHeihgt, -1.0f, 1.0f);
+		m_View = glm::mat4(1.0f);
 		m_Model = glm::mat4(1.0f);
-		m_Mvp = m_Projection * m_Model;
+		UpdateMvp();
 	}
 
 	Camera::~Camera()
@@ -19,20 +20,11 @@ namespace Stimpi
 		ST_CORE_INFO("Camera::~Camera() called");
 	}
 
-	void Camera::BindToShader(Shader& shader)
-	{
-		// Update ModelViewProj
-		m_Mvp = m_Projection * m_Model;
-
-		shader.Use();
-		shader.SetUniform("mvp", m_Mvp);
-	}
-
 	void Camera::Translate(glm::vec3 vector)
 	{
-		// Translate with invers matrix to "move" the scene (ignore z for now)
+		// Translate with inverse matrix to "move" the scene (ignore z for now)
 		m_Model = glm::translate(m_Model, glm::vec3(-vector.x, -vector.y, vector.z));
-		m_Mvp = m_Projection * m_Model;
+		UpdateMvp();
 	}
 
 	void Camera::Zoom(float factor)
@@ -42,8 +34,7 @@ namespace Stimpi
 			ST_CORE_WARN("Camera - zoom factor is invalid!");
 			return;
 		}
-		// TODO: check for better way
-		m_Projection = glm::ortho(0.0f, factor*m_SceneWidth, 0.0f, factor*m_SceneHeihgt, -1.0f, 1.0f);
+		// TODO: should scale on the glViewport 
 	}
 
 	void Camera::Resize(float sceneWidth, float sceneHeight)
@@ -52,6 +43,12 @@ namespace Stimpi
 		m_SceneHeihgt = sceneHeight;
 
 		m_Projection = glm::ortho(0.0f, m_SceneWidth, 0.0f, m_SceneHeihgt, -1.0f, 1.0f);
-		m_Mvp = m_Projection * m_Model;
+		UpdateMvp();
 	}
+
+	void Camera::UpdateMvp()
+	{
+		m_Mvp = m_Projection * m_View * m_Model;
+	}
+
 }

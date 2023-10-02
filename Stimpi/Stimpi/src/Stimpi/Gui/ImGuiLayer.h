@@ -7,6 +7,9 @@
 #include "Stimpi/Core/Event.h"
 #include "Stimpi/Core/Window.h"
 
+// Window includes
+#include "Stimpi/Gui/SceneConfigWindow.h"
+
 #include "ImGui/src/imgui.h"
 
 namespace Stimpi
@@ -20,9 +23,12 @@ namespace Stimpi
 		void OnAttach() override;
 		void OnDetach() override;
 		void Update(Timestep ts) override;
-		void OnEvent(BaseEvent* e) override;
+		void OnEvent(Event* e) override;
 	private:
 		ImGuiIO* m_IO{ nullptr };
 		WindowSDL* m_Window{ nullptr };
+
+		//Windows
+		SceneConfigWindow m_SceneConfigWindow;
 	};
 }

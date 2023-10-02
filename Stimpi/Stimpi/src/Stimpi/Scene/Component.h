@@ -26,9 +26,10 @@ namespace Stimpi
 			out << YAML::EndMap;
 		}
 
-		//Deserialize done in Scene - Every entity will have TagComponent
+		//De-serialize done in Scene - Every entity will have TagComponent
 	};
 
+	// TODO: ATM not used/needed
 	struct TransformComponent
 	{
 		glm::vec4 m_Transform;
@@ -42,20 +43,20 @@ namespace Stimpi
 		{
 			out << YAML::Key << "TransformComponent";
 			out << YAML::BeginMap;
-				out << YAML::Key << "Transform" << YAML::Value;
-				out << YAML::BeginSeq;
-					out << m_Transform.x << m_Transform.y << m_Transform.z << m_Transform.w;
-				out << YAML::EndSeq;
+			out << YAML::Key << "Transform" << YAML::Value;
+			out << YAML::BeginSeq;
+			out << m_Transform.x << m_Transform.y << m_Transform.z << m_Transform.w;
+			out << YAML::EndSeq;
 			out << YAML::EndMap;
 		}
 	};
 
 	struct QuadComponent
 	{
-		float m_X;
-		float m_Y;
-		float m_Width;
-		float m_Height;
+		float m_X{ 0.0f };
+		float m_Y{ 0.0f };
+		float m_Width{ 0.0f };
+		float m_Height{ 0.0f };
 
 		QuadComponent() = default;
 		QuadComponent(const QuadComponent&) = default;
@@ -72,7 +73,7 @@ namespace Stimpi
 			out << YAML::EndSeq;
 		}
 
-		//Deserialize constructor
+		//De-serialize constructor
 		QuadComponent(const YAML::Node& node)
 		{
 			m_X = node[0].as<float>();
@@ -84,8 +85,8 @@ namespace Stimpi
 
 	struct TextureComponent
 	{
-		std::string m_FilePath;
-		Texture* m_Texture;
+		std::string m_FilePath = "";
+		Texture* m_Texture = nullptr;
 
 		TextureComponent() = default;
 		TextureComponent(const TextureComponent&) = default;
@@ -107,7 +108,7 @@ namespace Stimpi
 			out << YAML::EndMap;
 		}
 
-		//Deserialize constructor
+		//De-serialize constructor
 		TextureComponent(const YAML::Node& node)
 		{
 			if (node["FilePath"])

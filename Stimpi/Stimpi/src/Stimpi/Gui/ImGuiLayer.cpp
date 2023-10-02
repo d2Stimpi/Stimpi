@@ -69,20 +69,24 @@ namespace Stimpi
 	}
 
 	static bool show_demo_window = true;
-	static bool show_another_window = true;
+	static bool show_scene_config_window = true;
 	static ImVec2 wsLog;
 	static ImVec2 uvLog;
 
-	void ImGuiLayer::OnEvent(BaseEvent* e)
+	void ImGuiLayer::OnEvent(Event* e)
 	{
+		//ST_CORE_INFO("OnEvent - ImGuiLayer");
 		ImGui_ImplSDL2_ProcessEvent(e->GetRawSDLEvent());
 		//e->LogEvent();
+
+		//ImGuiIO& io = ImGui::GetIO();
+		//ST_CORE_INFO("WantCaptureKeyboard {0}", io.WantCaptureKeyboard);
 
 		EventDispatcher<KeyboardEvent> keyDispatcher;
 		keyDispatcher.Dispatch(e, [](KeyboardEvent* keyEvent) -> bool {
 				if (keyEvent->GetKeyCode() == SDL_SCANCODE_A && keyEvent->GetType() == KeyboardEventType::KEY_EVENT_DOWN)
 				{
-					show_another_window = !show_another_window;
+					show_scene_config_window = !show_scene_config_window;
 					return true;
 				}
 				if (keyEvent->GetKeyCode() == SDL_SCANCODE_D && keyEvent->GetType() == KeyboardEventType::KEY_EVENT_DOWN)
@@ -90,6 +94,7 @@ namespace Stimpi
 					show_demo_window = !show_demo_window;
 					return true;
 				}
+				return false;
 			});
 
 		if (e->GetEventType() == Stimpi::EventType::WindowEvent)
@@ -143,8 +148,8 @@ namespace Stimpi
 			ImGui::EndMainMenuBar();
 		}
 
-		ImGui::SetNextWindowSize(ImVec2(1280, 720), ImGuiCond_Once);
-		ImGui::SetNextWindowSizeConstraints(ImVec2(0, 0), ImVec2(1280, 720));
+		//ImGui::SetNextWindowSize(ImVec2(1280, 720), ImGuiCond_Once);
+		//ImGui::SetNextWindowSizeConstraints(ImVec2(0, 0), ImVec2(1280, 720));
 
 		ImGui::Begin("OpenGL Main Scene View", &closeWidget, flags);
 
@@ -182,12 +187,14 @@ namespace Stimpi
 		//ImGui::Image((void*)(intptr_t)frameBuffer->GetTextureID(), ImVec2(wWidth, wHeight), uv_min, uv_max, tint_col, border_col);
 		ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)frameBuffer->GetTextureID(), ImVec2(pos), ImVec2(pos.x + ws.x, pos.y + ws.y), uv_min, uv_max);
 		ImGui::End();
-		// FBO Veiw sample end
+		// FBO View sample end
 
-		if (show_another_window)
+		// TODO: move show_scene_config_window to class
+		m_SceneConfigWindow.Draw();
+
+		if (show_scene_config_window)
 		{
-
-			ImGui::Begin("Scene Config", &show_another_window);
+			ImGui::Begin("Scene Config", &show_scene_config_window);
 			ImGui::Text("Resolution");
 			const char* resolution_items[] = { "1920x1080", "1280x720" };
 			static int current_resolution = 1;
@@ -212,8 +219,19 @@ namespace Stimpi
 				if (current_fps == 2) Time::Instance()->SetFPS(24);
 			};
 			ImGui::Separator();
+			// Scene Entities hierarchy view
+			ImGui::Text("Scene elements:");
 
-			ImGui::End();
+
+			ImGui::PushID(1);
+			if (ImGui::TreeNode("Basic trees", "Object"))
+			{
+
+				ImGui::TreePop();
+			}
+			ImGui::PopID();
+
+			ImGui::End(); //Config window
 		}
 		
 		static bool closeWidget2 = true;

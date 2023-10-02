@@ -67,18 +67,16 @@ namespace Stimpi
 		}
 	}
 
-	void LayerStack::OnEvent(BaseEvent* e)
+	void LayerStack::OnEvent(Event* e)
 	{
-		for (auto layer : m_Layers)
+		for (auto it = m_Layers.end(); it != m_Layers.begin(); )
 		{
-			if (e != nullptr)
+			if (e->IsHandled())
 			{
-				if (e->IsHandled())
-				{
-					break;
-				}
-				layer->OnEvent(e);
+				ST_CORE_INFO("Event consumed!");
+				break;
 			}
+			(*--it)->OnEvent(e);
 		}
 	}
 }

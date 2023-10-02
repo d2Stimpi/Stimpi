@@ -8,7 +8,7 @@
 
 namespace Stimpi
 {
-	enum class EventType {None = 0, WindowEvent, KeyboardEvent, MouseEvent };
+	enum class EventType {None = 0, WindowEvent, KeyboardEvent, MouseEvent, UnknownEvent };
 	enum class KeyboardEventType {NONE = 0, KEY_EVENT_DOWN, KEY_EVENT_UP, KEY_EVENT_REPEAT };
 	enum class MouseEventType { NONE = 0, MOUSE_EVENT_BUTTONDOWN, MOUSE_EVENT_BUTTONUP, MOUSE_EVENT_BUTTONHOLD, MOUSE_EVENT_WHEELUP, MOUSE_EVENT_WHEELDOWN, MOUSE_EVENT_MOTION };
 	enum class WindowEventType { NONE = 0, WINDOW_EVENT_QUIT, WINDOW_EVENT_RESIZE};
@@ -52,11 +52,11 @@ namespace Stimpi
 		}
 	}
 
-	class ST_API BaseEvent
+	class ST_API Event
 	{
 	public:
-		BaseEvent(EventType type) : m_EventType(type), m_RawSDLEvent(), m_Handled(false) {}
-		virtual ~BaseEvent() {}
+		Event(EventType type) : m_EventType(type), m_RawSDLEvent(), m_Handled(false) {}
+		virtual ~Event() {}
 
 		virtual void LogEvent() = 0;
 
@@ -75,10 +75,10 @@ namespace Stimpi
 	/******************************************************************************************/
 	/******************************** Events **************************************************/
 
-	class ST_API KeyboardEvent : public BaseEvent
+	class ST_API KeyboardEvent : public Event
 	{
 	public:
-		KeyboardEvent(KeyboardEventType type, uint32_t repeat, uint32_t keyCode) : BaseEvent(EventType::KeyboardEvent), m_Type(type), m_Repeat(repeat), m_KeyCode(keyCode){}
+		KeyboardEvent(KeyboardEventType type, uint32_t repeat, uint32_t keyCode) : Event(EventType::KeyboardEvent), m_Type(type), m_Repeat(repeat), m_KeyCode(keyCode){}
 		~KeyboardEvent() { /*ST_CORE_TRACE("~KeyboardEvent: {0}, KeyCode: {1}", GetStringKeyboardEvent(m_Type), m_KeyCode);*/ };
 		
 		void LogEvent() { ST_CORE_TRACE("KeyboardEvent: {0}, KeyCode: {1}", GetStringKeyboardEvent(m_Type), m_KeyCode); }
@@ -95,10 +95,10 @@ namespace Stimpi
 		uint32_t m_KeyCode;
 	};
 
-	class ST_API MouseEvent : public BaseEvent
+	class ST_API MouseEvent : public Event
 	{
 	public:
-		MouseEvent(MouseEventType type, uint32_t x, uint32_t y, uint8_t button) : BaseEvent(EventType::MouseEvent), m_Type(type), m_X(x), m_Y(y), m_Button(button) {}
+		MouseEvent(MouseEventType type, uint32_t x, uint32_t y, uint8_t button) : Event(EventType::MouseEvent), m_Type(type), m_X(x), m_Y(y), m_Button(button) {}
 		~MouseEvent() {}
 
 		void LogEvent() 
@@ -128,10 +128,10 @@ namespace Stimpi
 		uint8_t m_Button;
 	};
 
-	class ST_API WindowEvent : public BaseEvent
+	class ST_API WindowEvent : public Event
 	{
 	public:
-		WindowEvent(WindowEventType type, uint32_t width, uint32_t height) : BaseEvent(EventType::WindowEvent), m_Type(type), m_Width(width), m_Height(height) {}
+		WindowEvent(WindowEventType type, uint32_t width, uint32_t height) : Event(EventType::WindowEvent), m_Type(type), m_Width(width), m_Height(height) {}
 		~WindowEvent() {}
 
 		void LogEvent() { ST_CORE_TRACE("WindowEventType: {0}", GetStringWindowEvent(m_Type)); }
@@ -148,10 +148,23 @@ namespace Stimpi
 		uint32_t m_Height;
 	};
 
+	/* Used to enable passing unprocessed Raw SDLEvnets to ImGui */
+	class ST_API UnknownEvent : public Event
+	{
+	public:
+		UnknownEvent() : Event(EventType::UnknownEvent) {}
+		~UnknownEvent() {}
+
+		void LogEvent() { /*ST_CORE_TRACE("UnknownEvent");*/ }
+
+		static UnknownEvent* CreateUnknownEvent(SDL_Event e);
+	private:
+	};
+
 	class EventFactory
 	{
 	public:
-		static BaseEvent* EventCreate(SDL_Event e);
+		static Event* EventCreate(SDL_Event e);
 		static EventType GetEventType(SDL_Event e);
 	};
 
@@ -162,7 +175,7 @@ namespace Stimpi
 		using EventFunc = std::function<bool(T*)>;
 	public:
 
-		void Dispatch(BaseEvent* event, EventFunc func)
+		void Dispatch(Event* event, EventFunc func)
 		{
 			if (event->GetEventType() == T::GetStaticType())
 			{
