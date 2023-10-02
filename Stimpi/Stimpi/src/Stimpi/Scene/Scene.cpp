@@ -61,11 +61,8 @@ namespace Stimpi
 				if (entity.HasComponent<TextureComponent>())
 				{
 					auto texture = entity.GetComponent<TextureComponent>();
-					Renderer2D::Instace()->Submit(quad, texture);
-				}
-				else
-				{
-					Renderer2D::Instace()->Submit(quad);
+					if (texture)
+						Renderer2D::Instace()->Submit(quad, texture);
 				}
 			}
 		}

@@ -3,6 +3,11 @@
 #include "Stimpi/Core/Core.h"
 #include "Stimpi/Scene/Component.h"
 
+/**
+ * TODO:
+ *  - Add component to Entity button
+ */
+
 namespace Stimpi
 {
 	class Entity;
@@ -19,8 +24,9 @@ namespace Stimpi
 		void ComponentInspectorWidget();
 		
 		// Inspect UI layout parts
-		void QuadComponentLayout(QuadComponent& component, const std::string& name);
-		void TextureComponentLayout(TextureComponent& component, const std::string& name);
+		void QuadComponentLayout(QuadComponent& component);
+		void TextureComponentLayout(TextureComponent& component);
+		void AddComponentLayout();
 
 	private:
 		bool m_Show = true;

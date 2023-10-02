@@ -57,15 +57,17 @@ namespace Stimpi
 									{
 										ImGui::Separator();
 										auto& component = s_SelectedEntity.GetComponent<QuadComponent>();
-										QuadComponentLayout(component, entityTag);
+										QuadComponentLayout(component);
 									}
 
 									if (s_SelectedEntity.HasComponent<TextureComponent>())
 									{
 										ImGui::Separator();
 										auto& component = s_SelectedEntity.GetComponent<TextureComponent>();
-										TextureComponentLayout(component, entityTag);
+										TextureComponentLayout(component);
 									}
+
+									AddComponentLayout();
 								};
 							}
 
@@ -116,7 +118,7 @@ namespace Stimpi
 		ImGui::End(); // ComponentInspectorWidget
 	}
 
-	void SceneConfigWindow::QuadComponentLayout(QuadComponent& component, const std::string& name)
+	void SceneConfigWindow::QuadComponentLayout(QuadComponent& component)
 	{
 		ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue;
 		float x = component.m_X;
@@ -124,8 +126,11 @@ namespace Stimpi
 		float w = component.m_Width;
 		float h = component.m_Height;
 
-		ImGui::Text("QuadComponent");
-		ImGui::Text("Tag: %s", name.c_str());
+		ImGui::Text("QuadComponent"); ImGui::SameLine();
+		if (ImGui::Button("Remove##Quad"))
+		{
+			s_SelectedEntity.RemoveComponent<QuadComponent>();
+		}
 		ImGui::PushItemWidth(80.0f);
 		ImGui::Text("X:"); ImGui::SameLine();
 		if (ImGui::InputFloat("##QuadComponent X input", &x, NULL, NULL, "%.3f", flags))
@@ -142,11 +147,63 @@ namespace Stimpi
 		ImGui::PopItemWidth();
 	}
 
-	void SceneConfigWindow::TextureComponentLayout(TextureComponent& component, const std::string& name)
+	void SceneConfigWindow::TextureComponentLayout(TextureComponent& component)
 	{
-		ImGui::Text("TextureComponent");
-		ImGui::Text("Tag: %s", name.c_str());
+		ImGui::Text("TextureComponent"); ImGui::SameLine();
+		if (ImGui::Button("Remove##Texture"))
+		{
+			s_SelectedEntity.RemoveComponent<TextureComponent>();
+		}
 		ImGui::Text("File path: %s", component.m_FilePath.c_str());
 	}
 
+	void SceneConfigWindow::AddComponentLayout()
+	{
+		ImGuiComboFlags flags = ImGuiComboFlags_PopupAlignLeft;
+		const char* items[] = { "QuadComponent", "TextureComponent" };
+		static uint32_t selection = 0;
+		const char* selectedPreview = items[selection];
+
+		ImGui::Separator();
+		ImGui::PushItemWidth(160.0f);
+		if (ImGui::BeginCombo("##AddComponentWidget", selectedPreview, flags))
+		{
+			for (uint32_t i = 0; i < IM_ARRAYSIZE(items); i++)
+			{
+				const bool isSelected = (selection == i);
+				if (ImGui::Selectable(items[i], isSelected))
+					selection = i;
+
+				// Initial focus
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+		ImGui::PopItemWidth();
+
+		// Add component button
+		if (ImGui::Button("Add Component"))
+		{
+			ST_CORE_INFO("AddComponent button clicked - {0}", items[selection]);
+			switch (selection)
+			{
+			case 0: //QuadComponent
+				if (!s_SelectedEntity.HasComponent<QuadComponent>())
+				{
+					s_SelectedEntity.AddComponent<QuadComponent>();
+				}
+				break;
+			case 1: //TextureComponent
+				if (!s_SelectedEntity.HasComponent<TextureComponent>())
+				{
+					s_SelectedEntity.AddComponent<TextureComponent>("Capture.jpg");
+				}
+				break;
+			default:
+				ST_CORE_ERROR("AddComponentLayout - shoul't enter here");
+				break;
+			}
+		}
+	}
 }

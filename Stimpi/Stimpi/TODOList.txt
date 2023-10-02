@@ -1,13 +1,14 @@
-UI Stuff:
+[UI]
+- Window/Widget for listing loaded scenes, later file resources, etc...
 - Play button 
 	* Open fixed sized window with live game code running
 
-
-Events:
+[Events]
 - Move Events to separate files by type
 - Refine event types and sub-classes for easeir use
 
-
+[Components]
+- Add widt and height to texture component
 
 
 

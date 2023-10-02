@@ -7,6 +7,14 @@
 #include <glm/glm.hpp>
 #include <yaml-cpp/yaml.h>
 
+/**
+ *  Changes required when adding new Component
+ *  - [Entity] Serialization
+ *  - [Scene] Serialization and processing components in context of scene
+ *  - [Component] Implement Serialize function
+ *  - [ImGui - SceneConfigWindow] Extend inspect window widgets 
+ */
+
 namespace Stimpi
 {
 	struct TagComponent
