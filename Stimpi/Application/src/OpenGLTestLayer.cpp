@@ -6,6 +6,7 @@ OpenGLTestLayer::OpenGLTestLayer()
 {
 	m_Shader.reset(Stimpi::Shader::CreateShader("shaders\/shader.shader"));
 	m_ShaderChecker.reset(Stimpi::Shader::CreateShader("shaders\/checkerboard.shader"));
+	m_ShaderSolidColor.reset(Stimpi::Shader::CreateShader("shaders\/solidcolor.shader"));
 	m_SceneCamera = std::make_shared<Stimpi::Camera>(1280.0f, 720.0f);
 	m_Texture.reset(Stimpi::Texture::CreateTexture("Capture.jpg"));
 	//m_TextureRaw = Stimpi::ResourceManager::Instance()->LoadTexture("Picture1.jpg");
@@ -13,7 +14,7 @@ OpenGLTestLayer::OpenGLTestLayer()
 
 	// Just for test, no need to use here since Layer::OnEvent exists
 	m_KeyboardHandler = std::make_shared<Stimpi::KeyboardEventHandler>([](Stimpi::KeyboardEvent event) -> bool {
-			ST_INFO("Handling KeyboardEvent key: {0}", event.GetKeyCode());
+			//ST_INFO("Handling KeyboardEvent key: {0}", event.GetKeyCode());
 			return false;
 		});
 	//Register handler
@@ -63,6 +64,9 @@ void OpenGLTestLayer::Update(Stimpi::Timestep ts)
 	m_ShaderChecker->SetUniform("u_model", m_SceneCamera->GetModelMatrix());
 	m_ShaderChecker->SetUniform("u_resolution", glm::vec2(canvasWidth, canvasHeight));
 
+	m_ShaderSolidColor->SetUniform("u_proj", m_SceneCamera->GetProjectionMatrix());
+	m_ShaderSolidColor->SetUniform("u_model", m_SceneCamera->GetModelMatrix());
+
 	// Movement control
 	if (Stimpi::InputManager::IsKeyPressed(ST_KEY_I))
 		m_SceneCamera->Translate({0.0f, moveSpeed * ts, 0.0f});
@@ -87,26 +91,30 @@ void OpenGLTestLayer::Update(Stimpi::Timestep ts)
 	}
 	//m_SceneCamera->Zoom(zoomFactor);
 	
+	// Checker background cmd
 	Stimpi::Renderer2D::Instace()->BeginScene(m_SceneCamera.get(), m_ShaderChecker.get());
 	{
-		Stimpi::Renderer2D::Instace()->PushQuad(0.0f, 0.0f, canvasWidth, canvasHeight, 1.0f, 1.0f);
+		Stimpi::Renderer2D::Instace()->PushQuad({ 0.0f, 0.0f, canvasWidth, canvasHeight });
 	}
 	Stimpi::Renderer2D::Instace()->EndScene();
 
+	// Some texture test cmd
 	Stimpi::Renderer2D::Instace()->BeginScene(m_SceneCamera.get(), m_Shader.get());
 	{
 		Stimpi::Renderer2D::Instace()->UseTexture(m_Texture.get());
-		Stimpi::Renderer2D::Instace()->PushQuad(200.0f, 100.0f, canvasWidth/2, canvasHeight/2, 1.0f, 1.0f);
-		//Stimpi::Renderer2D::Instace()->UseTexture(m_Texture.get());
-		//Stimpi::Renderer2D::Instace()->PushQuad(0.0f, 0.0f, 250.f, 200.0f, 1.0f, 1.0f);
-		//Stimpi::Renderer2D::Instace()->UseTexture(m_Texture2.get());
-		//Stimpi::Renderer2D::Instace()->PushQuad(550.0f, 550.0f, 250.f, 200.0f, 1.0f, 1.0f);
-		//Stimpi::Renderer2D::Instace()->UseTexture(m_Texture.get());
-		//Stimpi::Renderer2D::Instace()->PushQuad(750.0f, 850.0f, 250.f, 200.0f, 1.0f, 1.0f);
+		Stimpi::Renderer2D::Instace()->PushQuad({ 200.0f, 100.0f, canvasWidth / 2, canvasHeight / 2 });
 	}
 	Stimpi::Renderer2D::Instace()->EndScene();
 
-	//Setup scene here for now
+	// Solid color test cmd
+	Stimpi::Renderer2D::Instace()->BeginScene(m_SceneCamera.get(), m_ShaderSolidColor.get());
+	{
+		Stimpi::Renderer2D::Instace()->Submit({ 100.0f, 100.0f, 50.0f, 50.0f }, { 0.2f, 0.3f, 0.8f });
+	}
+	Stimpi::Renderer2D::Instace()->EndScene();
+
+
+	//Setup scene cmd here for now
 	Stimpi::Renderer2D::Instace()->BeginScene(m_SceneCamera.get(), m_Shader.get());
 	{
 		Stimpi::Renderer2D::Instace()->UseTexture(m_Texture.get());

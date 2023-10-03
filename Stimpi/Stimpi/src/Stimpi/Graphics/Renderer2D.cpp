@@ -11,7 +11,7 @@ namespace Stimpi
 		m_FrameBuffer.reset(FrameBuffer::CreateFrameBuffer(1280, 720));
 
 		//Init VAO, VBO - TODO: handling more VAOs 4k/per
-		m_VAO.reset(VertexArrayObject::CreateVertexArrayObject({ 3, 0, 2 }));
+		m_VAO.reset(VertexArrayObject::CreateVertexArrayObject({ 3, 3, 2 }));
 		m_VAO->BindArray();
 
 		m_VBO.reset(BufferObject::CreateBufferObject(BufferObjectType::ARRAY_BUFFER));
@@ -56,37 +56,44 @@ namespace Stimpi
 		//TODO: support multiple render targets here (other FBO)
 	}
 
-	// TODO: handle u,v coords
-	void Renderer2D::PushQuad(float x, float y, float width, float height, float u, float v)
+	// TODO: handle UVs
+	void Renderer2D::PushQuad(glm::vec4 quad, glm::vec3 color, glm::vec2 min, glm::vec2 max)
 	{
-		auto left = x;
-		auto right = x + width;
-		auto bottom = y;
-		auto top = y + height;
+		auto left = quad.x;
+		auto right = quad.x + quad.z;
+		auto bottom = quad.y;
+		auto top = quad.y + quad.w;
 
 		auto activeCmd = *m_ActiveRenderCmdIter;
 
-		// Push Quad vertex data in Layout format { 3, 0, 2 }
-		activeCmd->PushVertexBufferData({ left, bottom, 0.0f, 0.0f, 0.0f });
-		activeCmd->PushVertexBufferData({ right, top, 0.0f, 1.0f, 1.0f });
-		activeCmd->PushVertexBufferData({ left, top, 0.0f, 0.0f, 1.0f });
+		// Push Quad vertex data in Layout format { 3, 3, 2 }
+		activeCmd->PushVertexBufferData({ left, bottom, 0.0f }, color, { min.x, min.y });
+		activeCmd->PushVertexBufferData({ right, top, 0.0f }, color, { max.x, max.y });
+		activeCmd->PushVertexBufferData({ left, top, 0.0f }, color, { min.x, max.y });
 
-		activeCmd->PushVertexBufferData({ left, bottom, 0.0f, 0.0f, 0.0f });
-		activeCmd->PushVertexBufferData({ right, bottom, 0.0f, 1.0f, 0.0f });
-		activeCmd->PushVertexBufferData({ right, top, 0.0f, 1.0f, 1.0f });
+		activeCmd->PushVertexBufferData({ left, bottom, 0.0f }, color, { min.x, min.y });
+		activeCmd->PushVertexBufferData({ right, bottom, 0.0f }, color, { max.x, min.y });
+		activeCmd->PushVertexBufferData({ right, top, 0.0f }, color, { max.x, max.y });
 
 		//TODO: Support Vertex indexing (ElementArray)
 	}
 
 	void Renderer2D::Submit(glm::vec4 quad)
 	{
-		PushQuad(quad.x, quad.y, quad.z, quad.w);
+		PushQuad(quad);
 	}
 
 	void Renderer2D::Submit(glm::vec4 quad, Texture* texture)
 	{
 		UseTexture(texture);
-		PushQuad(quad.x, quad.y, quad.z, quad.w);
+		PushQuad(quad);
+	}
+
+	void Renderer2D::Submit(glm::vec4 quad, glm::vec3 color)
+	{
+		(*m_ActiveRenderCmdIter)->GetShader()->SetUniform("u_useColor", 1);
+		UseTexture(nullptr);
+		PushQuad(quad, color);
 	}
 
 	void Renderer2D::UseTexture(Texture* texture)
@@ -144,7 +151,7 @@ namespace Stimpi
 				cmd->m_Texture->UseTexture();
 			}
 
-			// Not so clean and happy way to handle VBO size - TODO: consider rework maybe?
+			// Not so clean and happy way to handle VBO size - TODO: consider rework
 			// Check if VBO max size is surpassed - TODO: more testing, with something like simple particle emitter
 			if (cmd->Size() >= VERTEX_ARRAY_SIZE)
 			{
@@ -152,7 +159,7 @@ namespace Stimpi
 				uint32_t vertexRendered = 0;
 				uint32_t vertexRemaining = cmd->m_VertexCount;
 				uint32_t vertexSize = m_VAO->VertexSize();
-				uint32_t vertexCapacity = (uint32_t)(VERTEX_ARRAY_SIZE / vertexSize);	// ATM: 4096 / 2 = 819.2 -> 819
+				uint32_t vertexCapacity = (uint32_t)(VERTEX_ARRAY_SIZE / vertexSize);
 				uint32_t vertexToDraw = vertexCapacity;
 
 				while (vertexRendered < cmd->m_VertexCount)

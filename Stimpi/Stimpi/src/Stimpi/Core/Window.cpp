@@ -73,11 +73,6 @@ namespace Stimpi
 		SDL_Event event;
 		bool pending = SDL_PollEvent(&event);
 
-		if (event.type == SDL_TEXTINPUT)
-		{
-			ST_CORE_INFO("SDL_TEXTINPUT polled");
-		}
-
 		if (pending)
 		{
 			*e = EventFactory::EventCreate(event);

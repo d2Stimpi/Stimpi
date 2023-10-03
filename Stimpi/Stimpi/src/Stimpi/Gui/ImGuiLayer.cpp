@@ -77,10 +77,6 @@ namespace Stimpi
 	{
 		//ST_CORE_INFO("OnEvent - ImGuiLayer");
 		ImGui_ImplSDL2_ProcessEvent(e->GetRawSDLEvent());
-		//e->LogEvent();
-
-		//ImGuiIO& io = ImGui::GetIO();
-		//ST_CORE_INFO("WantCaptureKeyboard {0}", io.WantCaptureKeyboard);
 
 		EventDispatcher<KeyboardEvent> keyDispatcher;
 		keyDispatcher.Dispatch(e, [](KeyboardEvent* keyEvent) -> bool {

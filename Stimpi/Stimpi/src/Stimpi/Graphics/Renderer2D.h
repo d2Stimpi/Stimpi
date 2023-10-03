@@ -12,7 +12,7 @@
 #include "Stimpi/Graphics/Texture.h"
 #include "Stimpi/Graphics/VertexArrayObject.h"
 
-#define VERTEX_ARRAY_SIZE	(120 * 1000) // Layout{3,0,2} quad szie * 1000 (max 1k squares per call)  
+#define VERTEX_ARRAY_SIZE	(192 * 1000) // Layout{3,3,2} quad szie * 1000 (max 1k squares per call)  
 #define RENDERER_DBG	(true)
 
 /* TODO:
@@ -31,12 +31,12 @@ namespace Stimpi
 
 		void BeginScene(Camera* camera, Shader* shader);
 		void EndScene();
-		void PushQuad(float x, float y, float width, float height, float u = 1.0f, float v = 1.0f);
+		void PushQuad(glm::vec4 quad, glm::vec3 color = {1.0f, 1.0f, 1.0f}, glm::vec2 min = {0.0f, 0.0f}, glm::vec2 max = {1.0f, 1.0f});
 		
-		// TODO: add various Submitt methods
+		// TODO: add various Submit methods
 		void Submit(glm::vec4 quad);
 		void Submit(glm::vec4 quad, Texture* texture);
-		// TODO: Submit(quad, color)
+		void Submit(glm::vec4 quad, glm::vec3 color);
 		// TODO: Submit(quad, texture)
 
 		void UseTexture(Texture* texture);

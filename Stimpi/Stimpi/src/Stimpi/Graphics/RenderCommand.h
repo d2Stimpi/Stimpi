@@ -31,8 +31,8 @@ namespace Stimpi
 		RenderCommand(Camera* camera, Shader* shader);
 		~RenderCommand();
 
-		void PushVertexBufferData(std::initializer_list<float> list);
-		void PushIndexDufferData(std::initializer_list<unsigned int> list);
+		void PushVertexBufferData(glm::vec3 position, glm::vec3 color, glm::vec2 textureCoord);
+		void PushIndexDufferData(); // TODO: not needed atm
 		void UseTexture(Texture* texture);
 
 		Camera* GetCamera() { return m_Camera; }

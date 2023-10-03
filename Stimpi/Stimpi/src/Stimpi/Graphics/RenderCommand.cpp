@@ -23,16 +23,20 @@ namespace Stimpi
 
 	}
 
-	void RenderCommand::PushVertexBufferData(std::initializer_list<float> list)
+	void RenderCommand::PushVertexBufferData(glm::vec3 position, glm::vec3 color, glm::vec2 textureCoord)
 	{
-		for (auto elem : list)
-		{
-			(*m_CurrentTextureData)->m_Data.push_back(elem);
-		}
+		(*m_CurrentTextureData)->m_Data.push_back(position.x);
+		(*m_CurrentTextureData)->m_Data.push_back(position.y);
+		(*m_CurrentTextureData)->m_Data.push_back(position.z);
+		(*m_CurrentTextureData)->m_Data.push_back(color.r);
+		(*m_CurrentTextureData)->m_Data.push_back(color.g);
+		(*m_CurrentTextureData)->m_Data.push_back(color.b);
+		(*m_CurrentTextureData)->m_Data.push_back(textureCoord.x);
+		(*m_CurrentTextureData)->m_Data.push_back(textureCoord.y);
 		(*m_CurrentTextureData)->m_VertexCount++;
 	}
 
-	void RenderCommand::PushIndexDufferData(std::initializer_list<unsigned int> list)
+	void RenderCommand::PushIndexDufferData()
 	{
 		//TODO: when rdy to suport indices (ElementArray)
 	}
