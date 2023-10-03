@@ -143,11 +143,38 @@ namespace Stimpi
 			{
 				cmd->m_Texture->UseTexture();
 			}
-			
-			// TODO: check if VBO max size is surpassed
-			m_VBO->BufferSubData(0, cmd->m_Data.size() * sizeof(float), cmd->m_Data.data());
-			m_RenderAPI->DrawArrays(DrawElementsMode::TRIANGLES, 0, cmd->m_VertexCount);
-			m_DrawCallCnt++;
+
+			// Not so clean and happy way to handle VBO size - TODO: consider rework maybe?
+			// Check if VBO max size is surpassed - TODO: more testing, with something like simple particle emitter
+			if (cmd->Size() >= VERTEX_ARRAY_SIZE)
+			{
+				// Cycle trough all vertex data
+				uint32_t vertexRendered = 0;
+				uint32_t vertexRemaining = cmd->m_VertexCount;
+				uint32_t vertexSize = m_VAO->VertexSize();
+				uint32_t vertexCapacity = (uint32_t)(VERTEX_ARRAY_SIZE / vertexSize);	// ATM: 4096 / 2 = 819.2 -> 819
+				uint32_t vertexToDraw = vertexCapacity;
+
+				while (vertexRendered < cmd->m_VertexCount)
+				{
+					m_VBO->BufferSubData(0, vertexToDraw * vertexSize, cmd->Data(vertexRendered * vertexSize));
+					m_RenderAPI->DrawArrays(DrawElementsMode::TRIANGLES, 0, vertexToDraw);
+					m_DrawCallCnt++;
+
+					vertexRendered += vertexToDraw;
+
+					vertexRemaining -= vertexToDraw;
+					if (vertexRemaining < vertexCapacity)
+						vertexToDraw = vertexRemaining;
+				}
+
+			}
+			else
+			{
+				m_VBO->BufferSubData(0, cmd->Size(), cmd->Data());
+				m_RenderAPI->DrawArrays(DrawElementsMode::TRIANGLES, 0, cmd->m_VertexCount);
+				m_DrawCallCnt++;
+			}
 		}
 
 		shader->ClearBufferedUniforms();

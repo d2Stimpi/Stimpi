@@ -48,6 +48,8 @@ namespace Stimpi
 		// Called from Renderer
 		virtual void EnableVertexAttribArray() = 0;
 
+		uint32_t VertexSize() { return m_Layout.m_Stride; }
+
 		// Create VAO based on Renderer API type (OpenGL)
 		static VertexArrayObject* CreateVertexArrayObject(const DataLayout& layout);
 

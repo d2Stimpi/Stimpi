@@ -19,10 +19,9 @@ namespace Stimpi
 		std::vector<float> m_Data;
 		uint32_t m_VertexCount;
 
-		TextureData() : m_Texture(nullptr), m_Data({}), m_VertexCount(0)
-		{
-
-		}
+		TextureData() : m_Texture(nullptr), m_Data({}), m_VertexCount(0) {}
+		uint32_t Size() { return m_Data.size() * sizeof(float); }
+		float* Data(uint32_t offsetBytes = 0) { return m_Data.data() + (offsetBytes / sizeof(float)); }
 	};
 
 	class RenderCommand

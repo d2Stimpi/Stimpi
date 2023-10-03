@@ -12,7 +12,7 @@
 #include "Stimpi/Graphics/Texture.h"
 #include "Stimpi/Graphics/VertexArrayObject.h"
 
-#define VERTEX_ARRAY_SIZE	4096
+#define VERTEX_ARRAY_SIZE	(120 * 1000) // Layout{3,0,2} quad szie * 1000 (max 1k squares per call)  
 #define RENDERER_DBG	(true)
 
 /* TODO:
@@ -61,6 +61,7 @@ namespace Stimpi
 		void DrawRenderCmd(std::shared_ptr<RenderCommand>& renderCmd);
 		void ShowDebugData();
 
+	private:
 		RenderAPI* m_RenderAPI;
 		std::vector<std::shared_ptr<RenderCommand>> m_RenderCmds;
 		std::vector<std::shared_ptr<RenderCommand>>::iterator m_ActiveRenderCmdIter;
