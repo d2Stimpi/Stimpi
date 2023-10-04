@@ -6,7 +6,7 @@
 
 //TODO: combine in one header
 #include "Stimpi/Graphics/BufferObject.h"
-#include "Stimpi/Graphics/Camera.h"
+#include "Stimpi/Graphics/OrthoCamera.h"
 #include "Stimpi/Graphics/FrameBuffer.h"
 #include "Stimpi/Graphics/Shader.h"
 #include "Stimpi/Graphics/Texture.h"
@@ -29,7 +29,7 @@ namespace Stimpi
 
 		static Renderer2D* Instace();
 
-		void BeginScene(Camera* camera, Shader* shader);
+		void BeginScene(OrthoCamera* camera, Shader* shader);
 		void EndScene();
 		void PushQuad(glm::vec4 quad, glm::vec3 color = {1.0f, 1.0f, 1.0f}, glm::vec2 min = {0.0f, 0.0f}, glm::vec2 max = {1.0f, 1.0f});
 		
@@ -37,7 +37,6 @@ namespace Stimpi
 		void Submit(glm::vec4 quad);
 		void Submit(glm::vec4 quad, Texture* texture);
 		void Submit(glm::vec4 quad, glm::vec3 color);
-		// TODO: Submit(quad, texture)
 
 		void UseTexture(Texture* texture);
 		void RenderTarget(FrameBuffer* target); // TODO: needed?

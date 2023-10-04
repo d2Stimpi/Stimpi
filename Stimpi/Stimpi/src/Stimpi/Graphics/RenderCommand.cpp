@@ -8,7 +8,7 @@ namespace Stimpi
 
 	}
 
-	RenderCommand::RenderCommand(Camera* camera, Shader* shader) :
+	RenderCommand::RenderCommand(OrthoCamera* camera, Shader* shader) :
 		m_Camera(camera),
 		m_Shader(shader),
 		m_TextureDataVec({}),

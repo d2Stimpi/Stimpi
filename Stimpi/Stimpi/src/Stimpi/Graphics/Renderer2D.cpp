@@ -43,7 +43,7 @@ namespace Stimpi
 		return m_FrameBuffer.get();
 	}
 
-	void Renderer2D::BeginScene(Camera* camera, Shader* shader)
+	void Renderer2D::BeginScene(OrthoCamera* camera, Shader* shader)
 	{
 		// TODO: support multiple render targets here (other FBO)
 		m_RenderCmds.emplace_back(std::make_shared<RenderCommand>(camera, shader));
@@ -92,7 +92,6 @@ namespace Stimpi
 	void Renderer2D::Submit(glm::vec4 quad, glm::vec3 color)
 	{
 		(*m_ActiveRenderCmdIter)->GetShader()->SetUniform("u_useColor", 1);
-		UseTexture(nullptr);
 		PushQuad(quad, color);
 	}
 

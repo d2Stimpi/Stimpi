@@ -7,7 +7,8 @@ OpenGLTestLayer::OpenGLTestLayer()
 	m_Shader.reset(Stimpi::Shader::CreateShader("shaders\/shader.shader"));
 	m_ShaderChecker.reset(Stimpi::Shader::CreateShader("shaders\/checkerboard.shader"));
 	m_ShaderSolidColor.reset(Stimpi::Shader::CreateShader("shaders\/solidcolor.shader"));
-	m_SceneCamera = std::make_shared<Stimpi::Camera>(1280.0f, 720.0f);
+	m_SceneCamera = std::make_shared<Stimpi::OrthoCamera>(0.0f, 1280.0f, 0.0f, 720.0f);
+	m_SceneCamera->SetPosition({0.0f, 0.0f, 0.0f});
 	m_Texture.reset(Stimpi::Texture::CreateTexture("Capture.jpg"));
 	//m_TextureRaw = Stimpi::ResourceManager::Instance()->LoadTexture("Picture1.jpg");
 	m_Texture2.reset(Stimpi::Texture::CreateTexture("Picture1.jpg"));
@@ -54,18 +55,15 @@ void OpenGLTestLayer::Update(Stimpi::Timestep ts)
 	static float zoomSpeed = 10.0f;
 	static float zoomFactor = 1.0f;
 
-	m_SceneCamera->Resize(canvasWidth, canvasHeight);
+	m_SceneCamera->Resize(0.0f, canvasWidth, 0.0f, canvasHeight);
 
-	m_Shader->SetUniform("u_proj", m_SceneCamera->GetProjectionMatrix());
-	m_Shader->SetUniform("u_model", m_SceneCamera->GetModelMatrix());
+	m_Shader->SetUniform("u_ViewProjection", m_SceneCamera->GetViewProjectionMatrix());
 	m_Shader->SetUniform("u_texture", 0);
 	
-	m_ShaderChecker->SetUniform("u_proj", m_SceneCamera->GetProjectionMatrix());
-	m_ShaderChecker->SetUniform("u_model", m_SceneCamera->GetModelMatrix());
+	m_ShaderChecker->SetUniform("u_Projection", m_SceneCamera->GetProjectionMatrix());
 	m_ShaderChecker->SetUniform("u_resolution", glm::vec2(canvasWidth, canvasHeight));
 
-	m_ShaderSolidColor->SetUniform("u_proj", m_SceneCamera->GetProjectionMatrix());
-	m_ShaderSolidColor->SetUniform("u_model", m_SceneCamera->GetModelMatrix());
+	m_ShaderSolidColor->SetUniform("u_ViewProjection", m_SceneCamera->GetViewProjectionMatrix());
 
 	// Movement control
 	if (Stimpi::InputManager::IsKeyPressed(ST_KEY_I))
@@ -110,6 +108,8 @@ void OpenGLTestLayer::Update(Stimpi::Timestep ts)
 	Stimpi::Renderer2D::Instace()->BeginScene(m_SceneCamera.get(), m_ShaderSolidColor.get());
 	{
 		Stimpi::Renderer2D::Instace()->Submit({ 100.0f, 100.0f, 50.0f, 50.0f }, { 0.2f, 0.3f, 0.8f });
+		Stimpi::Renderer2D::Instace()->Submit({ 100.0f, 200.0f, 50.0f, 50.0f }, { 0.8f, 0.3f, 0.2f });
+		Stimpi::Renderer2D::Instace()->Submit({ 100.0f, 300.0f, 50.0f, 50.0f }, { 0.2f, 0.8f, 0.2f });
 	}
 	Stimpi::Renderer2D::Instace()->EndScene();
 

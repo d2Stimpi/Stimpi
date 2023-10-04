@@ -98,9 +98,9 @@
     <ClCompile Include="src\Stimpi\Core\Layer.cpp" />
     <ClCompile Include="src\Stimpi\Core\Time.cpp" />
     <ClCompile Include="src\Stimpi\Core\Window.cpp" />
-    <ClCompile Include="src\Stimpi\Graphics\Camera.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\FrameBuffer.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\OpenGL.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\OrthoCamera.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\RenderAPI.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\RenderCommand.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\Renderer2D.cpp" />
@@ -133,10 +133,10 @@
     <ClInclude Include="src\Stimpi\Core\Time.h" />
     <ClInclude Include="src\Stimpi\Core\Timestep.h" />
     <ClInclude Include="src\Stimpi\Core\Window.h" />
-    <ClInclude Include="src\Stimpi\Graphics\Camera.h" />
     <ClInclude Include="src\Stimpi\Graphics\FrameBuffer.h" />
     <ClInclude Include="src\Stimpi\Graphics\OpenGL.h" />
     <ClInclude Include="src\Stimpi\Graphics\Graphics.h" />
+    <ClInclude Include="src\Stimpi\Graphics\OrthoCamera.h" />
     <ClInclude Include="src\Stimpi\Graphics\RenderAPI.h" />
     <ClInclude Include="src\Stimpi\Graphics\RenderCommand.h" />
     <ClInclude Include="src\Stimpi\Graphics\Renderer2D.h" />

@@ -5,14 +5,12 @@ layout(location = 2) in vec2 aTexCoord;
 
 out vec2 TexCoord;
 
-uniform mat4 mvp;
-uniform mat4 u_proj;
-uniform mat4 u_model;
+uniform mat4 u_Projection;
 
 void main()
 {
 	// Only using Proj mat since this is for background and not movable render
-	gl_Position = u_proj * vec4(aPos, 1.0);
+	gl_Position = u_Projection * vec4(aPos, 1.0);
 	TexCoord = aTexCoord;
 }
 

@@ -7,7 +7,7 @@
 #include "Stimpi/Graphics/BufferObject.h"
 #include "Stimpi/Graphics/Texture.h"
 #include "Stimpi/Graphics/Shader.h"
-#include "Stimpi/Graphics/Camera.h"
+#include "Stimpi/Graphics/OrthoCamera.h"
 #include "Stimpi/Graphics/FrameBuffer.h"
 
 
@@ -28,14 +28,14 @@ namespace Stimpi
 	{
 	public:
 		RenderCommand();
-		RenderCommand(Camera* camera, Shader* shader);
+		RenderCommand(OrthoCamera* camera, Shader* shader);
 		~RenderCommand();
 
 		void PushVertexBufferData(glm::vec3 position, glm::vec3 color, glm::vec2 textureCoord);
 		void PushIndexDufferData(); // TODO: not needed atm
 		void UseTexture(Texture* texture);
 
-		Camera* GetCamera() { return m_Camera; }
+		OrthoCamera* GetCamera() { return m_Camera; }
 		Shader* GetShader() { return m_Shader; }
 		std::vector<std::shared_ptr<TextureData>>& GetData() { return m_TextureDataVec; }
 
@@ -43,7 +43,7 @@ namespace Stimpi
 	private:
 		std::vector<std::shared_ptr<TextureData>>::iterator TextureDataHasTexture(Texture* texture);
 
-		Camera* m_Camera;
+		OrthoCamera* m_Camera;
 		Shader* m_Shader;
 		std::vector<std::shared_ptr<TextureData>> m_TextureDataVec;
 		std::vector<std::shared_ptr<TextureData>>::iterator m_CurrentTextureData;

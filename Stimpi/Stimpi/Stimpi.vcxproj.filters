@@ -64,9 +64,6 @@
     <ClCompile Include="src\Stimpi\Platform\OpenGLTexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Stimpi\Graphics\Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Stimpi\Graphics\RenderAPI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -97,6 +94,9 @@
     <ClCompile Include="src\Stimpi\Scene\SceneManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\OrthoCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi\Core\Core.h">
@@ -122,7 +122,6 @@
     <ClInclude Include="src\Stimpi\Platform\OpenGLShader.h" />
     <ClInclude Include="src\Stimpi\Graphics\Texture.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLTexture.h" />
-    <ClInclude Include="src\Stimpi\Graphics\Camera.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLRenderAPI.h" />
     <ClInclude Include="src\Stimpi\Graphics\RenderAPI.h" />
     <ClInclude Include="src\Stimpi\Graphics\RenderCommand.h" />
@@ -136,5 +135,6 @@
     <ClInclude Include="src\Stimpi\Core\Timestep.h" />
     <ClInclude Include="src\Stimpi\Gui\SceneConfigWindow.h" />
     <ClInclude Include="src\Stimpi\Scene\SceneManager.h" />
+    <ClInclude Include="src\Stimpi\Graphics\OrthoCamera.h" />
   </ItemGroup>
 </Project>

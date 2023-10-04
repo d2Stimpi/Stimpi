@@ -13,7 +13,7 @@
 #include "Stimpi/Core/InputManager.h"
 
 #include "Stimpi/Graphics/BufferObject.h"
-#include "Stimpi/Graphics/Camera.h"
+#include "Stimpi/Graphics/OrthoCamera.h"
 #include "Stimpi/Graphics/Graphics.h"
 #include "Stimpi/Graphics/Renderer2D.h"
 #include "Stimpi/Graphics/Shader.h"
