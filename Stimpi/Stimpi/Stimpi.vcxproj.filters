@@ -19,7 +19,7 @@
     <ClCompile Include="src\Stimpi\Core\Layer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Stimpi\Gui\ImGuiLayer.cpp">
+    <ClCompile Include="src\Stimpi\Gui\EditorLayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Core\Window.cpp">
@@ -97,6 +97,12 @@
     <ClCompile Include="src\Stimpi\Graphics\OrthoCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Gui\MainMenuBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Scene\SceneSerializer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi\Core\Core.h">
@@ -107,7 +113,7 @@
     <ClInclude Include="src\Stimpi\Log.h" />
     <ClInclude Include="src\Stimpi\Core\Layer.h" />
     <ClInclude Include="src\Stimpi\Core\Event.h" />
-    <ClInclude Include="src\Stimpi\GUI\ImGuiLayer.h" />
+    <ClInclude Include="src\Stimpi\GUI\EditorLayer.h" />
     <ClInclude Include="src\Stimpi\Core\Window.h" />
     <ClInclude Include="src\Stimpi\Graphics\OpenGL.h" />
     <ClInclude Include="src\Stimpi\Graphics\Shader.h" />
@@ -136,5 +142,7 @@
     <ClInclude Include="src\Stimpi\Gui\SceneConfigWindow.h" />
     <ClInclude Include="src\Stimpi\Scene\SceneManager.h" />
     <ClInclude Include="src\Stimpi\Graphics\OrthoCamera.h" />
+    <ClInclude Include="src\Stimpi\Gui\MainManuBar.h" />
+    <ClInclude Include="src\Stimpi\Scene\SceneSerializer.h" />
   </ItemGroup>
 </Project>

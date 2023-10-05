@@ -45,13 +45,7 @@ namespace Stimpi
 
 	void Scene::OnUpdate(Timestep ts)
 	{
-		// Render all Square components
-		/*auto view = m_Registry.view<QuadComponent>();
-		for (auto entty : view)
-		{
-			auto quad = view.get<QuadComponent>(entty);
-			Renderer2D::Instace()->Submit(quad);
-		}*/
+		
 
 		for (auto entity : m_Entities)
 		{

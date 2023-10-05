@@ -1,4 +1,4 @@
-#include "Entity.h"
+#include "Stimpi/Scene/Entity.h"
 
 namespace Stimpi
 {

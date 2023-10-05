@@ -10,7 +10,6 @@ OpenGLTestLayer::OpenGLTestLayer()
 	m_SceneCamera = std::make_shared<Stimpi::OrthoCamera>(0.0f, 1280.0f, 0.0f, 720.0f);
 	m_SceneCamera->SetPosition({0.0f, 0.0f, 0.0f});
 	m_Texture.reset(Stimpi::Texture::CreateTexture("Capture.jpg"));
-	//m_TextureRaw = Stimpi::ResourceManager::Instance()->LoadTexture("Picture1.jpg");
 	m_Texture2.reset(Stimpi::Texture::CreateTexture("Picture1.jpg"));
 
 	// Just for test, no need to use here since Layer::OnEvent exists
@@ -27,13 +26,16 @@ OpenGLTestLayer::OpenGLTestLayer()
 	//resourceManager->WriteToFile("TestFile.data", "This is a test string");
 	resourceManager->Test();
 
-	//m_Scene = std::make_shared<Stimpi::Scene>();
-	m_Scene = std::make_shared<Stimpi::Scene>("SceneTest.data");
-	m_Scene->LoadSnece("SceneTest.data");
-	//m_Scene->SaveScene("SceneTest.data");
+	//Load Default Scene
+	Stimpi::SceneManager::Instance()->LoadScene("SceneTest.data");
 
-	//Set as active Scene
-	Stimpi::SceneManager::Instance()->SetActiveScene(m_Scene.get());
+	Stimpi::OnSceneChangedListener onScneeChanged = [&]() {
+		ST_CORE_INFO("OpenGLTestLayer - onScneeChanged()");
+		//TODO: move Scene stuff to Editor
+		m_Scene = Stimpi::SceneManager::Instance()->GetActiveSceneRef();
+	};
+	Stimpi::SceneManager::Instance()->RegisterOnSceneChangeListener(onScneeChanged);
+	m_Scene = Stimpi::SceneManager::Instance()->GetActiveSceneRef();
 }
 
 void OpenGLTestLayer::OnAttach() 

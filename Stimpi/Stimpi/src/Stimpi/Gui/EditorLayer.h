@@ -7,18 +7,21 @@
 #include "Stimpi/Core/Event.h"
 #include "Stimpi/Core/Window.h"
 
-// Window includes
+#include "Stimpi/Scene/Scene.h"
+
+// Gui includes
 #include "Stimpi/Gui/SceneConfigWindow.h"
+#include "Stimpi/Gui/MainManuBar.h"
 
 #include "ImGui/src/imgui.h"
 
 namespace Stimpi
 {
-	class ST_API ImGuiLayer : public Layer
+	class ST_API EditorLayer : public Layer
 	{
 	public:
-		ImGuiLayer(Window* window, SDL_GLContext* glContext);
-		~ImGuiLayer();
+		EditorLayer(Window* window, SDL_GLContext* glContext);
+		~EditorLayer();
 
 		void OnAttach() override;
 		void OnDetach() override;
@@ -28,7 +31,12 @@ namespace Stimpi
 		ImGuiIO* m_IO{ nullptr };
 		WindowSDL* m_Window{ nullptr };
 
+		//Menus
+		MainMenuBar m_MainMenuBar;
 		//Windows
 		SceneConfigWindow m_SceneConfigWindow;
+
+		//Scene data
+		std::shared_ptr<Scene> m_Scene;
 	};
 }

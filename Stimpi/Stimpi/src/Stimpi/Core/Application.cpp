@@ -4,7 +4,7 @@
 
 #include "Stimpi/Log.h"
 #include "Stimpi/Core/Layer.h"
-#include "Stimpi/Gui/ImGuiLayer.h"
+#include "Stimpi/Gui/EditorLayer.h"
 
 #include "Stimpi/Core/InputManager.h"
 #include "Stimpi/Core/Time.h"
@@ -26,7 +26,7 @@ namespace Stimpi
 		Stimpi::Log::Init();
 		m_Window.reset(Window::CreateAppWindow());
 		m_Context.CreateContext(m_Window.get());
-		m_LayerStack.AttachOverlay(new ImGuiLayer(m_Window.get(), &m_Context.GetContext()));
+		m_LayerStack.AttachOverlay(new EditorLayer(m_Window.get(), &m_Context.GetContext()));
 	}
 
 	void Application::Run()

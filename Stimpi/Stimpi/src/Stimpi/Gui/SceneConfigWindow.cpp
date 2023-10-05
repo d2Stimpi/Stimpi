@@ -15,6 +15,15 @@ namespace Stimpi
 		m_InspectFunc = []() {
 			ImGui::Text("Nothing selected");
 		};
+
+		OnSceneChangedListener onScneeChanged = [&]() {
+			ST_CORE_INFO("Scene change detected!");
+			s_SelectedEntity = {};
+			m_InspectFunc = []() {
+				ImGui::Text("Nothing selected");
+			};
+		};
+		SceneManager::Instance()->RegisterOnSceneChangeListener(onScneeChanged);
 	}
 
 	SceneConfigWindow::~SceneConfigWindow()
@@ -70,31 +79,6 @@ namespace Stimpi
 									AddComponentLayout();
 								};
 							}
-
-							//Show components as sub elements
-							/*if (entity.HasComponent<QuadComponent>())
-							{
-								auto& component = entity.GetComponent<QuadComponent>();
-								static bool selected = false;
-								
-								//ImGui::SetNextItemAllowOverlap();
-								//ImGui::Selectable("##quad_node", &selected); ImGui::SameLine();
-
-								if (ImGui::TreeNodeEx((void*)&component, leaf_flags, "Quad"))
-								{
-									QuadComponentClick(component, entityTag);
-								}
-							}
-
-							if (entity.HasComponent<TextureComponent>())
-							{
-								auto& component = entity.GetComponent<TextureComponent>();
-								if (ImGui::TreeNodeEx((void*)&component, leaf_flags, "Texture"))
-								{
-									TextureComponentClick(component, entityTag);
-								}
-							}*/
-							//ImGui::TreePop();
 						}
 						ImGui::PopID();
 					}

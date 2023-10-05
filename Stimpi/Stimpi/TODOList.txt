@@ -1,3 +1,14 @@
+[EditorLayer]
+- Manage active scene
+
+[OpenGLTestLayer]
+- Figure clear separation of Editor / Game (Runtime)
+- Should act as a "demo" app
+- Clean up not needed stuff and decouple from Editor - no direct Renderer Calls?
+
+
+
+
 [UI]
 - Rename SceneConfigWindow to SceneInspectWidget
 - Window/Widget for listing loaded scenes, later file resources, etc...
@@ -9,8 +20,9 @@
 - Refine event types and sub-classes for easeir use
 
 [Components]
-- Add widt and height to texture component
-
+- Add width and height to texture component
+- SubTexture for sprite and texture atlas rendering
+- NativeScripComonent
 
 
 

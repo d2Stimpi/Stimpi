@@ -108,7 +108,8 @@
     <ClCompile Include="src\Stimpi\Graphics\Texture.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\VertexArrayObject.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\BufferObject.cpp" />
-    <ClCompile Include="src\Stimpi\Gui\ImGuiLayer.cpp" />
+    <ClCompile Include="src\Stimpi\Gui\EditorLayer.cpp" />
+    <ClCompile Include="src\Stimpi\Gui\MainMenuBar.cpp" />
     <ClCompile Include="src\Stimpi\Gui\SceneConfigWindow.cpp" />
     <ClCompile Include="src\Stimpi\Log.cpp" />
     <ClCompile Include="src\Stimpi\Platform\OpenGLBufferObject.cpp" />
@@ -121,6 +122,7 @@
     <ClCompile Include="src\Stimpi\Scene\ResourceManager.cpp" />
     <ClCompile Include="src\Stimpi\Scene\Scene.cpp" />
     <ClCompile Include="src\Stimpi\Scene\SceneManager.cpp" />
+    <ClCompile Include="src\Stimpi\Scene\SceneSerializer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi.h" />
@@ -144,7 +146,8 @@
     <ClInclude Include="src\Stimpi\Graphics\Texture.h" />
     <ClInclude Include="src\Stimpi\Graphics\VertexArrayObject.h" />
     <ClInclude Include="src\Stimpi\Graphics\BufferObject.h" />
-    <ClInclude Include="src\Stimpi\GUI\ImGuiLayer.h" />
+    <ClInclude Include="src\Stimpi\GUI\EditorLayer.h" />
+    <ClInclude Include="src\Stimpi\Gui\MainManuBar.h" />
     <ClInclude Include="src\Stimpi\Gui\SceneConfigWindow.h" />
     <ClInclude Include="src\Stimpi\Log.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLBufferObject.h" />
@@ -158,6 +161,7 @@
     <ClInclude Include="src\Stimpi\Scene\ResourceManager.h" />
     <ClInclude Include="src\Stimpi\Scene\Scene.h" />
     <ClInclude Include="src\Stimpi\Scene\SceneManager.h" />
+    <ClInclude Include="src\Stimpi\Scene\SceneSerializer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

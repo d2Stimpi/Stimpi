@@ -37,6 +37,7 @@ namespace Stimpi
 		std::vector<Entity> m_Entities;
 
 		friend class Entity;
+		friend class SceneSerializer;
 		friend class SceneConfigWindow;
 	};
 }

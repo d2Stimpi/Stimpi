@@ -1,21 +1,23 @@
-#include "ImGuiLayer.h"
+#include "Stimpi/Gui/EditorLayer.h"
 
 #include "ImGui/src/imgui.h"
 #include "ImGui/src/backend/imgui_impl_sdl2.h"
 #include "ImGui/src/backend/imgui_impl_opengl3.h"
 
-#include <SDL.h>
-#include <SDL_opengl.h>
-
+#include "Stimpi/Core/Time.h"
 #include "Stimpi/Log.h"
 #include "Stimpi/Graphics/Shader.h"
 #include "Stimpi/Graphics/Renderer2D.h"
-#include "Stimpi/Core/Time.h"
+
+#include "Stimpi/Scene/SceneManager.h"
+
+#include <SDL.h>
+#include <SDL_opengl.h>
 
 namespace Stimpi
 {
 
-	ImGuiLayer::ImGuiLayer(Window* window, SDL_GLContext* glContext)
+	EditorLayer::EditorLayer(Window* window, SDL_GLContext* glContext)
 	{
 		const char* glsl_version = "#version 330";
 
@@ -27,7 +29,7 @@ namespace Stimpi
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Game pad Controls
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
 
@@ -47,23 +49,35 @@ namespace Stimpi
 		// Setup Platform/Renderer backends
 		ImGui_ImplSDL2_InitForOpenGL(m_Window->GetSDLWindow(), glContext);
 		ImGui_ImplOpenGL3_Init(glsl_version);
+
+		// Other (Non ImGui) internal data init
+
+		// Scene Init
+		Stimpi::SceneManager::Instance()->LoadScene("SceneTest.data");
+		Stimpi::OnSceneChangedListener onScneeChanged = [&]() {
+			ST_CORE_INFO("OpenGLTestLayer - onScneeChanged()");
+			//TODO: move Scene stuff to Editor
+			m_Scene = Stimpi::SceneManager::Instance()->GetActiveSceneRef();
+		};
+		Stimpi::SceneManager::Instance()->RegisterOnSceneChangeListener(onScneeChanged);
+		m_Scene = Stimpi::SceneManager::Instance()->GetActiveSceneRef();
 	}
 
-	ImGuiLayer::~ImGuiLayer()
+	EditorLayer::~EditorLayer()
 	{
-		ST_CORE_TRACE("{0}: ~ImGuiLayer", m_DebugName);
+		ST_CORE_TRACE("{0}: ~EditorLayer", m_DebugName);
 		// Cleanup
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplSDL2_Shutdown();
 		ImGui::DestroyContext();
 	}
 
-	void ImGuiLayer::OnAttach()
+	void EditorLayer::OnAttach()
 	{
 		ST_CORE_TRACE("{0}: OnAttach", m_DebugName);
 	}
 
-	void ImGuiLayer::OnDetach()
+	void EditorLayer::OnDetach()
 	{
 		ST_CORE_TRACE("{0}: OnDetach", m_DebugName);
 	}
@@ -73,7 +87,7 @@ namespace Stimpi
 	static ImVec2 wsLog;
 	static ImVec2 uvLog;
 
-	void ImGuiLayer::OnEvent(Event* e)
+	void EditorLayer::OnEvent(Event* e)
 	{
 		//ST_CORE_INFO("OnEvent - ImGuiLayer");
 		ImGui_ImplSDL2_ProcessEvent(e->GetRawSDLEvent());
@@ -104,7 +118,7 @@ namespace Stimpi
 		}
 	}
 
-	void ImGuiLayer::Update(Timestep ts)
+	void EditorLayer::Update(Timestep ts)
 	{
 		ImVec4 clear_color = ImVec4(0.0f, 0.55f, 0.60f, 1.00f);
 
@@ -122,27 +136,7 @@ namespace Stimpi
 		static bool use_work_area = false;
 
 		/* Main Menu */
-		if (ImGui::BeginMainMenuBar())
-		{
-			if (ImGui::BeginMenu("Menu"))
-			{
-				if (ImGui::MenuItem("Load Scene")) {}
-				if (ImGui::MenuItem("Save Scene", "CTRL+S")) {}
-				ImGui::Separator();
-				if (ImGui::MenuItem("Quit")) 
-				{
-					// TODO: Event queue
-					ST_CORE_INFO("Quit triggered from Menu!");
-					static SDL_Event event;
-					event.window.type = SDL_WINDOWEVENT;
-					event.window.event = SDL_WINDOWEVENT_CLOSE;
-					event.window.windowID = 1;
-					SDL_PushEvent(&event);
-				}
-				ImGui::EndMenu();
-			}
-			ImGui::EndMainMenuBar();
-		}
+		m_MainMenuBar.Draw();
 
 		//ImGui::SetNextWindowSize(ImVec2(1280, 720), ImGuiCond_Once);
 		//ImGui::SetNextWindowSizeConstraints(ImVec2(0, 0), ImVec2(1280, 720));
@@ -168,8 +162,8 @@ namespace Stimpi
 
 		if ((test.x != wsLog.x) || test.y != wsLog.y)
 		{
-			ST_CORE_INFO("Resize - ImGui window size: {0}, {1}", wsLog.x, wsLog.y);
-			ST_CORE_INFO("Resize - ImGui texture uv: {0}, {1}", uvLog.x, uvLog.y);
+			ST_CORE_INFO("Resize - Editor window size: {0}, {1}", wsLog.x, wsLog.y);
+			ST_CORE_INFO("Resize - Editor texture uv: {0}, {1}", uvLog.x, uvLog.y);
 			//Renderer2D::Instace()->ResizeCanvas(ws.x, ws.y);
 		}
 
