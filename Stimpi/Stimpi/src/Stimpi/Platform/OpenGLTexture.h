@@ -13,7 +13,7 @@ namespace Stimpi
 
 		void Delete();
 
-		void InitEmptyTexture(uint32_t width, uint32_t height) override;
+		void InitEmptyTexture(uint32_t width, uint32_t height, uint32_t channems = 3) override;
 		void LoadTexture(std::string file) override;
 		void UseTexture() override; 
 		void Bind() override;

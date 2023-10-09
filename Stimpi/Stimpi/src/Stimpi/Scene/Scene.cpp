@@ -4,38 +4,15 @@
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Graphics/Renderer2D.h"
 
+#include "Stimpi/Core/InputManager.h"
+
 namespace Stimpi
 {
 	// TODO: clean - don't create stuff here
 	Scene::Scene()
 	{
-		/*auto entity = CreateEntity();
-		entity.AddComponent<QuadComponent>(glm::vec4(0.0f, 0.0f, 50.0f, 40.0f));
-
-		auto view = m_Registry.view<TagComponent>();
-		for (auto item : view)
-		{
-			auto tag = view.get<TagComponent>(item);
-		}
-
-		auto textureObj = CreateEntity("Texture1");
-		//textureObj.AddComponent<TextureComponent>("Picture1.jpg");
-		textureObj.AddComponent<TextureComponent>("Capture.jpg");
-		textureObj.AddComponent<QuadComponent>(glm::vec4(100.0f, 20.0f, 50.0f, 40.0f));
-
-		textureObj = CreateEntity("Texture2");
-		textureObj.AddComponent<TextureComponent>("Capture.jpg");
-		textureObj.AddComponent<QuadComponent>(glm::vec4(200.0f, 20.0f, 50.0f, 40.0f));
-
-		textureObj = CreateEntity("Texture3");
-		textureObj.AddComponent<TextureComponent>("Picture1.jpg");
-		textureObj.AddComponent<QuadComponent>(glm::vec4(300.0f, 20.0f, 50.0f, 40.0f));*/
-	}
-
-	// TODO: fix?
-	Scene::Scene(std::string fileName)
-	{
-		//LoadSnece(fileName);
+		m_SceneCamera = std::make_shared<OrthoCamera>(0.0f, 1280.0f, 0.0f, 720.0f);
+		m_DefaultShader.reset(Stimpi::Shader::CreateShader("shaders\/shader.shader"));
 	}
 
 	Scene::~Scene()
@@ -45,7 +22,20 @@ namespace Stimpi
 
 	void Scene::OnUpdate(Timestep ts)
 	{
-		
+		// Movement control
+		static float moveSpeed = 400.f;
+
+		if (InputManager::IsKeyPressed(ST_KEY_W))
+			m_SceneCamera->Translate({ 0.0f, moveSpeed * ts, 0.0f });
+		if (InputManager::IsKeyPressed(ST_KEY_S))
+			m_SceneCamera->Translate({ 0.0f, -moveSpeed * ts, 0.0f });
+		if (InputManager::IsKeyPressed(ST_KEY_D))
+			m_SceneCamera->Translate({ moveSpeed * ts, 0.0f, 0.0f });
+		if (InputManager::IsKeyPressed(ST_KEY_A))
+			m_SceneCamera->Translate({ -moveSpeed * ts, 0.0f, 0.0f });
+
+		// Scene rendering
+		Stimpi::Renderer2D::Instace()->BeginScene(m_SceneCamera.get());
 
 		for (auto entity : m_Entities)
 		{
@@ -56,10 +46,12 @@ namespace Stimpi
 				{
 					auto texture = entity.GetComponent<TextureComponent>();
 					if (texture)
-						Renderer2D::Instace()->Submit(quad, texture);
+						Renderer2D::Instace()->Submit(quad, texture, m_DefaultShader.get());
 				}
 			}
 		}
+
+		Stimpi::Renderer2D::Instace()->EndScene();
 	}
 
 	void Scene::OnEvent(Event* event)
@@ -74,60 +66,5 @@ namespace Stimpi
 
 		m_Entities.push_back(entity);
 		return entity;
-	}
-
-	void Scene::Serialize(std::string fileName, std::string name)
-	{
-		YAML::Emitter out;
-
-		out << YAML::Block;
-		out << YAML::BeginMap;
-		out << YAML::Key << name << YAML::Value;
-
-			out << YAML::BeginMap;
-			for (auto entity : m_Entities)
-			{
-				out << YAML::Key << "Entity" << YAML::Value;
-				entity.Serialize(out);
-			}
-			out << YAML::EndMap;
-
-		out << YAML::EndMap;
-
-		ResourceManager::Instance()->WriteToFile(fileName, out.c_str());
-	}
-
-	void Scene::SaveScene(std::string fileName, std::string name)
-	{
-		Serialize(fileName, name);
-	}
-
-	void Scene::LoadSnece(std::string fileName, std::string name)
-	{
-		YAML::Node loadData = YAML::LoadFile(fileName);
-		YAML::Node scene = loadData[name];
-
-		YAML::Emitter emitter;
-		emitter << scene;
-		//ST_CORE_TRACE("Loading scene: {0}", name);
-		//ST_CORE_TRACE("Entities:\n {0}", emitter.c_str());
-
-		for (YAML::const_iterator it = scene.begin(); it != scene.end(); it++)
-		{
-			YAML::Node entityNode = it->second;
-			Entity entity;
-			if (entityNode["TagComponent"])
-			{
-				entity = CreateEntity(entityNode["TagComponent"]["Tag"].as<std::string>());
-				if (entityNode["QuadComponent"])
-				{
-					entity.AddComponent<QuadComponent>(QuadComponent(entityNode["QuadComponent"]));
-				}
-				if (entityNode["TextureComponent"])
-				{
-					entity.AddComponent<TextureComponent>(TextureComponent(entityNode["TextureComponent"]));
-				}
-			}
-		}
 	}
 }

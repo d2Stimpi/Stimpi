@@ -10,11 +10,11 @@ namespace Stimpi
 
 	}
 
-	FrameBuffer* FrameBuffer::CreateFrameBuffer(uint32_t width, uint32_t height)
+	FrameBuffer* FrameBuffer::CreateFrameBuffer(FrameBufferConfig config)
 	{
 		switch (Graphics::GetAPI())
 		{
-		case GraphicsAPI::OpenGL: return new OpenGLFrameBuffer(width, height);
+		case GraphicsAPI::OpenGL: return new OpenGLFrameBuffer(config);
 		case GraphicsAPI::None: ST_CORE_CRITICAL("GraphicsAPI: not supported!"); return nullptr;
 		}
 

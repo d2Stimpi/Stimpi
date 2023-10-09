@@ -13,6 +13,7 @@ namespace Stimpi
 		virtual ~RenderAPI();
 
 		// Used at start/end of the frame
+		virtual void EnableBlend() = 0;
 		virtual void Clear(float r, float g, float b, float a) = 0;
 		virtual void UnbindTexture() = 0;
 

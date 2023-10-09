@@ -70,9 +70,6 @@
     <ClCompile Include="src\Stimpi\Platform\OpenGLRenderAPI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Stimpi\Graphics\RenderCommand.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Stimpi\Scene\Entity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -103,6 +100,9 @@
     <ClCompile Include="src\Stimpi\Scene\SceneSerializer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\RenderCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi\Core\Core.h">
@@ -130,7 +130,6 @@
     <ClInclude Include="src\Stimpi\Platform\OpenGLTexture.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLRenderAPI.h" />
     <ClInclude Include="src\Stimpi\Graphics\RenderAPI.h" />
-    <ClInclude Include="src\Stimpi\Graphics\RenderCommand.h" />
     <ClInclude Include="src\Stimpi\Scene\Scene.h" />
     <ClInclude Include="src\Stimpi\Scene\Component.h" />
     <ClInclude Include="src\Stimpi\Scene\Entity.h" />
@@ -144,5 +143,6 @@
     <ClInclude Include="src\Stimpi\Graphics\OrthoCamera.h" />
     <ClInclude Include="src\Stimpi\Gui\MainManuBar.h" />
     <ClInclude Include="src\Stimpi\Scene\SceneSerializer.h" />
+    <ClInclude Include="src\Stimpi\Graphics\RenderCommand.h" />
   </ItemGroup>
 </Project>

@@ -26,4 +26,21 @@ namespace Stimpi
 		BufferObjectType m_Type;
 		uint32_t m_Capacity;
 	};
+
+	/* VertexBuffer to hold continuous array of vertex data */
+	class VertexBuffer
+	{
+	public:
+		VertexBuffer(uint32_t capacity, uint32_t vertexSize) : m_Data({}), m_Capacity(capacity), m_VertexSize(vertexSize) {}
+
+		float* GetRawData() { return m_Data.data(); }
+		uint32_t GetCount() { return m_Data.size() / m_VertexSize; }
+
+		std::vector<float>& GetData() { return m_Data; }
+
+	private:
+		std::vector<float> m_Data;
+		uint32_t m_Capacity;
+		uint32_t m_VertexSize;
+	};
 }

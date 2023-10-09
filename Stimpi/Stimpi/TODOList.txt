@@ -1,10 +1,15 @@
+[Renderer2D]
+-[DONE] Move Shader data to Submit cmd - to decouple from BeginScene function
+
+[Material]
+- Create material that wraps shader and uniforms
+
 [EditorLayer]
 - Manage active scene
 
 [OpenGLTestLayer]
-- Figure clear separation of Editor / Game (Runtime)
+- Figure out clear separation of Editor / Game (Runtime)
 - Should act as a "demo" app
-- Clean up not needed stuff and decouple from Editor - no direct Renderer Calls?
 
 
 

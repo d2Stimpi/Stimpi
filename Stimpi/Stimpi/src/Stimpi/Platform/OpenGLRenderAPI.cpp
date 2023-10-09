@@ -22,6 +22,12 @@ namespace Stimpi
 
 	}
 
+	void OpenGLRenderAPI::EnableBlend()
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+
 	void OpenGLRenderAPI::Clear(float r, float g, float b, float a)
 	{
 		glClearColor(r, g, b, a);

@@ -38,7 +38,7 @@ namespace Stimpi
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
 
-		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+		// When view ports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
 		ImGuiStyle& style = ImGui::GetStyle();
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
@@ -53,14 +53,18 @@ namespace Stimpi
 		// Other (Non ImGui) internal data init
 
 		// Scene Init
-		Stimpi::SceneManager::Instance()->LoadScene("SceneTest.data");
-		Stimpi::OnSceneChangedListener onScneeChanged = [&]() {
-			ST_CORE_INFO("OpenGLTestLayer - onScneeChanged()");
-			//TODO: move Scene stuff to Editor
-			m_Scene = Stimpi::SceneManager::Instance()->GetActiveSceneRef();
+		m_ShaderChecker.reset(Shader::CreateShader("shaders\/checkerboard.shader"));
+		// Editor camera init
+		m_SceneCamera = std::make_shared<Stimpi::OrthoCamera>(0.0f, 1280.0f, 0.0f, 720.0f);
+		m_SceneCamera->SetPosition({ 0.0f, 0.0f, 0.0f });
+
+		SceneManager::Instance()->LoadScene("SceneTest.data");
+		OnSceneChangedListener onScneeChanged = [&]() {
+			ST_CORE_INFO("EditorLayer - onScneeChanged()");
+			m_Scene = SceneManager::Instance()->GetActiveSceneRef();
 		};
-		Stimpi::SceneManager::Instance()->RegisterOnSceneChangeListener(onScneeChanged);
-		m_Scene = Stimpi::SceneManager::Instance()->GetActiveSceneRef();
+		SceneManager::Instance()->RegisterOnSceneChangeListener(onScneeChanged);
+		m_Scene = SceneManager::Instance()->GetActiveSceneRef();
 	}
 
 	EditorLayer::~EditorLayer()
@@ -94,12 +98,12 @@ namespace Stimpi
 
 		EventDispatcher<KeyboardEvent> keyDispatcher;
 		keyDispatcher.Dispatch(e, [](KeyboardEvent* keyEvent) -> bool {
-				if (keyEvent->GetKeyCode() == SDL_SCANCODE_A && keyEvent->GetType() == KeyboardEventType::KEY_EVENT_DOWN)
+				if (keyEvent->GetKeyCode() == SDL_SCANCODE_9 && keyEvent->GetType() == KeyboardEventType::KEY_EVENT_DOWN)
 				{
 					show_scene_config_window = !show_scene_config_window;
 					return true;
 				}
-				if (keyEvent->GetKeyCode() == SDL_SCANCODE_D && keyEvent->GetType() == KeyboardEventType::KEY_EVENT_DOWN)
+				if (keyEvent->GetKeyCode() == SDL_SCANCODE_0 && keyEvent->GetType() == KeyboardEventType::KEY_EVENT_DOWN)
 				{
 					show_demo_window = !show_demo_window;
 					return true;
@@ -240,10 +244,25 @@ namespace Stimpi
 		ImGui::Render();
 
 		// Custom Rendering stuff
+		auto canvasWidth = Stimpi::Renderer2D::Instace()->GetCanvasWidth();
+		auto canvasHeight = Stimpi::Renderer2D::Instace()->GetCanvasHeight();
+
+		m_SceneCamera->Resize(0.0f, canvasWidth, 0.0f, canvasHeight); 
+		m_ShaderChecker->SetUniform("u_Projection", m_SceneCamera->GetProjectionMatrix());
+		m_ShaderChecker->SetUniform("u_resolution", glm::vec2(canvasWidth, canvasHeight));
+
+		Stimpi::Renderer2D::Instace()->BeginScene(m_SceneCamera.get());
+		Stimpi::Renderer2D::Instace()->Submit({ 0.0f, 0.0f, canvasWidth, canvasHeight }, m_ShaderChecker.get());
+		Stimpi::Renderer2D::Instace()->EndScene();
+
+
+		m_Scene->OnUpdate(ts);
+
 		auto renderer = Renderer2D::Instace();
 		renderer->StartFrame();
 		renderer->DrawFrame();
 		renderer->EndFrame();
+
 
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

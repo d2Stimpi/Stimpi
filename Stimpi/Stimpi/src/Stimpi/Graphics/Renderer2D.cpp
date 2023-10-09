@@ -8,7 +8,7 @@ namespace Stimpi
 	{
 		m_RenderAPI = RenderAPI::CreateRenderAPI();
 		// TODO: get global window size? what size is FB?
-		m_FrameBuffer.reset(FrameBuffer::CreateFrameBuffer(1280, 720));
+		m_FrameBuffer.reset(FrameBuffer::CreateFrameBuffer({ 1280, 720, 4 }));
 
 		//Init VAO, VBO - TODO: handling more VAOs 4k/per
 		m_VAO.reset(VertexArrayObject::CreateVertexArrayObject({ 3, 3, 2 }));
@@ -20,9 +20,13 @@ namespace Stimpi
 
 		m_VAO->EnableVertexAttribArray();
 
-		// Dbg data
+		// Debug data
 		m_DrawCallCnt = 0;
 		m_RenderedCmdCnt = 0;
+
+		// Init cmd storage
+		m_NewRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_ActiveCamera, m_VAO->VertexSize()));
+		m_ActiveNewRenderCmdIter = std::end(m_NewRenderCmds) - 1;
 	}
 
 	Renderer2D::~Renderer2D()
@@ -43,61 +47,82 @@ namespace Stimpi
 		return m_FrameBuffer.get();
 	}
 
-	void Renderer2D::BeginScene(OrthoCamera* camera, Shader* shader)
+	// New
+	void Renderer2D::BeginScene(OrthoCamera* camera)
 	{
-		// TODO: support multiple render targets here (other FBO)
-		m_RenderCmds.emplace_back(std::make_shared<RenderCommand>(camera, shader));
-		m_ActiveRenderCmdIter = std::end(m_RenderCmds) - 1;
+		auto currnetCmd = *m_ActiveNewRenderCmdIter;
+
+		m_ActiveCamera = camera;
+		currnetCmd->m_Camera = m_ActiveCamera;
 	}
 
 	void Renderer2D::EndScene()
 	{
-		//TODO: combine same Shader/Camera data
-		//TODO: support multiple render targets here (other FBO)
+		Flush();
+	}
+	
+	void Renderer2D::Submit(glm::vec4 quad, Texture* texture, Shader* shader)
+	{	
+		CheckTextureBatching(texture);
+		auto currnetCmd = *m_ActiveNewRenderCmdIter;
+
+		CheckCapacity();
+		// First time call Submit after BeginScene
+		if ((currnetCmd->m_Texture == nullptr) && ((currnetCmd->m_Shader == nullptr)))
+		{
+			PushQuadVertexData(currnetCmd.get(), quad);
+			currnetCmd->m_Texture = texture;
+			currnetCmd->m_Shader = shader;
+
+			shader->SetUniform("u_texture", 0);
+		} 
+		else if ((currnetCmd->m_Texture != texture) || (currnetCmd->m_Shader != shader))
+		{
+			// If shader or texture changed
+			Flush(); 
+			currnetCmd = *m_ActiveNewRenderCmdIter;
+			PushQuadVertexData(currnetCmd.get(), quad);
+			currnetCmd->m_Texture = texture;
+			currnetCmd->m_Shader = shader;
+
+			shader->SetUniform("u_texture", 0);
+		}
+		else
+		{
+			// Batching vertex data
+			PushQuadVertexData(currnetCmd.get(), quad);
+		}
 	}
 
-	// TODO: handle UVs
-	void Renderer2D::PushQuad(glm::vec4 quad, glm::vec3 color, glm::vec2 min, glm::vec2 max)
+	void Renderer2D::Submit(glm::vec4 quad, Shader* shader)
 	{
-		auto left = quad.x;
-		auto right = quad.x + quad.z;
-		auto bottom = quad.y;
-		auto top = quad.y + quad.w;
-
-		auto activeCmd = *m_ActiveRenderCmdIter;
-
-		// Push Quad vertex data in Layout format { 3, 3, 2 }
-		activeCmd->PushVertexBufferData({ left, bottom, 0.0f }, color, { min.x, min.y });
-		activeCmd->PushVertexBufferData({ right, top, 0.0f }, color, { max.x, max.y });
-		activeCmd->PushVertexBufferData({ left, top, 0.0f }, color, { min.x, max.y });
-
-		activeCmd->PushVertexBufferData({ left, bottom, 0.0f }, color, { min.x, min.y });
-		activeCmd->PushVertexBufferData({ right, bottom, 0.0f }, color, { max.x, min.y });
-		activeCmd->PushVertexBufferData({ right, top, 0.0f }, color, { max.x, max.y });
-
-		//TODO: Support Vertex indexing (ElementArray)
+		Submit(quad, nullptr, shader);
 	}
 
-	void Renderer2D::Submit(glm::vec4 quad)
+	void Renderer2D::Submit(glm::vec4 quad, glm::vec3 color, Shader* shader)
 	{
-		PushQuad(quad);
+		auto currnetCmd = *m_ActiveNewRenderCmdIter;
+
+		// Flush if we have a texture set from other Submits or shader changed
+		if ((currnetCmd->m_Texture != nullptr) || (currnetCmd->m_Shader != shader))
+		{
+			Flush();
+			currnetCmd = *m_ActiveNewRenderCmdIter;
+		}
+
+		PushQuadVertexData(currnetCmd.get(), quad, color);
+		currnetCmd->m_Shader = shader;
 	}
 
-	void Renderer2D::Submit(glm::vec4 quad, Texture* texture)
+	void Renderer2D::Flush()
 	{
-		UseTexture(texture);
-		PushQuad(quad);
-	}
+		auto currnetCmd = *m_ActiveNewRenderCmdIter;
 
-	void Renderer2D::Submit(glm::vec4 quad, glm::vec3 color)
-	{
-		(*m_ActiveRenderCmdIter)->GetShader()->SetUniform("u_useColor", 1);
-		PushQuad(quad, color);
-	}
+		// For now set ViewProj camera uniform here
+		currnetCmd->m_Shader->SetUniform("u_ViewProjection", m_ActiveCamera->GetViewProjectionMatrix());
 
-	void Renderer2D::UseTexture(Texture* texture)
-	{
-		(*m_ActiveRenderCmdIter)->UseTexture(texture);
+		m_NewRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_ActiveCamera, m_VAO->VertexSize()));
+		m_ActiveNewRenderCmdIter = std::end(m_NewRenderCmds) - 1;
 	}
 
 	void Renderer2D::RenderTarget(FrameBuffer* target)
@@ -114,76 +139,21 @@ namespace Stimpi
 
 	void Renderer2D::StartFrame()
 	{
-		// TODO: support multiple render targets here (other FBO)
-		// Select FBO to render to
 		m_FrameBuffer->BindBuffer();
 		m_RenderAPI->SetViewport(0, 0, m_FrameBuffer->GetWidth(), m_FrameBuffer->GetHeight());
 		m_RenderAPI->Clear(0.5f, 0.5f, 0.5f, 1.0f);	 // TODO: make as param / configurable
+		m_RenderAPI->EnableBlend();
 	}
 
 	void Renderer2D::DrawFrame()
 	{
-		for (auto renderCmd : m_RenderCmds)
+		for (auto renderCmd : m_NewRenderCmds)
 		{
-			DrawRenderCmd(renderCmd);
+			// Skip last as it won't be filled with data
+			if (renderCmd != *m_ActiveNewRenderCmdIter)
+				DrawRenderCmd(renderCmd);
 		}
-		m_RenderedCmdCnt = m_RenderCmds.size();
-	}
-
-	void Renderer2D::DrawRenderCmd(std::shared_ptr<RenderCommand>& renderCmd)
-	{
-		auto shader = renderCmd->GetShader();
-		auto camera = renderCmd->GetCamera();
-
-		shader->Use();
-		shader->SetBufferedUniforms();
-
-		m_VAO->BindArray();
-		m_VBO->BindBuffer();
-
-		auto cmds = renderCmd->GetData();
-		for (auto cmd : cmds)
-		{
-
-			if (cmd->m_Texture != nullptr)
-			{
-				cmd->m_Texture->UseTexture();
-			}
-
-			// Not so clean and happy way to handle VBO size - TODO: consider rework
-			// Check if VBO max size is surpassed - TODO: more testing, with something like simple particle emitter
-			if (cmd->Size() >= VERTEX_ARRAY_SIZE)
-			{
-				// Cycle trough all vertex data
-				uint32_t vertexRendered = 0;
-				uint32_t vertexRemaining = cmd->m_VertexCount;
-				uint32_t vertexSize = m_VAO->VertexSize();
-				uint32_t vertexCapacity = (uint32_t)(VERTEX_ARRAY_SIZE / vertexSize);
-				uint32_t vertexToDraw = vertexCapacity;
-
-				while (vertexRendered < cmd->m_VertexCount)
-				{
-					m_VBO->BufferSubData(0, vertexToDraw * vertexSize, cmd->Data(vertexRendered * vertexSize));
-					m_RenderAPI->DrawArrays(DrawElementsMode::TRIANGLES, 0, vertexToDraw);
-					m_DrawCallCnt++;
-
-					vertexRendered += vertexToDraw;
-
-					vertexRemaining -= vertexToDraw;
-					if (vertexRemaining < vertexCapacity)
-						vertexToDraw = vertexRemaining;
-				}
-
-			}
-			else
-			{
-				m_VBO->BufferSubData(0, cmd->Size(), cmd->Data());
-				m_RenderAPI->DrawArrays(DrawElementsMode::TRIANGLES, 0, cmd->m_VertexCount);
-				m_DrawCallCnt++;
-			}
-		}
-
-		shader->ClearBufferedUniforms();
+		m_RenderedCmdCnt = m_NewRenderCmds.size() - 1; // last won't be filled with data
 	}
 
 	void Renderer2D::EndFrame()
@@ -193,13 +163,36 @@ namespace Stimpi
 		m_FrameBuffer->Unbind();
 		m_RenderAPI->UnbindTexture();
 
-		// Clear Render Cmds
-		m_RenderCmds.clear();
+		// Clear Render commands
+		m_NewRenderCmds.clear();
+		m_NewRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_ActiveCamera, m_VAO->VertexSize()));
+		m_ActiveNewRenderCmdIter = std::end(m_NewRenderCmds) - 1;
 
-		// Clear Dbg data
+		// Clear Debug data
 		ShowDebugData();
 		m_DrawCallCnt = 0;
 		m_RenderedCmdCnt = 0;
+	}
+
+	void Renderer2D::DrawRenderCmd(std::shared_ptr<RenderCommand>& renderCmd)
+	{
+		auto camera = renderCmd->m_Camera;
+		auto shader = renderCmd->m_Shader;
+
+		shader->Use();
+		shader->SetBufferedUniforms();
+
+		m_VAO->BindArray();
+		m_VBO->BindBuffer();
+
+		if (renderCmd->m_Texture != nullptr)
+			renderCmd->m_Texture->UseTexture();
+
+		m_VBO->BufferSubData(0, renderCmd->Size(), renderCmd->Data());
+		m_RenderAPI->DrawArrays(DrawElementsMode::TRIANGLES, 0, renderCmd->m_VertexCount);
+		m_DrawCallCnt++;
+
+		shader->ClearBufferedUniforms();
 	}
 
 	void Renderer2D::ShowDebugData()
@@ -218,4 +211,46 @@ namespace Stimpi
 			loggedRenderCmdCnt = m_RenderedCmdCnt;
 		}
 	}
+
+	void Renderer2D::CheckCapacity()
+	{
+		auto currnetCmd = *m_ActiveNewRenderCmdIter;
+
+		if (currnetCmd->m_VertexCount >= VERTEX_CMD_CAPACITY)
+		{
+			Flush();
+		}
+	}
+
+	void Renderer2D::CheckTextureBatching(Texture* texture)
+	{
+		auto found = std::find_if(std::begin(m_NewRenderCmds), std::end(m_NewRenderCmds), [&texture](auto elem) -> bool {
+			if (texture != nullptr && elem->m_Texture != nullptr)
+				return texture->GetTextureID() == elem->m_Texture->GetTextureID();
+			else
+				return false;
+			});
+
+		if (found != std::end(m_NewRenderCmds))
+		{
+			m_ActiveNewRenderCmdIter = found;
+		}
+	}
+
+	void Renderer2D::PushQuadVertexData(RenderCommand* cmd, glm::vec4 quad, glm::vec3 color /*= { 1.0f, 1.0f, 1.0f }*/, glm::vec2 min /*= { 0.0f, 0.0f }*/, glm::vec2 max /*= { 1.0f, 1.0f }*/)
+	{
+		auto left = quad.x;
+		auto right = quad.x + quad.z;
+		auto bottom = quad.y;
+		auto top = quad.y + quad.w;
+		
+		cmd->PushVertex({ left, bottom, 0.0f }, color, { min.x, min.y });
+		cmd->PushVertex({ right, top, 0.0f }, color, { max.x, max.y });
+		cmd->PushVertex({ left, top, 0.0f }, color, { min.x, max.y });
+		
+		cmd->PushVertex({ left, bottom, 0.0f }, color, { min.x, min.y });
+		cmd->PushVertex({ right, bottom, 0.0f }, color, { max.x, min.y });
+		cmd->PushVertex({ right, top, 0.0f }, color, { max.x, max.y });
+	}
+
 }

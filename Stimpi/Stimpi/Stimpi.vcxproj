@@ -140,8 +140,8 @@
     <ClInclude Include="src\Stimpi\Graphics\Graphics.h" />
     <ClInclude Include="src\Stimpi\Graphics\OrthoCamera.h" />
     <ClInclude Include="src\Stimpi\Graphics\RenderAPI.h" />
-    <ClInclude Include="src\Stimpi\Graphics\RenderCommand.h" />
     <ClInclude Include="src\Stimpi\Graphics\Renderer2D.h" />
+    <ClInclude Include="src\Stimpi\Graphics\RenderCommand.h" />
     <ClInclude Include="src\Stimpi\Graphics\Shader.h" />
     <ClInclude Include="src\Stimpi\Graphics\Texture.h" />
     <ClInclude Include="src\Stimpi\Graphics\VertexArrayObject.h" />

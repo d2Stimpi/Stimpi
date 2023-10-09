@@ -7,6 +7,9 @@
 
 #include "Stimpi/Gui/SceneConfigWindow.h"
 
+#include "Stimpi/Graphics/Shader.h"
+#include "Stimpi/Graphics/OrthoCamera.h" // TODO: make Camera class to use in scene
+
 #include <entt/entt.hpp>
 #include <yaml-cpp/yaml.h>
 
@@ -18,7 +21,6 @@ namespace Stimpi
 	{
 	public:
 		Scene();
-		Scene(std::string fileName);
 		~Scene();
 
 		void OnUpdate(Timestep ts);
@@ -26,15 +28,14 @@ namespace Stimpi
 
 		Entity CreateEntity(const std::string& name = "");
 
-		void Serialize(std::string fileName, std::string name);
-
-		void SaveScene(std::string fileName, std::string name = "Scene");
-		void LoadSnece(std::string fileName, std::string name = "Scene");
-
 	private:
 		entt::registry m_Registry;
 
 		std::vector<Entity> m_Entities;
+
+		std::shared_ptr<OrthoCamera> m_SceneCamera;
+		//Temp shader
+		std::shared_ptr<Stimpi::Shader> m_DefaultShader;
 
 		friend class Entity;
 		friend class SceneSerializer;

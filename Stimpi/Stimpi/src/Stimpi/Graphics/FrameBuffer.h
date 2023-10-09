@@ -6,10 +6,21 @@
 
 namespace Stimpi
 {
-	class ST_API FrameBuffer
+	struct FrameBufferConfig
+	{
+		uint32_t m_Width;
+		uint32_t m_Height;
+		uint32_t m_Channels;
+
+		FrameBufferConfig(uint32_t width, uint32_t height, uint32_t channels)
+			: m_Width(width), m_Height(height), m_Channels(channels)
+		{}
+	};
+
+	class FrameBuffer
 	{
 	public:
-		FrameBuffer(uint32_t width, uint32_t height) : m_Width(width), m_Height(height) {}
+		FrameBuffer(FrameBufferConfig config) : m_Width(config.m_Width), m_Height(config.m_Height), m_Channels(config.m_Channels) {}
 		virtual ~FrameBuffer();
 
 		virtual void BindBuffer() = 0;
@@ -21,10 +32,11 @@ namespace Stimpi
 		uint32_t GetHeight() { return m_Height; }
 		Texture* GetTexture() { return m_Texture.get(); }
 
-		static FrameBuffer* CreateFrameBuffer(uint32_t width, uint32_t height);
+		static FrameBuffer* CreateFrameBuffer(FrameBufferConfig config);
 	protected:
 		uint32_t m_Width;
 		uint32_t m_Height;
+		uint32_t m_Channels;
 		std::shared_ptr<Texture> m_Texture;
 	};
 }

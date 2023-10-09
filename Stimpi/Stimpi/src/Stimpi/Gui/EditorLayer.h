@@ -38,5 +38,7 @@ namespace Stimpi
 
 		//Scene data
 		std::shared_ptr<Scene> m_Scene;
+		std::shared_ptr<Shader> m_ShaderChecker;
+		std::shared_ptr<OrthoCamera> m_SceneCamera;
 	};
 }

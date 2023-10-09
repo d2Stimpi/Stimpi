@@ -5,16 +5,16 @@
 
 namespace Stimpi
 {
-	OpenGLFrameBuffer::OpenGLFrameBuffer(uint32_t width, uint32_t height)
-		: FrameBuffer(width, height)
+	OpenGLFrameBuffer::OpenGLFrameBuffer(FrameBufferConfig config)
+		: FrameBuffer(config)
 	{
 		glGenFramebuffers(1, &m_ID);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_ID);
 
 		m_Texture.reset(Texture::CreateFrameBufferTexture());
-		m_Texture->InitEmptyTexture(width, height);
+		m_Texture->InitEmptyTexture(m_Width, m_Height, m_Channels); // Create RGBA
 
-		// Attact texture to fbo
+		// Attach texture to FBO
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Texture->GetTextureID(), 0);
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			ST_CORE_ERROR("Framebuffer is not complete!");
