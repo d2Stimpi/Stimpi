@@ -98,15 +98,16 @@ namespace Stimpi
 	class ST_API MouseEvent : public Event
 	{
 	public:
-		MouseEvent(MouseEventType type, uint32_t x, uint32_t y, uint8_t button) : Event(EventType::MouseEvent), m_Type(type), m_X(x), m_Y(y), m_Button(button) {}
+		MouseEvent(MouseEventType type, uint32_t x, uint32_t y, uint8_t button, float scrollx, float scrolly) 
+			: Event(EventType::MouseEvent), m_Type(type), m_X(x), m_Y(y), m_Button(button), m_ScrollX(scrollx), m_ScrollY(scrolly) {}
 		~MouseEvent() {}
 
 		void LogEvent() 
 		{
 			if (m_Type == MouseEventType::MOUSE_EVENT_BUTTONDOWN || m_Type == MouseEventType::MOUSE_EVENT_BUTTONUP)
 				ST_CORE_TRACE("MouseEventType: {0}, Button: {1}, Coords: {2},{3}", GetStringMouseEvent(m_Type), m_Button, m_X, m_Y);
-			else if(m_Type == MouseEventType::MOUSE_EVENT_WHEELUP)
-				ST_CORE_TRACE("MouseEventType: {0}", GetStringMouseEvent(m_Type));
+			else if((m_Type == MouseEventType::MOUSE_EVENT_WHEELUP) || (m_Type == MouseEventType::MOUSE_EVENT_WHEELDOWN))
+				ST_CORE_TRACE("MouseEventType: {0} , Scroll: {1}, {2}", GetStringMouseEvent(m_Type), m_ScrollX, m_ScrollY);
 			else if(m_Type == MouseEventType::MOUSE_EVENT_MOTION)
 				ST_CORE_TRACE("MouseEventType: {0}, Coords: {1},{2}", GetStringMouseEvent(m_Type), m_X, m_Y);
 			else
@@ -120,12 +121,16 @@ namespace Stimpi
 		uint32_t GetX() { return m_X; }
 		uint32_t GetY() { return m_Y; }
 		uint8_t GetButton() { return m_Button; }
+		float GetScrollX() { return m_ScrollX; }
+		float GetScrollY() { return m_ScrollY; }
 		static EventType GetStaticType() { return EventType::MouseEvent; }
 	private:
 		MouseEventType m_Type;
 		uint32_t m_X;
 		uint32_t m_Y;
 		uint8_t m_Button;
+		float m_ScrollX;
+		float m_ScrollY;
 	};
 
 	class ST_API WindowEvent : public Event

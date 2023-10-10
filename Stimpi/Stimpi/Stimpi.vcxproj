@@ -47,7 +47,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\bin\$(Configuration)-$(Platform)\$(ProjectName)</OutDir>
     <IntDir>$(SolutionDir)\bin-int\$(Configuration)-$(Platform)\$(ProjectName)</IntDir>
-    <IncludePath>D:\libs\yaml-cpp\include;D:\GitHub\Stimpi\Stimpi\src\Stimpi\Vendor;D:\libs\stbimg;D:\libs\glfw-3.3.8.bin.WIN64\include;D:\libs\glm-0.9.9.7\glm;D:\libs\glad\include;D:\SDL2-devel-2.0.20-VC\SDL2-2.0.20\include;D:\libs\spdlog\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\GitHub\Stimpi\Stimpi\src;D:\libs\yaml-cpp\include;D:\GitHub\Stimpi\Stimpi\src\Stimpi\Vendor;D:\libs\stbimg;D:\libs\glfw-3.3.8.bin.WIN64\include;D:\libs\glm-0.9.9.7\glm;D:\libs\glad\include;D:\SDL2-devel-2.0.20-VC\SDL2-2.0.20\include;D:\libs\spdlog\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\libs\yaml-cpp\Debug;D:\libs\glfw-3.3.8.bin.WIN64\lib-vc2019;D:\GitHub\Stimpi\lib\Debug-x64\GLAD;D:\GitHub\Stimpi\lib\Debug-x64\ImGUI;D:\SDL2-devel-2.0.20-VC\SDL2-2.0.20\lib\x64;$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
@@ -63,6 +63,8 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <AdditionalIncludeDirectories>D:\GitHub\Stimpi\ImGUI;D:\GitHub\Stimpi\Stimpi\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stpch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -110,7 +112,8 @@
     <ClCompile Include="src\Stimpi\Graphics\BufferObject.cpp" />
     <ClCompile Include="src\Stimpi\Gui\EditorLayer.cpp" />
     <ClCompile Include="src\Stimpi\Gui\MainMenuBar.cpp" />
-    <ClCompile Include="src\Stimpi\Gui\SceneConfigWindow.cpp" />
+    <ClCompile Include="src\Stimpi\Gui\SceneHierarchyWindow.cpp" />
+    <ClCompile Include="src\Stimpi\Gui\SceneViewWindow.cpp" />
     <ClCompile Include="src\Stimpi\Log.cpp" />
     <ClCompile Include="src\Stimpi\Platform\OpenGLBufferObject.cpp" />
     <ClCompile Include="src\Stimpi\Platform\OpenGLFrameBuffer.cpp" />
@@ -118,11 +121,16 @@
     <ClCompile Include="src\Stimpi\Platform\OpenGLShader.cpp" />
     <ClCompile Include="src\Stimpi\Platform\OpenGLTexture.cpp" />
     <ClCompile Include="src\Stimpi\Platform\OpenGLVertexArrayObject.cpp" />
+    <ClCompile Include="src\Stimpi\Scene\Camera.cpp" />
+    <ClCompile Include="src\Stimpi\Scene\CameraController.cpp" />
     <ClCompile Include="src\Stimpi\Scene\Entity.cpp" />
     <ClCompile Include="src\Stimpi\Scene\ResourceManager.cpp" />
     <ClCompile Include="src\Stimpi\Scene\Scene.cpp" />
     <ClCompile Include="src\Stimpi\Scene\SceneManager.cpp" />
     <ClCompile Include="src\Stimpi\Scene\SceneSerializer.cpp" />
+    <ClCompile Include="src\stpch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi.h" />
@@ -132,6 +140,7 @@
     <ClInclude Include="src\Stimpi\Core\InputManager.h" />
     <ClInclude Include="src\Stimpi\Core\KeyCodes.h" />
     <ClInclude Include="src\Stimpi\Core\Layer.h" />
+    <ClInclude Include="src\Stimpi\Core\MouseCodes.h" />
     <ClInclude Include="src\Stimpi\Core\Time.h" />
     <ClInclude Include="src\Stimpi\Core\Timestep.h" />
     <ClInclude Include="src\Stimpi\Core\Window.h" />
@@ -148,7 +157,8 @@
     <ClInclude Include="src\Stimpi\Graphics\BufferObject.h" />
     <ClInclude Include="src\Stimpi\GUI\EditorLayer.h" />
     <ClInclude Include="src\Stimpi\Gui\MainManuBar.h" />
-    <ClInclude Include="src\Stimpi\Gui\SceneConfigWindow.h" />
+    <ClInclude Include="src\Stimpi\Gui\SceneHierarchyWindow.h" />
+    <ClInclude Include="src\Stimpi\Gui\SceneViewWindow.h" />
     <ClInclude Include="src\Stimpi\Log.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLBufferObject.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLFrameBuffer.h" />
@@ -156,12 +166,16 @@
     <ClInclude Include="src\Stimpi\Platform\OpenGLShader.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLTexture.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLVertexArrayObject.h" />
+    <ClInclude Include="src\Stimpi\Scene\Camera.h" />
+    <ClInclude Include="src\Stimpi\Scene\CameraController.h" />
     <ClInclude Include="src\Stimpi\Scene\Component.h" />
     <ClInclude Include="src\Stimpi\Scene\Entity.h" />
     <ClInclude Include="src\Stimpi\Scene\ResourceManager.h" />
     <ClInclude Include="src\Stimpi\Scene\Scene.h" />
     <ClInclude Include="src\Stimpi\Scene\SceneManager.h" />
     <ClInclude Include="src\Stimpi\Scene\SceneSerializer.h" />
+    <ClInclude Include="src\Stimpi\Scene\ScriptableEntity.h" />
+    <ClInclude Include="src\stpch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

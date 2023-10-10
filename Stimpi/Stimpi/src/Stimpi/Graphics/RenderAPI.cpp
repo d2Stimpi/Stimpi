@@ -1,3 +1,4 @@
+#include "stpch.h"
 #include "Stimpi/Graphics/RenderAPI.h"
 
 #include "Stimpi/Platform/OpenGLRenderAPI.h"

@@ -1,3 +1,4 @@
+#include "stpch.h"
 #include "Stimpi/Graphics/Texture.h"
 
 #include "Stimpi/Log.h"

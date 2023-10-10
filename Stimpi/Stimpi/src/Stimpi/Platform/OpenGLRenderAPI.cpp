@@ -1,3 +1,4 @@
+#include "stpch.h"
 #include "Stimpi/Platform/OpenGLRenderAPI.h"
 
 #include <glad/glad.h>

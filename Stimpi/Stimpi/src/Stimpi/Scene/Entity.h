@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Stimpi/Scene/Scene.h"
-#include "Stimpi/Scene/Component.h"
 #include "Stimpi/Log.h"
 
 #include <entt/entt.hpp>

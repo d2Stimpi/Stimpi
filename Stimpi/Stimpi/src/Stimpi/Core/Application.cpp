@@ -1,6 +1,5 @@
+#include "stpch.h"
 #include "Application.h"
-
-#include <string>
 
 #include "Stimpi/Log.h"
 #include "Stimpi/Core/Layer.h"
@@ -92,6 +91,12 @@ namespace Stimpi
 				keyboardDispatcher.Dispatch(event, [&](KeyboardEvent* e) -> bool {
 					InputManager::Instance()->AddEvent(*e);
 					return InputManager::Instance()->HandleKeyboardEvent(*e);
+					});
+
+				EventDispatcher<MouseEvent> mouseDispatcher;
+				mouseDispatcher.Dispatch(event, [&](MouseEvent* e) -> bool {
+					InputManager::Instance()->AddEvent(*e);
+					return InputManager::Instance()->HandleMouseEvent(*e);
 					});
 
 				m_LayerStack.OnEvent(event);

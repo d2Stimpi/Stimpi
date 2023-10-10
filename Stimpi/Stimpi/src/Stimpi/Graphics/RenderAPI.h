@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Stimpi/Core/Core.h"
-
 namespace Stimpi
 {
 	// TODO: add here to support more DrawElements modes

@@ -1,3 +1,4 @@
+#include "stpch.h"
 #pragma once
 
 #ifndef STIMPI_BUILD_DLL

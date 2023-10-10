@@ -1,3 +1,4 @@
+#include "stpch.h"
 #include "Stimpi/Scene/ResourceManager.h"
 
 #include "Stimpi/Scene/Component.h"

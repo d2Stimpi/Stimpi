@@ -1,6 +1,5 @@
+#include "stpch.h"
 #include "Stimpi/Platform/OpenGLShader.h"
-
-#include <iostream>
 
 #include "Stimpi/Log.h"
 

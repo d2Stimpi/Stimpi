@@ -1,3 +1,4 @@
+#include "stpch.h"
 #include "Stimpi/Graphics/Renderer2D.h"
 
 #include "Stimpi/Log.h"

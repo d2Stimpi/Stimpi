@@ -1,8 +1,5 @@
+#include "stpch.h"
 #include "Event.h"
-
-#include <functional>
-#include <vector>
-#include <memory>
 
 #define ST_EVENT_DBG false
 
@@ -50,6 +47,8 @@ namespace Stimpi
 		uint32_t x = 0;
 		uint32_t y = 0;
 		uint8_t button = 0;
+		float scroll_x = 0.0f;
+		float scroll_y = 0.0f;
 
 		switch (e.key.type)
 		{
@@ -88,7 +87,13 @@ namespace Stimpi
 		{
 			button = e.button.button;
 		}
-		return new MouseEvent(type, x, y, button);
+		if (e.key.type == SDL_MOUSEWHEEL)
+		{
+			scroll_x = e.wheel.preciseX;
+			scroll_y = e.wheel.preciseY;
+		}
+
+		return new MouseEvent(type, x, y, button, scroll_x, scroll_y);
 	}
 
 

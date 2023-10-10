@@ -1,6 +1,6 @@
+#include "stpch.h"
 #include "Stimpi/Graphics/Shader.h"
 
-#include <iostream>
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 

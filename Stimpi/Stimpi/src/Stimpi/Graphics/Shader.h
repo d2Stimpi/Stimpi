@@ -1,5 +1,6 @@
 #pragma once
 
+#include "stpch.h"
 #include "Stimpi/Core/Core.h"
 
 #include <type_traits>

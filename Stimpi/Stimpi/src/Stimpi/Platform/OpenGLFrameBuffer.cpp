@@ -1,3 +1,4 @@
+#include "stpch.h"
 #include "OpenGLFrameBuffer.h"
 
 #include <glad/glad.h>
@@ -38,6 +39,9 @@ namespace Stimpi
 
 	void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height)
 	{
+		if ((m_Width == width) && (m_Height == height))
+			return;
+
 		m_Width = width;
 		m_Height = height;
 		//ST_CORE_INFO("Framebuffer size: {0}, {1}", m_Width, m_Height);

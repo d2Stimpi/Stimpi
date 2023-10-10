@@ -1,3 +1,4 @@
+#include "stpch.h"
 #include "Stimpi/Graphics/VertexArrayObject.h"
 
 #include "Stimpi/Graphics/Graphics.h"

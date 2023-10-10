@@ -1,3 +1,4 @@
+#include "stpch.h"
 #include "Stimpi/Platform/OpenGLVertexArrayObject.h"
 
 #include <glad/glad.h>

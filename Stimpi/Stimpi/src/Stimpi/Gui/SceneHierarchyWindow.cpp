@@ -1,4 +1,5 @@
-#include "Stimpi/Gui/SceneConfigWindow.h"
+#include "stpch.h"
+#include "Stimpi/Gui/SceneHierarchyWindow.h"
 
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Entity.h"
@@ -10,7 +11,7 @@ namespace Stimpi
 {
 	Entity s_SelectedEntity;
 
-	SceneConfigWindow::SceneConfigWindow()
+	SceneHierarchyWindow::SceneHierarchyWindow()
 	{
 		m_InspectFunc = []() {
 			ImGui::Text("Nothing selected");
@@ -26,12 +27,12 @@ namespace Stimpi
 		SceneManager::Instance()->RegisterOnSceneChangeListener(onScneeChanged);
 	}
 
-	SceneConfigWindow::~SceneConfigWindow()
+	SceneHierarchyWindow::~SceneHierarchyWindow()
 	{
 
 	}
 
-	void SceneConfigWindow::Draw()
+	void SceneHierarchyWindow::Draw()
 	{
 		if (m_Show)
 		{
@@ -93,7 +94,7 @@ namespace Stimpi
 		}
 	}
 
-	void SceneConfigWindow::ComponentInspectorWidget()
+	void SceneHierarchyWindow::ComponentInspectorWidget()
 	{
 		if (ImGui::Begin("Component inspector", &m_ShowInspect))
 		{
@@ -102,7 +103,7 @@ namespace Stimpi
 		ImGui::End(); // ComponentInspectorWidget
 	}
 
-	void SceneConfigWindow::QuadComponentLayout(QuadComponent& component)
+	void SceneHierarchyWindow::QuadComponentLayout(QuadComponent& component)
 	{
 		ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue;
 		float x = component.m_X;
@@ -131,7 +132,7 @@ namespace Stimpi
 		ImGui::PopItemWidth();
 	}
 
-	void SceneConfigWindow::TextureComponentLayout(TextureComponent& component)
+	void SceneHierarchyWindow::TextureComponentLayout(TextureComponent& component)
 	{
 		ImGui::Text("TextureComponent"); ImGui::SameLine();
 		if (ImGui::Button("Remove##Texture"))
@@ -141,7 +142,7 @@ namespace Stimpi
 		ImGui::Text("File path: %s", component.m_FilePath.c_str());
 	}
 
-	void SceneConfigWindow::AddComponentLayout()
+	void SceneHierarchyWindow::AddComponentLayout()
 	{
 		ImGuiComboFlags flags = ImGuiComboFlags_PopupAlignLeft;
 		const char* items[] = { "QuadComponent", "TextureComponent" };

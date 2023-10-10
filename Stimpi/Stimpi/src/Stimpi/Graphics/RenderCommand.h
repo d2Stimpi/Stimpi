@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Stimpi/Core/Core.h"
 #include "Stimpi/Graphics/VertexArrayObject.h"
 #include "Stimpi/Graphics/BufferObject.h"
 #include "Stimpi/Graphics/Texture.h"

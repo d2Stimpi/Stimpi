@@ -1,3 +1,4 @@
+#include "stpch.h"
 #include "Stimpi/Scene/SceneManager.h"
 
 #include "Stimpi/Scene/SceneSerializer.h"

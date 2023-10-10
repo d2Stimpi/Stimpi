@@ -1,3 +1,4 @@
+#include "stpch.h"
 #include "Stimpi/Core/Time.h"
 
 namespace Stimpi

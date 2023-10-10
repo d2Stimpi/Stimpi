@@ -1,4 +1,7 @@
+#include "stpch.h"
 #include "Stimpi/Scene/Entity.h"
+
+#include "Stimpi/Scene/Component.h"
 
 namespace Stimpi
 {

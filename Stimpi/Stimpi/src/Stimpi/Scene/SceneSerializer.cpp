@@ -1,5 +1,7 @@
+#include "stpch.h"
 #include "Stimpi/Scene/SceneSerializer.h"
 
+#include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Scene/Entity.h"
 

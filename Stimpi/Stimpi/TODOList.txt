@@ -19,6 +19,7 @@
 - Window/Widget for listing loaded scenes, later file resources, etc...
 - Play button 
 	* Open fixed sized window with live game code running
+- Script component, show "external" variables in UI
 
 [Events]
 - Move Events to separate files by type

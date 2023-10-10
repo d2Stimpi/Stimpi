@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Stimpi/Core/Core.h"
-
 #include "Stimpi/Scene/Scene.h"
 
 namespace Stimpi

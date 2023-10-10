@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Stimpi/Core/Core.h"
 #include "Stimpi/Graphics/Texture.h"
 #include "Stimpi/Scene/ResourceManager.h"
+#include "Stimpi/Scene/ScriptableEntity.h"
 
 #include <glm/glm.hpp>
 #include <yaml-cpp/yaml.h>
@@ -129,6 +129,21 @@ namespace Stimpi
 				m_FilePath = "";
 				m_Texture = nullptr;
 			}
+		}
+	};
+
+	struct NativeScriptComponent
+	{
+		ScriptableEntity* m_Instance = nullptr;
+
+		ScriptableEntity* (*InstantiateScript)();
+		void (*DestroyScript)(NativeScriptComponent*);
+
+		template<typename T>
+		void Bind()
+		{
+			InstantiateScript = []() { return static_cast<ScriptableEntity*>(new T()); };
+			DestroyScript = [](NativeScriptComponent* nsc) { delete nsc->m_Instance; nsc->m_Instance = nullptr; };
 		}
 	};
 }

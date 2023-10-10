@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Stimpi/Core/Core.h"
 #include "Stimpi/Scene/Component.h"
 
 /**
@@ -12,11 +11,11 @@ namespace Stimpi
 {
 	class Entity;
 
-	class SceneConfigWindow
+	class SceneHierarchyWindow
 	{
 	public:
-		SceneConfigWindow();
-		~SceneConfigWindow();
+		SceneHierarchyWindow();
+		~SceneHierarchyWindow();
 
 		void Draw();
 

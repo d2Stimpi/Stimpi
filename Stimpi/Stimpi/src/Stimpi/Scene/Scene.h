@@ -5,10 +5,10 @@
 #include "Stimpi/Core/Event.h"
 #include "Stimpi/Core/Timestep.h"
 
-#include "Stimpi/Gui/SceneConfigWindow.h"
-
 #include "Stimpi/Graphics/Shader.h"
-#include "Stimpi/Graphics/OrthoCamera.h" // TODO: make Camera class to use in scene
+
+#include "Stimpi/Scene/Camera.h"
+#include "Stimpi/Scene/CameraController.h"
 
 #include <entt/entt.hpp>
 #include <yaml-cpp/yaml.h>
@@ -33,12 +33,13 @@ namespace Stimpi
 
 		std::vector<Entity> m_Entities;
 
-		std::shared_ptr<OrthoCamera> m_SceneCamera;
+		std::shared_ptr<Camera> m_SceneCamera;
+		std::shared_ptr<CameraController> m_CameraController;
 		//Temp shader
 		std::shared_ptr<Stimpi::Shader> m_DefaultShader;
 
 		friend class Entity;
 		friend class SceneSerializer;
-		friend class SceneConfigWindow;
+		friend class SceneHierarchyWindow;
 	};
 }

@@ -1,3 +1,4 @@
+#include "stpch.h"
 #include "Stimpi/Graphics/OrthoCamera.h"
 
 #include <glm/gtc/matrix_transform.hpp>

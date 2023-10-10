@@ -10,7 +10,8 @@
 #include "Stimpi/Scene/Scene.h"
 
 // Gui includes
-#include "Stimpi/Gui/SceneConfigWindow.h"
+#include "Stimpi/Gui/SceneViewWindow.h"
+#include "Stimpi/Gui/SceneHierarchyWindow.h"
 #include "Stimpi/Gui/MainManuBar.h"
 
 #include "ImGui/src/imgui.h"
@@ -28,13 +29,16 @@ namespace Stimpi
 		void Update(Timestep ts) override;
 		void OnEvent(Event* e) override;
 	private:
+		void SetDarkThemeStyle();
+	private:
 		ImGuiIO* m_IO{ nullptr };
 		WindowSDL* m_Window{ nullptr };
 
 		//Menus
 		MainMenuBar m_MainMenuBar;
 		//Windows
-		SceneConfigWindow m_SceneConfigWindow;
+		SceneViewWindow m_SceneViewWindow;
+		SceneHierarchyWindow m_SceneConfigWindow;
 
 		//Scene data
 		std::shared_ptr<Scene> m_Scene;

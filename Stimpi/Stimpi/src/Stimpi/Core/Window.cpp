@@ -1,6 +1,6 @@
+#include "stpch.h"
 #include "Window.h"
 
-#include <memory>
 #include <glad/glad.h>
 
 #include "Stimpi/Graphics/Renderer2D.h"

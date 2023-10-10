@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Stimpi/Core/Core.h"
 #include "Stimpi/Graphics/Graphics.h"
 #include "Stimpi/Graphics/Texture.h"
 

@@ -85,7 +85,7 @@
     <ClCompile Include="src\Stimpi\Scene\ResourceManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Stimpi\Gui\SceneConfigWindow.cpp">
+    <ClCompile Include="src\Stimpi\Gui\SceneHierarchyWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Scene\SceneManager.cpp">
@@ -101,6 +101,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Graphics\RenderCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Gui\SceneViewWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Scene\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Scene\CameraController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stpch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -138,11 +150,17 @@
     <ClInclude Include="src\Stimpi\Core\Time.h" />
     <ClInclude Include="src\Stimpi\Scene\ResourceManager.h" />
     <ClInclude Include="src\Stimpi\Core\Timestep.h" />
-    <ClInclude Include="src\Stimpi\Gui\SceneConfigWindow.h" />
+    <ClInclude Include="src\Stimpi\Gui\SceneHierarchyWindow.h" />
     <ClInclude Include="src\Stimpi\Scene\SceneManager.h" />
     <ClInclude Include="src\Stimpi\Graphics\OrthoCamera.h" />
     <ClInclude Include="src\Stimpi\Gui\MainManuBar.h" />
     <ClInclude Include="src\Stimpi\Scene\SceneSerializer.h" />
     <ClInclude Include="src\Stimpi\Graphics\RenderCommand.h" />
+    <ClInclude Include="src\Stimpi\Gui\SceneViewWindow.h" />
+    <ClInclude Include="src\Stimpi\Scene\ScriptableEntity.h" />
+    <ClInclude Include="src\Stimpi\Scene\Camera.h" />
+    <ClInclude Include="src\Stimpi\Scene\CameraController.h" />
+    <ClInclude Include="src\Stimpi\Core\MouseCodes.h" />
+    <ClInclude Include="src\stpch.h" />
   </ItemGroup>
 </Project>

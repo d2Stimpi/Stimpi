@@ -1,3 +1,4 @@
+#include "stpch.h"
 #include "Stimpi/Gui/EditorLayer.h"
 
 #include "ImGui/src/imgui.h"
@@ -36,7 +37,8 @@ namespace Stimpi
 		m_IO = &io;
 
 		// Setup Dear ImGui style
-		ImGui::StyleColorsDark();
+		// Custom style
+		SetDarkThemeStyle();	
 
 		// When view ports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
 		ImGuiStyle& style = ImGui::GetStyle();
@@ -98,12 +100,12 @@ namespace Stimpi
 
 		EventDispatcher<KeyboardEvent> keyDispatcher;
 		keyDispatcher.Dispatch(e, [](KeyboardEvent* keyEvent) -> bool {
-				if (keyEvent->GetKeyCode() == SDL_SCANCODE_9 && keyEvent->GetType() == KeyboardEventType::KEY_EVENT_DOWN)
+				if (keyEvent->GetKeyCode() == SDL_SCANCODE_P && keyEvent->GetType() == KeyboardEventType::KEY_EVENT_DOWN)
 				{
 					show_scene_config_window = !show_scene_config_window;
 					return true;
 				}
-				if (keyEvent->GetKeyCode() == SDL_SCANCODE_0 && keyEvent->GetType() == KeyboardEventType::KEY_EVENT_DOWN)
+				if (keyEvent->GetKeyCode() == SDL_SCANCODE_O && keyEvent->GetType() == KeyboardEventType::KEY_EVENT_DOWN)
 				{
 					show_demo_window = !show_demo_window;
 					return true;
@@ -122,6 +124,38 @@ namespace Stimpi
 		}
 	}
 
+	void EditorLayer::SetDarkThemeStyle()
+	{
+		auto& colors = ImGui::GetStyle().Colors;
+		colors[ImGuiCol_WindowBg] = ImVec4{ 0.1f, 0.105f, 0.11f, 1.0f };
+
+		// Headers
+		colors[ImGuiCol_Header] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
+		colors[ImGuiCol_HeaderHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
+		colors[ImGuiCol_HeaderActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+
+		// Buttons
+		colors[ImGuiCol_Button] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
+		colors[ImGuiCol_ButtonHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
+		colors[ImGuiCol_ButtonActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+
+		// FrameBG
+		colors[ImGuiCol_FrameBg] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
+		colors[ImGuiCol_FrameBgHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
+		colors[ImGuiCol_FrameBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+
+		// Tabs
+		colors[ImGuiCol_Tab] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+		colors[ImGuiCol_TabHovered] = ImVec4{ 0.38f, 0.3805f, 0.381f, 1.0f };
+		colors[ImGuiCol_TabActive] = ImVec4{ 0.28f, 0.2805f, 0.281f, 1.0f };
+		colors[ImGuiCol_TabUnfocused] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+		colors[ImGuiCol_TabUnfocusedActive] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
+
+		colors[ImGuiCol_TitleBg] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+		colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+		colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+	}
+
 	void EditorLayer::Update(Timestep ts)
 	{
 		ImVec4 clear_color = ImVec4(0.0f, 0.55f, 0.60f, 1.00f);
@@ -137,51 +171,12 @@ namespace Stimpi
 		// FBO Veiw sample begin
 		static ImGuiWindowFlags flags = ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoCollapse;
 		static bool closeWidget = true;
-		static bool use_work_area = false;
 
 		/* Main Menu */
 		m_MainMenuBar.Draw();
 
-		//ImGui::SetNextWindowSize(ImVec2(1280, 720), ImGuiCond_Once);
-		//ImGui::SetNextWindowSizeConstraints(ImVec2(0, 0), ImVec2(1280, 720));
-
-		ImGui::Begin("OpenGL Main Scene View", &closeWidget, flags);
-
-		static bool use_text_color_for_tint = true;
-		// Flip the FBO texture img
-		ImVec4 tint_col = use_text_color_for_tint ? ImGui::GetStyleColorVec4(ImGuiCol_Text) : ImVec4(0.0f, 0.0f, 1.0f, 1.0f);   // No tint
-		ImVec4 border_col = ImGui::GetStyleColorVec4(ImGuiCol_Border);
-
-		ImVec2 pos = ImGui::GetCursorScreenPos();
-		ImVec2 ws = ImGui::GetContentRegionAvail();
-
-		int wWidth = ImGui::GetWindowWidth();
-		int wHeight = ImGui::GetWindowHeight();
-		auto frameBuffer = Renderer2D::Instace()->GetFrameBuffer();
-
-		wsLog = ImVec2(wWidth, wHeight);//ws;
-		uvLog = ImVec2(ws.x / frameBuffer->GetWidth(), ws.y / frameBuffer->GetHeight());
-
-		static ImVec2 test = wsLog;
-
-		if ((test.x != wsLog.x) || test.y != wsLog.y)
-		{
-			ST_CORE_INFO("Resize - Editor window size: {0}, {1}", wsLog.x, wsLog.y);
-			ST_CORE_INFO("Resize - Editor texture uv: {0}, {1}", uvLog.x, uvLog.y);
-			//Renderer2D::Instace()->ResizeCanvas(ws.x, ws.y);
-		}
-
-		test = wsLog;
-
-		ImVec2 uv_min = ImVec2(0.0f, ws.y / frameBuffer->GetHeight());
-		ImVec2 uv_max = ImVec2(ws.x / frameBuffer->GetWidth(), 0.0f);
-		//ImVec2 uv_min = ImVec2(0.0f, 1.0f);
-		//ImVec2 uv_max = ImVec2(1.0f, 0.0f);
-		//ImGui::Image((void*)(intptr_t)frameBuffer->GetTextureID(), ImVec2(frameBuffer->GetWidth(), frameBuffer->GetHeight()), uv_min, uv_max, tint_col, border_col);
-		//ImGui::Image((void*)(intptr_t)frameBuffer->GetTextureID(), ImVec2(wWidth, wHeight), uv_min, uv_max, tint_col, border_col);
-		ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)frameBuffer->GetTextureID(), ImVec2(pos), ImVec2(pos.x + ws.x, pos.y + ws.y), uv_min, uv_max);
-		ImGui::End();
-		// FBO View sample end
+		/* Scene view */
+		m_SceneViewWindow.Draw();
 
 		// TODO: move show_scene_config_window to class
 		m_SceneConfigWindow.Draw();

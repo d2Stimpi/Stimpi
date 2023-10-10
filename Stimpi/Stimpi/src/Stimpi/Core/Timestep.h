@@ -5,7 +5,7 @@
 namespace Stimpi
 {
 	/* Time by default in milliseconds, impl cast will be in seconds */
-	class Timestep
+	class ST_API Timestep
 	{
 	public:
 		Timestep(float time = 0.0f)
