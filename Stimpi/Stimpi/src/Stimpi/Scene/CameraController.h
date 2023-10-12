@@ -12,11 +12,14 @@ namespace Stimpi
 		CameraController(Camera* camera);
 		~CameraController();
 
-		void AttachCamera(Camera* camera) { m_Camera = camera; }
+		void AttachCamera(Camera* camera);
 		void Update(Timestep ts);
+
+		void SetMouseControllesActive(bool active) { m_MouseActive = active; }
 
 	private:
 		Camera* m_Camera;
 		std::shared_ptr<MouseEvnetHandler> m_MouseHandler;
+		bool m_MouseActive;
 	};
 }

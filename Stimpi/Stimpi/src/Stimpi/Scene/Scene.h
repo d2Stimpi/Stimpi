@@ -6,6 +6,7 @@
 #include "Stimpi/Core/Timestep.h"
 
 #include "Stimpi/Graphics/Shader.h"
+#include "Stimpi/Graphics/SubTexture.h"
 
 #include "Stimpi/Scene/Camera.h"
 #include "Stimpi/Scene/CameraController.h"
@@ -28,15 +29,20 @@ namespace Stimpi
 
 		Entity CreateEntity(const std::string& name = "");
 
+		void SetCamera(Camera* camera);
+		Camera* GetCamera() { return m_SceneCamera; }
+
 	private:
 		entt::registry m_Registry;
 
 		std::vector<Entity> m_Entities;
 
-		std::shared_ptr<Camera> m_SceneCamera;
-		std::shared_ptr<CameraController> m_CameraController;
+		Camera* m_SceneCamera; // Created outside of scene (Editor); Scene will use Camera Component in Runtime state
 		//Temp shader
 		std::shared_ptr<Stimpi::Shader> m_DefaultShader;
+
+		//Test
+		std::shared_ptr<SubTexture> m_SubTexture;
 
 		friend class Entity;
 		friend class SceneSerializer;

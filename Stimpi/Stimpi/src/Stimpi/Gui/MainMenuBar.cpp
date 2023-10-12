@@ -23,7 +23,7 @@ namespace Stimpi
 
 	}
 
-	void MainMenuBar::Draw()
+	void MainMenuBar::OnImGuiRender()
 	{
 		if (ImGui::BeginMainMenuBar())
 		{
@@ -36,12 +36,12 @@ namespace Stimpi
 
 				if (ImGui::MenuItem("Load Scene")) 
 				{
-					SceneManager::Instance()->LoadScene("TestScene.d2s");
+					SceneManager::Instance()->LoadScene("..\/assets\/scenes\/TestScene.d2s");
 				}
 
 				if (ImGui::MenuItem("Save Scene", "CTRL+S")) 
 				{
-					SceneManager::Instance()->SaveScene("TestScene.d2s");
+					SceneManager::Instance()->SaveScene("..\/assets\/scenes\/TestScene.d2s");
 				}
 
 				ImGui::Separator();

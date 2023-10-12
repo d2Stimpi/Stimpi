@@ -10,9 +10,14 @@ namespace Stimpi
 		SceneViewWindow();
 		~SceneViewWindow();
 
-		void Draw();
+		void OnImGuiRender();
+
+		bool IsHovered() { return m_Hovered; }
+		bool IsFocused() { return m_Focused; }
 	private:
 		bool m_Show = true;
 		ImGuiWindowFlags m_Flags;
+		bool m_Hovered = false;
+		bool m_Focused = false;
 	};
 }

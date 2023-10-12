@@ -17,7 +17,7 @@ namespace Stimpi
 		SceneHierarchyWindow();
 		~SceneHierarchyWindow();
 
-		void Draw();
+		void OnImGuiRender();
 
 	private:
 		void ComponentInspectorWidget();

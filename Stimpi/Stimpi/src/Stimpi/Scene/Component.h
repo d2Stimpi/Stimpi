@@ -37,28 +37,6 @@ namespace Stimpi
 		//De-serialize done in Scene - Every entity will have TagComponent
 	};
 
-	// TODO: ATM not used/needed
-	struct TransformComponent
-	{
-		glm::vec4 m_Transform;
-
-		TransformComponent() = default;
-		TransformComponent(const TransformComponent&) = default;
-		TransformComponent(const glm::vec4& transform)
-			: m_Transform(transform) {}
-
-		void Serialize(YAML::Emitter& out)
-		{
-			out << YAML::Key << "TransformComponent";
-			out << YAML::BeginMap;
-			out << YAML::Key << "Transform" << YAML::Value;
-			out << YAML::BeginSeq;
-			out << m_Transform.x << m_Transform.y << m_Transform.z << m_Transform.w;
-			out << YAML::EndSeq;
-			out << YAML::EndMap;
-		}
-	};
-
 	struct QuadComponent
 	{
 		float m_X{ 0.0f };

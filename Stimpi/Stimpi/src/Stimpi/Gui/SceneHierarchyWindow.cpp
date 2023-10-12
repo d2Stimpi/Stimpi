@@ -32,7 +32,7 @@ namespace Stimpi
 
 	}
 
-	void SceneHierarchyWindow::Draw()
+	void SceneHierarchyWindow::OnImGuiRender()
 	{
 		if (m_Show)
 		{

@@ -55,18 +55,25 @@ namespace Stimpi
 		// Other (Non ImGui) internal data init
 
 		// Scene Init
-		m_ShaderChecker.reset(Shader::CreateShader("shaders\/checkerboard.shader"));
+		m_ShaderChecker.reset(Shader::CreateShader("..\/assets\/shaders\/checkerboard.shader"));
 		// Editor camera init
-		m_SceneCamera = std::make_shared<Stimpi::OrthoCamera>(0.0f, 1280.0f, 0.0f, 720.0f);
+		m_SceneCamera = std::make_shared<Camera>(0.0f, 1280.0f, 0.0f, 720.0f);
 		m_SceneCamera->SetPosition({ 0.0f, 0.0f, 0.0f });
+		m_CameraController = std::make_shared<CameraController>(m_SceneCamera.get());
 
-		SceneManager::Instance()->LoadScene("SceneTest.data");
+		m_BackgroundCamera = std::make_shared<Camera>(0.0f, 1280.0f, 0.0f, 720.0f);
+		m_BackgroundCamera->SetPosition({ 0.0f, 0.0f, 0.0f });
+
+		SceneManager::Instance()->LoadScene("..\/assets\/scenes\/SceneTest.data");
 		OnSceneChangedListener onScneeChanged = [&]() {
 			ST_CORE_INFO("EditorLayer - onScneeChanged()");
 			m_Scene = SceneManager::Instance()->GetActiveSceneRef();
+			m_Scene->SetCamera(m_SceneCamera.get());
 		};
 		SceneManager::Instance()->RegisterOnSceneChangeListener(onScneeChanged);
+
 		m_Scene = SceneManager::Instance()->GetActiveSceneRef();
+		m_Scene->SetCamera(m_SceneCamera.get());
 	}
 
 	EditorLayer::~EditorLayer()
@@ -173,13 +180,22 @@ namespace Stimpi
 		static bool closeWidget = true;
 
 		/* Main Menu */
-		m_MainMenuBar.Draw();
+		m_MainMenuBar.OnImGuiRender();
 
-		/* Scene view */
-		m_SceneViewWindow.Draw();
+		/* Scene View */
+		m_SceneViewWindow.OnImGuiRender();
+		/* Content Browser */
+		m_ContentBrowserWindow.OnImGuiRender();
+		/* Scene Hierarchy */
+		m_SceneHierarchyWindow.OnImGuiRender();
+
+		// Camera movement update
+		m_CameraController->SetMouseControllesActive(m_SceneViewWindow.IsHovered());
+
+		if (m_SceneViewWindow.IsFocused())
+			m_CameraController->Update(ts);
 
 		// TODO: move show_scene_config_window to class
-		m_SceneConfigWindow.Draw();
 
 		if (show_scene_config_window)
 		{
@@ -242,14 +258,14 @@ namespace Stimpi
 		auto canvasWidth = Stimpi::Renderer2D::Instace()->GetCanvasWidth();
 		auto canvasHeight = Stimpi::Renderer2D::Instace()->GetCanvasHeight();
 
-		m_SceneCamera->Resize(0.0f, canvasWidth, 0.0f, canvasHeight); 
-		m_ShaderChecker->SetUniform("u_Projection", m_SceneCamera->GetProjectionMatrix());
+		m_BackgroundCamera->Resize(0.0f, canvasWidth, 0.0f, canvasHeight);
+		m_ShaderChecker->SetUniform("u_Projection", m_BackgroundCamera->GetProjectionMatrix());
 		m_ShaderChecker->SetUniform("u_resolution", glm::vec2(canvasWidth, canvasHeight));
 
-		Stimpi::Renderer2D::Instace()->BeginScene(m_SceneCamera.get());
+		// Render Checker Background for editor
+		Stimpi::Renderer2D::Instace()->BeginScene(m_BackgroundCamera->GetOrthoCamera());
 		Stimpi::Renderer2D::Instace()->Submit({ 0.0f, 0.0f, canvasWidth, canvasHeight }, m_ShaderChecker.get());
 		Stimpi::Renderer2D::Instace()->EndScene();
-
 
 		m_Scene->OnUpdate(ts);
 

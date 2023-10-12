@@ -10,6 +10,7 @@
 #include "Stimpi/Scene/Scene.h"
 
 // Gui includes
+#include "Stimpi/Gui/ContentBrowserWindow.h"
 #include "Stimpi/Gui/SceneViewWindow.h"
 #include "Stimpi/Gui/SceneHierarchyWindow.h"
 #include "Stimpi/Gui/MainManuBar.h"
@@ -38,11 +39,15 @@ namespace Stimpi
 		MainMenuBar m_MainMenuBar;
 		//Windows
 		SceneViewWindow m_SceneViewWindow;
-		SceneHierarchyWindow m_SceneConfigWindow;
+		SceneHierarchyWindow m_SceneHierarchyWindow;
+		ContentBrowserWindow m_ContentBrowserWindow;
 
 		//Scene data
 		std::shared_ptr<Scene> m_Scene;
+		std::shared_ptr<Camera> m_SceneCamera;
+		std::shared_ptr<CameraController> m_CameraController;
+
+		std::shared_ptr<Camera> m_BackgroundCamera;
 		std::shared_ptr<Shader> m_ShaderChecker;
-		std::shared_ptr<OrthoCamera> m_SceneCamera;
 	};
 }

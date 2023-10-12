@@ -11,7 +11,7 @@ namespace Stimpi
 		// TODO: get global window size? what size is FB?
 		m_FrameBuffer.reset(FrameBuffer::CreateFrameBuffer({ 1280, 720, 4 }));
 
-		//Init VAO, VBO - TODO: handling more VAOs 4k/per
+		//Init VAO, VBO
 		m_VAO.reset(VertexArrayObject::CreateVertexArrayObject({ 3, 3, 2 }));
 		m_VAO->BindArray();
 
@@ -95,9 +95,42 @@ namespace Stimpi
 		}
 	}
 
+	void Renderer2D::Submit(glm::vec4 quad, SubTexture* subtexture, Shader* shader)
+	{
+		CheckTextureBatching(subtexture->GetTexture());
+		auto currnetCmd = *m_ActiveNewRenderCmdIter;
+
+		CheckCapacity();
+		// First time call Submit after BeginScene
+		if ((currnetCmd->m_Texture == nullptr) && ((currnetCmd->m_Shader == nullptr)))
+		{
+			PushQuadVertexData(currnetCmd.get(), quad, glm::vec3{1.0f}, subtexture->GetUVMin(), subtexture->GetUVMax());
+			currnetCmd->m_Texture = subtexture->GetTexture();
+			currnetCmd->m_Shader = shader;
+
+			shader->SetUniform("u_texture", 0);
+		}
+		else if ((currnetCmd->m_Texture != subtexture->GetTexture()) || (currnetCmd->m_Shader != shader))
+		{
+			// If shader or texture changed
+			Flush();
+			currnetCmd = *m_ActiveNewRenderCmdIter;
+			PushQuadVertexData(currnetCmd.get(), quad, glm::vec3{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+			currnetCmd->m_Texture = subtexture->GetTexture();
+			currnetCmd->m_Shader = shader;
+
+			shader->SetUniform("u_texture", 0);
+		}
+		else
+		{
+			// Batching vertex data
+			PushQuadVertexData(currnetCmd.get(), quad, glm::vec3{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+		}
+	}
+
 	void Renderer2D::Submit(glm::vec4 quad, Shader* shader)
 	{
-		Submit(quad, nullptr, shader);
+		Submit(quad, (Texture*)nullptr, shader);
 	}
 
 	void Renderer2D::Submit(glm::vec4 quad, glm::vec3 color, Shader* shader)

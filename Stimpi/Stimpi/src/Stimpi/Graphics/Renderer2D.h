@@ -12,6 +12,7 @@
 #include "Stimpi/Graphics/FrameBuffer.h"
 #include "Stimpi/Graphics/Shader.h"
 #include "Stimpi/Graphics/Texture.h"
+#include "Stimpi/Graphics/SubTexture.h"
 #include "Stimpi/Graphics/VertexArrayObject.h"
 
 #define VERTEX_CMD_CAPACITY (6 * 10000) // 6 vertex per quad, 10k quads
@@ -38,6 +39,7 @@ namespace Stimpi
 		// New
 		void Flush();
 		void Submit(glm::vec4 quad, Texture* texture, Shader* shader);
+		void Submit(glm::vec4 quad, SubTexture* subtexture, Shader* shader);
 		void Submit(glm::vec4 quad, Shader* shader);
 		void Submit(glm::vec4 quad, glm::vec3 color, Shader* shader);
 

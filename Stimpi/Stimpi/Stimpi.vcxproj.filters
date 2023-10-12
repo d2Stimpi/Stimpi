@@ -115,6 +115,12 @@
     <ClCompile Include="src\stpch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Gui\ContentBrowserWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\SubTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi\Core\Core.h">
@@ -162,5 +168,7 @@
     <ClInclude Include="src\Stimpi\Scene\CameraController.h" />
     <ClInclude Include="src\Stimpi\Core\MouseCodes.h" />
     <ClInclude Include="src\stpch.h" />
+    <ClInclude Include="src\Stimpi\Gui\ContentBrowserWindow.h" />
+    <ClInclude Include="src\Stimpi\Graphics\SubTexture.h" />
   </ItemGroup>
 </Project>

@@ -14,13 +14,11 @@ namespace Stimpi
 	// Test entity
 	Entity s_TestObj;
 
-	// TODO: clean - don't create stuff here
 	Scene::Scene()
 	{
-		m_SceneCamera = std::make_shared<Camera>(0.0f, 1280.0f, 0.0f, 720.0f);
-		m_CameraController = std::make_shared<CameraController>(m_SceneCamera.get());
-
 		m_DefaultShader.reset(Shader::CreateShader("shaders\/shader.shader"));
+
+		m_SubTexture = std::make_shared<SubTexture>(ResourceManager::Instance()->LoadTexture("..\/assets\/sprite_sheets\/sonic-sprite-sheet.png"), glm::vec2{ 0.0f, 0.0f }, glm::vec2{ 150.0f, 150.0f });
 
 		s_TestObj = CreateEntity("TestObj");
 		s_TestObj.AddComponent<QuadComponent>(glm::vec4{ 100.0f, 100.0f, 50.0f, 50.0f });
@@ -80,12 +78,7 @@ namespace Stimpi
 				});
 		}
 
-		// Resize Camera
-		//auto frameBuffer = Renderer2D::Instace()->GetFrameBuffer();
-		//m_SceneCamera->Resize(0.0f, frameBuffer->GetWidth(), 0.0f, frameBuffer->GetHeight());
-
-		// Movement control
-		m_CameraController->Update(ts);
+		//TODO: to use Camera Component for Runtime rendering
 
 		// Scene rendering
 		Stimpi::Renderer2D::Instace()->BeginScene(m_SceneCamera->GetOrthoCamera());
@@ -104,6 +97,8 @@ namespace Stimpi
 			}
 		}
 
+		Stimpi::Renderer2D::Instace()->Submit(glm::vec4{ 150.0f, 250.0f, 150.0f, 150.0f }, m_SubTexture.get(), m_DefaultShader.get());
+
 		Stimpi::Renderer2D::Instace()->EndScene();
 	}
 
@@ -120,4 +115,10 @@ namespace Stimpi
 		m_Entities.push_back(entity);
 		return entity;
 	}
+
+	void Scene::SetCamera(Camera* camera)
+	{
+		m_SceneCamera = camera;
+	}
+
 }

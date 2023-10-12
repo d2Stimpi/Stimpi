@@ -8,7 +8,7 @@ namespace Stimpi
 		MainMenuBar();
 		~MainMenuBar();
 
-		void Draw();
+		void OnImGuiRender();
 
 	private:
 	};

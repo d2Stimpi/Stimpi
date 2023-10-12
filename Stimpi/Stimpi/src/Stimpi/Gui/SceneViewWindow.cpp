@@ -1,6 +1,7 @@
 #include "stpch.h"
 #include "Stimpi/Gui/SceneViewWindow.h"
 
+#include "Stimpi/Log.h"
 #include "Stimpi/Graphics/Renderer2D.h"
 
 namespace Stimpi
@@ -16,7 +17,7 @@ namespace Stimpi
 
 	}
 
-	void SceneViewWindow::Draw()
+	void SceneViewWindow::OnImGuiRender()
 	{
 		auto frameBuffer = Renderer2D::Instace()->GetFrameBuffer();
 
@@ -27,6 +28,9 @@ namespace Stimpi
 		// Invert the image on ImGui window
 		ImVec2 uv_min = ImVec2(0.0f, ws.y / frameBuffer->GetHeight());
 		ImVec2 uv_max = ImVec2(ws.x / frameBuffer->GetWidth(), 0.0f);
+
+		m_Hovered = ImGui::IsWindowHovered();
+		m_Focused = ImGui::IsWindowFocused();
 
 		// Aspect ratio 16:9
 		/*if (((float)ws.x / 1.7778f) >= (float)ws.y)
