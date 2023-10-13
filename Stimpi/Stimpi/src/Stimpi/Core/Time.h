@@ -6,11 +6,6 @@
 
 namespace Stimpi
 {
-	class ST_API TimeStep
-	{
-	public:
-	};
-
 	class ST_API Time
 	{
 	public:

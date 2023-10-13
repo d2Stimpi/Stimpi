@@ -69,11 +69,17 @@ namespace Stimpi
 			ST_CORE_INFO("EditorLayer - onScneeChanged()");
 			m_Scene = SceneManager::Instance()->GetActiveSceneRef();
 			m_Scene->SetCamera(m_SceneCamera.get());
+
+			// Update when scene changes
+			SetupComponentContext(m_Scene.get());
 		};
 		SceneManager::Instance()->RegisterOnSceneChangeListener(onScneeChanged);
 
 		m_Scene = SceneManager::Instance()->GetActiveSceneRef();
 		m_Scene->SetCamera(m_SceneCamera.get());
+
+		// Window/Panel context set
+		SetupComponentContext(m_Scene.get());
 	}
 
 	EditorLayer::~EditorLayer()
@@ -163,6 +169,11 @@ namespace Stimpi
 		colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 	}
 
+	void EditorLayer::SetupComponentContext(Scene* scene)
+	{
+		m_SpriteAnimPanel.SetContext(scene);
+	}
+
 	void EditorLayer::Update(Timestep ts)
 	{
 		ImVec4 clear_color = ImVec4(0.0f, 0.55f, 0.60f, 1.00f);
@@ -188,6 +199,9 @@ namespace Stimpi
 		m_ContentBrowserWindow.OnImGuiRender();
 		/* Scene Hierarchy */
 		m_SceneHierarchyWindow.OnImGuiRender();
+		/*Sprite & Animation */
+		m_SpriteAnimPanel.OnUpdate(ts);
+		m_SpriteAnimPanel.OnImGuiRender();
 
 		// Camera movement update
 		m_CameraController->SetMouseControllesActive(m_SceneViewWindow.IsHovered());

@@ -6,6 +6,7 @@
 
 [EditorLayer]
 - Manage active scene
+- Add Scene ref to Windows/Panes as Context
 
 [OpenGLTestLayer]
 - Figure out clear separation of Editor / Game (Runtime)

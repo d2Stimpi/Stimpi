@@ -14,6 +14,7 @@
 #include "Stimpi/Gui/SceneViewWindow.h"
 #include "Stimpi/Gui/SceneHierarchyWindow.h"
 #include "Stimpi/Gui/MainManuBar.h"
+#include "Stimpi/Gui/SpriteAnimPanel.h"
 
 #include "ImGui/src/imgui.h"
 
@@ -31,16 +32,20 @@ namespace Stimpi
 		void OnEvent(Event* e) override;
 	private:
 		void SetDarkThemeStyle();
+
+		void SetupComponentContext(Scene* scene);
 	private:
 		ImGuiIO* m_IO{ nullptr };
 		WindowSDL* m_Window{ nullptr };
 
 		//Menus
 		MainMenuBar m_MainMenuBar;
-		//Windows
+		//Windows/Panes same thing xD
 		SceneViewWindow m_SceneViewWindow;
 		SceneHierarchyWindow m_SceneHierarchyWindow;
 		ContentBrowserWindow m_ContentBrowserWindow;
+		
+		SpriteAnimPanel m_SpriteAnimPanel;
 
 		//Scene data
 		std::shared_ptr<Scene> m_Scene;

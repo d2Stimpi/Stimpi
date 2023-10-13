@@ -121,6 +121,12 @@
     <ClCompile Include="src\Stimpi\Graphics\SubTexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Gui\SpriteAnimPanel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\Animation\Sprite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi\Core\Core.h">
@@ -170,5 +176,7 @@
     <ClInclude Include="src\stpch.h" />
     <ClInclude Include="src\Stimpi\Gui\ContentBrowserWindow.h" />
     <ClInclude Include="src\Stimpi\Graphics\SubTexture.h" />
+    <ClInclude Include="src\Stimpi\Gui\SpriteAnimPanel.h" />
+    <ClInclude Include="src\Stimpi\Graphics\Animation\Sprite.h" />
   </ItemGroup>
 </Project>
