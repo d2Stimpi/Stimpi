@@ -1,6 +1,7 @@
 #include "stpch.h"
 #include "Stimpi/Gui/SceneHierarchyWindow.h"
 
+#include "Stimpi/Gui/Components/UIPayload.h"
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Entity.h"
 
@@ -140,6 +141,13 @@ namespace Stimpi
 			s_SelectedEntity.RemoveComponent<TextureComponent>();
 		}
 		ImGui::Text("File path: %s", component.m_FilePath.c_str());
+
+
+		UIPayload::BeginTarget(PAYLOAD_TEXTURE, [&component](void* data, uint32_t size) {
+				std::string strData = std::string((char*)data, size);
+				ST_CORE_INFO("Data landed: {0}", strData.c_str());
+				component.SetPayload(strData);	// TODO: investigate app stuck
+			});
 	}
 
 	void SceneHierarchyWindow::AddComponentLayout()

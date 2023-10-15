@@ -86,6 +86,17 @@ namespace Stimpi
 
 		operator Texture* () const { return m_Texture; }
 
+		// Used for DragDropTarget
+		void SetPayload(const std::string& filePath)
+		{
+			auto newTexture = ResourceManager::Instance()->LoadTexture(filePath);
+			if (newTexture != nullptr)
+			{
+				m_FilePath = filePath;
+				m_Texture = newTexture;
+			}
+		}
+
 		void Serialize(YAML::Emitter& out)
 		{
 			out << YAML::Key << "TextureComponent";

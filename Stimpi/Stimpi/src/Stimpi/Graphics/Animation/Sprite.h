@@ -6,6 +6,8 @@
 
 #include <cstdint>
 
+/* TODO: Non-uniform frame duration */
+
 namespace Stimpi
 {
 	enum class SpriteState {RUNNING = 0, PAUSED, STOPPED, COMPELETED};	// Stopped - start form 0 frame; COMPELETED - used for maintaning correct UI data

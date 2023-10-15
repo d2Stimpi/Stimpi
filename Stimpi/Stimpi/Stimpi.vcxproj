@@ -112,6 +112,7 @@
     <ClCompile Include="src\Stimpi\Graphics\Texture.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\VertexArrayObject.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\BufferObject.cpp" />
+    <ClCompile Include="src\Stimpi\Gui\Components\UIPayload.cpp" />
     <ClCompile Include="src\Stimpi\Gui\ContentBrowserWindow.cpp" />
     <ClCompile Include="src\Stimpi\Gui\EditorLayer.cpp" />
     <ClCompile Include="src\Stimpi\Gui\MainMenuBar.cpp" />
@@ -161,6 +162,7 @@
     <ClInclude Include="src\Stimpi\Graphics\Texture.h" />
     <ClInclude Include="src\Stimpi\Graphics\VertexArrayObject.h" />
     <ClInclude Include="src\Stimpi\Graphics\BufferObject.h" />
+    <ClInclude Include="src\Stimpi\Gui\Components\UIPayload.h" />
     <ClInclude Include="src\Stimpi\Gui\ContentBrowserWindow.h" />
     <ClInclude Include="src\Stimpi\GUI\EditorLayer.h" />
     <ClInclude Include="src\Stimpi\Gui\MainManuBar.h" />

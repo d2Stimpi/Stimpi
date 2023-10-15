@@ -1,6 +1,9 @@
 #include "stpch.h"
 #include "Stimpi/Gui/ContentBrowserWindow.h"
 
+#include "Stimpi/Log.h"
+#include "Stimpi/Gui/Components/UIPayload.h"
+
 #include "ImGui/src/imgui.h"
 
 namespace Stimpi
@@ -43,6 +46,7 @@ namespace Stimpi
 				{
 
 				}
+				UIPayload::BeginSource(PAYLOAD_TEXTURE, path.string().c_str(), path.string().length(), filenameStr.c_str());
 			}
 		}
 

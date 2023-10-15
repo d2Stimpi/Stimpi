@@ -19,7 +19,7 @@ namespace Stimpi
 
 	void Sprite::SetCurrentFrame(uint32_t frame)
 	{
-		if (frame <= m_FramesCount && frame > 0)
+		//if (frame <= m_FramesCount && frame >= 0)
 		{
 			m_CurrentFrame = frame;
 			m_SpriteTexture->SetSubRegion(m_CurrentFrame);
@@ -43,7 +43,6 @@ namespace Stimpi
 				{
 					m_AnimState = SpriteState::COMPELETED;
 				}
-				// ST_CORE_INFO("Sprite frame: {0}", m_CurrentFrame);
 			}
 		}
 

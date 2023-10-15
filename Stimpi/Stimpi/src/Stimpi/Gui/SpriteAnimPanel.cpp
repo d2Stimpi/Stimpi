@@ -11,10 +11,15 @@ namespace Stimpi
 	
 	SpriteAnimPanel::SpriteAnimPanel()
 	{
-		// Temp test
-		auto texture = ResourceManager::Instance()->LoadTexture("..\/assets\/sprite_sheets\/sonic-sprite-sheet.png");
-		m_SubTextureDisplay = std::make_shared<SubTexture>(texture, glm::vec2{ 0.0f, 0.0f }, glm::vec2{ texture->GetWidth() / 10, texture->GetHeight() / 10 });
-		m_Sptire = std::make_shared<Sprite>(m_SubTextureDisplay.get(), 10, 2.8);
+		// Sonic sprite test
+		/*
+		auto texture = ResourceManager::Instance()->LoadTexture("..\/assets\/sprite_sheets\/sonic_run_1.png");
+		m_SubTextureDisplay = std::make_shared<SubTexture>(texture, glm::vec2{ 0.0f, 0.0f }, glm::vec2{ 42, 42 });
+		*/
+		// Nero sprite test
+		auto texture = ResourceManager::Instance()->LoadTexture("..\/assets\/sprite_sheets\/nero_slap_anim-sheet.png");
+		m_SubTextureDisplay = std::make_shared<SubTexture>(texture, glm::vec2{ 0.0f, 0.0f }, glm::vec2{ 24, 24 });
+		m_Sptire = std::make_shared<Sprite>(m_SubTextureDisplay.get(), 5, 1);
 		m_LoopAnim = m_Sptire->GetLooping();
 		m_Duration = m_Sptire->GetDuration();
 	}
@@ -43,7 +48,6 @@ namespace Stimpi
 			{
 				if (spriteState != SpriteState::RUNNING)
 				{
-					ST_CORE_INFO("Selected frame: {0}", m_CurrentFrame);
 					m_Sptire->SetCurrentFrame(m_CurrentFrame);
 				}
 			}
@@ -55,7 +59,7 @@ namespace Stimpi
 			ImVec2 uvMin = ImVec2{ textureMin.x, textureMax.y };
 			ImVec2 uvMax = ImVec2{ textureMax.x, textureMin.y };
 
-			ImGui::Image((ImTextureID)m_SubTextureDisplay->GetTextureID(), ImVec2{ (float)m_SubTextureDisplay->GetSubWidht() , (float)m_SubTextureDisplay->GetSubHeight() }, uvMin, uvMax);
+			ImGui::Image((ImTextureID)m_SubTextureDisplay->GetTextureID(), ImVec2{ 80 , 80 }, uvMin, uvMax);
 
 			ImGui::PushItemWidth(40);
 			if (spriteState != SpriteState::RUNNING)
@@ -80,11 +84,12 @@ namespace Stimpi
 			}
 			ImGui::PopItemWidth();
 
+			ImGui::PushItemWidth(80);
 			if (ImGui::InputFloat("Duration##Sptire", &m_Duration))
 			{
 				m_Sptire->SetDuration(m_Duration);
-				ST_CORE_INFO("Duration change: {0}", m_Duration);
 			}
+			ImGui::PopItemWidth();
 
 			if (ImGui::Checkbox("Loop##Sprite", &m_LoopAnim))
 			{
