@@ -57,9 +57,9 @@ namespace Stimpi
 		// Scene Init
 		m_ShaderChecker.reset(Shader::CreateShader("..\/assets\/shaders\/checkerboard.shader"));
 		// Editor camera init
-		m_SceneCamera = std::make_shared<Camera>(0.0f, 1280.0f, 0.0f, 720.0f);
-		m_SceneCamera->SetPosition({ 0.0f, 0.0f, 0.0f });
-		m_CameraController = std::make_shared<CameraController>(m_SceneCamera.get());
+		m_EditorCamera = std::make_shared<Camera>(0.0f, 1280.0f, 0.0f, 720.0f);
+		m_EditorCamera->SetPosition({ 0.0f, 0.0f, 0.0f });
+		m_CameraController = std::make_shared<CameraController>(m_EditorCamera.get());
 
 		m_BackgroundCamera = std::make_shared<Camera>(0.0f, 1280.0f, 0.0f, 720.0f);
 		m_BackgroundCamera->SetPosition({ 0.0f, 0.0f, 0.0f });
@@ -68,7 +68,7 @@ namespace Stimpi
 		OnSceneChangedListener onScneeChanged = [&]() {
 			ST_CORE_INFO("EditorLayer - onScneeChanged()");
 			m_Scene = SceneManager::Instance()->GetActiveSceneRef();
-			m_Scene->SetCamera(m_SceneCamera.get());
+			m_Scene->SetCamera(m_EditorCamera.get());
 
 			// Update when scene changes
 			SetupComponentContext(m_Scene.get());
@@ -76,7 +76,7 @@ namespace Stimpi
 		SceneManager::Instance()->RegisterOnSceneChangeListener(onScneeChanged);
 
 		m_Scene = SceneManager::Instance()->GetActiveSceneRef();
-		m_Scene->SetCamera(m_SceneCamera.get());
+		m_Scene->SetCamera(m_EditorCamera.get());
 
 		// Window/Panel context set
 		SetupComponentContext(m_Scene.get());
@@ -192,7 +192,8 @@ namespace Stimpi
 
 		/* Main Menu */
 		m_MainMenuBar.OnImGuiRender();
-
+		/* Runtime controls */
+		m_PlayPanel.OnImGuiRender();
 		/* Scene View */
 		m_SceneViewWindow.OnImGuiRender();
 		/* Content Browser */
@@ -203,11 +204,14 @@ namespace Stimpi
 		m_SpriteAnimPanel.OnUpdate(ts);
 		m_SpriteAnimPanel.OnImGuiRender();
 
-		// Camera movement update
-		m_CameraController->SetMouseControllesActive(m_SceneViewWindow.IsHovered());
+		// Camera movement update - only when in Stopped state
+		if (m_Scene->GetRuntimeState() == RuntimeState::STOPPED)
+		{
+			m_CameraController->SetMouseControllesActive(m_SceneViewWindow.IsHovered());
 
-		if (m_SceneViewWindow.IsFocused())
-			m_CameraController->Update(ts);
+			if (m_SceneViewWindow.IsFocused())
+				m_CameraController->Update(ts);
+		}
 
 		// TODO: move show_scene_config_window to class
 

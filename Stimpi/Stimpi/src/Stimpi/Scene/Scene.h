@@ -18,6 +18,8 @@ namespace Stimpi
 {
 	class Entity;
 
+	enum class RuntimeState { STOPPED = 0, RUNNING, PAUSED };
+
 	class ST_API Scene
 	{
 	public:
@@ -32,12 +34,19 @@ namespace Stimpi
 		void SetCamera(Camera* camera);
 		Camera* GetCamera() { return m_SceneCamera; }
 
+		RuntimeState GetRuntimeState() { return m_RuntimeState; }
+
+		void OnScenePlay();
+		void OnScenePause();
+		void OnSceneStop();
+
 	private:
 		entt::registry m_Registry;
-
 		std::vector<Entity> m_Entities;
+		RuntimeState m_RuntimeState;
 
-		Camera* m_SceneCamera; // Created outside of scene (Editor); Scene will use Camera Component in Runtime state
+		Camera* m_SceneCamera = nullptr; // Created outside of scene (Editor)
+		Camera* m_RenderCamera = nullptr; // Scene will use Camera Component in Runtime state
 		//Temp shader
 		std::shared_ptr<Stimpi::Shader> m_DefaultShader;
 

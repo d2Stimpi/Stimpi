@@ -45,7 +45,7 @@ namespace Stimpi
 		for (YAML::const_iterator it = scene.begin(); it != scene.end(); it++)
 		{
 			YAML::Node entityNode = it->second;
-			Entity entity;
+			Entity entity;	// TODO: move Entity deserialization code to Entity class
 			if (entityNode["TagComponent"])
 			{
 				entity = m_Scene->CreateEntity(entityNode["TagComponent"]["Tag"].as<std::string>());
@@ -56,6 +56,10 @@ namespace Stimpi
 				if (entityNode["TextureComponent"])
 				{
 					entity.AddComponent<TextureComponent>(TextureComponent(entityNode["TextureComponent"]));
+				}
+				if (entityNode["CameraComponent"])
+				{
+					entity.AddComponent<CameraComponent>(CameraComponent(entityNode["CameraComponent"]));
 				}
 			}
 		}

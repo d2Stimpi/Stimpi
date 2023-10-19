@@ -1,6 +1,8 @@
 #include "stpch.h"
 #include "Stimpi/Scene/Scene.h"
 
+#include "Stimpi/Log.h"
+
 #include "Stimpi/Scene/Entity.h"
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/ResourceManager.h"
@@ -16,25 +18,30 @@ namespace Stimpi
 
 	Scene::Scene()
 	{
+		m_RuntimeState = RuntimeState::STOPPED;
 		m_DefaultShader.reset(Shader::CreateShader("shaders\/shader.shader"));
 
+		/* Test stuff below */
 		m_SubTexture = std::make_shared<SubTexture>(ResourceManager::Instance()->LoadTexture("..\/assets\/sprite_sheets\/sonic-sprite-sheet.png"), glm::vec2{ 0.0f, 0.0f }, glm::vec2{ 150.0f, 150.0f });
 
-		s_TestObj = CreateEntity("TestObj");
+		s_TestObj = CreateEntity("ScriptedObj");
 		s_TestObj.AddComponent<QuadComponent>(glm::vec4{ 100.0f, 100.0f, 50.0f, 50.0f });
 		s_TestObj.AddComponent<TextureComponent>("Picture1.jpg");
+
+		auto camera = std::make_shared<Camera>(0.0f, 1280.0f, 0.0f, 720.0f);
+		s_TestObj.AddComponent<CameraComponent>(camera, true);
 
 		class QuadController : public ScriptableEntity
 		{
 		public:
 			void OnCreate()
 			{
-
+				ST_CORE_INFO("QuadController OnCreate()");
 			}
 
 			void OnDestroy()
 			{
-
+				ST_CORE_INFO("QuadController OnDestroy()");
 			}
 
 			void OnUpdate(Timestep ts)
@@ -63,43 +70,47 @@ namespace Stimpi
 
 	void Scene::OnUpdate(Timestep ts)
 	{
-		// TODO: move to Scene::OnScenePlay
+		// Update NativeScripts
+		if (m_RuntimeState == RuntimeState::RUNNING)
 		{
-			m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& ncs) 
+			m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& ncs)
 				{
-					if (!ncs.m_Instance)
+					if (ncs.m_Instance)
 					{
-						ncs.m_Instance = ncs.InstantiateScript();
-						ncs.m_Instance->m_Entity = Entity{ entity, this };
-						ncs.m_Instance->OnCreate();
+						ncs.m_Instance->OnUpdate(ts);
 					}
-
-					ncs.m_Instance->OnUpdate(ts);
 				});
 		}
 
-		//TODO: to use Camera Component for Runtime rendering
-
-		// Scene rendering
-		Stimpi::Renderer2D::Instace()->BeginScene(m_SceneCamera->GetOrthoCamera());
-
-		for (auto entity : m_Entities)
+		/* When not in Running state, use Editor sourced camera */
+		if (m_RuntimeState == RuntimeState::STOPPED)
 		{
-			if (entity.HasComponent<QuadComponent>())
-			{
-				auto quad = entity.GetComponent<QuadComponent>();
-				if (entity.HasComponent<TextureComponent>())
-				{
-					auto texture = entity.GetComponent<TextureComponent>();
-					if (texture)
-						Renderer2D::Instace()->Submit(quad, texture, m_DefaultShader.get());
-				}
-			}
+			m_RenderCamera = m_SceneCamera;
 		}
 
-		Stimpi::Renderer2D::Instace()->Submit(glm::vec4{ 150.0f, 250.0f, 150.0f, 150.0f }, m_SubTexture.get(), m_DefaultShader.get());
+		// Scene rendering
+		if (m_RenderCamera)
+		{
+			Stimpi::Renderer2D::Instace()->BeginScene(m_RenderCamera->GetOrthoCamera());
 
-		Stimpi::Renderer2D::Instace()->EndScene();
+			for (auto entity : m_Entities)
+			{
+				if (entity.HasComponent<QuadComponent>())
+				{
+					auto quad = entity.GetComponent<QuadComponent>();
+					if (entity.HasComponent<TextureComponent>())
+					{
+						auto texture = entity.GetComponent<TextureComponent>();
+						if (texture)
+							Renderer2D::Instace()->Submit(quad, texture, m_DefaultShader.get());
+					}
+				}
+			}
+
+			Stimpi::Renderer2D::Instace()->Submit(glm::vec4{ 150.0f, 250.0f, 150.0f, 150.0f }, m_SubTexture.get(), m_DefaultShader.get());
+
+			Stimpi::Renderer2D::Instace()->EndScene();
+		}
 	}
 
 	void Scene::OnEvent(Event* event)
@@ -119,6 +130,52 @@ namespace Stimpi
 	void Scene::SetCamera(Camera* camera)
 	{
 		m_SceneCamera = camera;
+	}
+
+	void Scene::OnScenePlay()
+	{
+		m_RuntimeState = RuntimeState::RUNNING;
+		
+		/* Create NativeScripts */
+		m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& ncs)
+			{
+				if (!ncs.m_Instance)
+				{
+					ncs.m_Instance = ncs.InstantiateScript();
+					ncs.m_Instance->m_Entity = Entity{ entity, this };
+					ncs.m_Instance->OnCreate();
+				}
+			});
+
+		m_Registry.view<CameraComponent>().each([=](auto entity, auto& ncs)
+			{
+				if (ncs.m_IsMain)
+				{
+					m_RenderCamera = ncs.m_Camera.get();
+				}
+			});
+	}
+
+	void Scene::OnScenePause()
+	{
+		m_RuntimeState = RuntimeState::PAUSED;
+	}
+
+	void Scene::OnSceneStop()
+	{
+		m_RuntimeState = RuntimeState::STOPPED;
+
+		/* Destroy NativeScripts */
+		m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& ncs)
+			{
+				if (ncs.m_Instance)
+				{
+					ncs.m_Instance->OnDestroy();
+					ncs.DestroyScript(&ncs);
+				}
+			});
+
+		// TODO: reload Scene to reset all Entities states
 	}
 
 }

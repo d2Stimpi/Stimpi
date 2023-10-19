@@ -20,6 +20,9 @@ namespace Stimpi
 		void SetPosition(glm::vec3 position) { m_Camera->SetPosition(position); }
 		const glm::vec3& GetPosition() const { return m_Camera->GetPosition(); }
 
+		void SetRotation(float rotation) { m_Camera->SetRotation(rotation); }
+		float GetRotation() { return m_Camera->GetRotation(); }
+
 		void SetAspectRation(float width, float height) { m_AspectRatio = width / height; }
 		float GetAspectRatio() { return m_AspectRatio; }
 

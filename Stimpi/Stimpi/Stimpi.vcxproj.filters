@@ -130,6 +130,9 @@
     <ClCompile Include="src\Stimpi\Gui\Components\UIPayload.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Gui\PlayPanel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi\Core\Core.h">
@@ -182,5 +185,6 @@
     <ClInclude Include="src\Stimpi\Gui\SpriteAnimPanel.h" />
     <ClInclude Include="src\Stimpi\Graphics\Animation\Sprite.h" />
     <ClInclude Include="src\Stimpi\Gui\Components\UIPayload.h" />
+    <ClInclude Include="src\Stimpi\Gui\PlayPanel.h" />
   </ItemGroup>
 </Project>

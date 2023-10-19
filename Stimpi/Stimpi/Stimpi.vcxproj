@@ -116,6 +116,7 @@
     <ClCompile Include="src\Stimpi\Gui\ContentBrowserWindow.cpp" />
     <ClCompile Include="src\Stimpi\Gui\EditorLayer.cpp" />
     <ClCompile Include="src\Stimpi\Gui\MainMenuBar.cpp" />
+    <ClCompile Include="src\Stimpi\Gui\PlayPanel.cpp" />
     <ClCompile Include="src\Stimpi\Gui\SceneHierarchyWindow.cpp" />
     <ClCompile Include="src\Stimpi\Gui\SceneViewWindow.cpp" />
     <ClCompile Include="src\Stimpi\Gui\SpriteAnimPanel.cpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="src\Stimpi\Gui\ContentBrowserWindow.h" />
     <ClInclude Include="src\Stimpi\GUI\EditorLayer.h" />
     <ClInclude Include="src\Stimpi\Gui\MainManuBar.h" />
+    <ClInclude Include="src\Stimpi\Gui\PlayPanel.h" />
     <ClInclude Include="src\Stimpi\Gui\SceneHierarchyWindow.h" />
     <ClInclude Include="src\Stimpi\Gui\SceneViewWindow.h" />
     <ClInclude Include="src\Stimpi\Gui\SpriteAnimPanel.h" />

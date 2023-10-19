@@ -14,6 +14,7 @@
 #include "Stimpi/Gui/SceneViewWindow.h"
 #include "Stimpi/Gui/SceneHierarchyWindow.h"
 #include "Stimpi/Gui/MainManuBar.h"
+#include "Stimpi/Gui/PlayPanel.h"
 #include "Stimpi/Gui/SpriteAnimPanel.h"
 
 #include "ImGui/src/imgui.h"
@@ -40,7 +41,9 @@ namespace Stimpi
 
 		//Menus
 		MainMenuBar m_MainMenuBar;
-		//Windows/Panes same thing xD
+		//Runtime controls
+		PlayPanel m_PlayPanel;
+		//Windows/Panels same thing xD
 		SceneViewWindow m_SceneViewWindow;
 		SceneHierarchyWindow m_SceneHierarchyWindow;
 		ContentBrowserWindow m_ContentBrowserWindow;
@@ -49,7 +52,7 @@ namespace Stimpi
 
 		//Scene data
 		std::shared_ptr<Scene> m_Scene;
-		std::shared_ptr<Camera> m_SceneCamera;
+		std::shared_ptr<Camera> m_EditorCamera;
 		std::shared_ptr<CameraController> m_CameraController;
 
 		std::shared_ptr<Camera> m_BackgroundCamera;

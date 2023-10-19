@@ -3,6 +3,7 @@
 #include "Stimpi/Graphics/Texture.h"
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Scene/ScriptableEntity.h"
+#include "Stimpi/Scene/Camera.h"
 
 #include <glm/glm.hpp>
 #include <yaml-cpp/yaml.h>
@@ -117,6 +118,68 @@ namespace Stimpi
 			{
 				m_FilePath = "";
 				m_Texture = nullptr;
+			}
+		}
+	};
+
+	struct CameraComponent
+	{
+		std::shared_ptr<Camera> m_Camera = nullptr;
+		bool m_IsMain = false;
+
+		CameraComponent() = default;
+		CameraComponent(const CameraComponent&) = default;
+		CameraComponent(std::shared_ptr<Camera> camera, bool isMain)
+			: m_Camera(camera), m_IsMain(isMain) {}
+
+		void Serialize(YAML::Emitter& out)
+		{
+			out << YAML::Key << "CameraComponent";
+			out << YAML::BeginMap;
+			{
+				out << YAML::Key << "Position" << YAML::Value;
+				out << YAML::BeginSeq;
+				{
+					glm::vec3 position = m_Camera->GetOrthoCamera()->GetPosition();
+					out << position.x << position.y << position.z;
+				}
+				out << YAML::EndSeq;
+
+				out << YAML::Key << "Rotation" << YAML::Value << m_Camera->GetOrthoCamera()->GetRotation();
+
+				out << YAML::Key << "ViewQuad" << YAML::Value;
+				out << YAML::BeginSeq;
+				{
+					glm::vec4 view = m_Camera->GetOrthoCamera()->GetViewQuad();
+					out << view.x << view.y << view.z << view.w;
+				}
+				out << YAML::EndSeq;
+
+				out << YAML::Key << "IsMain" << YAML::Value << m_IsMain;
+			}
+			out << YAML::EndMap;
+		}
+
+		//De-serialize constructor
+		CameraComponent(const YAML::Node& node)
+		{
+			if (node["ViewQuad"])
+			{
+				YAML::Node view = node["ViewQuad"];
+				m_Camera = std::make_shared<Camera>(view[0].as<float>(), view[1].as<float>(), view[2].as<float>(), view[3].as<float>());
+			}
+			if (node["Position"])
+			{
+				YAML::Node positionNode = node["Position"];
+				m_Camera->SetPosition(glm::vec3(positionNode[0].as<float>(), positionNode[1].as<float>(), positionNode[2].as<float>()));
+			}
+			if (node["Rotation"])
+			{
+				m_Camera->SetRotation(node["Rotation"].as<float>());
+			}
+			if (node["IsMain"])
+			{
+				m_IsMain = node["IsMain"].as<bool>();
 			}
 		}
 	};

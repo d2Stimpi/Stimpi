@@ -28,6 +28,11 @@ namespace Stimpi
 		{
 			GetComponent<TextureComponent>().Serialize(out);
 		}
+
+		if (HasComponent<CameraComponent>())
+		{
+			GetComponent<CameraComponent>().Serialize(out);
+		}
 		out << YAML::EndMap;
 	}
 }
