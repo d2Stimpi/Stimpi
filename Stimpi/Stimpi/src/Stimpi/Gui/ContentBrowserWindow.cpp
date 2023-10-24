@@ -46,7 +46,14 @@ namespace Stimpi
 				{
 
 				}
-				UIPayload::BeginSource(PAYLOAD_TEXTURE, path.string().c_str(), path.string().length(), filenameStr.c_str());
+				if (relativePath.extension().string() == ".jpg" || relativePath.extension().string() == ".JPG")
+				{
+					UIPayload::BeginSource(PAYLOAD_TEXTURE, path.string().c_str(), path.string().length(), filenameStr.c_str());
+				}
+				if (relativePath.extension().string() == ".d2s")
+				{
+					UIPayload::BeginSource(PAYLOAD_SCENE, path.string().c_str(), path.string().length(), filenameStr.c_str());
+				}
 			}
 		}
 

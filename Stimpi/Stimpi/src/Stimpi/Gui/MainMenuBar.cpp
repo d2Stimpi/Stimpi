@@ -6,6 +6,8 @@
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/SceneSerializer.h"
 
+#include "Stimpi/Utils/PlatformUtils.h"
+
 #include "ImGui/src/imgui.h"
 #include "ImGui/src/imgui_internal.h"
 
@@ -34,14 +36,22 @@ namespace Stimpi
 					SceneManager::Instance()->NewScene();
 				}
 
-				if (ImGui::MenuItem("Load Scene")) 
+				if (ImGui::MenuItem("Open Scene", "Ctrl+O")) 
 				{
-					SceneManager::Instance()->LoadScene("..\/assets\/scenes\/TestScene_save.d2s");
+					std::string filePath = FileDialogs::OpenFile("d2S Scene (*.d2s)\0*.d2s\0");
+					if (!filePath.empty())
+					{
+						SceneManager::Instance()->LoadScene(filePath);
+					}
 				}
 
-				if (ImGui::MenuItem("Save Scene", "CTRL+S")) 
+				if (ImGui::MenuItem("Save Scene", "Ctrl+Shift+S")) 
 				{
-					SceneManager::Instance()->SaveScene("..\/assets\/scenes\/TestScene_save.d2s");
+					std::string filePath = FileDialogs::SaveFile("d2S Scene (*.d2s)\0*.d2s\0");
+					if (!filePath.empty())
+					{
+						SceneManager::Instance()->SaveScene(filePath);
+					}
 				}
 
 				ImGui::Separator();

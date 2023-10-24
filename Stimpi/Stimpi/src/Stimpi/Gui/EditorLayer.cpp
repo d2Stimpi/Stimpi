@@ -186,7 +186,7 @@ namespace Stimpi
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
 
-		// FBO Veiw sample begin
+		// FBO View sample begin
 		static ImGuiWindowFlags flags = ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoCollapse;
 		static bool closeWidget = true;
 

@@ -145,7 +145,7 @@ namespace Stimpi
 
 		UIPayload::BeginTarget(PAYLOAD_TEXTURE, [&component](void* data, uint32_t size) {
 				std::string strData = std::string((char*)data, size);
-				ST_CORE_INFO("Data landed: {0}", strData.c_str());
+				ST_CORE_INFO("Texture data dropped: {0}", strData.c_str());
 				component.SetPayload(strData);	// TODO: investigate app stuck
 			});
 	}

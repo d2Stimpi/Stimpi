@@ -127,6 +127,7 @@
     <ClCompile Include="src\Stimpi\Platform\OpenGLShader.cpp" />
     <ClCompile Include="src\Stimpi\Platform\OpenGLTexture.cpp" />
     <ClCompile Include="src\Stimpi\Platform\OpenGLVertexArrayObject.cpp" />
+    <ClCompile Include="src\Stimpi\Platform\Windows\WindowsPlatformUtils.cpp" />
     <ClCompile Include="src\Stimpi\Scene\Camera.cpp" />
     <ClCompile Include="src\Stimpi\Scene\CameraController.cpp" />
     <ClCompile Include="src\Stimpi\Scene\Entity.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="src\Stimpi\Scene\SceneManager.h" />
     <ClInclude Include="src\Stimpi\Scene\SceneSerializer.h" />
     <ClInclude Include="src\Stimpi\Scene\ScriptableEntity.h" />
+    <ClInclude Include="src\Stimpi\Utils\PlatformUtils.h" />
     <ClInclude Include="src\stpch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

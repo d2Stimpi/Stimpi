@@ -3,6 +3,8 @@
 
 #include "Stimpi/Log.h"
 #include "Stimpi/Graphics/Renderer2D.h"
+#include "Stimpi/Gui/Components/UIPayload.h"
+#include "Stimpi/Scene/SceneManager.h"
 
 namespace Stimpi
 {
@@ -22,6 +24,7 @@ namespace Stimpi
 		auto frameBuffer = Renderer2D::Instace()->GetFrameBuffer();
 
 		ImGui::Begin("OpenGL Main Scene View", &m_Show, m_Flags);
+		ImGui::BeginChild("##DropTarget-SceneView");	// Used to be able to catch drag-drop item on whole window
 
 		ImVec2 pos = ImGui::GetCursorScreenPos();
 		ImVec2 ws = ImGui::GetContentRegionAvail();
@@ -43,6 +46,15 @@ namespace Stimpi
 		}*/
 
 		ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)frameBuffer->GetTextureID(), ImVec2(pos), ImVec2(pos.x + ws.x, pos.y + ws.y), uv_min, uv_max);
+		ImGui::EndChild();
+
+		// Accept Scene as drag-drop item to load it
+		UIPayload::BeginTarget(PAYLOAD_SCENE, [](void* data, uint32_t size) {
+			std::string strData = std::string((char*)data, size);
+			ST_CORE_INFO("Scene data dropped: {0}", strData.c_str());
+			SceneManager::Instance()->LoadScene(strData);	// TODO: investigate app stuck
+			});
+
 		ImGui::End();
 	}
 
