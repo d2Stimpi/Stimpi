@@ -1,37 +1,35 @@
+TODO Next:
+- Add GUID component
+	- Update HierarchyWindow
+- Rename _Window -> _Panel
+- Add Object picking (trough frame buffer attachment)
+
 [Renderer2D]
--[DONE] Move Shader data to Submit cmd - to decouple from BeginScene function
 
 [Material]
 - Create material that wraps shader and uniforms
 
 [EditorLayer]
-- Manage active scene
-- Add Scene ref to Windows/Panes as Context
+- (Maybe?) Add Scene ref to Windows/Panes as Context
 
 [OpenGLTestLayer]
 - Figure out clear separation of Editor / Game (Runtime)
 - Should act as a "demo" app
 
-
-
-
 [UI]
-- Rename SceneConfigWindow to SceneInspectWidget
-- Window/Widget for listing loaded scenes, later file resources, etc...
-- Play button 
-	* Open fixed sized window with live game code running
-- Script component, show "external" variables in UI
+- C# Script component (Much later)
 
 [Events]
 - Move Events to separate files by type
 - Refine event types and sub-classes for easeir use
 
+
+
 [Components]
 - Add width and height to texture component
-- SubTexture for sprite and texture atlas rendering
-- NativeScripComonent
 
-
+[Bugs]
+- Removing CameraComponent when Scene is running -> Crash
 
 
 

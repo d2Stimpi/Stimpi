@@ -9,6 +9,7 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Graphics/Shader.h"
 #include "Stimpi/Graphics/Renderer2D.h"
+#include "Stimpi/Gui/EditorUtils.h"
 
 #include "Stimpi/Scene/SceneManager.h"
 
@@ -113,18 +114,21 @@ namespace Stimpi
 
 		EventDispatcher<KeyboardEvent> keyDispatcher;
 		keyDispatcher.Dispatch(e, [](KeyboardEvent* keyEvent) -> bool {
-				if (keyEvent->GetKeyCode() == SDL_SCANCODE_P && keyEvent->GetType() == KeyboardEventType::KEY_EVENT_DOWN)
-				{
-					show_scene_config_window = !show_scene_config_window;
-					return true;
-				}
-				if (keyEvent->GetKeyCode() == SDL_SCANCODE_O && keyEvent->GetType() == KeyboardEventType::KEY_EVENT_DOWN)
-				{
-					show_demo_window = !show_demo_window;
-					return true;
-				}
+			if (!EditorUtils::WantCaptureKeyboard())	// Bail out if we are processing some input text for example
 				return false;
-			});
+
+			if (keyEvent->GetKeyCode() == SDL_SCANCODE_P && keyEvent->GetType() == KeyboardEventType::KEY_EVENT_DOWN)
+			{
+				show_scene_config_window = !show_scene_config_window;
+				return true;
+			}
+			if (keyEvent->GetKeyCode() == SDL_SCANCODE_O && keyEvent->GetType() == KeyboardEventType::KEY_EVENT_DOWN)
+			{
+				show_demo_window = !show_demo_window;
+				return true;
+			}
+			return false;
+		});
 
 		if (e->GetEventType() == Stimpi::EventType::WindowEvent)
 		{

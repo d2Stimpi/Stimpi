@@ -74,7 +74,7 @@ namespace Stimpi
 		{
 			if (e->IsHandled())
 			{
-				ST_CORE_INFO("Event consumed!");
+				ST_CORE_INFO("LayerStack: Event consumed!");
 				break;
 			}
 			(*--it)->OnEvent(e);

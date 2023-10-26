@@ -45,7 +45,10 @@ namespace Stimpi
 			return m_Scene->m_Registry.all_of<T>(m_Handle);
 		}
 
+		entt::entity GetHandle() { return m_Handle; }
+
 		operator bool() const { return (uint32_t)m_Handle != 0; }
+		bool operator== (const Entity& rhs) { return m_Handle == rhs.m_Handle; }
 
 		// TODO: remove when GUID is implemented
 		operator uint32_t() const { return (uint32_t)m_Handle; }

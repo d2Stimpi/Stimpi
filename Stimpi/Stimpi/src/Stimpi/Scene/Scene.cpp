@@ -18,6 +18,9 @@ namespace Stimpi
 
 	Scene::Scene()
 	{
+		// Hack?? Create 0 value Entity and never use it. Fixes check for valid Entity
+		m_Registry.create();
+
 		m_RuntimeState = RuntimeState::STOPPED;
 		m_DefaultShader.reset(Shader::CreateShader("shaders\/shader.shader"));
 
@@ -125,6 +128,12 @@ namespace Stimpi
 
 		m_Entities.push_back(entity);
 		return entity;
+	}
+
+	void Scene::RemoveEntity(Entity entity)
+	{
+		m_Registry.destroy(entity.GetHandle());
+		m_Entities.erase(std::remove(std::begin(m_Entities), std::end(m_Entities), entity));
 	}
 
 	void Scene::SetCamera(Camera* camera)

@@ -30,6 +30,7 @@ namespace Stimpi
 		void OnEvent(Event* event);
 
 		Entity CreateEntity(const std::string& name = "");
+		void RemoveEntity(Entity entity);
 
 		void SetCamera(Camera* camera);
 		Camera* GetCamera() { return m_SceneCamera; }

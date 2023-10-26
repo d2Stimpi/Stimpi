@@ -2,6 +2,8 @@
 #include "Stimpi/Gui/SceneHierarchyWindow.h"
 
 #include "Stimpi/Gui/Components/UIPayload.h"
+#include "Stimpi/Gui/EditorUtils.h"
+
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Entity.h"
 
@@ -10,7 +12,7 @@
 
 namespace Stimpi
 {
-	Entity s_SelectedEntity;
+	Entity s_SelectedEntity = {};
 
 	SceneHierarchyWindow::SceneHierarchyWindow()
 	{
@@ -20,12 +22,15 @@ namespace Stimpi
 
 		OnSceneChangedListener onScneeChanged = [&]() {
 			ST_CORE_INFO("Scene change detected!");
+			m_ActiveScene = SceneManager::Instance()->GetActiveScene();
 			s_SelectedEntity = {};
 			m_InspectFunc = []() {
 				ImGui::Text("Nothing selected");
 			};
 		};
 		SceneManager::Instance()->RegisterOnSceneChangeListener(onScneeChanged);
+
+		m_ActiveScene = SceneManager::Instance()->GetActiveScene();
 	}
 
 	SceneHierarchyWindow::~SceneHierarchyWindow()
@@ -37,23 +42,49 @@ namespace Stimpi
 	{
 		if (m_Show)
 		{
-			auto currentScene = SceneManager::Instance()->GetActiveScene();
 			ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
 			// ImGuiTreeNodeFlags_NoTreePushOnOpen - does not require ImGui::TreePop() call
 			ImGuiTreeNodeFlags leaf_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; 
 
 			ImGui::Begin("Scene Hierarchy", &m_Show);
 
-			if (currentScene)
+			if (m_ActiveScene)
 			{
-				if (ImGui::TreeNodeEx((void*)&currentScene, node_flags | ImGuiTreeNodeFlags_DefaultOpen, "Scene"))
+				if (ImGui::TreeNodeEx((void*)&m_ActiveScene, node_flags | ImGuiTreeNodeFlags_DefaultOpen, "Scene"))
 				{
-					for (auto entity : currentScene->m_Entities)
+					// Add Entity Button
+					ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 60);
+					if (ImGui::Button(" + ##NewEntity"))
+					{
+						s_SelectedEntity = m_ActiveScene->CreateEntity("NewEntity");
+					}
+
+					// Remove Entity Button
+					ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 30);
+					if (ImGui::Button(" - ##RemoveEntity"))
+					{
+						// TODO: When GUID is added - check if selected Entity is valid
+						if (s_SelectedEntity)
+						{
+							m_ActiveScene->RemoveEntity(s_SelectedEntity);
+							m_InspectFunc = []() {
+								ImGui::Text("Nothing selected");
+							};
+							s_SelectedEntity = {};
+						}
+					}
+
+					for (auto entity : m_ActiveScene->m_Entities)
 					{
 						ImGui::PushID((uint32_t)entity);
 						auto entityTag = entity.GetComponent<TagComponent>().m_Tag;
+						
+						// Selection - TODO: will handle itself when GUID is added to Entity (currently shows 0 index selection when it should not) 
+						if (s_SelectedEntity == entity)
+						{
+							EditorUtils::RenderSelection();
+						}
 
-						/* was node_flag */
 						if (ImGui::TreeNodeEx((void*)&entity, leaf_flags,"%s", entityTag.c_str()))
 						{
 							if (ImGui::IsItemClicked())
@@ -61,8 +92,11 @@ namespace Stimpi
 								s_SelectedEntity = entity;
 								m_InspectFunc = [this, entityTag]()
 								{
-									ImGui::Text("Entity");
-									ImGui::Text("Name: %s", entityTag.c_str());
+									if (s_SelectedEntity.HasComponent<TagComponent>())
+									{
+										auto& component = s_SelectedEntity.GetComponent<TagComponent>();
+										TagComponentLayout(component);
+									}
 
 									if (s_SelectedEntity.HasComponent<QuadComponent>())
 									{
@@ -76,6 +110,13 @@ namespace Stimpi
 										ImGui::Separator();
 										auto& component = s_SelectedEntity.GetComponent<TextureComponent>();
 										TextureComponentLayout(component);
+									}
+
+									if (s_SelectedEntity.HasComponent<CameraComponent>())
+									{
+										ImGui::Separator();
+										auto& component = s_SelectedEntity.GetComponent<CameraComponent>();
+										CameraComponentLayout(component);
 									}
 
 									AddComponentLayout();
@@ -102,6 +143,23 @@ namespace Stimpi
 			m_InspectFunc();
 		}
 		ImGui::End(); // ComponentInspectorWidget
+	}
+
+	void SceneHierarchyWindow::TagComponentLayout(TagComponent& component)
+	{
+		char tagInputBuff[12] = { "EntityTag" };
+
+		if (component.m_Tag.length() < 12)
+		{
+			strcpy_s(tagInputBuff, component.m_Tag.c_str());
+		}
+
+		if (ImGui::InputText("##TagComponent", tagInputBuff, sizeof(tagInputBuff), ImGuiInputTextFlags_EnterReturnsTrue))
+		{
+			component.m_Tag = std::string(tagInputBuff);
+		}
+		EditorUtils::SetActiveItemCaptureKeyboard(false);
+		ImGui::SameLine(); ImGui::Text("Tag");
 	}
 
 	void SceneHierarchyWindow::QuadComponentLayout(QuadComponent& component)
@@ -150,10 +208,20 @@ namespace Stimpi
 			});
 	}
 
+	void SceneHierarchyWindow::CameraComponentLayout(CameraComponent& component)
+	{
+		ImGui::Text("CameraComponent"); ImGui::SameLine();
+		if (ImGui::Button("Remove##Camera"))
+		{
+			s_SelectedEntity.RemoveComponent<CameraComponent>();
+		}
+		if (ImGui::Checkbox("Main##Camera", &component.m_IsMain));
+	}
+
 	void SceneHierarchyWindow::AddComponentLayout()
 	{
 		ImGuiComboFlags flags = ImGuiComboFlags_PopupAlignLeft;
-		const char* items[] = { "QuadComponent", "TextureComponent" };
+		const char* items[] = { "QuadComponent", "TextureComponent", "CameraComponent" };
 		static uint32_t selection = 0;
 		const char* selectedPreview = items[selection];
 
@@ -191,6 +259,12 @@ namespace Stimpi
 				if (!s_SelectedEntity.HasComponent<TextureComponent>())
 				{
 					s_SelectedEntity.AddComponent<TextureComponent>("Capture.jpg");
+				}
+				break;
+			case 2: //CameraComponent
+				if (!s_SelectedEntity.HasComponent<CameraComponent>())
+				{
+					s_SelectedEntity.AddComponent<CameraComponent>(std::make_shared<Camera>(), false);
 				}
 				break;
 			default:

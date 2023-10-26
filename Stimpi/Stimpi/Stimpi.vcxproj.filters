@@ -136,6 +136,9 @@
     <ClCompile Include="src\Stimpi\Platform\Windows\WindowsPlatformUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Gui\EditorUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi\Core\Core.h">
@@ -190,5 +193,6 @@
     <ClInclude Include="src\Stimpi\Gui\Components\UIPayload.h" />
     <ClInclude Include="src\Stimpi\Gui\PlayPanel.h" />
     <ClInclude Include="src\Stimpi\Utils\PlatformUtils.h" />
+    <ClInclude Include="src\Stimpi\Gui\EditorUtils.h" />
   </ItemGroup>
 </Project>

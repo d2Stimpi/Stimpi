@@ -1,11 +1,7 @@
 #pragma once
 
 #include "Stimpi/Scene/Component.h"
-
-/**
- * TODO:
- *  - Add component to Entity button
- */
+#include "Stimpi/Scene/Scene.h"
 
 namespace Stimpi
 {
@@ -23,13 +19,17 @@ namespace Stimpi
 		void ComponentInspectorWidget();
 		
 		// Inspect UI layout parts
+		void TagComponentLayout(TagComponent& component);
 		void QuadComponentLayout(QuadComponent& component);
 		void TextureComponentLayout(TextureComponent& component);
+		void CameraComponentLayout(CameraComponent& component);
 		void AddComponentLayout();
 
 	private:
 		bool m_Show = true;
 		bool m_ShowInspect = true;
+
+		Scene* m_ActiveScene = nullptr;
 
 		std::function<void(void)> m_InspectFunc{nullptr};
 	};

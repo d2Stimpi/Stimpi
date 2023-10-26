@@ -11,6 +11,7 @@ namespace Stimpi
 	class ST_API Camera
 	{
 	public:
+		Camera();
 		Camera(float left, float right, float bottom, float top);
 		~Camera();
 
