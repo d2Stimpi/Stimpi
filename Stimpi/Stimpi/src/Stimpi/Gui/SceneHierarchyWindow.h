@@ -15,6 +15,8 @@ namespace Stimpi
 
 		void OnImGuiRender();
 
+		static void SetPickedEntity(Entity picked);
+
 	private:
 		void ComponentInspectorWidget();
 		
@@ -25,6 +27,7 @@ namespace Stimpi
 		void CameraComponentLayout(CameraComponent& component);
 		void AddComponentLayout();
 
+		void ShowSelectedEntityComponents(bool show);
 	private:
 		bool m_Show = true;
 		bool m_ShowInspect = true;

@@ -34,12 +34,16 @@ namespace Stimpi
 
 		void SetCamera(Camera* camera);
 		Camera* GetCamera() { return m_SceneCamera; }
+		Camera* GetRenderCamera() { return m_RenderCamera; } // Use this for picking so it can work in runtime
 
 		RuntimeState GetRuntimeState() { return m_RuntimeState; }
 
 		void OnScenePlay();
 		void OnScenePause();
 		void OnSceneStop();
+
+		// Mouse Picking
+		Entity MousePickEntity(uint32_t x, uint32_t y);
 
 	private:
 		entt::registry m_Registry;

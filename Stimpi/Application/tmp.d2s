@@ -1,0 +1,51 @@
+Scene:
+  Entity:
+    TagComponent:
+      Tag: ScriptedObj
+    QuadComponent:
+      - 100
+      - 100
+      - 50
+      - 50
+    TextureComponent:
+      FilePath: Picture1.jpg
+    CameraComponent:
+      Position:
+        - 0
+        - 0
+        - 0
+      Rotation: 0
+      ViewQuad:
+        - 0
+        - 1280
+        - 0
+        - 720
+      IsMain: true
+  Entity:
+    TagComponent:
+      Tag: Entity
+    QuadComponent:
+      - 0
+      - 0
+      - 50
+      - 40
+  Entity:
+    TagComponent:
+      Tag: Texture2
+    QuadComponent:
+      - 200
+      - 20
+      - 50
+      - 40
+    TextureComponent:
+      FilePath: Capture.jpg
+  Entity:
+    TagComponent:
+      Tag: Texture3
+    QuadComponent:
+      - 300
+      - 20
+      - 50
+      - 40
+    TextureComponent:
+      FilePath: Picture1.jpg

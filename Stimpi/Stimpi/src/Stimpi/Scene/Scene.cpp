@@ -187,4 +187,19 @@ namespace Stimpi
 		// TODO: reload Scene to reset all Entities states
 	}
 
+	Stimpi::Entity Scene::MousePickEntity(uint32_t x, uint32_t y)
+	{
+		Entity picked = {};
+		m_Registry.view<QuadComponent>().each([this, &picked, x, y](auto entity, auto& quad)
+			{
+				if ((x >= quad.m_X) && (x <= (quad.m_X + quad.m_Width)) &&
+					(y >= quad.m_Y) && (y <= (quad.m_Y + quad.m_Height)))
+				{
+					picked = Entity(entity, this);
+				}
+			});
+
+		return picked;
+	}
+
 }

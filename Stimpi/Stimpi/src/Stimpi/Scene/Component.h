@@ -122,6 +122,7 @@ namespace Stimpi
 		}
 	};
 
+	// TODO: add zoom value in serialization
 	struct CameraComponent
 	{
 		std::shared_ptr<Camera> m_Camera = nullptr;

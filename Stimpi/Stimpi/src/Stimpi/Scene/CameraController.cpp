@@ -2,6 +2,7 @@
 #include "Stimpi/Scene/CameraController.h"
 
 #include "Stimpi/Core/InputManager.h"
+#include "Stimpi/Log.h"
 
 namespace Stimpi
 {
@@ -24,11 +25,7 @@ namespace Stimpi
 			if (InputManager::Instance()->IsKeyPressed(ST_KEY_LCTRL) && ((e.GetType() == MouseEventType::MOUSE_EVENT_WHEELUP) || (e.GetType() == MouseEventType::MOUSE_EVENT_WHEELDOWN)))
 			{
 				width += scrollSpeed * e.GetScrollY();
-				height += scrollSpeed * e.GetScrollY();
-				if (width / m_Camera->GetAspectRatio() > height)
-					m_Camera->Resize(0.0f, width, 0.0f, width / m_Camera->GetAspectRatio());
-				else
-					m_Camera->Resize(0.0f, height * m_Camera->GetAspectRatio(), 0.0f, height);
+				m_Camera->SetZoomFactor(m_Camera->GetViewportWidth() / width);
 			}
 
 			static bool buttonHold = false;

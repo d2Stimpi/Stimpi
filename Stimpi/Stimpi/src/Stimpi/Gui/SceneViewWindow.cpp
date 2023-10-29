@@ -4,7 +4,9 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Graphics/Renderer2D.h"
 #include "Stimpi/Gui/Components/UIPayload.h"
+#include "Stimpi/Gui/SceneHierarchyWindow.h"
 #include "Stimpi/Scene/SceneManager.h"
+#include "Stimpi/Scene/Entity.h"
 
 namespace Stimpi
 {
@@ -45,6 +47,24 @@ namespace Stimpi
 			frameBuffer->Resize(((float)ws.y*1.778f), ws.y);
 		}*/
 
+		ImGuiIO& io = ImGui::GetIO();
+		if (io.MouseClicked[ImGuiMouseButton_Left] && m_Hovered)
+		{
+			ImVec2 winPos = ImGui::GetCursorScreenPos();
+			ImVec2 clickPos = io.MouseClickedPos[ImGuiMouseButton_Left];
+			ImVec2 pickPos = { clickPos.x - winPos.x, ws.y - (clickPos.y - winPos.y) };
+
+			auto scene = SceneManager::Instance()->GetActiveScene();
+			auto camera = scene->GetRenderCamera();
+			auto camPos = camera->GetPosition();
+			float zoomFactor = camera->GetZoomFactor();
+
+			auto picked = scene->MousePickEntity(zoomFactor * pickPos.x + camPos.x, zoomFactor * pickPos.y + camPos.y);
+			ST_CORE_INFO("Picked Entity: {0}", (uint32_t)picked);
+			// Pass picked Entity to SceneHierarchy panel
+			SceneHierarchyWindow::SetPickedEntity(picked);
+		}
+
 		ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)frameBuffer->GetTextureID(), ImVec2(pos), ImVec2(pos.x + ws.x, pos.y + ws.y), uv_min, uv_max);
 		ImGui::EndChild();
 
@@ -54,6 +74,7 @@ namespace Stimpi
 			ST_CORE_INFO("Scene data dropped: {0}", strData.c_str());
 			SceneManager::Instance()->LoadScene(strData);	// TODO: investigate app stuck
 			});
+
 
 		ImGui::End();
 	}

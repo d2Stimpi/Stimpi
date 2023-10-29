@@ -39,6 +39,8 @@ namespace Stimpi
 			{
 				ST_CORE_INFO("Play the scene.");
 				m_ActiveScene->OnScenePlay();
+				// Save scene as temp file so it can be restored on Scene Stop
+				SceneManager::Instance()->SaveScene("tmp.d2s");
 			}
 		}
 		else
@@ -55,6 +57,8 @@ namespace Stimpi
 		{
 			ST_CORE_INFO("Stop the scene.");
 			m_ActiveScene->OnSceneStop();
+			// Restore Scene form temp file
+			SceneManager::Instance()->LoadScene("tmp.d2s");
 		}
 
 		ImGui::End();
