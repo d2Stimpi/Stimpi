@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ImGui/src/imgui.h"
+#include "Stimpi/Core/Timestep.h"
 
 namespace Stimpi
 {

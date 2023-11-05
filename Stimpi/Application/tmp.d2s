@@ -3,8 +3,8 @@ Scene:
     TagComponent:
       Tag: ScriptedObj
     QuadComponent:
-      - 100
-      - 100
+      - 259.918182
+      - 126.613197
       - 50
       - 50
     TextureComponent:
@@ -29,6 +29,16 @@ Scene:
       - 0
       - 50
       - 40
+  Entity:
+    TagComponent:
+      Tag: Texture1
+    QuadComponent:
+      - 100
+      - 20
+      - 50
+      - 40
+    TextureComponent:
+      FilePath: Capture.jpg
   Entity:
     TagComponent:
       Tag: Texture2

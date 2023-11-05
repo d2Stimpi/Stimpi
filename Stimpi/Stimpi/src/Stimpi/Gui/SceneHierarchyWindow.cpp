@@ -75,7 +75,6 @@ namespace Stimpi
 					ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 30);
 					if (ImGui::Button(" - ##RemoveEntity"))
 					{
-						// TODO: When GUID is added - check if selected Entity is valid
 						if (s_SelectedEntity)
 						{
 							m_ActiveScene->RemoveEntity(s_SelectedEntity);
@@ -88,7 +87,6 @@ namespace Stimpi
 						ImGui::PushID((uint32_t)entity);
 						auto entityTag = entity.GetComponent<TagComponent>().m_Tag;
 						
-						// Selection - TODO: will handle itself when GUID is added to Entity (currently shows 0 index selection when it should not) 
 						if (s_SelectedEntity == entity)
 						{
 							EditorUtils::RenderSelection();
@@ -118,6 +116,11 @@ namespace Stimpi
 	{
 		if (picked)
 			s_SelectedEntity = picked;
+	}
+
+	Stimpi::Entity SceneHierarchyWindow::GetSelectedEntity()
+	{
+		return s_SelectedEntity;
 	}
 
 	void SceneHierarchyWindow::ComponentInspectorWidget()

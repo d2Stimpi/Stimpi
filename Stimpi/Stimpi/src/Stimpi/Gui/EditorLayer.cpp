@@ -10,6 +10,7 @@
 #include "Stimpi/Graphics/Shader.h"
 #include "Stimpi/Graphics/Renderer2D.h"
 #include "Stimpi/Gui/EditorUtils.h"
+#include "Stimpi/Gui/Gizmo2D.h"
 
 #include "Stimpi/Scene/SceneManager.h"
 
@@ -194,12 +195,13 @@ namespace Stimpi
 		static ImGuiWindowFlags flags = ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoCollapse;
 		static bool closeWidget = true;
 
+		/* Gizmo2D setup */
+		Gizmo2D::BeginFrame();
+
 		/* Main Menu */
 		m_MainMenuBar.OnImGuiRender();
 		/* Runtime controls */
 		m_PlayPanel.OnImGuiRender();
-		/* Scene View */
-		m_SceneViewWindow.OnImGuiRender();
 		/* Content Browser */
 		m_ContentBrowserWindow.OnImGuiRender();
 		/* Scene Hierarchy */
@@ -273,8 +275,6 @@ namespace Stimpi
 		if (show_demo_window)
 			ImGui::ShowDemoWindow(&show_demo_window);
 		
-		// Rendering
-		ImGui::Render();
 
 		// Custom Rendering stuff
 		auto canvasWidth = Stimpi::Renderer2D::Instace()->GetCanvasWidth();
@@ -291,11 +291,16 @@ namespace Stimpi
 
 		m_Scene->OnUpdate(ts);
 
+		/* Scene View - render after scene so Gizmo won't lag behind 1 frame */
+		m_SceneViewWindow.OnImGuiRender();
+
 		auto renderer = Renderer2D::Instace();
 		renderer->StartFrame();
 		renderer->DrawFrame();
 		renderer->EndFrame();
 
+		// GUI Rendering
+		ImGui::Render();
 
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

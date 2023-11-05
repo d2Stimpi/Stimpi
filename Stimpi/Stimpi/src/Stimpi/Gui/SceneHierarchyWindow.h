@@ -16,6 +16,7 @@ namespace Stimpi
 		void OnImGuiRender();
 
 		static void SetPickedEntity(Entity picked);
+		static Entity GetSelectedEntity();
 
 	private:
 		void ComponentInspectorWidget();

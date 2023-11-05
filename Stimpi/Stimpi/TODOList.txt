@@ -4,6 +4,9 @@ TODO Next:
 - Rename _Window -> _Panel
 - Add Object picking (trough frame buffer attachment)
 
+[Scale - Objects - World]
+- Object scale in meters, Camera setup so that objects are in meter scale instead of pixel
+
 [Renderer2D]
 
 [Material]

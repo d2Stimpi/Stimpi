@@ -32,6 +32,7 @@ namespace Stimpi
 			static glm::vec2 startPosition;
 			static glm::vec2 movePosition;
 			static glm::vec3 cameraStartPos;
+			float cameraZoom = m_Camera->GetZoomFactor();
 			if (InputManager::Instance()->IsMouseButtonPressed(ST_BUTTON_MIDDLE))
 			{
 				if (!buttonHold)	// Start of MMB hold
@@ -40,6 +41,7 @@ namespace Stimpi
 					cameraStartPos = m_Camera->GetPosition();
 				}
 				movePosition = startPosition - glm::vec2(e.GetX(), e.GetY());
+				movePosition = movePosition * cameraZoom;
 				m_Camera->SetPosition(cameraStartPos + glm::vec3{ movePosition.x, -movePosition.y, 0.0f });
 				buttonHold = true;
 			}
@@ -68,6 +70,8 @@ namespace Stimpi
 	{
 		if (m_Camera != nullptr)
 		{
+			// Disabled - TODO: consider other keys
+			/*
 			static float moveSpeed = 400.0f;
 			static float zoomSpeed = 10.0f;
 
@@ -80,6 +84,7 @@ namespace Stimpi
 				m_Camera->Translate({ moveSpeed * ts, 0.0f, 0.0f });
 			if (InputManager::IsKeyPressed(ST_KEY_A))
 				m_Camera->Translate({ -moveSpeed * ts, 0.0f, 0.0f });
+			*/
 		}
 	}
 }

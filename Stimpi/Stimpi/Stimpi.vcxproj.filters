@@ -139,6 +139,9 @@
     <ClCompile Include="src\Stimpi\Gui\EditorUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Gui\Gizmo2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi\Core\Core.h">
@@ -194,5 +197,6 @@
     <ClInclude Include="src\Stimpi\Gui\PlayPanel.h" />
     <ClInclude Include="src\Stimpi\Utils\PlatformUtils.h" />
     <ClInclude Include="src\Stimpi\Gui\EditorUtils.h" />
+    <ClInclude Include="src\Stimpi\Gui\Gizmo2D.h" />
   </ItemGroup>
 </Project>

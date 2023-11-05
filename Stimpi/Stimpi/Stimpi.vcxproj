@@ -116,6 +116,7 @@
     <ClCompile Include="src\Stimpi\Gui\ContentBrowserWindow.cpp" />
     <ClCompile Include="src\Stimpi\Gui\EditorLayer.cpp" />
     <ClCompile Include="src\Stimpi\Gui\EditorUtils.cpp" />
+    <ClCompile Include="src\Stimpi\Gui\Gizmo2D.cpp" />
     <ClCompile Include="src\Stimpi\Gui\MainMenuBar.cpp" />
     <ClCompile Include="src\Stimpi\Gui\PlayPanel.cpp" />
     <ClCompile Include="src\Stimpi\Gui\SceneHierarchyWindow.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="src\Stimpi\Gui\ContentBrowserWindow.h" />
     <ClInclude Include="src\Stimpi\GUI\EditorLayer.h" />
     <ClInclude Include="src\Stimpi\Gui\EditorUtils.h" />
+    <ClInclude Include="src\Stimpi\Gui\Gizmo2D.h" />
     <ClInclude Include="src\Stimpi\Gui\MainManuBar.h" />
     <ClInclude Include="src\Stimpi\Gui\PlayPanel.h" />
     <ClInclude Include="src\Stimpi\Gui\SceneHierarchyWindow.h" />
