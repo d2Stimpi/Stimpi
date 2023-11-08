@@ -24,7 +24,13 @@ namespace Stimpi
 		m_ProjectionMatrix = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
 		RecalcViewProjection();
 		// Serialization data
-		m_ViewQuad = glm::vec4(left, right, bottom, top);
+		//m_ViewQuad = glm::vec4(left, right, bottom, top);
+	}
+
+	void OrthoCamera::SetOrtho(glm::vec4 view)
+	{
+		m_ViewQuad = view;
+		Resize(view.x, view.y, view.z, view.w);
 	}
 
 	void OrthoCamera::RecalcViewProjection()

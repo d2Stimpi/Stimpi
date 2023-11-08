@@ -24,6 +24,7 @@ namespace Stimpi
 		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
 		const glm::mat4& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
 
+		void SetOrtho(glm::vec4 view);
 		// Serialization use
 		glm::vec4 GetViewQuad() { return m_ViewQuad; }
 

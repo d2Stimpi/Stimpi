@@ -23,8 +23,9 @@ namespace Stimpi
 		Entity m_Entity;
 		float m_CameraZoom;
 		GizmoAction m_Action;
+		bool m_Using; // When mouse is hovered over controls, use ot prevent running mouse picking
 
-		Context() : m_MouseHold(false), m_UsingAxis(ManipulateAxis::NONE), m_Clicked(false)
+		Context() : m_MouseHold(false), m_UsingAxis(ManipulateAxis::NONE), m_Clicked(false), m_Using(false)
 		{
 		}
 	};
@@ -156,6 +157,11 @@ namespace Stimpi
 		gContext.m_DrawList = drawlist ? drawlist : ImGui::GetWindowDrawList();
 	}
 
+	bool Gizmo2D::IsUsing()
+	{
+		return gContext.m_Using;
+	}
+
 	static void DrawTranslationArrow(ImVec2 pos, uint32_t length, uint32_t thickness)
 	{
 		ImDrawList* drawList = gContext.m_DrawList;
@@ -174,6 +180,7 @@ namespace Stimpi
 			|| gContext.m_UsingAxis == ManipulateAxis::X_AXIS)
 		{
 			colX = colHover;
+			gContext.m_Using = true;
 			CalcualteMove(ManipulateAxis::X_AXIS);
 		}
 		else
@@ -182,6 +189,7 @@ namespace Stimpi
 			|| gContext.m_UsingAxis == ManipulateAxis::Y_AXIS)
 		{
 			colY = colHover;
+			gContext.m_Using = true;
 			CalcualteMove(ManipulateAxis::Y_AXIS);
 		}
 		else
@@ -190,7 +198,12 @@ namespace Stimpi
 			|| gContext.m_UsingAxis == ManipulateAxis::XY_AXIS)
 		{
 			colC = colHover;
+			gContext.m_Using = true;
 			CalcualteMove(ManipulateAxis::XY_AXIS);
+		}
+		else
+		{
+			gContext.m_Using = false;
 		}
 
 		drawList->AddLine(pos, ImVec2(pos.x + length, pos.y), colX, thickness);
@@ -236,6 +249,7 @@ namespace Stimpi
 			|| gContext.m_UsingAxis == ManipulateAxis::X_AXIS)
 		{
 			colX = colHover;
+			gContext.m_Using = true;
 			CalcualteMove(ManipulateAxis::X_AXIS);
 		}
 		else
@@ -244,6 +258,7 @@ namespace Stimpi
 			|| gContext.m_UsingAxis == ManipulateAxis::Y_AXIS)
 		{
 			colY = colHover;
+			gContext.m_Using = true;
 			CalcualteMove(ManipulateAxis::Y_AXIS);
 		}
 		else
@@ -252,7 +267,12 @@ namespace Stimpi
 			|| gContext.m_UsingAxis == ManipulateAxis::XY_AXIS)
 		{
 			colC = colHover;
+			gContext.m_Using = true;
 			CalcualteMove(ManipulateAxis::XY_AXIS);
+		}
+		else
+		{
+			gContext.m_Using = false;
 		}
 
 		drawList->AddLine(pos, ImVec2(pos.x + length, pos.y), colX, thickness);

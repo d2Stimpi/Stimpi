@@ -52,7 +52,7 @@ namespace Stimpi
 		}*/
 
 		ImGuiIO& io = ImGui::GetIO();
-		if (io.MouseClicked[ImGuiMouseButton_Left] && m_Hovered)
+		if (io.MouseClicked[ImGuiMouseButton_Left] && m_Hovered && (Gizmo2D::IsUsing() == false))
 		{
 			ImVec2 winPos = ImGui::GetCursorScreenPos();
 			ImVec2 clickPos = io.MouseClickedPos[ImGuiMouseButton_Left];
@@ -101,7 +101,7 @@ namespace Stimpi
 		UIPayload::BeginTarget(PAYLOAD_SCENE, [](void* data, uint32_t size) {
 			std::string strData = std::string((char*)data, size);
 			ST_CORE_INFO("Scene data dropped: {0}", strData.c_str());
-			SceneManager::Instance()->LoadScene(strData);	// TODO: investigate app stuck
+			SceneManager::Instance()->LoadScene(strData);
 			});
 
 

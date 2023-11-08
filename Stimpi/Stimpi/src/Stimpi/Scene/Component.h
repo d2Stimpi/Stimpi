@@ -87,6 +87,11 @@ namespace Stimpi
 
 		operator Texture* () const { return m_Texture; }
 
+		void SetTexture(const std::string& filePath)
+		{
+			SetPayload(filePath);
+		}
+
 		// Used for DragDropTarget
 		void SetPayload(const std::string& filePath)
 		{
@@ -148,6 +153,8 @@ namespace Stimpi
 
 				out << YAML::Key << "Rotation" << YAML::Value << m_Camera->GetOrthoCamera()->GetRotation();
 
+				out << YAML::Key << "Zoom" << YAML::Value << m_Camera->GetZoomFactor();
+
 				out << YAML::Key << "ViewQuad" << YAML::Value;
 				out << YAML::BeginSeq;
 				{
@@ -177,6 +184,10 @@ namespace Stimpi
 			if (node["Rotation"])
 			{
 				m_Camera->SetRotation(node["Rotation"].as<float>());
+			}
+			if (node["Rotation"])
+			{
+				m_Camera->SetZoomFactor(node["Zoom"].as<float>());
 			}
 			if (node["IsMain"])
 			{

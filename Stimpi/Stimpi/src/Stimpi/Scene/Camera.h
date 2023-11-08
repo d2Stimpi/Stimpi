@@ -4,7 +4,6 @@
 #include "Stimpi/Graphics/OrthoCamera.h"
 
 /* Only Orthographic Camera type is supported */
-/* TODO: impl aspect ratio handling */
 
 namespace Stimpi
 {
@@ -17,6 +16,7 @@ namespace Stimpi
 
 		void Translate(glm::vec3 vector) { m_Camera->Translate(vector); }
 		void Resize(float left, float right, float bottom, float top) { m_Camera->Resize(left, right, bottom, top); }
+		void Resize(glm::vec4 view) { m_Camera->Resize(view.x, view.y, view.z, view.w); }
 
 		void SetPosition(glm::vec3 position) { m_Camera->SetPosition(position); }
 		const glm::vec3& GetPosition() const { return m_Camera->GetPosition(); }
@@ -26,6 +26,9 @@ namespace Stimpi
 
 		void SetZoomFactor(float zoom);
 		float GetZoomFactor() { return m_ZoomFactor; }
+
+		void SetOrthoView(glm::vec4 view) { m_Camera->SetOrtho(view); }
+		glm::vec4 GetOrthoView() { return m_Camera->GetViewQuad(); }
 
 		void SetAspectRation(float width, float height) { m_AspectRatio = width / height; }
 		float GetAspectRatio() { return m_AspectRatio; }

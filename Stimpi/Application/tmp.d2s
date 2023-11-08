@@ -1,34 +1,25 @@
 Scene:
   Entity:
     TagComponent:
-      Tag: ScriptedObj
-    QuadComponent:
-      - 259.918182
-      - 126.613197
-      - 50
-      - 50
-    TextureComponent:
-      FilePath: Picture1.jpg
-    CameraComponent:
-      Position:
-        - 0
-        - 0
-        - 0
-      Rotation: 0
-      ViewQuad:
-        - 0
-        - 1280
-        - 0
-        - 720
-      IsMain: true
-  Entity:
-    TagComponent:
       Tag: Entity
     QuadComponent:
       - 0
       - 0
       - 50
       - 40
+    CameraComponent:
+      Position:
+        - 0
+        - 0
+        - 0
+      Rotation: 0
+      Zoom: 0.5
+      ViewQuad:
+        - 0
+        - 1280
+        - 0
+        - 720
+      IsMain: true
   Entity:
     TagComponent:
       Tag: Texture1

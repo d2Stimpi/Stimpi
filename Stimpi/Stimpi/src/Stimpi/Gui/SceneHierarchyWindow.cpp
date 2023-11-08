@@ -7,8 +7,12 @@
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Entity.h"
 
+#include "Stimpi/Utils/PlatformUtils.h"
+
 #include "ImGui/src/imgui.h"
 #include "ImGui/src/imgui_internal.h"
+
+#include <filesystem>
 
 namespace Stimpi
 {
@@ -187,72 +191,100 @@ namespace Stimpi
 		{
 			s_SelectedEntity.RemoveComponent<TextureComponent>();
 		}
-		ImGui::Text("File path: %s", component.m_FilePath.c_str());
-
+		std::filesystem::path texturePath = component.m_FilePath.c_str();
+		if (ImGui::Button("Texture##TextureComponent"))
+		{
+			std::string filePath = FileDialogs::OpenFile("Texture (*.jpg)\0*.jpg\0(*.png)\0*.png\0");
+			if (!filePath.empty())
+			{
+				component.SetTexture(filePath);
+			}
+		}
 
 		UIPayload::BeginTarget(PAYLOAD_TEXTURE, [&component](void* data, uint32_t size) {
-				std::string strData = std::string((char*)data, size);
-				ST_CORE_INFO("Texture data dropped: {0}", strData.c_str());
-				component.SetPayload(strData);	// TODO: investigate app stuck
+			std::string strData = std::string((char*)data, size);
+			ST_CORE_INFO("Texture data dropped: {0}", strData.c_str());
+			component.SetPayload(strData);
 			});
+
+		ImGui::SameLine();
+		ImGui::Text("%s", texturePath.filename().string().c_str());
+
+		
 	}
 
 	void SceneHierarchyWindow::CameraComponentLayout(CameraComponent& component)
 	{
+		ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue;
+		glm::vec4 view = component.m_Camera->GetOrthoCamera()->GetViewQuad();
+
 		ImGui::Text("CameraComponent"); ImGui::SameLine();
 		if (ImGui::Button("Remove##Camera"))
 		{
 			s_SelectedEntity.RemoveComponent<CameraComponent>();
 		}
-		if (ImGui::Checkbox("Main##Camera", &component.m_IsMain));
+		ImGui::Checkbox("Main##Camera", &component.m_IsMain);
+
+		ImGui::PushItemWidth(80.0f);
+		ImGui::Text("left:"); 
+		ImGui::SameLine(60.f);
+		if (ImGui::InputFloat("##CameraComponent left input", &view.x, NULL, NULL, "%.3f", flags))
+			component.m_Camera->SetOrthoView(view);
+
+		ImGui::Text("right:");
+		ImGui::SameLine(60.f);
+		if (ImGui::InputFloat("##CameraComponent right input", &view.y, NULL, NULL, "%.3f", flags))
+			component.m_Camera->SetOrthoView(view);
+
+		ImGui::Text("bottom:"); 
+		ImGui::SameLine(60.f);
+		if (ImGui::InputFloat("##CameraComponent bottom input", &view.z, NULL, NULL, "%.3f", flags))
+			component.m_Camera->SetOrthoView(view);
+
+		ImGui::Text("top:"); 
+		ImGui::SameLine(60.f);
+		if (ImGui::InputFloat("##CameraComponent top input", &view.w, NULL, NULL, "%.3f", flags))
+			component.m_Camera->SetOrthoView(view);
+
+		float camZoom = 1.f / component.m_Camera->GetZoomFactor();
+		ImGui::Text("zoom:");
+		ImGui::SameLine(60.f);
+		if (ImGui::InputFloat("##CameraComponent zoom input", &camZoom, NULL, NULL, "%.3f", flags))
+			component.m_Camera->SetZoomFactor(1.f / camZoom);
+
+		ImGui::PopItemWidth();
 	}
 
 	void SceneHierarchyWindow::AddComponentLayout()
 	{
 		ImGuiComboFlags flags = ImGuiComboFlags_PopupAlignLeft | ImGuiComboFlags_NoArrowButton;
-		const char* items[] = { "QuadComponent", "TextureComponent", "CameraComponent" };
-		static uint32_t selection = 0;
 		const char* selectedPreview = "Add Component";
 
-		//ImGui::Separator();
 		ImGui::PushItemWidth(100.0f);
 		if (ImGui::BeginCombo("##AddComponentWidget", selectedPreview, flags))
 		{
-			for (uint32_t i = 0; i < IM_ARRAYSIZE(items); i++)
+			if (!s_SelectedEntity.HasComponent<QuadComponent>())
 			{
-				const bool isSelected = (selection == i);
-				if (ImGui::Selectable(items[i], isSelected))
+				if (ImGui::Selectable("QuadComponent##AddComponent"))
 				{
-					selection = i;
-					switch (selection)
-					{
-					case 0: //QuadComponent
-						if (!s_SelectedEntity.HasComponent<QuadComponent>())
-						{
-							s_SelectedEntity.AddComponent<QuadComponent>();
-						}
-						break;
-					case 1: //TextureComponent
-						if (!s_SelectedEntity.HasComponent<TextureComponent>())
-						{
-							s_SelectedEntity.AddComponent<TextureComponent>("Capture.jpg");
-						}
-						break;
-					case 2: //CameraComponent
-						if (!s_SelectedEntity.HasComponent<CameraComponent>())
-						{
-							s_SelectedEntity.AddComponent<CameraComponent>(std::make_shared<Camera>(), false);
-						}
-						break;
-					default:
-						ST_CORE_ERROR("AddComponentLayout - shoul't enter here");
-						break;
-					}
+					s_SelectedEntity.AddComponent<QuadComponent>();
 				}
+			}
 
-				// Initial focus
-				if (isSelected)
-					ImGui::SetItemDefaultFocus();
+			if (!s_SelectedEntity.HasComponent<TextureComponent>())
+			{
+				if (ImGui::Selectable("TextureComponent##AddComponent"))
+				{
+					s_SelectedEntity.AddComponent<TextureComponent>();
+				}
+			}
+
+			if (!s_SelectedEntity.HasComponent<CameraComponent>())
+			{
+				if (ImGui::Selectable("CameraComponent##AddComponent"))
+				{
+					s_SelectedEntity.AddComponent<CameraComponent>(std::make_shared<Camera>(), false);
+				}
 			}
 			ImGui::EndCombo();
 		}

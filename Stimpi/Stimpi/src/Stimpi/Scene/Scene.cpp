@@ -10,11 +10,15 @@
 
 #include "Stimpi/Core/InputManager.h"
 
+// TODO: remove enventually
+#define USE_TEST_STUFF false
+
 namespace Stimpi
 {
-
+#if USE_TEST_STUFF
 	// Test entity
 	Entity s_TestObj;
+#endif
 
 	Scene::Scene()
 	{
@@ -24,6 +28,7 @@ namespace Stimpi
 		m_RuntimeState = RuntimeState::STOPPED;
 		m_DefaultShader.reset(Shader::CreateShader("shaders\/shader.shader"));
 
+#if USE_TEST_STUFF
 		/* Test stuff below */
 		m_SubTexture = std::make_shared<SubTexture>(ResourceManager::Instance()->LoadTexture("..\/assets\/sprite_sheets\/sonic-sprite-sheet.png"), glm::vec2{ 0.0f, 0.0f }, glm::vec2{ 150.0f, 150.0f });
 
@@ -64,6 +69,7 @@ namespace Stimpi
 		};
 
 		s_TestObj.AddComponent<NativeScriptComponent>().Bind<QuadController>();
+#endif
 	}
 
 	Scene::~Scene()
@@ -109,9 +115,9 @@ namespace Stimpi
 					}
 				}
 			}
-
+#if USE_TEST_STUFF
 			Stimpi::Renderer2D::Instace()->Submit(glm::vec4{ 150.0f, 250.0f, 150.0f, 150.0f }, m_SubTexture.get(), m_DefaultShader.get());
-
+#endif
 			Stimpi::Renderer2D::Instace()->EndScene();
 		}
 	}
@@ -183,8 +189,6 @@ namespace Stimpi
 					ncs.DestroyScript(&ncs);
 				}
 			});
-
-		// TODO: reload Scene to reset all Entities states
 	}
 
 	Stimpi::Entity Scene::MousePickEntity(uint32_t x, uint32_t y)

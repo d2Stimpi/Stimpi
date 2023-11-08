@@ -26,6 +26,8 @@ namespace Stimpi
 		static void BeginFrame();
 		static void SetDrawlist(ImDrawList* drawlist);
 
+		static bool IsUsing();
+
 		static void Manipulate(Camera* camera, Entity object, GizmoAction action);
 	private:
 	};
