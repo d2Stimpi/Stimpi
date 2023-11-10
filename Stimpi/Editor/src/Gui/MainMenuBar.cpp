@@ -1,5 +1,5 @@
 #include "stpch.h"
-#include "Stimpi/Gui/MainManuBar.h"
+#include "Gui/MainManuBar.h"
 
 #include "Stimpi/Log.h"
 

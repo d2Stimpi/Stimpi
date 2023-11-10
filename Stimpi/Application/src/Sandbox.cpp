@@ -1,5 +1,5 @@
 #include "Stimpi.h"
-// Enrty point - include only once
+// Entry point - include only once
 #include "Stimpi/Core/EntryPoint.h"
 
 #include "OpenGLTestLayer.h"

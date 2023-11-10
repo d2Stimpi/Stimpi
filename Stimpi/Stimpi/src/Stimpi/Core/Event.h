@@ -175,7 +175,7 @@ namespace Stimpi
 
 	// Mainly used as filter of events based on sub-type 
 	template <typename T>
-	class EventDispatcher
+	class ST_API EventDispatcher
 	{
 		using EventFunc = std::function<bool(T*)>;
 	public:

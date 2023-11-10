@@ -26,8 +26,15 @@ namespace Stimpi
 		m_RenderedCmdCnt = 0;
 
 		// Init cmd storage
-		m_NewRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_ActiveCamera, m_VAO->VertexSize()));
-		m_ActiveNewRenderCmdIter = std::end(m_NewRenderCmds) - 1;
+		m_RenderCmds.emplace_back(std::make_shared<RenderCommand>(m_VAO->VertexSize()));
+		m_ActiveRenderCmdIter = std::end(m_RenderCmds) - 1;
+
+		// For local rendering of FBs
+		m_RenderFrameBufferShader.reset(Shader::CreateShader("..\/assets\/shaders\/framebuffer.shader"));
+		m_RenderFrameBufferCmd = std::make_shared<RenderCommand>(m_VAO->VertexSize());
+		// Populate fixed data, shader uniform is set every frame
+		m_RenderFrameBufferCmd->m_Texture = m_FrameBuffer->GetTexture();
+		m_RenderFrameBufferCmd->m_Shader = m_RenderFrameBufferShader.get();
 	}
 
 	Renderer2D::~Renderer2D()
@@ -51,10 +58,9 @@ namespace Stimpi
 	// New
 	void Renderer2D::BeginScene(OrthoCamera* camera)
 	{
-		auto currnetCmd = *m_ActiveNewRenderCmdIter;
+		auto currnetCmd = *m_ActiveRenderCmdIter;
 
 		m_ActiveCamera = camera;
-		currnetCmd->m_Camera = m_ActiveCamera;
 	}
 
 	void Renderer2D::EndScene()
@@ -65,7 +71,7 @@ namespace Stimpi
 	void Renderer2D::Submit(glm::vec4 quad, Texture* texture, Shader* shader)
 	{	
 		CheckTextureBatching(texture);
-		auto currnetCmd = *m_ActiveNewRenderCmdIter;
+		auto currnetCmd = *m_ActiveRenderCmdIter;
 
 		CheckCapacity();
 		// First time call Submit after BeginScene
@@ -81,7 +87,7 @@ namespace Stimpi
 		{
 			// If shader or texture changed
 			Flush(); 
-			currnetCmd = *m_ActiveNewRenderCmdIter;
+			currnetCmd = *m_ActiveRenderCmdIter;
 			PushQuadVertexData(currnetCmd.get(), quad);
 			currnetCmd->m_Texture = texture;
 			currnetCmd->m_Shader = shader;
@@ -98,7 +104,7 @@ namespace Stimpi
 	void Renderer2D::Submit(glm::vec4 quad, SubTexture* subtexture, Shader* shader)
 	{
 		CheckTextureBatching(subtexture->GetTexture());
-		auto currnetCmd = *m_ActiveNewRenderCmdIter;
+		auto currnetCmd = *m_ActiveRenderCmdIter;
 
 		CheckCapacity();
 		// First time call Submit after BeginScene
@@ -114,7 +120,7 @@ namespace Stimpi
 		{
 			// If shader or texture changed
 			Flush();
-			currnetCmd = *m_ActiveNewRenderCmdIter;
+			currnetCmd = *m_ActiveRenderCmdIter;
 			PushQuadVertexData(currnetCmd.get(), quad, glm::vec3{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 			currnetCmd->m_Texture = subtexture->GetTexture();
 			currnetCmd->m_Shader = shader;
@@ -135,13 +141,13 @@ namespace Stimpi
 
 	void Renderer2D::Submit(glm::vec4 quad, glm::vec3 color, Shader* shader)
 	{
-		auto currnetCmd = *m_ActiveNewRenderCmdIter;
+		auto currnetCmd = *m_ActiveRenderCmdIter;
 
 		// Flush if we have a texture set from other Submits or shader changed
 		if ((currnetCmd->m_Texture != nullptr) || (currnetCmd->m_Shader != shader))
 		{
 			Flush();
-			currnetCmd = *m_ActiveNewRenderCmdIter;
+			currnetCmd = *m_ActiveRenderCmdIter;
 		}
 
 		PushQuadVertexData(currnetCmd.get(), quad, color);
@@ -150,18 +156,24 @@ namespace Stimpi
 
 	void Renderer2D::Flush()
 	{
-		auto currnetCmd = *m_ActiveNewRenderCmdIter;
+		auto currnetCmd = *m_ActiveRenderCmdIter;
 
 		// For now set ViewProj camera uniform here
 		currnetCmd->m_Shader->SetUniform("u_ViewProjection", m_ActiveCamera->GetViewProjectionMatrix());
 
-		m_NewRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_ActiveCamera, m_VAO->VertexSize()));
-		m_ActiveNewRenderCmdIter = std::end(m_NewRenderCmds) - 1;
+		m_RenderCmds.emplace_back(std::make_shared<RenderCommand>(m_VAO->VertexSize()));
+		m_ActiveRenderCmdIter = std::end(m_RenderCmds) - 1;
 	}
 
-	void Renderer2D::RenderTarget(FrameBuffer* target)
+	void Renderer2D::RenderFrameBuffer()
 	{
-		//TODO: if needed
+		m_RenderFrameBufferShader->SetUniform("u_texture", 0);
+		m_RenderFrameBufferShader->SetUniform("u_ViewProjection", m_ActiveCamera->GetViewProjectionMatrix());
+
+		m_RenderFrameBufferCmd->ClearData();
+		PushQuadVertexData(m_RenderFrameBufferCmd.get(), glm::vec4(0.0f, 0.0f, GetCanvasWidth(), GetCanvasHeight()));
+
+		DrawRenderCmd(m_RenderFrameBufferCmd);
 	}
 
 	void Renderer2D::ResizeCanvas(uint32_t width, uint32_t height)
@@ -181,13 +193,13 @@ namespace Stimpi
 
 	void Renderer2D::DrawFrame()
 	{
-		for (auto renderCmd : m_NewRenderCmds)
+		for (auto renderCmd : m_RenderCmds)
 		{
 			// Skip last as it won't be filled with data
-			if (renderCmd != *m_ActiveNewRenderCmdIter)
+			if (renderCmd != *m_ActiveRenderCmdIter)
 				DrawRenderCmd(renderCmd);
 		}
-		m_RenderedCmdCnt = m_NewRenderCmds.size() - 1; // last won't be filled with data
+		m_RenderedCmdCnt = m_RenderCmds.size() - 1; // last won't be filled with data
 	}
 
 	void Renderer2D::EndFrame()
@@ -197,10 +209,13 @@ namespace Stimpi
 		m_FrameBuffer->Unbind();
 		m_RenderAPI->UnbindTexture();
 
+		if (m_LocalRendering)	// If app handles rendering FB locally to window
+			RenderFrameBuffer();
+
 		// Clear Render commands
-		m_NewRenderCmds.clear();
-		m_NewRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_ActiveCamera, m_VAO->VertexSize()));
-		m_ActiveNewRenderCmdIter = std::end(m_NewRenderCmds) - 1;
+		m_RenderCmds.clear();
+		m_RenderCmds.emplace_back(std::make_shared<RenderCommand>(m_VAO->VertexSize()));
+		m_ActiveRenderCmdIter = std::end(m_RenderCmds) - 1;
 
 		// Clear Debug data
 		ShowDebugData();
@@ -210,7 +225,6 @@ namespace Stimpi
 
 	void Renderer2D::DrawRenderCmd(std::shared_ptr<RenderCommand>& renderCmd)
 	{
-		auto camera = renderCmd->m_Camera;
 		auto shader = renderCmd->m_Shader;
 
 		shader->Use();
@@ -248,7 +262,7 @@ namespace Stimpi
 
 	void Renderer2D::CheckCapacity()
 	{
-		auto currnetCmd = *m_ActiveNewRenderCmdIter;
+		auto currnetCmd = *m_ActiveRenderCmdIter;
 
 		if (currnetCmd->m_VertexCount >= VERTEX_CMD_CAPACITY)
 		{
@@ -258,16 +272,16 @@ namespace Stimpi
 
 	void Renderer2D::CheckTextureBatching(Texture* texture)
 	{
-		auto found = std::find_if(std::begin(m_NewRenderCmds), std::end(m_NewRenderCmds), [&texture](auto elem) -> bool {
+		auto found = std::find_if(std::begin(m_RenderCmds), std::end(m_RenderCmds), [&texture](auto elem) -> bool {
 			if (texture != nullptr && elem->m_Texture != nullptr)
 				return texture->GetTextureID() == elem->m_Texture->GetTextureID();
 			else
 				return false;
 			});
 
-		if (found != std::end(m_NewRenderCmds))
+		if (found != std::end(m_RenderCmds))
 		{
-			m_ActiveNewRenderCmdIter = found;
+			m_ActiveRenderCmdIter = found;
 		}
 	}
 

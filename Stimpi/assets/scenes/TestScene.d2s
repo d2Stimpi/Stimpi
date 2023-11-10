@@ -8,7 +8,7 @@ Scene:
       - 50
       - 40
     TextureComponent:
-      FilePath: Capture.jpg
+      FilePath: ..\/assets/textures/Capture.jpg
   Entity:
     TagComponent:
       Tag: Texture1
@@ -18,7 +18,7 @@ Scene:
       - 50
       - 40
     TextureComponent:
-      FilePath: Capture.jpg
+      FilePath: ..\/assets/textures/Capture.jpg
   Entity:
     TagComponent:
       Tag: Texture2
@@ -28,7 +28,7 @@ Scene:
       - 50
       - 40
     TextureComponent:
-      FilePath: Capture.jpg
+      FilePath: ..\/assets/textures/Capture.jpg
   Entity:
     TagComponent:
       Tag: Texture3
@@ -38,4 +38,4 @@ Scene:
       - 50
       - 40
     TextureComponent:
-      FilePath: Picture1.jpg
+      FilePath: ..\/assets/textures/Picture1.jpg

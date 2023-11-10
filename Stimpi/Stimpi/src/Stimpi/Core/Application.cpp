@@ -3,7 +3,6 @@
 
 #include "Stimpi/Log.h"
 #include "Stimpi/Core/Layer.h"
-#include "Stimpi/Gui/EditorLayer.h"
 
 #include "Stimpi/Core/InputManager.h"
 #include "Stimpi/Core/Time.h"
@@ -25,7 +24,7 @@ namespace Stimpi
 		Stimpi::Log::Init();
 		m_Window.reset(Window::CreateAppWindow());
 		m_Context.CreateContext(m_Window.get());
-		m_LayerStack.AttachOverlay(new EditorLayer(m_Window.get(), &m_Context.GetContext()));
+		//m_LayerStack.AttachOverlay(new EditorLayer(m_Window.get(), &m_Context.GetContext()));
 	}
 
 	void Application::Run()
@@ -50,6 +49,8 @@ namespace Stimpi
 
 			Time::Instance()->FPSCapDelay();
 			Time::Instance()->FrameEnd();
+
+			m_Window->SwapWindow();
 		};
 	}
 
@@ -62,6 +63,11 @@ namespace Stimpi
 	void Application::PushLayer(Layer* layer)
 	{
 		m_LayerStack.AttachLayer(layer);
+	}
+
+	void Application::PushOverlay(Layer* layer)
+	{
+		m_LayerStack.AttachOverlay(layer);
 	}
 
 	void Application::PopLayer(Layer* layer)
@@ -84,20 +90,24 @@ namespace Stimpi
 						Stop();
 						return true;
 					}
+					if (e->GetType() == WindowEventType::WINDOW_EVENT_RESIZE)
+					{
+						m_Window->OnResizeEvent(e->GetWidth(), e->GetHeight());
+					}
 					return false;
-					});
+				});
 
 				EventDispatcher<KeyboardEvent> keyboardDispatcher;
 				keyboardDispatcher.Dispatch(event, [&](KeyboardEvent* e) -> bool {
 					InputManager::Instance()->AddEvent(*e);
 					return InputManager::Instance()->HandleKeyboardEvent(*e);
-					});
+				});
 
 				EventDispatcher<MouseEvent> mouseDispatcher;
 				mouseDispatcher.Dispatch(event, [&](MouseEvent* e) -> bool {
 					InputManager::Instance()->AddEvent(*e);
 					return InputManager::Instance()->HandleMouseEvent(*e);
-					});
+				});
 
 				m_LayerStack.OnEvent(event);
 			}

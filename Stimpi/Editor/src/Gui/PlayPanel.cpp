@@ -1,5 +1,5 @@
 #include "stpch.h"
-#include "Stimpi/Gui/PlayPanel.h"
+#include "Gui/PlayPanel.h"
 
 #include "Stimpi/Log.h"
 #include "Stimpi/Scene/SceneManager.h"

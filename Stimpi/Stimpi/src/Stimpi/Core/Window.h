@@ -25,7 +25,10 @@ namespace Stimpi
 		virtual void Deinit() = 0;
 		virtual bool PollEvent(Event** e) = 0;
 
-		//OnEvent Callbacks
+		// Perform Render buffer swapping
+		virtual void SwapWindow() = 0;
+
+		// OnEvent Callbacks
 		virtual void OnResizeEvent(uint32_t width, uint32_t height) = 0;
 
 		static Window* CreateAppWindow();
@@ -50,7 +53,10 @@ namespace Stimpi
 		void Deinit() override;
 		bool PollEvent(Event** e) override;
 
-		//OnEvent Callbacks
+		// Perform Render buffer swapping
+		void SwapWindow() override;
+
+		// OnEvent Callbacks
 		void OnResizeEvent(uint32_t width, uint32_t height) override;
 
 		SDL_Window* GetSDLWindow() { return m_Window; }

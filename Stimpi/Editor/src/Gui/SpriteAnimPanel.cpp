@@ -1,5 +1,5 @@
 #include "stpch.h"
-#include "Stimpi/Gui/SpriteAnimPanel.h"
+#include "Gui/SpriteAnimPanel.h"
 
 #include "Stimpi/Scene/ResourceManager.h"
 

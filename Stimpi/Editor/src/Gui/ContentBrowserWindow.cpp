@@ -1,8 +1,7 @@
-#include "stpch.h"
-#include "Stimpi/Gui/ContentBrowserWindow.h"
+#include "Gui/ContentBrowserWindow.h"
 
 #include "Stimpi/Log.h"
-#include "Stimpi/Gui/Components/UIPayload.h"
+#include "Gui/Components/UIPayload.h"
 
 #include "ImGui/src/imgui.h"
 

@@ -20,15 +20,14 @@ namespace Stimpi
 
 	struct RenderCommand
 	{
-		OrthoCamera* m_Camera; // use in Renderer2D to map cmds by camera
 		Shader* m_Shader;
 		Texture* m_Texture;
 		std::vector<VertexData> m_VertexData;
 		uint32_t m_VertexCount;
 		uint32_t m_VertexSize;
 
-		RenderCommand(OrthoCamera* camera, uint32_t vertexSize)
-			: m_Camera(camera), m_Shader(nullptr), m_Texture(nullptr), m_VertexData({}), m_VertexCount(0), m_VertexSize(vertexSize)
+		RenderCommand(uint32_t vertexSize)
+			: m_Shader(nullptr), m_Texture(nullptr), m_VertexData({}), m_VertexCount(0), m_VertexSize(vertexSize)
 		{}
 
 		uint32_t Size() { return m_VertexCount * m_VertexSize; }
@@ -44,6 +43,12 @@ namespace Stimpi
 
 			m_VertexData.push_back(vertex);
 			m_VertexCount++;
+		}
+
+		void ClearData()
+		{
+			m_VertexData.clear();
+			m_VertexCount = 0;
 		}
 	};
 }

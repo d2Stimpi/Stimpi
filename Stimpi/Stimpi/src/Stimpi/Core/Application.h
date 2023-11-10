@@ -20,14 +20,16 @@ namespace Stimpi
 		void Stop();
 
 		void PushLayer(Layer* layer);
+		void PushOverlay(Layer* layer);
 		void PopLayer(Layer* layer);
 	private:
 		void ProcessEvents();
+	protected:
+		std::unique_ptr<Window> m_Window;
+		GLContext m_Context;
 	private:
 		LayerStack m_LayerStack;
 		bool m_Running{ true };
-		std::unique_ptr<Window> m_Window;
-		GLContext m_Context;
 
 	};
 

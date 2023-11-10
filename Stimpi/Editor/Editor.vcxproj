@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{54cb00a0-4473-4d25-915b-23880e2f3ac3}</ProjectGuid>
+    <RootNamespace>Editor</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)\bin\$(Configuration)-$(Platform)\$(ProjectName)</OutDir>
+    <IntDir>$(SolutionDir)\bin-int\$(Configuration)-$(Platform)\$(ProjectName)</IntDir>
+    <IncludePath>D:\libs\glad\include;D:\libs\yaml-cpp\include;D:\GitHub\Stimpi\Stimpi\src\Stimpi\Vendor;D:\libs\glm-0.9.9.7\glm;D:\SDL2-devel-2.0.20-VC\SDL2-2.0.20\include;D:\libs\spdlog\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\libs\yaml-cpp\Debug;D:\GitHub\Stimpi\lib\Debug-x64\GLAD;D:\GitHub\Stimpi\lib\Debug-x64\ImGUI;D:\SDL2-devel-2.0.20-VC\SDL2-2.0.20\lib\x64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\GitHub\Stimpi\ImGUI;D:\GitHub\Stimpi\Editor\src;D:\GitHub\Stimpi\Stimpi\src;</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>GLAD.lib;ImGUI.lib;yaml-cppd.lib;SDL2.lib;SDL2main.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\EditorApplication.cpp" />
+    <ClCompile Include="src\Gui\Components\UIPayload.cpp" />
+    <ClCompile Include="src\Gui\ContentBrowserWindow.cpp" />
+    <ClCompile Include="src\Gui\EditorLayer.cpp" />
+    <ClCompile Include="src\Gui\EditorUtils.cpp" />
+    <ClCompile Include="src\Gui\Gizmo2D.cpp" />
+    <ClCompile Include="src\Gui\MainMenuBar.cpp" />
+    <ClCompile Include="src\Gui\PlayPanel.cpp" />
+    <ClCompile Include="src\Gui\SceneHierarchyWindow.cpp" />
+    <ClCompile Include="src\Gui\SceneViewWindow.cpp" />
+    <ClCompile Include="src\Gui\SpriteAnimPanel.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Stimpi\Stimpi.vcxproj">
+      <Project>{8a1aeeef-25ba-48f2-97e0-5d6722d82a8f}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Gui\Components\UIPayload.h" />
+    <ClInclude Include="src\Gui\ContentBrowserWindow.h" />
+    <ClInclude Include="src\Gui\EditorLayer.h" />
+    <ClInclude Include="src\Gui\EditorUtils.h" />
+    <ClInclude Include="src\Gui\Gizmo2D.h" />
+    <ClInclude Include="src\Gui\MainManuBar.h" />
+    <ClInclude Include="src\Gui\PlayPanel.h" />
+    <ClInclude Include="src\Gui\SceneHierarchyWindow.h" />
+    <ClInclude Include="src\Gui\SceneViewWindow.h" />
+    <ClInclude Include="src\Gui\SpriteAnimPanel.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\checkerboard.shader" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

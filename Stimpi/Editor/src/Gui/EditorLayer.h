@@ -10,18 +10,18 @@
 #include "Stimpi/Scene/Scene.h"
 
 // Gui includes
-#include "Stimpi/Gui/ContentBrowserWindow.h"
-#include "Stimpi/Gui/SceneViewWindow.h"
-#include "Stimpi/Gui/SceneHierarchyWindow.h"
-#include "Stimpi/Gui/MainManuBar.h"
-#include "Stimpi/Gui/PlayPanel.h"
-#include "Stimpi/Gui/SpriteAnimPanel.h"
+#include "Gui/ContentBrowserWindow.h"
+#include "Gui/SceneViewWindow.h"
+#include "Gui/SceneHierarchyWindow.h"
+#include "Gui/MainManuBar.h"
+#include "Gui/PlayPanel.h"
+#include "Gui/SpriteAnimPanel.h"
 
 #include "ImGui/src/imgui.h"
 
 namespace Stimpi
 {
-	class ST_API EditorLayer : public Layer
+	class EditorLayer : public Layer
 	{
 	public:
 		EditorLayer(Window* window, SDL_GLContext* glContext);

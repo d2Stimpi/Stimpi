@@ -1,5 +1,5 @@
 #include "stpch.h"
-#include "Stimpi/Gui/EditorUtils.h"
+#include "Gui/EditorUtils.h"
 
 #include "ImGui/src/imgui.h"
 #include "ImGui/src/imgui_internal.h"

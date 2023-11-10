@@ -72,7 +72,8 @@
       <AdditionalDependencies>yaml-cppd.lib;glfw3.lib;opengl32.lib;GLAD.lib;OpenGL32.lib;ImGUI.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)\bin\$(Configuration)-$(Platform)\$(ProjectName)\$(ProjectName).dll $(SolutionDir)\bin\$(Configuration)-$(Platform)\Application\$(ProjectName).dll </Command>
+      <Command>copy $(SolutionDir)\bin\$(Configuration)-$(Platform)\$(ProjectName)\$(ProjectName).dll $(SolutionDir)\bin\$(Configuration)-$(Platform)\Application\$(ProjectName).dll;
+copy $(SolutionDir)\bin\$(Configuration)-$(Platform)\$(ProjectName)\$(ProjectName).dll $(SolutionDir)\bin\$(Configuration)-$(Platform)\Editor\$(ProjectName).dll </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -81,7 +82,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>STIMPI_BUILD_DLL;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -112,16 +113,6 @@
     <ClCompile Include="src\Stimpi\Graphics\Texture.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\VertexArrayObject.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\BufferObject.cpp" />
-    <ClCompile Include="src\Stimpi\Gui\Components\UIPayload.cpp" />
-    <ClCompile Include="src\Stimpi\Gui\ContentBrowserWindow.cpp" />
-    <ClCompile Include="src\Stimpi\Gui\EditorLayer.cpp" />
-    <ClCompile Include="src\Stimpi\Gui\EditorUtils.cpp" />
-    <ClCompile Include="src\Stimpi\Gui\Gizmo2D.cpp" />
-    <ClCompile Include="src\Stimpi\Gui\MainMenuBar.cpp" />
-    <ClCompile Include="src\Stimpi\Gui\PlayPanel.cpp" />
-    <ClCompile Include="src\Stimpi\Gui\SceneHierarchyWindow.cpp" />
-    <ClCompile Include="src\Stimpi\Gui\SceneViewWindow.cpp" />
-    <ClCompile Include="src\Stimpi\Gui\SpriteAnimPanel.cpp" />
     <ClCompile Include="src\Stimpi\Log.cpp" />
     <ClCompile Include="src\Stimpi\Platform\OpenGLBufferObject.cpp" />
     <ClCompile Include="src\Stimpi\Platform\OpenGLFrameBuffer.cpp" />
@@ -166,16 +157,6 @@
     <ClInclude Include="src\Stimpi\Graphics\Texture.h" />
     <ClInclude Include="src\Stimpi\Graphics\VertexArrayObject.h" />
     <ClInclude Include="src\Stimpi\Graphics\BufferObject.h" />
-    <ClInclude Include="src\Stimpi\Gui\Components\UIPayload.h" />
-    <ClInclude Include="src\Stimpi\Gui\ContentBrowserWindow.h" />
-    <ClInclude Include="src\Stimpi\GUI\EditorLayer.h" />
-    <ClInclude Include="src\Stimpi\Gui\EditorUtils.h" />
-    <ClInclude Include="src\Stimpi\Gui\Gizmo2D.h" />
-    <ClInclude Include="src\Stimpi\Gui\MainManuBar.h" />
-    <ClInclude Include="src\Stimpi\Gui\PlayPanel.h" />
-    <ClInclude Include="src\Stimpi\Gui\SceneHierarchyWindow.h" />
-    <ClInclude Include="src\Stimpi\Gui\SceneViewWindow.h" />
-    <ClInclude Include="src\Stimpi\Gui\SpriteAnimPanel.h" />
     <ClInclude Include="src\Stimpi\Log.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLBufferObject.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLFrameBuffer.h" />
@@ -194,6 +175,9 @@
     <ClInclude Include="src\Stimpi\Scene\ScriptableEntity.h" />
     <ClInclude Include="src\Stimpi\Utils\PlatformUtils.h" />
     <ClInclude Include="src\stpch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\framebuffer.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

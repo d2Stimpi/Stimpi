@@ -85,9 +85,15 @@ namespace Stimpi
 		return pending;
 	}
 
+	void WindowSDL::SwapWindow()
+	{
+		SDL_GL_SwapWindow(m_Window);
+	}
+
 	void WindowSDL::OnResizeEvent(uint32_t width, uint32_t height)
 	{
-		
+		if (Renderer2D::Instace()->IsLocalRendering()) // Do not resize for editor rendering
+			Renderer2D::Instace()->ResizeCanvas(width, height);
 	}
 
 	SDL_Window* GetSDLWindow(Window* window)

@@ -1,8 +1,8 @@
 #include "stpch.h"
-#include "Stimpi/Gui/SceneHierarchyWindow.h"
+#include "Gui/SceneHierarchyWindow.h"
 
-#include "Stimpi/Gui/Components/UIPayload.h"
-#include "Stimpi/Gui/EditorUtils.h"
+#include "Gui/Components/UIPayload.h"
+#include "Gui/EditorUtils.h"
 
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Entity.h"

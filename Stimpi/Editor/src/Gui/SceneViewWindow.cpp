@@ -1,14 +1,14 @@
 #include "stpch.h"
-#include "Stimpi/Gui/SceneViewWindow.h"
+#include "Gui/SceneViewWindow.h"
 
 #include "Stimpi/Log.h"
 #include "Stimpi/Core/InputManager.h"
 #include "Stimpi/Graphics/Renderer2D.h"
-#include "Stimpi/Gui/Components/UIPayload.h"
-#include "Stimpi/Gui/SceneHierarchyWindow.h"
-#include "Stimpi/Gui/Gizmo2D.h"
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Entity.h"
+#include "Gui/Components/UIPayload.h"
+#include "Gui/SceneHierarchyWindow.h"
+#include "Gui/Gizmo2D.h"
 
 
 namespace Stimpi

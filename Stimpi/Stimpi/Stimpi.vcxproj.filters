@@ -19,9 +19,6 @@
     <ClCompile Include="src\Stimpi\Core\Layer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Stimpi\Gui\EditorLayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Stimpi\Core\Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -85,25 +82,16 @@
     <ClCompile Include="src\Stimpi\Scene\ResourceManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Stimpi\Gui\SceneHierarchyWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Stimpi\Scene\SceneManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Graphics\OrthoCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Stimpi\Gui\MainMenuBar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Stimpi\Scene\SceneSerializer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Graphics\RenderCommand.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Gui\SceneViewWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Scene\Camera.cpp">
@@ -115,31 +103,13 @@
     <ClCompile Include="src\stpch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Stimpi\Gui\ContentBrowserWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Stimpi\Graphics\SubTexture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Gui\SpriteAnimPanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Graphics\Animation\Sprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Stimpi\Gui\Components\UIPayload.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Gui\PlayPanel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Stimpi\Platform\Windows\WindowsPlatformUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Gui\EditorUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Gui\Gizmo2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -152,7 +122,6 @@
     <ClInclude Include="src\Stimpi\Log.h" />
     <ClInclude Include="src\Stimpi\Core\Layer.h" />
     <ClInclude Include="src\Stimpi\Core\Event.h" />
-    <ClInclude Include="src\Stimpi\GUI\EditorLayer.h" />
     <ClInclude Include="src\Stimpi\Core\Window.h" />
     <ClInclude Include="src\Stimpi\Graphics\OpenGL.h" />
     <ClInclude Include="src\Stimpi\Graphics\Shader.h" />
@@ -177,26 +146,20 @@
     <ClInclude Include="src\Stimpi\Core\Time.h" />
     <ClInclude Include="src\Stimpi\Scene\ResourceManager.h" />
     <ClInclude Include="src\Stimpi\Core\Timestep.h" />
-    <ClInclude Include="src\Stimpi\Gui\SceneHierarchyWindow.h" />
     <ClInclude Include="src\Stimpi\Scene\SceneManager.h" />
     <ClInclude Include="src\Stimpi\Graphics\OrthoCamera.h" />
-    <ClInclude Include="src\Stimpi\Gui\MainManuBar.h" />
     <ClInclude Include="src\Stimpi\Scene\SceneSerializer.h" />
     <ClInclude Include="src\Stimpi\Graphics\RenderCommand.h" />
-    <ClInclude Include="src\Stimpi\Gui\SceneViewWindow.h" />
     <ClInclude Include="src\Stimpi\Scene\ScriptableEntity.h" />
     <ClInclude Include="src\Stimpi\Scene\Camera.h" />
     <ClInclude Include="src\Stimpi\Scene\CameraController.h" />
     <ClInclude Include="src\Stimpi\Core\MouseCodes.h" />
     <ClInclude Include="src\stpch.h" />
-    <ClInclude Include="src\Stimpi\Gui\ContentBrowserWindow.h" />
     <ClInclude Include="src\Stimpi\Graphics\SubTexture.h" />
-    <ClInclude Include="src\Stimpi\Gui\SpriteAnimPanel.h" />
     <ClInclude Include="src\Stimpi\Graphics\Animation\Sprite.h" />
-    <ClInclude Include="src\Stimpi\Gui\Components\UIPayload.h" />
-    <ClInclude Include="src\Stimpi\Gui\PlayPanel.h" />
     <ClInclude Include="src\Stimpi\Utils\PlatformUtils.h" />
-    <ClInclude Include="src\Stimpi\Gui\EditorUtils.h" />
-    <ClInclude Include="src\Stimpi\Gui\Gizmo2D.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\framebuffer.shader" />
   </ItemGroup>
 </Project>

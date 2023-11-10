@@ -10,7 +10,7 @@
 
 #include "Stimpi/Core/InputManager.h"
 
-// TODO: remove enventually
+// TODO: remove eventually
 #define USE_TEST_STUFF false
 
 namespace Stimpi
@@ -26,7 +26,7 @@ namespace Stimpi
 		m_Registry.create();
 
 		m_RuntimeState = RuntimeState::STOPPED;
-		m_DefaultShader.reset(Shader::CreateShader("shaders\/shader.shader"));
+		m_DefaultShader.reset(Shader::CreateShader("..\/assets\/shaders\/shader.shader"));
 
 #if USE_TEST_STUFF
 		/* Test stuff below */

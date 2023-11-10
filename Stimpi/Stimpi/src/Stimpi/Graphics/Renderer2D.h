@@ -33,6 +33,9 @@ namespace Stimpi
 
 		static Renderer2D* Instace();
 
+		void EnableLocalRendering(bool enable) { m_LocalRendering = enable; };
+		bool IsLocalRendering() { return m_LocalRendering; }
+
 		void BeginScene(OrthoCamera* camera);
 		void EndScene();
 		
@@ -43,7 +46,7 @@ namespace Stimpi
 		void Submit(glm::vec4 quad, Shader* shader);
 		void Submit(glm::vec4 quad, glm::vec3 color, Shader* shader);
 
-		void RenderTarget(FrameBuffer* target); // TODO: needed?
+		void RenderFrameBuffer(); // Used for Application to handle displaying of FBs ourselves
 
 		// Event Callbacks
 		void ResizeCanvas(uint32_t width, uint32_t height);
@@ -52,12 +55,12 @@ namespace Stimpi
 		uint32_t GetCanvasWidth() { if (m_FrameBuffer != nullptr) return m_FrameBuffer->GetWidth(); };
 		uint32_t GetCanvasHeight() { if (m_FrameBuffer != nullptr) return m_FrameBuffer->GetHeight(); };
 
-		//Render queued stuff
+		// Render queued stuff
 		void StartFrame();
 		void DrawFrame();
 		void EndFrame();
 
-		//To link with ImGui
+		// To link with ImGui
 		FrameBuffer* GetFrameBuffer();
 
 	private:
@@ -69,16 +72,22 @@ namespace Stimpi
 
 		void ShowDebugData();
 	private:
+		bool m_LocalRendering = false;
+
 		RenderAPI* m_RenderAPI;
 		std::shared_ptr<FrameBuffer> m_FrameBuffer;
 		std::shared_ptr<VertexArrayObject> m_VAO;
 		std::shared_ptr<BufferObject> m_VBO;
 
 		OrthoCamera* m_ActiveCamera;
-		std::vector<std::shared_ptr<RenderCommand>> m_NewRenderCmds;
-		std::vector<std::shared_ptr<RenderCommand>>::iterator m_ActiveNewRenderCmdIter;
+		std::vector<std::shared_ptr<RenderCommand>> m_RenderCmds;
+		std::vector<std::shared_ptr<RenderCommand>>::iterator m_ActiveRenderCmdIter;
 
-		//Dbg data per frame
+		// For local rendering
+		std::shared_ptr<Shader> m_RenderFrameBufferShader;
+		std::shared_ptr<RenderCommand> m_RenderFrameBufferCmd;
+
+		// Debug data per frame
 		uint32_t m_DrawCallCnt;
 		uint32_t m_RenderedCmdCnt;
 	};

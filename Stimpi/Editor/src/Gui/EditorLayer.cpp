@@ -1,5 +1,5 @@
 #include "stpch.h"
-#include "Stimpi/Gui/EditorLayer.h"
+#include "Gui/EditorLayer.h"
 
 #include "ImGui/src/imgui.h"
 #include "ImGui/src/backend/imgui_impl_sdl2.h"
@@ -9,8 +9,8 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Graphics/Shader.h"
 #include "Stimpi/Graphics/Renderer2D.h"
-#include "Stimpi/Gui/EditorUtils.h"
-#include "Stimpi/Gui/Gizmo2D.h"
+#include "Gui/EditorUtils.h"
+#include "Gui/Gizmo2D.h"
 
 #include "Stimpi/Scene/SceneManager.h"
 
@@ -96,6 +96,7 @@ namespace Stimpi
 	void EditorLayer::OnAttach()
 	{
 		ST_CORE_TRACE("{0}: OnAttach", m_DebugName);
+		Renderer2D::Instace()->EnableLocalRendering(false);
 	}
 
 	void EditorLayer::OnDetach()
@@ -315,6 +316,7 @@ namespace Stimpi
 			ImGui::RenderPlatformWindowsDefault();
 			SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
 		}
-		SDL_GL_SwapWindow(m_Window->GetSDLWindow());
+		// Moved to Window class
+		//SDL_GL_SwapWindow(m_Window->GetSDLWindow());
 	}
 }
