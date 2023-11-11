@@ -3,8 +3,17 @@
 
 #include "Stimpi/Log.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/glm.hpp>
+
 namespace Stimpi
 {
+	// Quad vertex data for rendering by Transforms
+	glm::vec4 s_QuadVertexPosition[4] = { {-0.5f, -0.5f, 0.0f, 1.0f},
+										  { 0.5f, -0.5f, 0.0f, 1.0f},
+										  { 0.5f,  0.5f, 0.0f, 1.0f},
+										  {-0.5f,  0.5f, 0.0f, 1.0f} };
+
 	Renderer2D::Renderer2D()
 	{
 		m_RenderAPI = RenderAPI::CreateRenderAPI();
@@ -70,6 +79,64 @@ namespace Stimpi
 	
 	void Renderer2D::Submit(glm::vec4 quad, Texture* texture, Shader* shader)
 	{	
+		glm::vec3 position = { quad.x + quad.z / 2.0f, quad.y + quad.w / 2.0f, 0.0f };
+		glm::vec2 scale = { quad.z, quad.w };
+
+		Submit(position, scale, 0.0f, texture, shader);
+	}
+
+	void Renderer2D::Submit(glm::vec4 quad, SubTexture* subtexture, Shader* shader)
+	{
+		glm::vec3 position = { quad.x + quad.z / 2.0f, quad.y + quad.w / 2.0f, 0.0f };
+		glm::vec2 scale = { quad.z, quad.w };
+
+		Submit(position, scale, 0.0f, subtexture, shader);
+	}
+
+	void Renderer2D::Submit(glm::vec4 quad, Shader* shader)
+	{
+		Submit(quad, (Texture*)nullptr, shader);
+	}
+
+	void Renderer2D::Submit(glm::vec4 quad, glm::vec3 color, Shader* shader)
+	{
+		glm::vec3 position = { quad.x + quad.z / 2.0f, quad.y + quad.w / 2.0f, 0.0f };
+		glm::vec2 scale = { quad.z, quad.w };
+
+		Submit(position, scale, 0.0f, color, shader);
+	}
+
+	void Renderer2D::Submit(glm::vec4 quad, float rotation, Texture* texture, Shader* shader)
+	{
+		glm::vec3 position = { quad.x + quad.z / 2.0f, quad.y + quad.w / 2.0f, 0.0f };
+		glm::vec2 scale = { quad.z, quad.w };
+
+		Submit(position, scale, rotation, texture, shader);
+	}
+
+	void Renderer2D::Submit(glm::vec4 quad, float rotation, SubTexture* subtexture, Shader* shader)
+	{
+		glm::vec3 position = { quad.x + quad.z / 2.0f, quad.y + quad.w / 2.0f, 0.0f };
+		glm::vec2 scale = { quad.z, quad.w };
+
+		Submit(position, scale, rotation, subtexture, shader);
+	}
+
+	void Renderer2D::Submit(glm::vec4 quad, float rotation, Shader* shader)
+	{
+		Submit(quad, rotation, (Texture*)nullptr, shader);
+	}
+
+	void Renderer2D::Submit(glm::vec4 quad, float rotation, glm::vec3 color, Shader* shader)
+	{
+		glm::vec3 position = { quad.x + quad.z / 2.0f, quad.y + quad.w / 2.0f, 0.0f };
+		glm::vec2 scale = { quad.z, quad.w };
+
+		Submit(position, scale, rotation, color, shader);
+	}
+
+	void Renderer2D::Submit(glm::vec3 pos, glm::vec2 scale, float rotation, Texture* texture, Shader* shader)
+	{
 		CheckTextureBatching(texture);
 		auto currnetCmd = *m_ActiveRenderCmdIter;
 
@@ -77,18 +144,18 @@ namespace Stimpi
 		// First time call Submit after BeginScene
 		if ((currnetCmd->m_Texture == nullptr) && ((currnetCmd->m_Shader == nullptr)))
 		{
-			PushQuadVertexData(currnetCmd.get(), quad);
+			PushTransformedVertexData(currnetCmd.get(), pos, scale, rotation);
 			currnetCmd->m_Texture = texture;
 			currnetCmd->m_Shader = shader;
 
 			shader->SetUniform("u_texture", 0);
-		} 
+		}
 		else if ((currnetCmd->m_Texture != texture) || (currnetCmd->m_Shader != shader))
 		{
 			// If shader or texture changed
-			Flush(); 
+			Flush();
 			currnetCmd = *m_ActiveRenderCmdIter;
-			PushQuadVertexData(currnetCmd.get(), quad);
+			PushTransformedVertexData(currnetCmd.get(), pos, scale, rotation);
 			currnetCmd->m_Texture = texture;
 			currnetCmd->m_Shader = shader;
 
@@ -97,11 +164,11 @@ namespace Stimpi
 		else
 		{
 			// Batching vertex data
-			PushQuadVertexData(currnetCmd.get(), quad);
+			PushTransformedVertexData(currnetCmd.get(), pos, scale, rotation);
 		}
 	}
 
-	void Renderer2D::Submit(glm::vec4 quad, SubTexture* subtexture, Shader* shader)
+	void Renderer2D::Submit(glm::vec3 pos, glm::vec2 scale, float rotation, SubTexture* subtexture, Shader* shader)
 	{
 		CheckTextureBatching(subtexture->GetTexture());
 		auto currnetCmd = *m_ActiveRenderCmdIter;
@@ -110,7 +177,7 @@ namespace Stimpi
 		// First time call Submit after BeginScene
 		if ((currnetCmd->m_Texture == nullptr) && ((currnetCmd->m_Shader == nullptr)))
 		{
-			PushQuadVertexData(currnetCmd.get(), quad, glm::vec3{1.0f}, subtexture->GetUVMin(), subtexture->GetUVMax());
+			PushTransformedVertexData(currnetCmd.get(), pos, scale, rotation, glm::vec3{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 			currnetCmd->m_Texture = subtexture->GetTexture();
 			currnetCmd->m_Shader = shader;
 
@@ -121,7 +188,7 @@ namespace Stimpi
 			// If shader or texture changed
 			Flush();
 			currnetCmd = *m_ActiveRenderCmdIter;
-			PushQuadVertexData(currnetCmd.get(), quad, glm::vec3{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+			PushTransformedVertexData(currnetCmd.get(), pos, scale, rotation, glm::vec3{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 			currnetCmd->m_Texture = subtexture->GetTexture();
 			currnetCmd->m_Shader = shader;
 
@@ -130,16 +197,16 @@ namespace Stimpi
 		else
 		{
 			// Batching vertex data
-			PushQuadVertexData(currnetCmd.get(), quad, glm::vec3{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+			PushTransformedVertexData(currnetCmd.get(), pos, scale, rotation, glm::vec3{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 		}
 	}
 
-	void Renderer2D::Submit(glm::vec4 quad, Shader* shader)
+	void Renderer2D::Submit(glm::vec3 pos, glm::vec2 scale, float rotation, Shader* shader)
 	{
-		Submit(quad, (Texture*)nullptr, shader);
+		Submit(pos, scale, rotation, (Texture*)nullptr, shader);
 	}
 
-	void Renderer2D::Submit(glm::vec4 quad, glm::vec3 color, Shader* shader)
+	void Renderer2D::Submit(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color, Shader* shader)
 	{
 		auto currnetCmd = *m_ActiveRenderCmdIter;
 
@@ -150,7 +217,7 @@ namespace Stimpi
 			currnetCmd = *m_ActiveRenderCmdIter;
 		}
 
-		PushQuadVertexData(currnetCmd.get(), quad, color);
+		PushTransformedVertexData(currnetCmd.get(), pos, scale, rotation, color);
 		currnetCmd->m_Shader = shader;
 	}
 
@@ -286,19 +353,25 @@ namespace Stimpi
 	}
 
 	void Renderer2D::PushQuadVertexData(RenderCommand* cmd, glm::vec4 quad, glm::vec3 color /*= { 1.0f, 1.0f, 1.0f }*/, glm::vec2 min /*= { 0.0f, 0.0f }*/, glm::vec2 max /*= { 1.0f, 1.0f }*/)
-	{
-		auto left = quad.x;
-		auto right = quad.x + quad.z;
-		auto bottom = quad.y;
-		auto top = quad.y + quad.w;
-		
-		cmd->PushVertex({ left, bottom, 0.0f }, color, { min.x, min.y });
-		cmd->PushVertex({ right, top, 0.0f }, color, { max.x, max.y });
-		cmd->PushVertex({ left, top, 0.0f }, color, { min.x, max.y });
-		
-		cmd->PushVertex({ left, bottom, 0.0f }, color, { min.x, min.y });
-		cmd->PushVertex({ right, bottom, 0.0f }, color, { max.x, min.y });
-		cmd->PushVertex({ right, top, 0.0f }, color, { max.x, max.y });
+	{	
+		glm::vec3 position = { quad.x + quad.z / 2.0f, quad.y + quad.w / 2.0f, 0.0f};
+		glm::vec2 size = { quad.z, quad.w };
+
+		PushTransformedVertexData(cmd, position, size, 0.0f, color, min, max);
 	}
 
+	void Renderer2D::PushTransformedVertexData(RenderCommand* cmd, glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color /*= { 1.0f, 1.0f, 1.0f }*/, glm::vec2 min /*= { 0.0f, 0.0f }*/, glm::vec2 max /*= { 1.0f, 1.0f }*/)
+	{
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) *
+			glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f)) *
+			glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f));
+
+		cmd->PushVertex(transform * s_QuadVertexPosition[0], color, { min.x, min.y });
+		cmd->PushVertex(transform * s_QuadVertexPosition[1], color, { max.x, min.y });
+		cmd->PushVertex(transform * s_QuadVertexPosition[2], color, { max.x, max.y });
+
+		cmd->PushVertex(transform * s_QuadVertexPosition[2], color, { max.x, max.y });
+		cmd->PushVertex(transform * s_QuadVertexPosition[3], color, { min.x, max.y });
+		cmd->PushVertex(transform * s_QuadVertexPosition[0], color, { min.x, min.y });
+	}
 }

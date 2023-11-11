@@ -44,19 +44,21 @@ namespace Stimpi
 		float m_Y{ 0.0f };
 		float m_Width{ 0.0f };
 		float m_Height{ 0.0f };
+		float m_Rotation{ 0.0f };
 
 		QuadComponent() = default;
 		QuadComponent(const QuadComponent&) = default;
-		QuadComponent(const glm::vec4& quad)
-			: m_X(quad.x), m_Y(quad.y), m_Width(quad.z), m_Height(quad.w) {}
+		QuadComponent(const glm::vec4& quad, float rotation = 0.0f)
+			: m_X(quad.x), m_Y(quad.y), m_Width(quad.z), m_Height(quad.w), m_Rotation(rotation) {}
 
 		operator glm::vec4() const { return glm::vec4(m_X, m_Y, m_Width, m_Height); }
+		glm::vec3 Center() { return glm::vec3(m_X + m_Width / 2.f, m_Y + m_Width / 2.f, 0.f); }
 
 		void Serialize(YAML::Emitter& out)
 		{
 			out << YAML::Key << "QuadComponent";
 			out << YAML::BeginSeq;
-				out << m_X << m_Y << m_Width << m_Height;
+				out << m_X << m_Y << m_Width << m_Height << m_Rotation;
 			out << YAML::EndSeq;
 		}
 
@@ -67,6 +69,8 @@ namespace Stimpi
 			m_Y = node[1].as<float>();
 			m_Width = node[2].as<float>();
 			m_Height = node[3].as<float>();
+			if (node[4])
+				m_Rotation = node[4].as<float>();
 		}
 	};
 

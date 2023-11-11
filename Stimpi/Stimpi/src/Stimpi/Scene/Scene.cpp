@@ -31,10 +31,11 @@ namespace Stimpi
 #if USE_TEST_STUFF
 		/* Test stuff below */
 		m_SubTexture = std::make_shared<SubTexture>(ResourceManager::Instance()->LoadTexture("..\/assets\/sprite_sheets\/sonic-sprite-sheet.png"), glm::vec2{ 0.0f, 0.0f }, glm::vec2{ 150.0f, 150.0f });
+		m_TestTexture = ResourceManager::Instance()->LoadTexture("..\/assets\/textures\/Picture1.jpg");
 
 		s_TestObj = CreateEntity("ScriptedObj");
 		s_TestObj.AddComponent<QuadComponent>(glm::vec4{ 100.0f, 100.0f, 50.0f, 50.0f });
-		s_TestObj.AddComponent<TextureComponent>("Picture1.jpg");
+		s_TestObj.AddComponent<TextureComponent>("..\/assets\/textures\/Picture1.jpg");
 
 		auto camera = std::make_shared<Camera>(0.0f, 1280.0f, 0.0f, 720.0f);
 		s_TestObj.AddComponent<CameraComponent>(camera, true);
@@ -106,17 +107,19 @@ namespace Stimpi
 			{
 				if (entity.HasComponent<QuadComponent>())
 				{
-					auto quad = entity.GetComponent<QuadComponent>();
+					auto& quad = entity.GetComponent<QuadComponent>();
 					if (entity.HasComponent<TextureComponent>())
 					{
-						auto texture = entity.GetComponent<TextureComponent>();
+						auto& texture = entity.GetComponent<TextureComponent>();
 						if (texture)
-							Renderer2D::Instace()->Submit(quad, texture, m_DefaultShader.get());
+							Renderer2D::Instace()->Submit(quad, quad.m_Rotation, texture, m_DefaultShader.get());
 					}
 				}
 			}
 #if USE_TEST_STUFF
-			Stimpi::Renderer2D::Instace()->Submit(glm::vec4{ 150.0f, 250.0f, 150.0f, 150.0f }, m_SubTexture.get(), m_DefaultShader.get());
+			//Stimpi::Renderer2D::Instace()->Submit(glm::vec4{ 150.0f, 250.0f, 150.0f, 150.0f }, m_SubTexture.get(), m_DefaultShader.get());
+			Stimpi::Renderer2D::Instace()->Submit(glm::vec3{ 225.0f, 220.0f, 0.0f }, glm::vec2{ 50.0f, 40.0f }, 15.0f, m_TestTexture, m_DefaultShader.get());
+			Stimpi::Renderer2D::Instace()->Submit(glm::vec4{ 350.0f, 250.0f, 150.0f, 150.0f }, 45.0f, m_TestTexture, m_DefaultShader.get());
 #endif
 			Stimpi::Renderer2D::Instace()->EndScene();
 		}

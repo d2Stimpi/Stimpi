@@ -39,12 +39,25 @@ namespace Stimpi
 		void BeginScene(OrthoCamera* camera);
 		void EndScene();
 		
-		// New
 		void Flush();
+		
+		// Quad rendering - TODO: to be removed
 		void Submit(glm::vec4 quad, Texture* texture, Shader* shader);
 		void Submit(glm::vec4 quad, SubTexture* subtexture, Shader* shader);
 		void Submit(glm::vec4 quad, Shader* shader);
 		void Submit(glm::vec4 quad, glm::vec3 color, Shader* shader);
+
+		// Rotating Quad rendering
+		void Submit(glm::vec4 quad, float rotation, Texture* texture, Shader* shader);
+		void Submit(glm::vec4 quad, float rotation, SubTexture* subtexture, Shader* shader);
+		void Submit(glm::vec4 quad, float rotation, Shader* shader);
+		void Submit(glm::vec4 quad, float rotation, glm::vec3 color, Shader* shader);
+
+		// Rendering by Transforms
+		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, Texture* texture, Shader* shader);
+		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, SubTexture* subtexture, Shader* shader);
+		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, Shader* shader);
+		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color, Shader* shader);
 
 		void RenderFrameBuffer(); // Used for Application to handle displaying of FBs ourselves
 
@@ -65,6 +78,7 @@ namespace Stimpi
 
 	private:
 		void PushQuadVertexData(RenderCommand* cmd, glm::vec4 quad, glm::vec3 color = { 1.0f, 1.0f, 1.0f }, glm::vec2 min = { 0.0f, 0.0f }, glm::vec2 max = { 1.0f, 1.0f });
+		void PushTransformedVertexData(RenderCommand* cmd, glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color = { 1.0f, 1.0f, 1.0f }, glm::vec2 min = { 0.0f, 0.0f }, glm::vec2 max = { 1.0f, 1.0f });
 		void DrawRenderCmd(std::shared_ptr<RenderCommand>& renderCmd);
 
 		void CheckCapacity();

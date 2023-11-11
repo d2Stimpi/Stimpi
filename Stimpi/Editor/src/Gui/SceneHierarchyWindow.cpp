@@ -20,10 +20,6 @@ namespace Stimpi
 
 	SceneHierarchyWindow::SceneHierarchyWindow()
 	{
-		m_InspectFunc = []() {
-			ImGui::Text("Nothing selected");
-		};
-
 		OnSceneChangedListener onScneeChanged = [&]() {
 			ST_CORE_INFO("Scene change detected!");
 			m_ActiveScene = SceneManager::Instance()->GetActiveScene();
@@ -132,7 +128,6 @@ namespace Stimpi
 		if (ImGui::Begin("Component inspector", &m_ShowInspect))
 		{
 			ShowSelectedEntityComponents((bool)s_SelectedEntity);
-			m_InspectFunc();
 		}
 		ImGui::End(); // ComponentInspectorWidget
 	}
@@ -146,13 +141,17 @@ namespace Stimpi
 			strcpy_s(tagInputBuff, component.m_Tag.c_str());
 		}
 
-		ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth() - 105);
-		if (ImGui::InputText("##TagComponent", tagInputBuff, sizeof(tagInputBuff), ImGuiInputTextFlags_EnterReturnsTrue))
+		ImGui::Separator();
+		if (ImGui::CollapsingHeader("TagComponent", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			component.m_Tag = std::string(tagInputBuff);
+			ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth());
+			if (ImGui::InputText("##TagComponent", tagInputBuff, sizeof(tagInputBuff), ImGuiInputTextFlags_EnterReturnsTrue))
+			{
+				component.m_Tag = std::string(tagInputBuff);
+			}
+			EditorUtils::SetActiveItemCaptureKeyboard(false);
+			ImGui::PopItemWidth();
 		}
-		EditorUtils::SetActiveItemCaptureKeyboard(false);
-		ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 90); AddComponentLayout();
 	}
 
 	void SceneHierarchyWindow::QuadComponentLayout(QuadComponent& component)
@@ -162,55 +161,71 @@ namespace Stimpi
 		float y = component.m_Y;
 		float w = component.m_Width;
 		float h = component.m_Height;
+		float rota = component.m_Rotation;
 
-		ImGui::Text("QuadComponent"); ImGui::SameLine();
-		if (ImGui::Button("Remove##Quad"))
+		ImGui::Separator();
+		if (ImGui::CollapsingHeader("QuadComponent", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			s_SelectedEntity.RemoveComponent<QuadComponent>();
+			ImGui::PushItemWidth(80.0f);
+			if (ImGui::InputFloat("##QuadComponent X input", &x, NULL, NULL, "%.3f", flags))
+				component.m_X = x;
+			ImGui::SameLine(); ImGui::Text("X position");
+			if (ImGui::InputFloat("##QuadComponent Y input", &y, NULL, NULL, "%.3f", flags))
+				component.m_Y = y;
+			ImGui::SameLine(); ImGui::Text("Y position");
+			if (ImGui::InputFloat("##QuadComponent W input", &w, NULL, NULL, "%.3f", flags))
+				component.m_Width = w;
+			ImGui::SameLine(); ImGui::Text("Width");
+			if (ImGui::InputFloat("##QuadComponent H input", &h, NULL, NULL, "%.3f", flags))
+				component.m_Height = h;
+			ImGui::SameLine(); ImGui::Text("Height");
+			if (ImGui::InputFloat("##QuadComponent R input", &rota, NULL, NULL, "%.3f", flags))
+				component.m_Rotation = rota;
+			ImGui::SameLine(); ImGui::Text("Rotation");
+			ImGui::PopItemWidth();
+			if (ImGui::Button("Remove##Quad"))
+			{
+				s_SelectedEntity.RemoveComponent<QuadComponent>();
+			}
 		}
-		ImGui::PushItemWidth(80.0f);
-		ImGui::Text("X:"); ImGui::SameLine();
-		if (ImGui::InputFloat("##QuadComponent X input", &x, NULL, NULL, "%.3f", flags))
-			component.m_X = x;
-		ImGui::Text("Y:"); ImGui::SameLine();
-		if (ImGui::InputFloat("##QuadComponent Y input", &y, NULL, NULL, "%.3f", flags))
-			component.m_Y = y;
-		ImGui::Text("W:"); ImGui::SameLine();
-		if (ImGui::InputFloat("##QuadComponent W input", &w, NULL, NULL, "%.3f", flags))
-			component.m_Width = w;
-		ImGui::Text("H:"); ImGui::SameLine();
-		if (ImGui::InputFloat("##QuadComponent h input", &h, NULL, NULL, "%.3f", flags))
-			component.m_Height = h;
-		ImGui::PopItemWidth();
 	}
 
 	void SceneHierarchyWindow::TextureComponentLayout(TextureComponent& component)
 	{
-		ImGui::Text("TextureComponent"); ImGui::SameLine();
-		if (ImGui::Button("Remove##Texture"))
+		ImGui::Separator();
+		if (ImGui::CollapsingHeader("TextureComponent", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			s_SelectedEntity.RemoveComponent<TextureComponent>();
-		}
-		std::filesystem::path texturePath = component.m_FilePath.c_str();
-		if (ImGui::Button("Texture##TextureComponent"))
-		{
-			std::string filePath = FileDialogs::OpenFile("Texture (*.jpg)\0*.jpg\0(*.png)\0*.png\0");
-			if (!filePath.empty())
+			std::filesystem::path texturePath = component.m_FilePath.c_str();
+
+			ImGui::PushItemWidth(80.0f);
+			if (ImGui::Button("Texture##TextureComponent"))
 			{
-				component.SetTexture(filePath);
+				std::string filePath = FileDialogs::OpenFile("Texture (*.jpg)\0*.jpg\0(*.png)\0*.png\0");
+				if (!filePath.empty())
+				{
+					component.SetTexture(filePath);
+				}
+			}
+			ImGui::PopItemWidth();
+
+
+			UIPayload::BeginTarget(PAYLOAD_TEXTURE, [&component](void* data, uint32_t size) {
+				std::string strData = std::string((char*)data, size);
+				ST_CORE_INFO("Texture data dropped: {0}", strData.c_str());
+				component.SetPayload(strData);
+				});
+
+			ImGui::SameLine();
+			if (texturePath.has_filename())
+				ImGui::Text("%s", texturePath.filename().string().c_str());
+			else
+				ImGui::Text("Add Texture");
+
+			if (ImGui::Button("Remove##Texture"))
+			{
+				s_SelectedEntity.RemoveComponent<TextureComponent>();
 			}
 		}
-
-		UIPayload::BeginTarget(PAYLOAD_TEXTURE, [&component](void* data, uint32_t size) {
-			std::string strData = std::string((char*)data, size);
-			ST_CORE_INFO("Texture data dropped: {0}", strData.c_str());
-			component.SetPayload(strData);
-			});
-
-		ImGui::SameLine();
-		ImGui::Text("%s", texturePath.filename().string().c_str());
-
-		
 	}
 
 	void SceneHierarchyWindow::CameraComponentLayout(CameraComponent& component)
@@ -218,41 +233,44 @@ namespace Stimpi
 		ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue;
 		glm::vec4 view = component.m_Camera->GetOrthoCamera()->GetViewQuad();
 
-		ImGui::Text("CameraComponent"); ImGui::SameLine();
-		if (ImGui::Button("Remove##Camera"))
+		ImGui::Separator();
+		if (ImGui::CollapsingHeader("CameraComponent", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			s_SelectedEntity.RemoveComponent<CameraComponent>();
+			ImGui::Checkbox("Main##Camera", &component.m_IsMain);
+
+			ImGui::PushItemWidth(80.0f);
+			if (ImGui::InputFloat("##CameraComponent left input", &view.x, NULL, NULL, "%.3f", flags))
+				component.m_Camera->SetOrthoView(view);
+			ImGui::SameLine();
+			ImGui::Text("Left");
+
+			if (ImGui::InputFloat("##CameraComponent right input", &view.y, NULL, NULL, "%.3f", flags))
+				component.m_Camera->SetOrthoView(view);
+			ImGui::SameLine();
+			ImGui::Text("Right");
+
+			if (ImGui::InputFloat("##CameraComponent bottom input", &view.z, NULL, NULL, "%.3f", flags))
+				component.m_Camera->SetOrthoView(view);
+			ImGui::SameLine();
+			ImGui::Text("Bottom");
+
+			if (ImGui::InputFloat("##CameraComponent top input", &view.w, NULL, NULL, "%.3f", flags))
+				component.m_Camera->SetOrthoView(view);
+			ImGui::SameLine();
+			ImGui::Text("Top");
+
+			float camZoom = 1.f / component.m_Camera->GetZoomFactor();
+			if (ImGui::InputFloat("##CameraComponent zoom input", &camZoom, NULL, NULL, "%.3f", flags))
+				component.m_Camera->SetZoomFactor(1.f / camZoom);
+			ImGui::SameLine();
+			ImGui::Text("Camera Zoom");
+			ImGui::PopItemWidth();
+
+			if (ImGui::Button("Remove##Camera"))
+			{
+				s_SelectedEntity.RemoveComponent<CameraComponent>();
+			}
 		}
-		ImGui::Checkbox("Main##Camera", &component.m_IsMain);
-
-		ImGui::PushItemWidth(80.0f);
-		ImGui::Text("left:"); 
-		ImGui::SameLine(60.f);
-		if (ImGui::InputFloat("##CameraComponent left input", &view.x, NULL, NULL, "%.3f", flags))
-			component.m_Camera->SetOrthoView(view);
-
-		ImGui::Text("right:");
-		ImGui::SameLine(60.f);
-		if (ImGui::InputFloat("##CameraComponent right input", &view.y, NULL, NULL, "%.3f", flags))
-			component.m_Camera->SetOrthoView(view);
-
-		ImGui::Text("bottom:"); 
-		ImGui::SameLine(60.f);
-		if (ImGui::InputFloat("##CameraComponent bottom input", &view.z, NULL, NULL, "%.3f", flags))
-			component.m_Camera->SetOrthoView(view);
-
-		ImGui::Text("top:"); 
-		ImGui::SameLine(60.f);
-		if (ImGui::InputFloat("##CameraComponent top input", &view.w, NULL, NULL, "%.3f", flags))
-			component.m_Camera->SetOrthoView(view);
-
-		float camZoom = 1.f / component.m_Camera->GetZoomFactor();
-		ImGui::Text("zoom:");
-		ImGui::SameLine(60.f);
-		if (ImGui::InputFloat("##CameraComponent zoom input", &camZoom, NULL, NULL, "%.3f", flags))
-			component.m_Camera->SetZoomFactor(1.f / camZoom);
-
-		ImGui::PopItemWidth();
 	}
 
 	void SceneHierarchyWindow::AddComponentLayout()
@@ -260,7 +278,7 @@ namespace Stimpi
 		ImGuiComboFlags flags = ImGuiComboFlags_PopupAlignLeft | ImGuiComboFlags_NoArrowButton;
 		const char* selectedPreview = "Add Component";
 
-		ImGui::PushItemWidth(100.0f);
+		ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth());
 		if (ImGui::BeginCombo("##AddComponentWidget", selectedPreview, flags))
 		{
 			if (!s_SelectedEntity.HasComponent<QuadComponent>())
@@ -295,41 +313,35 @@ namespace Stimpi
 	{
 		if (show)
 		{
-			m_InspectFunc = [this]()
+			AddComponentLayout();
+
+			if (s_SelectedEntity.HasComponent<TagComponent>())
 			{
-				if (s_SelectedEntity.HasComponent<TagComponent>())
-				{
-					auto& component = s_SelectedEntity.GetComponent<TagComponent>();
-					TagComponentLayout(component);
-				}
+				auto& component = s_SelectedEntity.GetComponent<TagComponent>();
+				TagComponentLayout(component);
+			}
 
-				if (s_SelectedEntity.HasComponent<QuadComponent>())
-				{
-					ImGui::Separator();
-					auto& component = s_SelectedEntity.GetComponent<QuadComponent>();
-					QuadComponentLayout(component);
-				}
+			if (s_SelectedEntity.HasComponent<QuadComponent>())
+			{
+				auto& component = s_SelectedEntity.GetComponent<QuadComponent>();
+				QuadComponentLayout(component);
+			}
 
-				if (s_SelectedEntity.HasComponent<TextureComponent>())
-				{
-					ImGui::Separator();
-					auto& component = s_SelectedEntity.GetComponent<TextureComponent>();
-					TextureComponentLayout(component);
-				}
+			if (s_SelectedEntity.HasComponent<TextureComponent>())
+			{
+				auto& component = s_SelectedEntity.GetComponent<TextureComponent>();
+				TextureComponentLayout(component);
+			}
 
-				if (s_SelectedEntity.HasComponent<CameraComponent>())
-				{
-					ImGui::Separator();
-					auto& component = s_SelectedEntity.GetComponent<CameraComponent>();
-					CameraComponentLayout(component);
-				}
-			};
+			if (s_SelectedEntity.HasComponent<CameraComponent>())
+			{
+				auto& component = s_SelectedEntity.GetComponent<CameraComponent>();
+				CameraComponentLayout(component);
+			}
 		}
 		else
 		{
-			m_InspectFunc = []() {
-				ImGui::Text("Nothing selected");
-			};
+			ImGui::Text("Nothing selected");
 		}
 	}
 

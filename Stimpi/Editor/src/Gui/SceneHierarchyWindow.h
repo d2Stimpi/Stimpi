@@ -34,7 +34,5 @@ namespace Stimpi
 		bool m_ShowInspect = true;
 
 		Scene* m_ActiveScene = nullptr;
-
-		std::function<void(void)> m_InspectFunc{nullptr};
 	};
 }

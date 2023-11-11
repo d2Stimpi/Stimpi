@@ -57,6 +57,7 @@ namespace Stimpi
 
 		//Test
 		std::shared_ptr<SubTexture> m_SubTexture;
+		Texture* m_TestTexture;
 
 		friend class Entity;
 		friend class SceneSerializer;
