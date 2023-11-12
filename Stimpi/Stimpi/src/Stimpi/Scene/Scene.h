@@ -14,6 +14,8 @@
 #include <entt/entt.hpp>
 #include <yaml-cpp/yaml.h>
 
+class b2World;
+
 namespace Stimpi
 {
 	class Entity;
@@ -52,12 +54,15 @@ namespace Stimpi
 
 		Camera* m_SceneCamera = nullptr; // Created outside of scene (Editor)
 		Camera* m_RenderCamera = nullptr; // Scene will use Camera Component in Runtime state
-		//Temp shader
+		// Temp shader
 		std::shared_ptr<Stimpi::Shader> m_DefaultShader;
 
-		//Test
+		// Test
 		std::shared_ptr<SubTexture> m_SubTexture;
 		Texture* m_TestTexture;
+
+		// Physics
+		b2World* m_PhysicsDWorld = nullptr;
 
 		friend class Entity;
 		friend class SceneSerializer;

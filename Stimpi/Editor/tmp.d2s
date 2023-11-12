@@ -7,6 +7,7 @@ Scene:
       - 0
       - 50
       - 40
+      - 0
     CameraComponent:
       Position:
         - 0
@@ -16,28 +17,30 @@ Scene:
       Zoom: 1
       ViewQuad:
         - 0
-        - 1280
+        - 128
         - 0
-        - 720
+        - 72
       IsMain: true
   Entity:
     TagComponent:
       Tag: Texture1
     QuadComponent:
-      - 100
-      - 20
+      - 39
+      - 30
       - 50
       - 40
+      - 0
     TextureComponent:
       FilePath: ..\/assets/textures/Capture.jpg
   Entity:
     TagComponent:
       Tag: Texture2
     QuadComponent:
-      - 200
-      - 20
-      - 50
-      - 40
+      - 31.5
+      - 13.5
+      - 10
+      - 1
+      - 0
     TextureComponent:
       FilePath: ../assets/textures/Capture.jpg
   Entity:
@@ -48,5 +51,6 @@ Scene:
       - 20
       - 50
       - 40
+      - 0
     TextureComponent:
       FilePath: ../assets/textures/Picture1.jpg

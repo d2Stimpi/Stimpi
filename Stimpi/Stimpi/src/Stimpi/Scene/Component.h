@@ -53,6 +53,8 @@ namespace Stimpi
 
 		operator glm::vec4() const { return glm::vec4(m_X, m_Y, m_Width, m_Height); }
 		glm::vec3 Center() { return glm::vec3(m_X + m_Width / 2.f, m_Y + m_Width / 2.f, 0.f); }
+		float HalfWidth() { return m_Width / 2.0f; }
+		float HalfHeight() { return m_Height / 2.0f; }
 
 		void Serialize(YAML::Emitter& out)
 		{
@@ -213,6 +215,38 @@ namespace Stimpi
 			InstantiateScript = []() { return static_cast<ScriptableEntity*>(new T()); };
 			DestroyScript = [](NativeScriptComponent* nsc) { delete nsc->m_Instance; nsc->m_Instance = nullptr; };
 		}
+	};
+
+	// Physics
+
+	struct RigidBody2DComponent
+	{
+		enum class BodyType { STATIC = 0, DYNAMIC, KINEMATIC };
+
+		BodyType m_Type = BodyType::STATIC;
+		bool m_FixedRotation = false;
+		// For runtime
+		void* m_RuntimeBody = nullptr;
+
+		RigidBody2DComponent() = default;
+		RigidBody2DComponent(const RigidBody2DComponent&) = default;
+	};
+
+	struct BoxCollider2DComponent
+	{
+		glm::vec2 m_Offset = { 0.0f, 0.0f };
+		glm::vec2 m_Size = { 0.5f, 0.5f };	// Represents the 1m unit and Renderer's quad size
+
+		float m_Density = 1.0f;
+		float m_Friction = 0.5f;
+		float m_Restitution = 0.0f;
+		float m_RestitutionThreshold = 0.5f;
+
+		// For runtime
+		void* m_RuntimeFixture = nullptr;
+
+		BoxCollider2DComponent() = default;
+		BoxCollider2DComponent(const BoxCollider2DComponent&) = default;
 	};
 }
 

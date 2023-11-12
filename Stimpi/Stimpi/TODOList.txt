@@ -35,5 +35,5 @@ TODO Next:
 [Bugs/Issue]
 - Removing CameraComponent when Scene is running -> Crash
 
-
+- Premake: figure out how to get _DEBUG in preprocessor
 

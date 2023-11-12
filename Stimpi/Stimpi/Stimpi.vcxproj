@@ -47,8 +47,8 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\bin\$(Configuration)-$(Platform)\$(ProjectName)</OutDir>
     <IntDir>$(SolutionDir)\bin-int\$(Configuration)-$(Platform)\$(ProjectName)</IntDir>
-    <IncludePath>D:\GitHub\Stimpi\Stimpi\src;D:\libs\yaml-cpp\include;D:\GitHub\Stimpi\Stimpi\src\Stimpi\Vendor;D:\libs\stbimg;D:\libs\glfw-3.3.8.bin.WIN64\include;D:\libs\glm-0.9.9.7\glm;D:\libs\glad\include;D:\SDL2-devel-2.0.20-VC\SDL2-2.0.20\include;D:\libs\spdlog\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\libs\yaml-cpp\Debug;D:\libs\glfw-3.3.8.bin.WIN64\lib-vc2019;D:\GitHub\Stimpi\lib\Debug-x64\GLAD;D:\GitHub\Stimpi\lib\Debug-x64\ImGUI;D:\SDL2-devel-2.0.20-VC\SDL2-2.0.20\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\GitHub\Stimpi\Stimpi\vendor\Box2D\include;D:\GitHub\Stimpi\Stimpi\src;D:\libs\yaml-cpp\include;D:\GitHub\Stimpi\Stimpi\src\Stimpi\Vendor;D:\libs\stbimg;D:\libs\glfw-3.3.8.bin.WIN64\include;D:\libs\glm-0.9.9.7\glm;D:\libs\glad\include;D:\SDL2-devel-2.0.20-VC\SDL2-2.0.20\include;D:\libs\spdlog\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\GitHub\Stimpi\Stimpi\vendor\Box2D\bin\Debug-x64\Box2D;D:\libs\yaml-cpp\Debug;D:\libs\glfw-3.3.8.bin.WIN64\lib-vc2019;D:\GitHub\Stimpi\lib\Debug-x64\GLAD;D:\GitHub\Stimpi\lib\Debug-x64\ImGUI;D:\SDL2-devel-2.0.20-VC\SDL2-2.0.20\lib\x64;$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -69,7 +69,9 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>yaml-cppd.lib;glfw3.lib;opengl32.lib;GLAD.lib;OpenGL32.lib;ImGUI.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Box2D.lib;yaml-cppd.lib;glfw3.lib;opengl32.lib;GLAD.lib;OpenGL32.lib;ImGUI.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)\bin\$(Configuration)-$(Platform)\$(ProjectName)\$(ProjectName).dll $(SolutionDir)\bin\$(Configuration)-$(Platform)\Application\$(ProjectName).dll;

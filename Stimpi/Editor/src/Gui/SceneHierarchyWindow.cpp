@@ -12,6 +12,7 @@
 #include "ImGui/src/imgui.h"
 #include "ImGui/src/imgui_internal.h"
 
+#include <glm/gtc/type_ptr.hpp>
 #include <filesystem>
 
 namespace Stimpi
@@ -141,17 +142,15 @@ namespace Stimpi
 			strcpy_s(tagInputBuff, component.m_Tag.c_str());
 		}
 
-		ImGui::Separator();
-		if (ImGui::CollapsingHeader("TagComponent", ImGuiTreeNodeFlags_DefaultOpen))
+		
+		ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth() - 105);
+		if (ImGui::InputText("##TagComponent", tagInputBuff, sizeof(tagInputBuff), ImGuiInputTextFlags_EnterReturnsTrue))
 		{
-			ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth());
-			if (ImGui::InputText("##TagComponent", tagInputBuff, sizeof(tagInputBuff), ImGuiInputTextFlags_EnterReturnsTrue))
-			{
-				component.m_Tag = std::string(tagInputBuff);
-			}
-			EditorUtils::SetActiveItemCaptureKeyboard(false);
-			ImGui::PopItemWidth();
+			component.m_Tag = std::string(tagInputBuff);
 		}
+		EditorUtils::SetActiveItemCaptureKeyboard(false);
+		ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 90); AddComponentLayout();
+		ImGui::PopItemWidth();
 	}
 
 	void SceneHierarchyWindow::QuadComponentLayout(QuadComponent& component)
@@ -164,24 +163,14 @@ namespace Stimpi
 		float rota = component.m_Rotation;
 
 		ImGui::Separator();
-		if (ImGui::CollapsingHeader("QuadComponent", ImGuiTreeNodeFlags_DefaultOpen))
+		if (ImGui::CollapsingHeader("Quad##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			ImGui::PushItemWidth(80.0f);
-			if (ImGui::InputFloat("##QuadComponent X input", &x, NULL, NULL, "%.3f", flags))
-				component.m_X = x;
-			ImGui::SameLine(); ImGui::Text("X position");
-			if (ImGui::InputFloat("##QuadComponent Y input", &y, NULL, NULL, "%.3f", flags))
-				component.m_Y = y;
-			ImGui::SameLine(); ImGui::Text("Y position");
-			if (ImGui::InputFloat("##QuadComponent W input", &w, NULL, NULL, "%.3f", flags))
-				component.m_Width = w;
-			ImGui::SameLine(); ImGui::Text("Width");
-			if (ImGui::InputFloat("##QuadComponent H input", &h, NULL, NULL, "%.3f", flags))
-				component.m_Height = h;
-			ImGui::SameLine(); ImGui::Text("Height");
-			if (ImGui::InputFloat("##QuadComponent R input", &rota, NULL, NULL, "%.3f", flags))
-				component.m_Rotation = rota;
-			ImGui::SameLine(); ImGui::Text("Rotation");
+			ImGui::DragFloat("X position", &component.m_X);
+			ImGui::DragFloat("Y position", &component.m_Y);
+			ImGui::DragFloat("Width", &component.m_Width);
+			ImGui::DragFloat("Height", &component.m_Height);
+			ImGui::DragFloat("Rotation", &component.m_Rotation);
 			ImGui::PopItemWidth();
 			if (ImGui::Button("Remove##Quad"))
 			{
@@ -193,7 +182,7 @@ namespace Stimpi
 	void SceneHierarchyWindow::TextureComponentLayout(TextureComponent& component)
 	{
 		ImGui::Separator();
-		if (ImGui::CollapsingHeader("TextureComponent", ImGuiTreeNodeFlags_DefaultOpen))
+		if (ImGui::CollapsingHeader("Texture##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			std::filesystem::path texturePath = component.m_FilePath.c_str();
 
@@ -234,7 +223,7 @@ namespace Stimpi
 		glm::vec4 view = component.m_Camera->GetOrthoCamera()->GetViewQuad();
 
 		ImGui::Separator();
-		if (ImGui::CollapsingHeader("CameraComponent", ImGuiTreeNodeFlags_DefaultOpen))
+		if (ImGui::CollapsingHeader("Camera##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			ImGui::Checkbox("Main##Camera", &component.m_IsMain);
 
@@ -273,17 +262,77 @@ namespace Stimpi
 		}
 	}
 
+	void SceneHierarchyWindow::RigidBody2DComponentLayout(RigidBody2DComponent& component)
+	{
+		ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue;
+
+		ImGui::Separator();
+		if (ImGui::CollapsingHeader("Rigid Body 2D##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			const char* bodyTypeStrings[] = { "Static", "Dynamic", "Kinematic" };
+			const char* currentBodyTypeString = bodyTypeStrings[(int)component.m_Type];
+
+			if (ImGui::BeginCombo("Body Type", currentBodyTypeString))
+			{
+				for (int i = 0; i <= 2; i++)
+				{
+					bool isSelected = currentBodyTypeString == bodyTypeStrings[i];
+					if (ImGui::Selectable(bodyTypeStrings[i], isSelected))
+					{
+						currentBodyTypeString = bodyTypeStrings[i];
+						component.m_Type = (RigidBody2DComponent::BodyType)i;
+					}
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+
+				ImGui::EndCombo();
+			}
+
+			ImGui::Checkbox("Fixed Rotation", &component.m_FixedRotation);
+
+			if (ImGui::Button("Remove##RigidBody2D"))
+			{
+				s_SelectedEntity.RemoveComponent<RigidBody2DComponent>();
+			}
+		}
+	}
+
+	void SceneHierarchyWindow::BoxCollider2DComponentLayout(BoxCollider2DComponent& component)
+	{
+		ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue;
+
+		ImGui::Separator();
+		if (ImGui::CollapsingHeader("Box Collider##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::DragFloat2("Offset", glm::value_ptr(component.m_Offset));
+			ImGui::DragFloat2("Size", glm::value_ptr(component.m_Size));
+			ImGui::PushItemWidth(80.0f);
+			ImGui::DragFloat("Density", &component.m_Density, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("Friction", &component.m_Friction, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("Restitution", &component.m_Restitution, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("Restitution Threshold", &component.m_RestitutionThreshold, 0.01f, 0.0f);
+			ImGui::PopItemWidth();
+
+			if (ImGui::Button("Remove##BoxCollider"))
+			{
+				s_SelectedEntity.RemoveComponent<BoxCollider2DComponent>();
+			}
+		}
+	}
+
 	void SceneHierarchyWindow::AddComponentLayout()
 	{
 		ImGuiComboFlags flags = ImGuiComboFlags_PopupAlignLeft | ImGuiComboFlags_NoArrowButton;
 		const char* selectedPreview = "Add Component";
 
-		ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth());
+		ImGui::PushItemWidth(100.0f);
 		if (ImGui::BeginCombo("##AddComponentWidget", selectedPreview, flags))
 		{
 			if (!s_SelectedEntity.HasComponent<QuadComponent>())
 			{
-				if (ImGui::Selectable("QuadComponent##AddComponent"))
+				if (ImGui::Selectable("Quad##AddComponent"))
 				{
 					s_SelectedEntity.AddComponent<QuadComponent>();
 				}
@@ -291,7 +340,7 @@ namespace Stimpi
 
 			if (!s_SelectedEntity.HasComponent<TextureComponent>())
 			{
-				if (ImGui::Selectable("TextureComponent##AddComponent"))
+				if (ImGui::Selectable("Texture##AddComponent"))
 				{
 					s_SelectedEntity.AddComponent<TextureComponent>();
 				}
@@ -299,9 +348,25 @@ namespace Stimpi
 
 			if (!s_SelectedEntity.HasComponent<CameraComponent>())
 			{
-				if (ImGui::Selectable("CameraComponent##AddComponent"))
+				if (ImGui::Selectable("Camera##AddComponent"))
 				{
 					s_SelectedEntity.AddComponent<CameraComponent>(std::make_shared<Camera>(), false);
+				}
+			}
+
+			if (!s_SelectedEntity.HasComponent<RigidBody2DComponent>())
+			{
+				if (ImGui::Selectable("RigidBody2D##AddComponent"))
+				{
+					s_SelectedEntity.AddComponent<RigidBody2DComponent>();
+				}
+			}
+
+			if (!s_SelectedEntity.HasComponent<BoxCollider2DComponent>())
+			{
+				if (ImGui::Selectable("BoxCollider2D##AddComponent"))
+				{
+					s_SelectedEntity.AddComponent<BoxCollider2DComponent>();
 				}
 			}
 			ImGui::EndCombo();
@@ -313,8 +378,6 @@ namespace Stimpi
 	{
 		if (show)
 		{
-			AddComponentLayout();
-
 			if (s_SelectedEntity.HasComponent<TagComponent>())
 			{
 				auto& component = s_SelectedEntity.GetComponent<TagComponent>();
@@ -337,6 +400,18 @@ namespace Stimpi
 			{
 				auto& component = s_SelectedEntity.GetComponent<CameraComponent>();
 				CameraComponentLayout(component);
+			}
+
+			if (s_SelectedEntity.HasComponent<RigidBody2DComponent>())
+			{
+				auto& component = s_SelectedEntity.GetComponent<RigidBody2DComponent>();
+				RigidBody2DComponentLayout(component);
+			}
+
+			if (s_SelectedEntity.HasComponent<BoxCollider2DComponent>())
+			{
+				auto& component = s_SelectedEntity.GetComponent<BoxCollider2DComponent>();
+				BoxCollider2DComponentLayout(component);
 			}
 		}
 		else

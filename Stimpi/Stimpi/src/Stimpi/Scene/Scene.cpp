@@ -10,11 +10,30 @@
 
 #include "Stimpi/Core/InputManager.h"
 
+#include "box2d/b2_world.h"
+#include "box2d/b2_body.h"
+#include "box2d/b2_fixture.h"
+#include "box2d/b2_polygon_shape.h"
+
 // TODO: remove eventually
 #define USE_TEST_STUFF false
 
 namespace Stimpi
 {
+	static b2BodyType Rigidbody2DTypeToBox2DType(RigidBody2DComponent::BodyType type)
+	{
+		switch (type)
+		{
+		    case RigidBody2DComponent::BodyType::STATIC:	return b2_staticBody;
+		    case RigidBody2DComponent::BodyType::DYNAMIC:	return b2_dynamicBody;
+		    case RigidBody2DComponent::BodyType::KINEMATIC: return b2_kinematicBody;
+		}
+
+		ST_CORE_ASSERT(false, "Unknown physics body type");
+		return b2_staticBody;
+	}
+
+
 #if USE_TEST_STUFF
 	// Test entity
 	Entity s_TestObj;
@@ -89,6 +108,26 @@ namespace Stimpi
 					{
 						ncs.m_Instance->OnUpdate(ts);
 					}
+				});
+		}
+
+		// Physics
+		if (m_RuntimeState == RuntimeState::RUNNING)
+		{
+			const int32_t velocityIterations = 6;
+			const int32_t positionIterations = 2;
+			m_PhysicsDWorld->Step(ts, velocityIterations, positionIterations);
+
+			m_Registry.view<RigidBody2DComponent>().each([=](auto e, RigidBody2DComponent& rb2d)
+				{
+					Entity entity = { e, this };
+					auto& quad = entity.GetComponent<QuadComponent>();
+
+					b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+					const auto& position = body->GetPosition();
+					quad.m_X = position.x - quad.HalfWidth();
+					quad.m_Y = position.y - quad.HalfHeight();
+					quad.m_Rotation = body->GetAngle();
 				});
 		}
 
@@ -172,6 +211,39 @@ namespace Stimpi
 					m_RenderCamera = ncs.m_Camera.get();
 				}
 			});
+
+		// Init Physics
+		m_PhysicsDWorld = new b2World({0.0f, -9.8f});
+		m_Registry.view<RigidBody2DComponent>().each([=](auto e, auto& rb2d)
+			{
+				Entity entity = { e, this };
+				auto& quad = entity.GetComponent<QuadComponent>();
+
+				b2BodyDef bodyDef;
+				bodyDef.type = Rigidbody2DTypeToBox2DType(rb2d.m_Type);
+				bodyDef.position.Set(quad.Center().x, quad.Center().y);
+				bodyDef.angle = quad.m_Rotation;
+
+				b2Body* body = m_PhysicsDWorld->CreateBody(&bodyDef);
+				body->SetFixedRotation(rb2d.m_FixedRotation);
+				rb2d.m_RuntimeBody = body;
+
+				if (entity.HasComponent<BoxCollider2DComponent>())
+				{
+					auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+
+					b2PolygonShape boxShape;
+					boxShape.SetAsBox(bc2d.m_Size.x * quad.m_Width, bc2d.m_Size.y * quad.m_Height);
+
+					b2FixtureDef fixtureDef;
+					fixtureDef.shape = &boxShape;
+					fixtureDef.density = bc2d.m_Density;
+					fixtureDef.friction = bc2d.m_Friction;
+					fixtureDef.restitution = bc2d.m_Restitution;
+					fixtureDef.restitutionThreshold = bc2d.m_RestitutionThreshold;
+					body->CreateFixture(&fixtureDef);
+				}
+			});
 	}
 
 	void Scene::OnScenePause()
@@ -192,6 +264,11 @@ namespace Stimpi
 					ncs.DestroyScript(&ncs);
 				}
 			});
+
+
+		// De-Init Physics
+		delete m_PhysicsDWorld;
+		m_PhysicsDWorld = nullptr;
 	}
 
 	Stimpi::Entity Scene::MousePickEntity(uint32_t x, uint32_t y)

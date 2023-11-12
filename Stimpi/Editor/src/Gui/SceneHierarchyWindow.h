@@ -26,6 +26,8 @@ namespace Stimpi
 		void QuadComponentLayout(QuadComponent& component);
 		void TextureComponentLayout(TextureComponent& component);
 		void CameraComponentLayout(CameraComponent& component);
+		void RigidBody2DComponentLayout(RigidBody2DComponent& component);
+		void BoxCollider2DComponentLayout(BoxCollider2DComponent& component);
 		void AddComponentLayout();
 
 		void ShowSelectedEntityComponents(bool show);
