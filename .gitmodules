@@ -1,0 +1,3 @@
+[submodule "Stimpi/Stimpi/vendor/Box2D"]
+	path = Stimpi/Stimpi/vendor/Box2D
+	url = https://github.com/d2Stimpi/box2d.git
