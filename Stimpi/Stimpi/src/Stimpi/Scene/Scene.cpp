@@ -41,7 +41,7 @@ namespace Stimpi
 
 	Scene::Scene()
 	{
-		// Hack?? Create 0 value Entity and never use it. Fixes check for valid Entity
+		// Workaround - Create 0 value Entity and never use it. Fixes check for valid Entity
 		m_Registry.create();
 
 		m_RuntimeState = RuntimeState::STOPPED;
@@ -78,13 +78,13 @@ namespace Stimpi
 				static float moveSpeed = 400.f;
 
 				if (InputManager::IsKeyPressed(ST_KEY_T))
-					quad.m_Y += moveSpeed * ts;
+					quad.m_Position.y += moveSpeed * ts;
 				if (InputManager::IsKeyPressed(ST_KEY_G))
-					quad.m_Y -= moveSpeed * ts;
+					quad.m_Position.y -= moveSpeed * ts;
 				if (InputManager::IsKeyPressed(ST_KEY_H))
-					quad.m_X += moveSpeed * ts;
+					quad.m_Position.x += moveSpeed * ts;
 				if (InputManager::IsKeyPressed(ST_KEY_F))
-					quad.m_X -= moveSpeed * ts;
+					quad.m_Position.x -= moveSpeed * ts;
 			}
 		};
 
@@ -125,8 +125,8 @@ namespace Stimpi
 
 					b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
 					const auto& position = body->GetPosition();
-					quad.m_X = position.x - quad.HalfWidth();
-					quad.m_Y = position.y - quad.HalfHeight();
+					quad.m_Position.x = position.x - quad.HalfWidth();
+					quad.m_Position.y = position.y - quad.HalfHeight();
 					quad.m_Rotation = body->GetAngle();
 				});
 		}
@@ -137,7 +137,7 @@ namespace Stimpi
 			m_RenderCamera = m_SceneCamera;
 		}
 
-		// Scene rendering
+		// Scene Rendering
 		if (m_RenderCamera)
 		{
 			Stimpi::Renderer2D::Instace()->BeginScene(m_RenderCamera->GetOrthoCamera());
@@ -193,7 +193,7 @@ namespace Stimpi
 	{
 		m_RuntimeState = RuntimeState::RUNNING;
 		
-		/* Create NativeScripts */
+		// Create NativeScripts
 		m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& ncs)
 			{
 				if (!ncs.m_Instance)
@@ -233,7 +233,7 @@ namespace Stimpi
 					auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
 
 					b2PolygonShape boxShape;
-					boxShape.SetAsBox(bc2d.m_Size.x * quad.m_Width, bc2d.m_Size.y * quad.m_Height);
+					boxShape.SetAsBox(bc2d.m_Size.x * quad.m_Size.x, bc2d.m_Size.y * quad.m_Size.y);
 
 					b2FixtureDef fixtureDef;
 					fixtureDef.shape = &boxShape;
@@ -249,6 +249,11 @@ namespace Stimpi
 	void Scene::OnScenePause()
 	{
 		m_RuntimeState = RuntimeState::PAUSED;
+	}
+
+	void Scene::OnSceneResume()
+	{
+		m_RuntimeState = RuntimeState::RUNNING;
 	}
 
 	void Scene::OnSceneStop()
@@ -271,13 +276,13 @@ namespace Stimpi
 		m_PhysicsDWorld = nullptr;
 	}
 
-	Stimpi::Entity Scene::MousePickEntity(uint32_t x, uint32_t y)
+	Stimpi::Entity Scene::MousePickEntity(float x, float y)
 	{
 		Entity picked = {};
 		m_Registry.view<QuadComponent>().each([this, &picked, x, y](auto entity, auto& quad)
 			{
-				if ((x >= quad.m_X) && (x <= (quad.m_X + quad.m_Width)) &&
-					(y >= quad.m_Y) && (y <= (quad.m_Y + quad.m_Height)))
+				if ((x >= quad.m_Position.x) && (x <= (quad.m_Position.x + quad.m_Size.x)) &&
+					(y >= quad.m_Position.y) && (y <= (quad.m_Position.y + quad.m_Size.y)))
 				{
 					picked = Entity(entity, this);
 				}

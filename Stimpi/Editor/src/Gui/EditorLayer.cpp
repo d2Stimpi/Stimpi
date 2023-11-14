@@ -59,7 +59,7 @@ namespace Stimpi
 		// Scene Init
 		m_ShaderChecker.reset(Shader::CreateShader("..\/assets\/shaders\/checkerboard.shader"));
 		// Editor camera init
-		m_EditorCamera = std::make_shared<Camera>(0.0f, 1280.0f, 0.0f, 720.0f);
+		m_EditorCamera = std::make_shared<Camera>(0.0f, 128.0f, 0.0f, 72.0f); // TODO: expose to Editor
 		m_EditorCamera->SetPosition({ 0.0f, 0.0f, 0.0f });
 		m_CameraController = std::make_shared<CameraController>(m_EditorCamera.get());
 
@@ -69,6 +69,9 @@ namespace Stimpi
 		SceneManager::Instance()->LoadScene("..\/assets\/scenes\/SceneTest.data");
 		OnSceneChangedListener onScneeChanged = [&]() {
 			ST_CORE_INFO("EditorLayer - onScneeChanged()");
+			
+			Renderer2D::Instace()->FlushScene();
+
 			m_Scene = SceneManager::Instance()->GetActiveSceneRef();
 			m_Scene->SetCamera(m_EditorCamera.get());
 
@@ -221,7 +224,7 @@ namespace Stimpi
 		}
 
 		// TODO: move show_scene_config_window to class
-
+		static bool showCheckerboard = true;
 		if (show_scene_config_window)
 		{
 			ImGui::Begin("Scene Config", &show_scene_config_window);
@@ -249,17 +252,8 @@ namespace Stimpi
 				if (current_fps == 2) Time::Instance()->SetFPS(24);
 			};
 			ImGui::Separator();
-			// Scene Entities hierarchy view
-			ImGui::Text("Scene elements:");
-
-
-			ImGui::PushID(1);
-			if (ImGui::TreeNode("Basic trees", "Object"))
-			{
-
-				ImGui::TreePop();
-			}
-			ImGui::PopID();
+			
+			ImGui::Checkbox("Show CheckerBoard BG", &showCheckerboard);
 
 			ImGui::End(); //Config window
 		}
@@ -286,9 +280,12 @@ namespace Stimpi
 		m_ShaderChecker->SetUniform("u_resolution", glm::vec2(canvasWidth, canvasHeight));
 
 		// Render Checker Background for editor
-		Stimpi::Renderer2D::Instace()->BeginScene(m_BackgroundCamera->GetOrthoCamera());
-		Stimpi::Renderer2D::Instace()->Submit({ 0.0f, 0.0f, canvasWidth, canvasHeight }, m_ShaderChecker.get());
-		Stimpi::Renderer2D::Instace()->EndScene();
+		if (showCheckerboard)
+		{
+			Stimpi::Renderer2D::Instace()->BeginScene(m_BackgroundCamera->GetOrthoCamera());
+			Stimpi::Renderer2D::Instace()->Submit({ 0.0f, 0.0f, canvasWidth, canvasHeight }, m_ShaderChecker.get());
+			Stimpi::Renderer2D::Instace()->EndScene();
+		}
 
 		m_Scene->OnUpdate(ts);
 

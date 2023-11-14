@@ -156,21 +156,16 @@ namespace Stimpi
 	void SceneHierarchyWindow::QuadComponentLayout(QuadComponent& component)
 	{
 		ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue;
-		float x = component.m_X;
-		float y = component.m_Y;
-		float w = component.m_Width;
-		float h = component.m_Height;
-		float rota = component.m_Rotation;
 
 		ImGui::Separator();
 		if (ImGui::CollapsingHeader("Quad##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
 		{
+			ImGui::DragFloat2("Position", glm::value_ptr(component.m_Position));
+			//ImGui::DragFloat2("Y position", &component.m_Y);
+			ImGui::DragFloat2("Size", glm::value_ptr(component.m_Size));
+			//ImGui::DragFloat("Height", &component.m_Height);
 			ImGui::PushItemWidth(80.0f);
-			ImGui::DragFloat("X position", &component.m_X);
-			ImGui::DragFloat("Y position", &component.m_Y);
-			ImGui::DragFloat("Width", &component.m_Width);
-			ImGui::DragFloat("Height", &component.m_Height);
-			ImGui::DragFloat("Rotation", &component.m_Rotation);
+			ImGui::DragFloat("Rotation", &component.m_Rotation, 0.01);
 			ImGui::PopItemWidth();
 			if (ImGui::Button("Remove##Quad"))
 			{

@@ -24,8 +24,8 @@ namespace Stimpi
 		void SetRotation(float rotation) { m_Camera->SetRotation(rotation); }
 		float GetRotation() { return m_Camera->GetRotation(); }
 
-		void SetZoomFactor(float zoom);
-		float GetZoomFactor() { return m_ZoomFactor; }
+		void SetZoomFactor(float zoom) { m_Camera->SetZoom(zoom); }
+		float GetZoomFactor() { return m_Camera->GetZoom(); }
 
 		void SetOrthoView(glm::vec4 view) { m_Camera->SetOrtho(view); }
 		glm::vec4 GetOrthoView() { return m_Camera->GetViewQuad(); }
@@ -44,7 +44,6 @@ namespace Stimpi
 	private:
 		std::shared_ptr<OrthoCamera> m_Camera;
 		float m_AspectRatio;
-		float m_ZoomFactor;
 
 		// Immutable
 		float m_ViewportWidth;

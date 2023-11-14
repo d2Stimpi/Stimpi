@@ -225,11 +225,23 @@ namespace Stimpi
 	{
 		auto currnetCmd = *m_ActiveRenderCmdIter;
 
+		if (currnetCmd->m_Shader == nullptr)
+		{
+			// No data to qualify as a valid RenderCommand
+			return;
+		}
+
 		// For now set ViewProj camera uniform here
 		currnetCmd->m_Shader->SetUniform("u_ViewProjection", m_ActiveCamera->GetViewProjectionMatrix());
 
 		m_RenderCmds.emplace_back(std::make_shared<RenderCommand>(m_VAO->VertexSize()));
 		m_ActiveRenderCmdIter = std::end(m_RenderCmds) - 1;
+	}
+
+	void Renderer2D::FlushScene()
+	{
+		// Clear Render commands
+		ClearRenderCommands();
 	}
 
 	void Renderer2D::RenderFrameBuffer()
@@ -280,9 +292,7 @@ namespace Stimpi
 			RenderFrameBuffer();
 
 		// Clear Render commands
-		m_RenderCmds.clear();
-		m_RenderCmds.emplace_back(std::make_shared<RenderCommand>(m_VAO->VertexSize()));
-		m_ActiveRenderCmdIter = std::end(m_RenderCmds) - 1;
+		ClearRenderCommands();
 
 		// Clear Debug data
 		ShowDebugData();
@@ -352,6 +362,14 @@ namespace Stimpi
 		}
 	}
 
+	void Renderer2D::ClearRenderCommands()
+	{
+		// Clear Render commands
+		m_RenderCmds.clear();
+		m_RenderCmds.emplace_back(std::make_shared<RenderCommand>(m_VAO->VertexSize()));
+		m_ActiveRenderCmdIter = std::end(m_RenderCmds) - 1;
+	}
+
 	void Renderer2D::PushQuadVertexData(RenderCommand* cmd, glm::vec4 quad, glm::vec3 color /*= { 1.0f, 1.0f, 1.0f }*/, glm::vec2 min /*= { 0.0f, 0.0f }*/, glm::vec2 max /*= { 1.0f, 1.0f }*/)
 	{	
 		glm::vec3 position = { quad.x + quad.z / 2.0f, quad.y + quad.w / 2.0f, 0.0f};
@@ -363,7 +381,7 @@ namespace Stimpi
 	void Renderer2D::PushTransformedVertexData(RenderCommand* cmd, glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color /*= { 1.0f, 1.0f, 1.0f }*/, glm::vec2 min /*= { 0.0f, 0.0f }*/, glm::vec2 max /*= { 1.0f, 1.0f }*/)
 	{
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) *
-			glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f)) *
+			glm::rotate(glm::mat4(1.0f), rotation/*glm::radians(rotation)*/, glm::vec3(0.0f, 0.0f, 1.0f)) *
 			glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f));
 
 		cmd->PushVertex(transform * s_QuadVertexPosition[0], color, { min.x, min.y });

@@ -42,10 +42,11 @@ namespace Stimpi
 
 		void OnScenePlay();
 		void OnScenePause();
+		void OnSceneResume();
 		void OnSceneStop();
 
 		// Mouse Picking
-		Entity MousePickEntity(uint32_t x, uint32_t y);
+		Entity MousePickEntity(float x, float y);
 
 	private:
 		entt::registry m_Registry;

@@ -38,8 +38,9 @@ namespace Stimpi
 
 		void BeginScene(OrthoCamera* camera);
 		void EndScene();
-		
-		void Flush();
+
+		// Cancel all render commands
+		void FlushScene();
 		
 		// Quad rendering - TODO: to be removed
 		void Submit(glm::vec4 quad, Texture* texture, Shader* shader);
@@ -59,8 +60,6 @@ namespace Stimpi
 		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, Shader* shader);
 		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color, Shader* shader);
 
-		void RenderFrameBuffer(); // Used for Application to handle displaying of FBs ourselves
-
 		// Event Callbacks
 		void ResizeCanvas(uint32_t width, uint32_t height);
 
@@ -77,12 +76,17 @@ namespace Stimpi
 		FrameBuffer* GetFrameBuffer();
 
 	private:
+		void Flush();
+		void RenderFrameBuffer(); // Used for Application to handle displaying of FBs ourselves
+
 		void PushQuadVertexData(RenderCommand* cmd, glm::vec4 quad, glm::vec3 color = { 1.0f, 1.0f, 1.0f }, glm::vec2 min = { 0.0f, 0.0f }, glm::vec2 max = { 1.0f, 1.0f });
 		void PushTransformedVertexData(RenderCommand* cmd, glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color = { 1.0f, 1.0f, 1.0f }, glm::vec2 min = { 0.0f, 0.0f }, glm::vec2 max = { 1.0f, 1.0f });
 		void DrawRenderCmd(std::shared_ptr<RenderCommand>& renderCmd);
 
 		void CheckCapacity();
 		void CheckTextureBatching(Texture* texture);
+
+		void ClearRenderCommands();
 
 		void ShowDebugData();
 	private:

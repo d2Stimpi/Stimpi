@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Stimpi/Core/Core.h"
 #include "Stimpi/Graphics/Texture.h"
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Scene/ScriptableEntity.h"
@@ -40,37 +41,37 @@ namespace Stimpi
 
 	struct QuadComponent
 	{
-		float m_X{ 0.0f };
-		float m_Y{ 0.0f };
-		float m_Width{ 0.0f };
-		float m_Height{ 0.0f };
+		glm::vec2 m_Position = { 0.0f, 0.0f };
+		glm::vec2 m_Size = { 0.0f, 0.0f };
 		float m_Rotation{ 0.0f };
 
 		QuadComponent() = default;
 		QuadComponent(const QuadComponent&) = default;
-		QuadComponent(const glm::vec4& quad, float rotation = 0.0f)
-			: m_X(quad.x), m_Y(quad.y), m_Width(quad.z), m_Height(quad.w), m_Rotation(rotation) {}
+		QuadComponent(const glm::vec4 quad, float rotation = 0.0f)
+			: m_Position(quad.x, quad.y), m_Size(quad.z, quad.w), m_Rotation(rotation) {}
+		QuadComponent(const glm::vec2& pos, const glm::vec2 size, float rotation = 0.0f)
+			: m_Position(pos), m_Size(size), m_Rotation(rotation) {}
 
-		operator glm::vec4() const { return glm::vec4(m_X, m_Y, m_Width, m_Height); }
-		glm::vec3 Center() { return glm::vec3(m_X + m_Width / 2.f, m_Y + m_Width / 2.f, 0.f); }
-		float HalfWidth() { return m_Width / 2.0f; }
-		float HalfHeight() { return m_Height / 2.0f; }
+		operator glm::vec4() const { return glm::vec4(m_Position.x, m_Position.y, m_Size.x, m_Size.y); }
+		glm::vec2 Center() { return glm::vec2(m_Position.x + m_Size.x / 2.f, m_Position.y + m_Size.y / 2.f); }
+		float HalfWidth() { return m_Size.x / 2.0f; }
+		float HalfHeight() { return m_Size.y / 2.0f; }
 
 		void Serialize(YAML::Emitter& out)
 		{
 			out << YAML::Key << "QuadComponent";
 			out << YAML::BeginSeq;
-				out << m_X << m_Y << m_Width << m_Height << m_Rotation;
+				out << m_Position.x << m_Position.y << m_Size.x << m_Size.y << m_Rotation;
 			out << YAML::EndSeq;
 		}
 
 		//De-serialize constructor
 		QuadComponent(const YAML::Node& node)
 		{
-			m_X = node[0].as<float>();
-			m_Y = node[1].as<float>();
-			m_Width = node[2].as<float>();
-			m_Height = node[3].as<float>();
+			m_Position.x = node[0].as<float>();
+			m_Position.y = node[1].as<float>();
+			m_Size.x = node[2].as<float>();
+			m_Size.y = node[3].as<float>();
 			if (node[4])
 				m_Rotation = node[4].as<float>();
 		}
@@ -225,11 +226,62 @@ namespace Stimpi
 
 		BodyType m_Type = BodyType::STATIC;
 		bool m_FixedRotation = false;
+
 		// For runtime
 		void* m_RuntimeBody = nullptr;
 
 		RigidBody2DComponent() = default;
 		RigidBody2DComponent(const RigidBody2DComponent&) = default;
+
+		std::string RigidBody2DTypeToString(BodyType type)
+		{
+			switch (type)
+			{
+			case BodyType::STATIC:	return "Static";
+			case BodyType::DYNAMIC:	return "Dynamic";
+			case BodyType::KINEMATIC: return "Kinematic";
+			}
+
+			ST_CORE_ASSERT(false, "Unknow Rigid Body type");
+			return "Unknown";
+		}
+
+		BodyType StringToRigidBody2DType(std::string typeString)
+		{
+			BodyType ret = BodyType::STATIC;
+
+			typeString == "Static" ?	ret = BodyType::STATIC :
+			typeString == "Dynamic" ?	ret = BodyType::DYNAMIC :
+			typeString == "Kinematic" ? ret = BodyType::KINEMATIC :
+			ret = BodyType::STATIC;
+
+			return ret;
+		}
+
+		void Serialize(YAML::Emitter& out)
+		{
+			out << YAML::Key << "RigidBody2DComponent";
+			out << YAML::BeginMap;
+			{
+				out << YAML::Key << "Type" << YAML::Value << RigidBody2DTypeToString(m_Type);
+
+				out << YAML::Key << "FixedRotation" << YAML::Value << m_FixedRotation;
+			}
+			out << YAML::EndMap;
+		}
+
+		//De-serialize constructor
+		RigidBody2DComponent(const YAML::Node& node)
+		{
+			if (node["Type"])
+			{
+				m_Type = StringToRigidBody2DType(node["Type"].as<std::string>());
+			}
+			if (node["FixedRotation"])
+			{
+				m_FixedRotation = node["FixedRotation"].as<bool>();
+			}
+		}
 	};
 
 	struct BoxCollider2DComponent
@@ -247,6 +299,67 @@ namespace Stimpi
 
 		BoxCollider2DComponent() = default;
 		BoxCollider2DComponent(const BoxCollider2DComponent&) = default;
+
+		void Serialize(YAML::Emitter& out)
+		{
+			out << YAML::Key << "BoxCollider2DComponent";
+			out << YAML::BeginMap;
+			{
+				out << YAML::Key << "Offset" << YAML::Value;
+				out << YAML::BeginSeq;
+				{
+					out << m_Offset.x << m_Offset.y;
+				}
+				out << YAML::EndSeq;
+
+				out << YAML::Key << "Size" << YAML::Value;
+				out << YAML::BeginSeq;
+				{
+					out << m_Size.x << m_Size.y;
+				}
+				out << YAML::EndSeq;
+
+				out << YAML::Key << "Density" << YAML::Value << m_Density;
+
+				out << YAML::Key << "Friction" << YAML::Value << m_Friction;
+
+				out << YAML::Key << "Restitution" << YAML::Value << m_Restitution;
+
+				out << YAML::Key << "RestitutionThreshold" << YAML::Value << m_RestitutionThreshold;
+			}
+			out << YAML::EndMap;
+		}
+
+		//De-serialize constructor
+		BoxCollider2DComponent(const YAML::Node& node)
+		{
+			if (node["Offset"])
+			{
+				YAML::Node offset = node["Offset"];
+				m_Offset = glm::vec2(offset[0].as<float>(), offset[1].as<float>());
+			}
+			if (node["Size"])
+			{
+				YAML::Node size = node["Size"];
+				m_Size = glm::vec2(size[0].as<float>(), size[1].as<float>());
+			}
+			if (node["Density"])
+			{
+				m_Density = node["Density"].as<float>();
+			}
+			if (node["Friction"])
+			{
+				m_Friction = node["Friction"].as<float>();
+			}
+			if (node["Restitution"])
+			{
+				m_Restitution = node["Restitution"].as<float>();
+			}
+			if (node["RestitutionThreshold"])
+			{
+				m_RestitutionThreshold = node["RestitutionThreshold"].as<float>();
+			}
+		}
 	};
 }
 

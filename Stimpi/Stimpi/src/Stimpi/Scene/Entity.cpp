@@ -33,6 +33,16 @@ namespace Stimpi
 		{
 			GetComponent<CameraComponent>().Serialize(out);
 		}
+
+		if (HasComponent<RigidBody2DComponent>())
+		{
+			GetComponent<RigidBody2DComponent>().Serialize(out);
+		}
+
+		if (HasComponent<BoxCollider2DComponent>())
+		{
+			GetComponent<BoxCollider2DComponent>().Serialize(out);
+		}
 		out << YAML::EndMap;
 	}
 }

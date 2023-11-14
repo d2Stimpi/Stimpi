@@ -23,7 +23,8 @@ namespace Stimpi
 		Entity m_Entity;
 		float m_CameraZoom;
 		GizmoAction m_Action;
-		bool m_Using; // When mouse is hovered over controls, use ot prevent running mouse picking
+		bool m_Using; // When mouse is hovered over controls, use to prevent running mouse picking
+		float m_TranslateScale = 1.0f;
 
 		Context() : m_MouseHold(false), m_UsingAxis(ManipulateAxis::NONE), m_Clicked(false), m_Using(false)
 		{
@@ -67,12 +68,12 @@ namespace Stimpi
 					auto& quad = gContext.m_Entity.GetComponent<QuadComponent>();
 					if (gContext.m_Action == GizmoAction::TRANSLATE)
 					{
-						quad.m_X += translate_x * gContext.m_CameraZoom;
+						quad.m_Position.x += translate_x * gContext.m_CameraZoom * gContext.m_TranslateScale;
 					}
 					if (gContext.m_Action == GizmoAction::SCALE)
 					{
-						quad.m_Width += translate_x * gContext.m_CameraZoom;
-						quad.m_X -= translate_x * gContext.m_CameraZoom / 2;
+						quad.m_Size.x += translate_x * gContext.m_CameraZoom;
+						quad.m_Position.x -= translate_x * gContext.m_CameraZoom / 2;
 					}
 				}
 				
@@ -82,12 +83,12 @@ namespace Stimpi
 					auto& quad = gContext.m_Entity.GetComponent<QuadComponent>();
 					if (gContext.m_Action == GizmoAction::TRANSLATE)
 					{
-						quad.m_Y -= translate_y * gContext.m_CameraZoom;
+						quad.m_Position.y -= translate_y * gContext.m_CameraZoom * gContext.m_TranslateScale;
 					}
 					if (gContext.m_Action == GizmoAction::SCALE)
 					{
-						quad.m_Height -= translate_y * gContext.m_CameraZoom;
-						quad.m_Y += translate_y * gContext.m_CameraZoom / 2;
+						quad.m_Size.y -= translate_y * gContext.m_CameraZoom;
+						quad.m_Position.y += translate_y * gContext.m_CameraZoom / 2;
 					}
 				}
 
@@ -98,15 +99,15 @@ namespace Stimpi
 					auto& quad = gContext.m_Entity.GetComponent<QuadComponent>();
 					if (gContext.m_Action == GizmoAction::TRANSLATE)
 					{
-						quad.m_X += translate_x * gContext.m_CameraZoom;
-						quad.m_Y -= translate_y * gContext.m_CameraZoom;
+						quad.m_Position.x += translate_x * gContext.m_CameraZoom * gContext.m_TranslateScale;
+						quad.m_Position.y -= translate_y * gContext.m_CameraZoom * gContext.m_TranslateScale;
 					}
 					if (gContext.m_Action == GizmoAction::SCALE)
 					{ 
-						quad.m_Width += translate_x * gContext.m_CameraZoom;
-						quad.m_Height -= translate_y * gContext.m_CameraZoom;
-						quad.m_X -= translate_x * gContext.m_CameraZoom / 2;
-						quad.m_Y += translate_y * gContext.m_CameraZoom / 2;
+						quad.m_Size.x += translate_x * gContext.m_CameraZoom;
+						quad.m_Size.y -= translate_y * gContext.m_CameraZoom;
+						quad.m_Position.x -= translate_x * gContext.m_CameraZoom / 2;
+						quad.m_Position.y += translate_y * gContext.m_CameraZoom / 2;
 					}
 				}
 
@@ -302,8 +303,11 @@ namespace Stimpi
 
 	void Gizmo2D::Manipulate(Camera* camera, Entity object, GizmoAction action)
 	{
+		if (action == GizmoAction::NONE)
+			return;
+
 		auto quad = object.GetComponent<QuadComponent>();
-		glm::vec2 objPos = { quad.m_X + quad.m_Width / 2.0f, quad.m_Y + quad.m_Height / 2.0f };
+		glm::vec2 objPos = { quad.Center().x, quad.Center().y };
 		glm::vec3 camPos = camera->GetPosition();
 		float camZoom = camera->GetZoomFactor();
 
@@ -311,10 +315,37 @@ namespace Stimpi
 
 		ImVec2 winPos = ImGui::GetCursorScreenPos();
 		ImVec2 winSize = ImGui::GetContentRegionAvail();
+
+		// Test
+		glm::vec4 testPos = { objPos.x ,objPos.y, 0.0f, 1.0f };
+		glm::mat4 view = camera->GetViewMatrix();
+		auto newPos = testPos * glm::inverse(view);
+		//ST_CORE_INFO("Calc pos {0}, {1}", newPos.x, newPos.y);
+
+		/* Calculating Object's World to Window position
+		*  1. Move Object position by Camera position and apply Camera zoom
+		*  2. Work out the difference between FrameBuffer and Window size
+		*/
+		ImVec2 ws = ImGui::GetContentRegionAvail();
+		glm::vec4 camView = camera->GetOrthoView();
+		float aspect = camera->GetAspectRatio();
+		glm::vec2 scale = { 1.0f, 1.0f };
+		if (ws.x / aspect >= ws.y)
+			scale.y = ws.y / (ws.x / aspect);
+		else
+			scale.x = (ws.y * aspect) / ws.x;
+		
+		//ST_CORE_INFO("Fix scale {0}, {1}", scale.x, scale.y);
+
+		drawPos = { drawPos.x / (camView.y / ws.x), drawPos.y / (camView.w / ws.y) };
+		drawPos = { drawPos.x * scale.x, drawPos.y * scale.y };
+		//ST_CORE_INFO("drawPos {0}, {1}", drawPos.x, drawPos.y);
 		
 		gContext.m_Action = action;
 		gContext.m_Entity = object;
 		gContext.m_CameraZoom = camera->GetZoomFactor();
+		gContext.m_TranslateScale = camera->GetOrthoView().y / ws.x;
+		ST_CORE_INFO("m_TranslateScale {0}", gContext.m_TranslateScale);
 
 		if (action == GizmoAction::TRANSLATE)
 			DrawTranslationArrow(ImVec2(drawPos.x + winPos.x, winPos.y + winSize.y - drawPos.y), 40, 4);

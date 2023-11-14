@@ -61,6 +61,14 @@ namespace Stimpi
 				{
 					entity.AddComponent<CameraComponent>(CameraComponent(entityNode["CameraComponent"]));
 				}
+				if (entityNode["RigidBody2DComponent"])
+				{
+					entity.AddComponent<RigidBody2DComponent>(RigidBody2DComponent(entityNode["RigidBody2DComponent"]));
+				}
+				if (entityNode["BoxCollider2DComponent"])
+				{
+					entity.AddComponent<BoxCollider2DComponent>(BoxCollider2DComponent(entityNode["BoxCollider2DComponent"]));
+				}
 			}
 		}
 
