@@ -25,10 +25,10 @@ Scene:
     TagComponent:
       Tag: Texture1
     QuadComponent:
-      - 100
-      - 20
-      - 50
-      - 40
+      - 73.974823
+      - 17.0391464
+      - 113.498955
+      - 103.164848
       - 0
     TextureComponent:
       FilePath: ..\/assets/textures/Capture.jpg

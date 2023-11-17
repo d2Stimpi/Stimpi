@@ -130,6 +130,7 @@ copy $(SolutionDir)\bin\$(Configuration)-$(Platform)\$(ProjectName)\$(ProjectNam
     <ClCompile Include="src\Stimpi\Scene\Scene.cpp" />
     <ClCompile Include="src\Stimpi\Scene\SceneManager.cpp" />
     <ClCompile Include="src\Stimpi\Scene\SceneSerializer.cpp" />
+    <ClCompile Include="src\Stimpi\Scene\Utils\SceneUtils.cpp" />
     <ClCompile Include="src\stpch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
@@ -175,6 +176,7 @@ copy $(SolutionDir)\bin\$(Configuration)-$(Platform)\$(ProjectName)\$(ProjectNam
     <ClInclude Include="src\Stimpi\Scene\SceneManager.h" />
     <ClInclude Include="src\Stimpi\Scene\SceneSerializer.h" />
     <ClInclude Include="src\Stimpi\Scene\ScriptableEntity.h" />
+    <ClInclude Include="src\Stimpi\Scene\Utils\SceneUtils.h" />
     <ClInclude Include="src\Stimpi\Utils\PlatformUtils.h" />
     <ClInclude Include="src\stpch.h" />
   </ItemGroup>

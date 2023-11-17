@@ -6,6 +6,7 @@
 #include "Stimpi/Graphics/Renderer2D.h"
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Entity.h"
+#include "Stimpi/Scene/Utils/SceneUtils.h"
 #include "Gui/Components/UIPayload.h"
 #include "Gui/SceneHierarchyWindow.h"
 #include "Gui/Gizmo2D.h"
@@ -55,33 +56,20 @@ namespace Stimpi
 		ImGuiIO& io = ImGui::GetIO();
 		if (io.MouseClicked[ImGuiMouseButton_Left] && m_Hovered && (Gizmo2D::IsUsing() == false))
 		{
-			/* Calculating the Picking position
-			* 1. Determine the position of click in the SceneView Window - pickPos
-			* 2. Read the Camera view bounding box and multiply by camera's zoom
-			* 3. Calculate displayed Camera's region. Camera view divided by ratio of FB size/window size - camRegion
-			* 4. Figure out Window to World scale size - scale
-			* 5. Final World pick position is calculated by adding Camera position to scaled window click position (pickPos)
-			*/
 			ImVec2 winPos = ImGui::GetCursorScreenPos();
 			ImVec2 clickPos = io.MouseClickedPos[ImGuiMouseButton_Left];
-			ImVec2 pickPos = { clickPos.x - winPos.x, ws.y - (clickPos.y - winPos.y) };
-			ST_CORE_INFO("==============================");
-			ST_CORE_INFO("Window size: {0}, {1}", ImGui::GetWindowSize().x, ImGui::GetWindowSize().y);
-			ST_CORE_INFO("Frame Buffer size: {0}, {1}", frameBuffer->GetWidth(), frameBuffer->GetHeight());
-			ST_CORE_INFO("Scene View click position: {0}, {1}", pickPos.x, pickPos.y);
+			glm::vec2 pickPos = { clickPos.x - winPos.x, ws.y - (clickPos.y - winPos.y) };
 
-			auto camPos = camera->GetPosition();
-			float zoomFactor = camera->GetZoomFactor();
-			glm::vec4 camView = camera->GetOrthoView() * zoomFactor;
-			glm::vec2 camRegion = { camView.y / (frameBuffer->GetWidth() / ws.x), camView.w / (frameBuffer->GetHeight() / ws.y) };
-			ST_CORE_INFO("Camera view: {0}, {1}, {2}, {3}", camView.x, camRegion.x, camView.z, camRegion.y);
-			glm::vec2 scale = { ws.x / camRegion.x, ws.y / camRegion.y };
-			ST_CORE_INFO("Window -> World scale {0}, {1}", scale.x, scale.y);
-			ST_CORE_INFO("World click position: {0}, {1}", pickPos.x / scale.x + camPos.x, pickPos.y / scale.y + camPos.y);
-			ST_CORE_INFO("==============================");
+			ST_CORE_INFO("Win pos {0}", pickPos);
 
-			//auto picked = scene->MousePickEntity(zoomFactor * pickPos.x + camPos.x, zoomFactor * pickPos.y + camPos.y);
-			auto picked = scene->MousePickEntity(pickPos.x / scale.x + camPos.x, pickPos.y / scale.y + camPos.y);
+			auto worldPos = SceneUtils::WindowToWorldPoint(camera, glm::vec2{ ws.x, ws.y }, pickPos);
+			auto windowPos = SceneUtils::WorldToWindowPoint(camera, glm::vec2{ ws.x, ws.y }, worldPos);
+
+			ST_CORE_INFO("World pos {0}", worldPos);
+			ST_CORE_INFO("Camera pos {0}", camera->GetPosition());
+			ST_CORE_INFO("Window pos {0} \n", windowPos);
+
+			auto picked = scene->MousePickEntity(worldPos.x, worldPos.y);
 
 			// Pass picked Entity to SceneHierarchy panel
 			SceneHierarchyWindow::SetPickedEntity(picked);

@@ -1,8 +1,10 @@
 #pragma once
 
 #include <spdlog/spdlog.h>
+#include <spdlog/fmt/ostr.h>
 #include <memory>
 #include <assert.h>
+#include <glm/glm.hpp>
 
 #include "Core/Core.h"
 
@@ -23,6 +25,24 @@ namespace Stimpi
 		static std::shared_ptr<spdlog::logger> s_ClientLogger;
 	};
 }
+
+template<>
+struct fmt::formatter<glm::vec2> : fmt::formatter<std::string>
+{
+	auto format(glm::vec2 vec, format_context& ctx) const -> decltype(ctx.out())
+	{
+		return format_to(ctx.out(), "vec2[{0}, {1}]", vec.x, vec.y);
+	}
+};
+
+template<>
+struct fmt::formatter<glm::vec3> : fmt::formatter<std::string>
+{
+	auto format(glm::vec3 vec, format_context& ctx) const -> decltype(ctx.out())
+	{
+		return format_to(ctx.out(), "vec2[{0}, {1}, {2}]", vec.x, vec.y, vec.z);
+	}
+};
 
 // Core - engine log macros
 #define ST_CORE_TRACE(...)		Stimpi::Log::GetCoreLogger()->trace(__VA_ARGS__)
