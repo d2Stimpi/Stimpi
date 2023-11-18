@@ -115,6 +115,9 @@
     <ClCompile Include="src\Stimpi\Scene\Utils\SceneUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Scene\Component.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi\Core\Core.h">

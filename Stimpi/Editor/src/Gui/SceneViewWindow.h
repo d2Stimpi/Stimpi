@@ -15,7 +15,11 @@ namespace Stimpi
 
 		bool IsHovered() { return m_Hovered; }
 		bool IsFocused() { return m_Focused; }
+
 	private:
+		void DrawUIComponents(ImVec2 winPos, ImVec2 winSize);
+		bool PickUIComponents(ImVec2 pickPos);
+
 		bool m_Show = true;
 		ImGuiWindowFlags m_Flags;
 		bool m_Hovered = false;

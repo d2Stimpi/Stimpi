@@ -3,15 +3,15 @@ Scene:
     TagComponent:
       Tag: Entity
     QuadComponent:
-      - 0
-      - 0
+      - 22.7758026
+      - 18.5243187
       - 50
       - 40
       - 0
     CameraComponent:
       Position:
-        - 0
-        - 0
+        - -47.7758026
+        - -38.5243187
         - 0
       Rotation: 0
       Zoom: 1
@@ -20,15 +20,15 @@ Scene:
         - 1280
         - 0
         - 720
-      IsMain: true
+      IsMain: false
   Entity:
     TagComponent:
       Tag: Texture1
     QuadComponent:
-      - 73.974823
-      - 17.0391464
-      - 113.498955
-      - 103.164848
+      - 86.3345184
+      - 17.1150665
+      - 50
+      - 40
       - 0
     TextureComponent:
       FilePath: ..\/assets/textures/Capture.jpg

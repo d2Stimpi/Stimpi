@@ -6,6 +6,8 @@
 #include "Stimpi/Scene/Entity.h"
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/ResourceManager.h"
+#include "Stimpi/Scene/Utils/SceneUtils.h"
+
 #include "Stimpi/Graphics/Renderer2D.h"
 
 #include "Stimpi/Core/InputManager.h"
@@ -39,10 +41,16 @@ namespace Stimpi
 	Entity s_TestObj;
 #endif
 
+	static void OnQuadCreated(entt::registry& reg, entt::entity ent)
+	{
+		ST_CORE_INFO("QuadComponent added {}");
+	}
+
 	Scene::Scene()
 	{
 		// Workaround - Create 0 value Entity and never use it. Fixes check for valid Entity
 		m_Registry.create();
+		ComponentObserver::InitOnConstructObservers(m_Registry, this);
 
 		m_RuntimeState = RuntimeState::STOPPED;
 		m_DefaultShader.reset(Shader::CreateShader("..\/assets\/shaders\/shader.shader"));
@@ -94,7 +102,7 @@ namespace Stimpi
 
 	Scene::~Scene()
 	{
-
+		ComponentObserver::DeinitOnConstructObservers(m_Registry);
 	}
 
 	void Scene::OnUpdate(Timestep ts)
@@ -176,6 +184,11 @@ namespace Stimpi
 
 		m_Entities.push_back(entity);
 		return entity;
+	}
+
+	Stimpi::Entity Scene::GetEntityByHandle(entt::entity handle)
+	{
+		return Entity(handle, this);
 	}
 
 	void Scene::RemoveEntity(Entity entity)
@@ -279,12 +292,18 @@ namespace Stimpi
 	Stimpi::Entity Scene::MousePickEntity(float x, float y)
 	{
 		Entity picked = {};
+
 		m_Registry.view<QuadComponent>().each([this, &picked, x, y](auto entity, auto& quad)
 			{
-				if ((x >= quad.m_Position.x) && (x <= (quad.m_Position.x + quad.m_Size.x)) &&
-					(y >= quad.m_Position.y) && (y <= (quad.m_Position.y + quad.m_Size.y)))
+				if (quad.m_PickEnabled)
 				{
-					picked = Entity(entity, this);
+					glm::vec2 pos = { x, y };
+					glm::vec2 min = { quad.m_Position.x, quad.m_Position.y };
+					glm::vec2 max = { quad.m_Position.x + quad.m_Size.x, quad.m_Position.y + quad.m_Size.y };
+					if (SceneUtils::IsContainedInSquare(pos, min, max))
+					{
+						picked = Entity(entity, this);
+					}
 				}
 			});
 

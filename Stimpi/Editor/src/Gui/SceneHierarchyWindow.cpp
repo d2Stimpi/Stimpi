@@ -161,9 +161,7 @@ namespace Stimpi
 		if (ImGui::CollapsingHeader("Quad##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			ImGui::DragFloat2("Position", glm::value_ptr(component.m_Position));
-			//ImGui::DragFloat2("Y position", &component.m_Y);
 			ImGui::DragFloat2("Size", glm::value_ptr(component.m_Size));
-			//ImGui::DragFloat("Height", &component.m_Height);
 			ImGui::PushItemWidth(80.0f);
 			ImGui::DragFloat("Rotation", &component.m_Rotation, 0.01);
 			ImGui::PopItemWidth();
@@ -220,6 +218,14 @@ namespace Stimpi
 		ImGui::Separator();
 		if (ImGui::CollapsingHeader("Camera##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
 		{
+			if (s_SelectedEntity.HasComponent<QuadComponent>())
+			{
+				// Use quad position for camera's pos
+				auto& quad = s_SelectedEntity.GetComponent<QuadComponent>();
+				component.m_Position = quad.Center();
+				component.UpdatePosition();
+			}
+
 			ImGui::Checkbox("Main##Camera", &component.m_IsMain);
 
 			ImGui::PushItemWidth(80.0f);

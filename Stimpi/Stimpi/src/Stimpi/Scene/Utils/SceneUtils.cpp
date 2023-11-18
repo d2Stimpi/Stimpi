@@ -40,7 +40,7 @@ namespace Stimpi
 
 		winPos = winPos * cameraZoom;
 		glm::vec2 worldPos = { winPos.x / scale.x + cameraPosition.x, winPos.y / scale.y + cameraPosition.y };
-		ST_CORE_INFO("   WindowToWorldPoint: pos {0}, {1}", worldPos.x , worldPos.y);
+		//ST_CORE_INFO("   WindowToWorldPoint: pos {0}, {1}", worldPos.x , worldPos.y);
 
 		return worldPos;
 	}
@@ -78,6 +78,17 @@ namespace Stimpi
 		glm::vec2 winPos = { worldPos.x * scale.x, worldPos.y * scale.y };
 
 		return winPos;
+	}
+
+	bool SceneUtils::IsContainedInSquare(glm::vec2 point, glm::vec2 min, glm::vec2 max)
+	{
+		if ((point.x >= min.x) && (point.x <= max.x) &&
+			(point.y >= min.y) && (point.y <= max.y))
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 }

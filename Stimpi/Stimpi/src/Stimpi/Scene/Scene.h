@@ -32,6 +32,7 @@ namespace Stimpi
 		void OnEvent(Event* event);
 
 		Entity CreateEntity(const std::string& name = "");
+		Entity GetEntityByHandle(entt::entity handle);
 		void RemoveEntity(Entity entity);
 
 		void SetCamera(Camera* camera);
@@ -68,5 +69,6 @@ namespace Stimpi
 		friend class Entity;
 		friend class SceneSerializer;
 		friend class SceneHierarchyWindow;
+		friend class SceneViewWindow;
 	};
 }

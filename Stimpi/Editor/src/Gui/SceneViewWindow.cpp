@@ -34,23 +34,23 @@ namespace Stimpi
 		ImGui::BeginChild("##DropTarget-SceneView");	// Used to be able to catch drag-drop item on whole window
 
 		ImVec2 pos = ImGui::GetCursorScreenPos();
-		ImVec2 ws = ImGui::GetContentRegionAvail();
+		ImVec2 winSize = ImGui::GetContentRegionAvail();
 		// Invert the image on ImGui window
-		ImVec2 uv_min = ImVec2(0.0f, ws.y / frameBuffer->GetHeight());
-		ImVec2 uv_max = ImVec2(ws.x / frameBuffer->GetWidth(), 0.0f);
+		ImVec2 uv_min = ImVec2(0.0f, winSize.y / frameBuffer->GetHeight());
+		ImVec2 uv_max = ImVec2(winSize.x / frameBuffer->GetWidth(), 0.0f);
 
 		m_Hovered = ImGui::IsWindowHovered();
 		m_Focused = ImGui::IsWindowFocused();
 
 		// Aspect ratio 16:9
 		// TODO: configurable aspect ratio
-		if (((float)ws.x / 1.7778f) >= (float)ws.y)
+		if (((float)winSize.x / 1.7778f) >= (float)winSize.y)
 		{
-			frameBuffer->Resize(ws.x, ((float)ws.x / 1.7778f));
+			frameBuffer->Resize(winSize.x, ((float)winSize.x / 1.7778f));
 		}
 		else
 		{
-			frameBuffer->Resize(((float)ws.y*1.778f), ws.y);
+			frameBuffer->Resize(((float)winSize.y*1.778f), winSize.y);
 		}
 
 		ImGuiIO& io = ImGui::GetIO();
@@ -58,27 +58,30 @@ namespace Stimpi
 		{
 			ImVec2 winPos = ImGui::GetCursorScreenPos();
 			ImVec2 clickPos = io.MouseClickedPos[ImGuiMouseButton_Left];
-			glm::vec2 pickPos = { clickPos.x - winPos.x, ws.y - (clickPos.y - winPos.y) };
+			glm::vec2 pickPos = { clickPos.x - winPos.x, winSize.y - (clickPos.y - winPos.y) };
 
-			ST_CORE_INFO("Win pos {0}", pickPos);
+			auto worldPos = SceneUtils::WindowToWorldPoint(camera, glm::vec2{ winSize.x, winSize.y }, pickPos);
 
-			auto worldPos = SceneUtils::WindowToWorldPoint(camera, glm::vec2{ ws.x, ws.y }, pickPos);
-			auto windowPos = SceneUtils::WorldToWindowPoint(camera, glm::vec2{ ws.x, ws.y }, worldPos);
+			// First try to pick UI components only
+			if (PickUIComponents(ImVec2(pickPos.x, pickPos.y)) == false)
+			{
+				auto picked = scene->MousePickEntity(worldPos.x, worldPos.y);
+				// Pass picked Entity to SceneHierarchy panel
+				SceneHierarchyWindow::SetPickedEntity(picked);
+			}
 
-			ST_CORE_INFO("World pos {0}", worldPos);
-			ST_CORE_INFO("Camera pos {0}", camera->GetPosition());
-			ST_CORE_INFO("Window pos {0} \n", windowPos);
-
-			auto picked = scene->MousePickEntity(worldPos.x, worldPos.y);
-
-			// Pass picked Entity to SceneHierarchy panel
-			SceneHierarchyWindow::SetPickedEntity(picked);
 		}
 
 		// Draw Scene before Gizmo
-		ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)frameBuffer->GetTextureID(), ImVec2(pos), ImVec2(pos.x + ws.x, pos.y + ws.y), uv_min, uv_max);
+		ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)frameBuffer->GetTextureID(), ImVec2(pos), ImVec2(pos.x + winSize.x, pos.y + winSize.y), uv_min, uv_max);
 		
-		// Draw Gizmo
+		// Draw Scene UI components, Cameras, etc...
+		if (scene->GetRuntimeState() == RuntimeState::STOPPED)
+		{
+			DrawUIComponents(pos, winSize);
+		}
+
+		// Draw Gizmo last and on top
 		auto selectedEntity = SceneHierarchyWindow::GetSelectedEntity();
 		if (selectedEntity && scene->GetRuntimeState() != RuntimeState::RUNNING)
 		{
@@ -114,6 +117,55 @@ namespace Stimpi
 
 
 		ImGui::End();
+	}
+
+	void SceneViewWindow::DrawUIComponents(ImVec2 winPos, ImVec2 winSize)
+	{
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		auto sceneCamera = scene->GetRenderCamera();
+
+		scene->m_Registry.view<CameraComponent>().each([=](auto e, CameraComponent& camera)
+			{
+				static Texture* camTexture = ResourceManager::Instance()->LoadTexture("..\/Editor\/assets\/icons\/camera.png");
+				glm::vec2 iconSize = { 30.0f , 24.0f }; // TODO: Icon manager? and uniform size of icons
+				auto camPos = camera.m_Position;
+
+				auto calcPos = SceneUtils::WorldToWindowPoint(sceneCamera, glm::vec2{ winSize.x, winSize.y }, { camPos.x, camPos.y });
+
+				ImVec2 drawPos = { calcPos.x + winPos.x, winPos.y + winSize.y - calcPos.y };
+				ImVec2 uv_min = ImVec2(0.0f, 1.0f);
+				ImVec2 uv_max = ImVec2(1.0f, 0.0f);
+
+				ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)camTexture->GetTextureID(), ImVec2(drawPos.x - iconSize.x / 2, drawPos.y - iconSize.y / 2), ImVec2(drawPos.x + iconSize.x / 2, drawPos.y + iconSize.y / 2), uv_min, uv_max);
+			});
+	}
+
+	bool SceneViewWindow::PickUIComponents(ImVec2 pickPos)
+	{
+		bool picked = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		auto sceneCamera = scene->GetRenderCamera();
+
+		glm::vec2 iconSize = { 30.0f , 24.0f }; // TODO: Icon manager? and uniform size of icons
+		ImVec2 winPos = ImGui::GetCursorScreenPos();
+		ImVec2 winSize = ImGui::GetContentRegionAvail();
+
+		scene->m_Registry.view<CameraComponent>().each([&](auto entity, CameraComponent& camera)
+			{
+				auto calcPos = SceneUtils::WorldToWindowPoint(sceneCamera, glm::vec2{ winSize.x, winSize.y }, camera.m_Position);
+
+				glm::vec2 clickPos = { pickPos.x, pickPos.y };
+				glm::vec2 min = { calcPos.x - iconSize.x / 2.0f, calcPos.y - iconSize.y / 2.0f };
+				glm::vec2 max = { calcPos.x + iconSize.x / 2.0f, calcPos.y + iconSize.y / 2.0f };
+
+				if (SceneUtils::IsContainedInSquare(clickPos, min, max))
+				{
+					SceneHierarchyWindow::SetPickedEntity(scene->GetEntityByHandle(entity));
+					picked = true;
+				}
+			});
+
+		return picked;
 	}
 
 }
