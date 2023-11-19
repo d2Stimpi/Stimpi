@@ -144,23 +144,15 @@ namespace Stimpi
 		}
 	};
 
-	// TODO: add zoom value in serialization
 	struct CameraComponent
 	{
 		std::shared_ptr<Camera> m_Camera = nullptr;
 		bool m_IsMain = false;
-		glm::vec2 m_Position = {0.0f, 0.0f}; // Inverted position for moving camera in editor
 
 		CameraComponent() = default;
 		CameraComponent(const CameraComponent&) = default;
 		CameraComponent(std::shared_ptr<Camera> camera, bool isMain)
 			: m_Camera(camera), m_IsMain(isMain) {}
-
-		void UpdatePosition()
-		{
-			auto pos = m_Camera->GetPosition();
-			m_Camera->SetPosition({-m_Position.x, -m_Position.y, pos.z});
-		}
 
 		void Serialize(YAML::Emitter& out)
 		{
@@ -204,8 +196,6 @@ namespace Stimpi
 			{
 				YAML::Node positionNode = node["Position"];
 				m_Camera->SetPosition(glm::vec3(positionNode[0].as<float>(), positionNode[1].as<float>(), positionNode[2].as<float>()));
-				// Invert values when saving data in Position
-				m_Position = { -positionNode[0].as<float>(), -positionNode[1].as<float>() };
 			}
 			if (node["Rotation"])
 			{

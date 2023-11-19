@@ -19,8 +19,8 @@ Scene:
     TagComponent:
       Tag: Box
     QuadComponent:
-      - 38
-      - 33
+      - 44.0898247
+      - 41.9707756
       - 10
       - 10
       - 0
@@ -37,7 +37,7 @@ Scene:
         - 0.5
         - 0.5
       Density: 1
-      Friction: 0.5
+      Friction: 1
       Restitution: 0.270000011
       RestitutionThreshold: 0.5
   Entity:
@@ -45,10 +45,10 @@ Scene:
       Tag: Floor
     QuadComponent:
       - 12
-      - 9
+      - 8.30482006
       - 64
       - 5
-      - 0.50999999
+      - 0.400000006
     TextureComponent:
       FilePath: ../assets\textures\Picture1.jpg
     RigidBody2DComponent:
@@ -88,5 +88,80 @@ Scene:
         - 0.5
       Density: 1
       Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    TagComponent:
+      Tag: Box2
+    QuadComponent:
+      - 27.8280945
+      - 49.402256
+      - 6
+      - 6
+      - 0
+    TextureComponent:
+      FilePath: ../assets\textures\Capture.JPG
+    RigidBody2DComponent:
+      Type: Dynamic
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 0.829999983
+      Friction: 1
+      Restitution: 0.74000001
+      RestitutionThreshold: 0.5
+  Entity:
+    TagComponent:
+      Tag: box3
+    QuadComponent:
+      - 43.7325439
+      - 64.4238968
+      - 2.65376925
+      - 6.651052
+      - 0
+    TextureComponent:
+      FilePath: ../assets\textures\Picture1.jpg
+    RigidBody2DComponent:
+      Type: Dynamic
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    TagComponent:
+      Tag: Box4
+    QuadComponent:
+      - 31
+      - 33
+      - 5
+      - 8
+      - 0
+    TextureComponent:
+      FilePath: ../assets\textures\Capture.JPG
+    RigidBody2DComponent:
+      Type: Dynamic
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 1
       Restitution: 0
       RestitutionThreshold: 0.5

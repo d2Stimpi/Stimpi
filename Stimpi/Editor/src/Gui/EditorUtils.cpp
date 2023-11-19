@@ -26,4 +26,18 @@ namespace Stimpi
 		ImGui::RenderFrame(pos, ImVec2(pos.x + ImGui::GetContentRegionMax().x, pos.y + ImGui::GetTextLineHeight()), col, true);
 	}
 
+	glm::vec2 EditorUtils::PositionInCurentWindow(glm::vec2 pos)
+	{
+		auto res = PositionInCurentWindow(ImVec2(pos.x, pos.y));
+		return glm::vec2(res.x, res.y);
+	}
+
+	ImVec2 EditorUtils::PositionInCurentWindow(ImVec2 pos)
+	{
+		ImVec2 winPos = ImGui::GetCursorScreenPos();
+		ImVec2 winSize = ImGui::GetContentRegionAvail();
+
+		return ImVec2(pos.x + winPos.x, winPos.y + winSize.y - pos.y);
+	}
+
 }

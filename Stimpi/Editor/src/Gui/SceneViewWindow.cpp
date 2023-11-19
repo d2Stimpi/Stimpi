@@ -4,12 +4,15 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Core/InputManager.h"
 #include "Stimpi/Graphics/Renderer2D.h"
+
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Entity.h"
 #include "Stimpi/Scene/Utils/SceneUtils.h"
+
 #include "Gui/Components/UIPayload.h"
 #include "Gui/SceneHierarchyWindow.h"
 #include "Gui/Gizmo2D.h"
+#include "Gui/EditorUtils.h"
 
 
 namespace Stimpi
@@ -124,19 +127,36 @@ namespace Stimpi
 		auto scene = SceneManager::Instance()->GetActiveScene();
 		auto sceneCamera = scene->GetRenderCamera();
 
-		scene->m_Registry.view<CameraComponent>().each([=](auto e, CameraComponent& camera)
+		scene->m_Registry.view<CameraComponent>().each([=, &scene](auto e, CameraComponent& camera)
 			{
 				static Texture* camTexture = ResourceManager::Instance()->LoadTexture("..\/Editor\/assets\/icons\/camera.png");
 				glm::vec2 iconSize = { 30.0f , 24.0f }; // TODO: Icon manager? and uniform size of icons
-				auto camPos = camera.m_Position;
+				auto camPos = camera.m_Camera->GetPosition();
+				auto camView = camera.m_Camera->GetOrthoView();
 
-				auto calcPos = SceneUtils::WorldToWindowPoint(sceneCamera, glm::vec2{ winSize.x, winSize.y }, { camPos.x, camPos.y });
+				// Position Camera's UI icon by Quad Center if it exists
+				Entity entity = scene->GetEntityByHandle(e);
+				if (entity.HasComponent<QuadComponent>())
+				{
+					auto& quad = entity.GetComponent<QuadComponent>();
+					auto quadCenter = quad.Center();
+					camPos = { quadCenter.x, quadCenter.y, camPos.z };
+				}
 
-				ImVec2 drawPos = { calcPos.x + winPos.x, winPos.y + winSize.y - calcPos.y };
+				// Cam Icon
+				auto calcPos = SceneUtils::WorldToWindowPoint(sceneCamera, glm::vec2{ winSize.x, winSize.y }, { camView.x + camPos.x, camView.z + camPos.y });
+				calcPos = EditorUtils::PositionInCurentWindow(calcPos);
 				ImVec2 uv_min = ImVec2(0.0f, 1.0f);
 				ImVec2 uv_max = ImVec2(1.0f, 0.0f);
-
-				ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)camTexture->GetTextureID(), ImVec2(drawPos.x - iconSize.x / 2, drawPos.y - iconSize.y / 2), ImVec2(drawPos.x + iconSize.x / 2, drawPos.y + iconSize.y / 2), uv_min, uv_max);
+				ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)camTexture->GetTextureID(), ImVec2(calcPos.x - iconSize.x / 2, calcPos.y - iconSize.y / 2), ImVec2(calcPos.x + iconSize.x / 2, calcPos.y + iconSize.y / 2), uv_min, uv_max);
+				
+				// Cam bounds
+				camPos = camera.m_Camera->GetPosition(); // Reset Camera position
+				auto camMin = SceneUtils::WorldToWindowPoint(sceneCamera, glm::vec2{ winSize.x, winSize.y }, { camView.x + camPos.x, camView.z + camPos.y });
+				auto camMax = SceneUtils::WorldToWindowPoint(sceneCamera, glm::vec2{ winSize.x, winSize.y }, { camView.y + camPos.x, camView.w + camPos.y });
+				camMin = EditorUtils::PositionInCurentWindow(camMin);
+				camMax = EditorUtils::PositionInCurentWindow(camMax);
+				ImGui::GetWindowDrawList()->AddQuad(ImVec2(camMin.x, camMin.y), ImVec2(camMax.x, camMin.y), ImVec2(camMax.x, camMax.y), ImVec2(camMin.x, camMax.y), ImColor(0.8f, 0.8f, 0.2f, 1.0f), 3);
 			});
 	}
 
@@ -150,9 +170,21 @@ namespace Stimpi
 		ImVec2 winPos = ImGui::GetCursorScreenPos();
 		ImVec2 winSize = ImGui::GetContentRegionAvail();
 
-		scene->m_Registry.view<CameraComponent>().each([&](auto entity, CameraComponent& camera)
+		scene->m_Registry.view<CameraComponent>().each([&](auto e, CameraComponent& camera)
 			{
-				auto calcPos = SceneUtils::WorldToWindowPoint(sceneCamera, glm::vec2{ winSize.x, winSize.y }, camera.m_Position);
+				auto camPos = camera.m_Camera->GetPosition();
+				auto camView = camera.m_Camera->GetOrthoView();
+
+				// Camera's UI icon relative to Quad Center if it exists
+				Entity entity = scene->GetEntityByHandle(e);
+				if (entity.HasComponent<QuadComponent>())
+				{
+					auto& quad = entity.GetComponent<QuadComponent>();
+					auto quadCenter = quad.Center();
+					camPos = { quadCenter.x, quadCenter.y, camPos.z };
+				}
+
+				auto calcPos = SceneUtils::WorldToWindowPoint(sceneCamera, glm::vec2{ winSize.x, winSize.y }, glm::vec2{ camView.x + camPos.x, camView.z + camPos.y });
 
 				glm::vec2 clickPos = { pickPos.x, pickPos.y };
 				glm::vec2 min = { calcPos.x - iconSize.x / 2.0f, calcPos.y - iconSize.y / 2.0f };
@@ -160,7 +192,7 @@ namespace Stimpi
 
 				if (SceneUtils::IsContainedInSquare(clickPos, min, max))
 				{
-					SceneHierarchyWindow::SetPickedEntity(scene->GetEntityByHandle(entity));
+					SceneHierarchyWindow::SetPickedEntity(entity);
 					picked = true;
 				}
 			});

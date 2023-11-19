@@ -41,11 +41,6 @@ namespace Stimpi
 	Entity s_TestObj;
 #endif
 
-	static void OnQuadCreated(entt::registry& reg, entt::entity ent)
-	{
-		ST_CORE_INFO("QuadComponent added {}");
-	}
-
 	Scene::Scene()
 	{
 		// Workaround - Create 0 value Entity and never use it. Fixes check for valid Entity
@@ -107,6 +102,8 @@ namespace Stimpi
 
 	void Scene::OnUpdate(Timestep ts)
 	{
+		UpdateComponentDependacies(ts);
+
 		// Update NativeScripts
 		if (m_RuntimeState == RuntimeState::RUNNING)
 		{
@@ -129,13 +126,16 @@ namespace Stimpi
 			m_Registry.view<RigidBody2DComponent>().each([=](auto e, RigidBody2DComponent& rb2d)
 				{
 					Entity entity = { e, this };
-					auto& quad = entity.GetComponent<QuadComponent>();
+					if (entity.HasComponent<QuadComponent>())
+					{
+						auto& quad = entity.GetComponent<QuadComponent>();
 
-					b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
-					const auto& position = body->GetPosition();
-					quad.m_Position.x = position.x - quad.HalfWidth();
-					quad.m_Position.y = position.y - quad.HalfHeight();
-					quad.m_Rotation = body->GetAngle();
+						b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+						const auto& position = body->GetPosition();
+						quad.m_Position.x = position.x - quad.HalfWidth();
+						quad.m_Position.y = position.y - quad.HalfHeight();
+						quad.m_Rotation = body->GetAngle();
+					}
 				});
 		}
 
@@ -230,31 +230,34 @@ namespace Stimpi
 		m_Registry.view<RigidBody2DComponent>().each([=](auto e, auto& rb2d)
 			{
 				Entity entity = { e, this };
-				auto& quad = entity.GetComponent<QuadComponent>();
-
-				b2BodyDef bodyDef;
-				bodyDef.type = Rigidbody2DTypeToBox2DType(rb2d.m_Type);
-				bodyDef.position.Set(quad.Center().x, quad.Center().y);
-				bodyDef.angle = quad.m_Rotation;
-
-				b2Body* body = m_PhysicsDWorld->CreateBody(&bodyDef);
-				body->SetFixedRotation(rb2d.m_FixedRotation);
-				rb2d.m_RuntimeBody = body;
-
-				if (entity.HasComponent<BoxCollider2DComponent>())
+				if (entity.HasComponent<QuadComponent>())
 				{
-					auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+					auto& quad = entity.GetComponent<QuadComponent>();
 
-					b2PolygonShape boxShape;
-					boxShape.SetAsBox(bc2d.m_Size.x * quad.m_Size.x, bc2d.m_Size.y * quad.m_Size.y);
+					b2BodyDef bodyDef;
+					bodyDef.type = Rigidbody2DTypeToBox2DType(rb2d.m_Type);
+					bodyDef.position.Set(quad.Center().x, quad.Center().y);
+					bodyDef.angle = quad.m_Rotation;
 
-					b2FixtureDef fixtureDef;
-					fixtureDef.shape = &boxShape;
-					fixtureDef.density = bc2d.m_Density;
-					fixtureDef.friction = bc2d.m_Friction;
-					fixtureDef.restitution = bc2d.m_Restitution;
-					fixtureDef.restitutionThreshold = bc2d.m_RestitutionThreshold;
-					body->CreateFixture(&fixtureDef);
+					b2Body* body = m_PhysicsDWorld->CreateBody(&bodyDef);
+					body->SetFixedRotation(rb2d.m_FixedRotation);
+					rb2d.m_RuntimeBody = body;
+
+					if (entity.HasComponent<BoxCollider2DComponent>())
+					{
+						auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+
+						b2PolygonShape boxShape;
+						boxShape.SetAsBox(bc2d.m_Size.x * quad.m_Size.x, bc2d.m_Size.y * quad.m_Size.y);
+
+						b2FixtureDef fixtureDef;
+						fixtureDef.shape = &boxShape;
+						fixtureDef.density = bc2d.m_Density;
+						fixtureDef.friction = bc2d.m_Friction;
+						fixtureDef.restitution = bc2d.m_Restitution;
+						fixtureDef.restitutionThreshold = bc2d.m_RestitutionThreshold;
+						body->CreateFixture(&fixtureDef);
+					}
 				}
 			});
 	}
@@ -297,10 +300,7 @@ namespace Stimpi
 			{
 				if (quad.m_PickEnabled)
 				{
-					glm::vec2 pos = { x, y };
-					glm::vec2 min = { quad.m_Position.x, quad.m_Position.y };
-					glm::vec2 max = { quad.m_Position.x + quad.m_Size.x, quad.m_Position.y + quad.m_Size.y };
-					if (SceneUtils::IsContainedInSquare(pos, min, max))
+					if (SceneUtils::IsPointInRotatedSquare({ x, y }, quad.Center(), quad.m_Size, quad.m_Rotation))
 					{
 						picked = Entity(entity, this);
 					}
@@ -308,6 +308,20 @@ namespace Stimpi
 			});
 
 		return picked;
+	}
+
+	void Scene::UpdateComponentDependacies(Timestep ts)
+	{
+		m_Registry.view<CameraComponent>().each([this](auto e, CameraComponent camera)
+			{
+				Entity entitiy = { e, this };
+				if (entitiy.HasComponent<QuadComponent>())
+				{
+					auto& quad = entitiy.GetComponent<QuadComponent>();
+					auto camPos = camera.m_Camera->GetPosition();
+					camera.m_Camera->SetPosition({ quad.m_Position.x , quad.m_Position.y, camPos.z });
+				}
+			});
 	}
 
 }

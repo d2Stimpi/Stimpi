@@ -14,5 +14,6 @@ namespace Stimpi
 		static glm::vec2 WorldToWindowPoint(Camera* camera, glm::vec2 windowSize, glm::vec2 worldPos);
 
 		static bool IsContainedInSquare(glm::vec2 point, glm::vec2 min, glm::vec2 max);
+		static bool IsPointInRotatedSquare(glm::vec2 point, glm::vec2 center, glm::vec2 size, float rotation);
 	};
 }

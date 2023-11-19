@@ -1,34 +1,26 @@
 Scene:
   Entity:
     TagComponent:
-      Tag: ScriptedObj
+      Tag: Entity
     QuadComponent:
-      - 100
-      - 100
+      - 10
+      - 12
       - 50
-      - 50
-    TextureComponent:
-      FilePath: ..\/assets/textures/Picture1.jpg
+      - 40
+      - 0
     CameraComponent:
       Position:
         - 0
         - 0
         - 0
       Rotation: 0
+      Zoom: 1
       ViewQuad:
         - 0
-        - 1280
+        - 128
         - 0
-        - 720
+        - 72
       IsMain: true
-  Entity:
-    TagComponent:
-      Tag: Entity
-    QuadComponent:
-      - 0
-      - 0
-      - 50
-      - 40
   Entity:
     TagComponent:
       Tag: Texture1
@@ -37,6 +29,7 @@ Scene:
       - 20
       - 50
       - 40
+      - 0
     TextureComponent:
       FilePath: ..\/assets/textures/Capture.jpg
   Entity:
@@ -47,8 +40,9 @@ Scene:
       - 20
       - 50
       - 40
+      - 0
     TextureComponent:
-      FilePath: ..\/assets/textures/Capture.jpg
+      FilePath: ../assets/textures/Capture.jpg
   Entity:
     TagComponent:
       Tag: Texture3
@@ -57,5 +51,6 @@ Scene:
       - 20
       - 50
       - 40
+      - 0
     TextureComponent:
-      FilePath: ..\/assets/textures/Picture1.jpg
+      FilePath: ../assets/textures/Picture1.jpg

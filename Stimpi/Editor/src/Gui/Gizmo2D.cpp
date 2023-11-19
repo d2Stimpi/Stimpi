@@ -5,6 +5,7 @@
 #include "Stimpi/Core/InputManager.h"
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/Utils/SceneUtils.h"
+#include "Gui/EditorUtils.h"
 
 #include "ImGui/src/imgui_internal.h"
 
@@ -318,6 +319,7 @@ namespace Stimpi
 		ImVec2 winSize = ImGui::GetContentRegionAvail();
 
 		glm::vec2 drawPos = SceneUtils::WorldToWindowPoint(camera, glm::vec2{ winSize.x, winSize.y }, objPos);
+		drawPos = EditorUtils::PositionInCurentWindow(drawPos);
 		
 		gContext.m_Action = action;
 		gContext.m_Entity = object;
@@ -326,9 +328,9 @@ namespace Stimpi
 		gContext.m_ScalingScale = camera->GetOrthoView().y / winSize.x;
 
 		if (action == GizmoAction::TRANSLATE)
-			DrawTranslationArrow(ImVec2(drawPos.x + winPos.x, winPos.y + winSize.y - drawPos.y), 40, 4);
+			DrawTranslationArrow(ImVec2(drawPos.x, drawPos.y), 40, 4);
 
 		if (action == GizmoAction::SCALE)
-			DrawScaleArrow(ImVec2(drawPos.x + winPos.x, winPos.y + winSize.y - drawPos.y), 40, 4);
+			DrawScaleArrow(ImVec2(drawPos.x, drawPos.y), 40, 4);
 	}
 }

@@ -165,6 +165,7 @@ namespace Stimpi
 			ImGui::PushItemWidth(80.0f);
 			ImGui::DragFloat("Rotation", &component.m_Rotation, 0.01);
 			ImGui::PopItemWidth();
+			ImGui::Separator();
 			if (ImGui::Button("Remove##Quad"))
 			{
 				s_SelectedEntity.RemoveComponent<QuadComponent>();
@@ -203,6 +204,7 @@ namespace Stimpi
 			else
 				ImGui::Text("Add Texture");
 
+			ImGui::Separator();
 			if (ImGui::Button("Remove##Texture"))
 			{
 				s_SelectedEntity.RemoveComponent<TextureComponent>();
@@ -218,44 +220,23 @@ namespace Stimpi
 		ImGui::Separator();
 		if (ImGui::CollapsingHeader("Camera##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			if (s_SelectedEntity.HasComponent<QuadComponent>())
-			{
-				// Use quad position for camera's pos
-				auto& quad = s_SelectedEntity.GetComponent<QuadComponent>();
-				component.m_Position = quad.Center();
-				component.UpdatePosition();
-			}
-
 			ImGui::Checkbox("Main##Camera", &component.m_IsMain);
 
+			ImGui::Text("Camera Viewport:");
 			ImGui::PushItemWidth(80.0f);
-			if (ImGui::InputFloat("##CameraComponent left input", &view.x, NULL, NULL, "%.3f", flags))
-				component.m_Camera->SetOrthoView(view);
-			ImGui::SameLine();
-			ImGui::Text("Left");
+			ImGui::DragFloat("X##CameraComponent left input", &view.x);
 
-			if (ImGui::InputFloat("##CameraComponent right input", &view.y, NULL, NULL, "%.3f", flags))
-				component.m_Camera->SetOrthoView(view);
 			ImGui::SameLine();
-			ImGui::Text("Right");
+			ImGui::DragFloat("Y##CameraComponent bottom input", &view.z);
 
-			if (ImGui::InputFloat("##CameraComponent bottom input", &view.z, NULL, NULL, "%.3f", flags))
-				component.m_Camera->SetOrthoView(view);
+			ImGui::DragFloat("W##CameraComponent right input", &view.y);
+
 			ImGui::SameLine();
-			ImGui::Text("Bottom");
+			ImGui::DragFloat("H##CameraComponent top input", &view.w);
 
-			if (ImGui::InputFloat("##CameraComponent top input", &view.w, NULL, NULL, "%.3f", flags))
-				component.m_Camera->SetOrthoView(view);
-			ImGui::SameLine();
-			ImGui::Text("Top");
+			component.m_Camera->SetOrthoView(view);
 
-			float camZoom = 1.f / component.m_Camera->GetZoomFactor();
-			if (ImGui::InputFloat("##CameraComponent zoom input", &camZoom, NULL, NULL, "%.3f", flags))
-				component.m_Camera->SetZoomFactor(1.f / camZoom);
-			ImGui::SameLine();
-			ImGui::Text("Camera Zoom");
-			ImGui::PopItemWidth();
-
+			ImGui::Separator();
 			if (ImGui::Button("Remove##Camera"))
 			{
 				s_SelectedEntity.RemoveComponent<CameraComponent>();
@@ -293,6 +274,7 @@ namespace Stimpi
 
 			ImGui::Checkbox("Fixed Rotation", &component.m_FixedRotation);
 
+			ImGui::Separator();
 			if (ImGui::Button("Remove##RigidBody2D"))
 			{
 				s_SelectedEntity.RemoveComponent<RigidBody2DComponent>();
@@ -316,6 +298,7 @@ namespace Stimpi
 			ImGui::DragFloat("Restitution Threshold", &component.m_RestitutionThreshold, 0.01f, 0.0f);
 			ImGui::PopItemWidth();
 
+			ImGui::Separator();
 			if (ImGui::Button("Remove##BoxCollider"))
 			{
 				s_SelectedEntity.RemoveComponent<BoxCollider2DComponent>();

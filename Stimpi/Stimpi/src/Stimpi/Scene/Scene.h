@@ -48,6 +48,9 @@ namespace Stimpi
 
 		// Mouse Picking
 		Entity MousePickEntity(float x, float y);
+	private:
+		// Update components based on interactions
+		void UpdateComponentDependacies(Timestep ts);
 
 	private:
 		entt::registry m_Registry;

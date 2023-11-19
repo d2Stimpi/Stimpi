@@ -3,6 +3,8 @@
 
 #include "Stimpi/Log.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 namespace Stimpi
 {
 
@@ -30,17 +32,12 @@ namespace Stimpi
 		}
 		// Calculate visible camera bounds. Not full FrameBuffer is always visible
 		glm::vec2 cameraVisibleSize = { cameraBounds.y * windowSize.x / fbSize.x, cameraBounds.w * windowSize.y / fbSize.y };
-		
-		//ST_CORE_INFO("   WindowToWorldPoint: cam {0}, {1}", cameraVisibleSize.x, cameraVisibleSize.y);
-		//ST_CORE_INFO("   WindowToWorldPoint: fb {0}, {1}", fbSize.x, fbSize.y);
 
 		// Adjusted camera view and window size ratio
 		glm::vec2 scale = { windowSize.x / cameraVisibleSize.x, windowSize.y / cameraVisibleSize.y };
-		//ST_CORE_INFO("   WindowToWorldPoint: scale {0}, {1}", scale.x, scale.y);
 
 		winPos = winPos * cameraZoom;
 		glm::vec2 worldPos = { winPos.x / scale.x + cameraPosition.x, winPos.y / scale.y + cameraPosition.y };
-		//ST_CORE_INFO("   WindowToWorldPoint: pos {0}, {1}", worldPos.x , worldPos.y);
 
 		return worldPos;
 	}
@@ -89,6 +86,23 @@ namespace Stimpi
 		}
 
 		return false;
+	}
+
+	bool SceneUtils::IsPointInRotatedSquare(glm::vec2 point, glm::vec2 center, glm::vec2 size, float rotation)
+	{
+		glm::mat4 transform = glm::rotate(glm::mat4(1.0f), -rotation, glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::vec4 vectorPointCenter = { point.x - center.x, point.y - center.y, 1.0f, 1.0f };
+		glm::vec4 rotatedVector = transform * vectorPointCenter;
+
+		if ((rotatedVector.x > -size.x / 2.0f) && (rotatedVector.x < size.x / 2.0f) &&
+			(rotatedVector.y > -size.y / 2.0f) && (rotatedVector.y < size.y / 2.0f))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 }
