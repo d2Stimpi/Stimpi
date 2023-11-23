@@ -1,3 +1,9 @@
 [submodule "Stimpi/Stimpi/vendor/Box2D"]
 	path = Stimpi/Stimpi/vendor/Box2D
 	url = https://github.com/d2Stimpi/box2d.git
+[submodule "Stimpi/vendor/yaml-cpp"]
+	path = Stimpi/vendor/yaml-cpp
+	url = https://github.com/d2Stimpi/yaml-cpp.git
+[submodule "Stimpi/vendor/spdlog"]
+	path = Stimpi/vendor/spdlog
+	url = https://github.com/d2Stimpi/spdlog.git

@@ -9,11 +9,15 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Dist|x64">
+      <Configuration>Dist</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{BBBDE9D1-A75F-14A8-901A-28FC7C5B9BF8}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{8a1aeeef-25ba-48f2-97e0-5d6722d82a8f}</ProjectGuid>
     <RootNamespace>Stimpi</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -21,20 +25,23 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
-  </ImportGroup>
-  <ImportGroup Label="Shared">
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -42,104 +49,118 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)\bin\$(Configuration)-$(Platform)\$(ProjectName)</OutDir>
-    <IntDir>$(SolutionDir)\bin-int\$(Configuration)-$(Platform)\$(ProjectName)</IntDir>
-    <IncludePath>D:\GitHub\Stimpi\Stimpi\vendor\Box2D\include;D:\GitHub\Stimpi\Stimpi\src;D:\libs\yaml-cpp\include;D:\GitHub\Stimpi\Stimpi\src\Stimpi\Vendor;D:\libs\stbimg;D:\libs\glfw-3.3.8.bin.WIN64\include;D:\libs\glm-0.9.9.7\glm;D:\libs\glad\include;D:\SDL2-devel-2.0.20-VC\SDL2-2.0.20\include;D:\libs\spdlog\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\GitHub\Stimpi\Stimpi\vendor\Box2D\bin\Debug-x64\Box2D;D:\libs\yaml-cpp\Debug;D:\libs\glfw-3.3.8.bin.WIN64\lib-vc2019;D:\GitHub\Stimpi\lib\Debug-x64\GLAD;D:\GitHub\Stimpi\lib\Debug-x64\ImGUI;D:\SDL2-devel-2.0.20-VC\SDL2-2.0.20\lib\x64;$(LibraryPath)</LibraryPath>
-    <SourcePath>$(SourcePath)</SourcePath>
+    <OutDir>..\bin\Debug-windows-x86_64\Stimpi\</OutDir>
+    <IntDir>..\bin-int\Debug-windows-x86_64\Stimpi\</IntDir>
+    <TargetName>Stimpi</TargetName>
+    <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\Release-windows-x86_64\Stimpi\</OutDir>
+    <IntDir>..\bin-int\Release-windows-x86_64\Stimpi\</IntDir>
+    <TargetName>Stimpi</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\Dist-windows-x86_64\Stimpi\</OutDir>
+    <IntDir>..\bin-int\Dist-windows-x86_64\Stimpi\</IntDir>
+    <TargetName>Stimpi</TargetName>
+    <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>STIMPI_BUILD_DLL;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>D:\GitHub\Stimpi\ImGUI;D:\GitHub\Stimpi\Stimpi\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stpch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>STIMPI_BUILD_DLL;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;src\Stimpi\Vendor;vendor\Box2D\include;..\vendor\SDL2-2.0.20\include;..\vendor\spdlog\include;..\vendor\glm-0.9.9.7\glm;..\vendor\yaml-cpp\include;..\vendor\stbimg;..\GLAD\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AdditionalOptions>/MDd %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Box2D.lib;yaml-cppd.lib;glfw3.lib;opengl32.lib;GLAD.lib;OpenGL32.lib;ImGUI.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;yaml-cppd.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\vendor\SDL2-2.0.20\lib\x64;..\vendor\yaml-cpp\Debug;..\vendor\glfw\lib-vc2019;..\bin\Debug-windows-x86_64\GLAD;..\bin\Debug-windows-x86_64\Box2D;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\bin\Debug-windows-x86_64\Stimpi\Stimpi.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)\bin\$(Configuration)-$(Platform)\$(ProjectName)\$(ProjectName).dll $(SolutionDir)\bin\$(Configuration)-$(Platform)\Application\$(ProjectName).dll;
-copy $(SolutionDir)\bin\$(Configuration)-$(Platform)\$(ProjectName)\$(ProjectName).dll $(SolutionDir)\bin\$(Configuration)-$(Platform)\Editor\$(ProjectName).dll </Command>
+      <Command>IF EXIST ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Debug-windows-x86_64\Application &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Debug-windows-x86_64\Application &gt; nul)
+IF EXIST ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Debug-windows-x86_64\Editor &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Debug-windows-x86_64\Editor &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>STIMPI_BUILD_DLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;src\Stimpi\Vendor;vendor\Box2D\include;..\vendor\SDL2-2.0.20\include;..\vendor\spdlog\include;..\vendor\glm-0.9.9.7\glm;..\vendor\yaml-cpp\include;..\vendor\stbimg;..\GLAD\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>STIMPI_BUILD_DLL;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <AdditionalOptions>/MD %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>SDL2.lib;yaml-cppd.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\vendor\SDL2-2.0.20\lib\x64;..\vendor\yaml-cpp\Debug;..\vendor\glfw\lib-vc2019;..\bin\Release-windows-x86_64\GLAD;..\bin\Release-windows-x86_64\Box2D;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\bin\Release-windows-x86_64\Stimpi\Stimpi.lib</ImportLibrary>
     </Link>
+    <PostBuildEvent>
+      <Command>IF EXIST ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Release-windows-x86_64\Application &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Release-windows-x86_64\Application &gt; nul)
+IF EXIST ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Release-windows-x86_64\Editor &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Release-windows-x86_64\Editor &gt; nul)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="src\Stimpi\Core\Application.cpp" />
-    <ClCompile Include="src\Stimpi\Core\EntryPoint.h" />
-    <ClCompile Include="src\Stimpi\Core\Event.cpp" />
-    <ClCompile Include="src\Stimpi\Core\InputManager.cpp" />
-    <ClCompile Include="src\Stimpi\Core\Layer.cpp" />
-    <ClCompile Include="src\Stimpi\Core\Time.cpp" />
-    <ClCompile Include="src\Stimpi\Core\Window.cpp" />
-    <ClCompile Include="src\Stimpi\Graphics\Animation\Sprite.cpp" />
-    <ClCompile Include="src\Stimpi\Graphics\FrameBuffer.cpp" />
-    <ClCompile Include="src\Stimpi\Graphics\OpenGL.cpp" />
-    <ClCompile Include="src\Stimpi\Graphics\OrthoCamera.cpp" />
-    <ClCompile Include="src\Stimpi\Graphics\RenderAPI.cpp" />
-    <ClCompile Include="src\Stimpi\Graphics\RenderCommand.cpp" />
-    <ClCompile Include="src\Stimpi\Graphics\Renderer2D.cpp" />
-    <ClCompile Include="src\Stimpi\Graphics\Shader.cpp" />
-    <ClCompile Include="src\Stimpi\Graphics\SubTexture.cpp" />
-    <ClCompile Include="src\Stimpi\Graphics\Texture.cpp" />
-    <ClCompile Include="src\Stimpi\Graphics\VertexArrayObject.cpp" />
-    <ClCompile Include="src\Stimpi\Graphics\BufferObject.cpp" />
-    <ClCompile Include="src\Stimpi\Log.cpp" />
-    <ClCompile Include="src\Stimpi\Platform\OpenGLBufferObject.cpp" />
-    <ClCompile Include="src\Stimpi\Platform\OpenGLFrameBuffer.cpp" />
-    <ClCompile Include="src\Stimpi\Platform\OpenGLRenderAPI.cpp" />
-    <ClCompile Include="src\Stimpi\Platform\OpenGLShader.cpp" />
-    <ClCompile Include="src\Stimpi\Platform\OpenGLTexture.cpp" />
-    <ClCompile Include="src\Stimpi\Platform\OpenGLVertexArrayObject.cpp" />
-    <ClCompile Include="src\Stimpi\Platform\Windows\WindowsPlatformUtils.cpp" />
-    <ClCompile Include="src\Stimpi\Scene\Camera.cpp" />
-    <ClCompile Include="src\Stimpi\Scene\CameraController.cpp" />
-    <ClCompile Include="src\Stimpi\Scene\Component.cpp" />
-    <ClCompile Include="src\Stimpi\Scene\Entity.cpp" />
-    <ClCompile Include="src\Stimpi\Scene\ResourceManager.cpp" />
-    <ClCompile Include="src\Stimpi\Scene\Scene.cpp" />
-    <ClCompile Include="src\Stimpi\Scene\SceneManager.cpp" />
-    <ClCompile Include="src\Stimpi\Scene\SceneSerializer.cpp" />
-    <ClCompile Include="src\Stimpi\Scene\Utils\SceneUtils.cpp" />
-    <ClCompile Include="src\stpch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stpch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>STIMPI_BUILD_DLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;src\Stimpi\Vendor;vendor\Box2D\include;..\vendor\SDL2-2.0.20\include;..\vendor\spdlog\include;..\vendor\glm-0.9.9.7\glm;..\vendor\yaml-cpp\include;..\vendor\stbimg;..\GLAD\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
-  </ItemGroup>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>SDL2.lib;yaml-cppd.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\vendor\SDL2-2.0.20\lib\x64;..\vendor\yaml-cpp\Debug;..\vendor\glfw\lib-vc2019;..\bin\Dist-windows-x86_64\GLAD;..\bin\Dist-windows-x86_64\Box2D;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\bin\Dist-windows-x86_64\Stimpi\Stimpi.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Dist-windows-x86_64\Application &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Dist-windows-x86_64\Application &gt; nul)
+IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Dist-windows-x86_64\Editor &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Dist-windows-x86_64\Editor &gt; nul)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi.h" />
     <ClInclude Include="src\Stimpi\Core\Application.h" />
     <ClInclude Include="src\Stimpi\Core\Core.h" />
+    <ClInclude Include="src\Stimpi\Core\EntryPoint.h" />
     <ClInclude Include="src\Stimpi\Core\Event.h" />
     <ClInclude Include="src\Stimpi\Core\InputManager.h" />
     <ClInclude Include="src\Stimpi\Core\KeyCodes.h" />
@@ -149,18 +170,18 @@ copy $(SolutionDir)\bin\$(Configuration)-$(Platform)\$(ProjectName)\$(ProjectNam
     <ClInclude Include="src\Stimpi\Core\Timestep.h" />
     <ClInclude Include="src\Stimpi\Core\Window.h" />
     <ClInclude Include="src\Stimpi\Graphics\Animation\Sprite.h" />
+    <ClInclude Include="src\Stimpi\Graphics\BufferObject.h" />
     <ClInclude Include="src\Stimpi\Graphics\FrameBuffer.h" />
-    <ClInclude Include="src\Stimpi\Graphics\OpenGL.h" />
     <ClInclude Include="src\Stimpi\Graphics\Graphics.h" />
+    <ClInclude Include="src\Stimpi\Graphics\OpenGL.h" />
     <ClInclude Include="src\Stimpi\Graphics\OrthoCamera.h" />
     <ClInclude Include="src\Stimpi\Graphics\RenderAPI.h" />
-    <ClInclude Include="src\Stimpi\Graphics\Renderer2D.h" />
     <ClInclude Include="src\Stimpi\Graphics\RenderCommand.h" />
+    <ClInclude Include="src\Stimpi\Graphics\Renderer2D.h" />
     <ClInclude Include="src\Stimpi\Graphics\Shader.h" />
     <ClInclude Include="src\Stimpi\Graphics\SubTexture.h" />
     <ClInclude Include="src\Stimpi\Graphics\Texture.h" />
     <ClInclude Include="src\Stimpi\Graphics\VertexArrayObject.h" />
-    <ClInclude Include="src\Stimpi\Graphics\BufferObject.h" />
     <ClInclude Include="src\Stimpi\Log.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLBufferObject.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLFrameBuffer.h" />
@@ -182,7 +203,52 @@ copy $(SolutionDir)\bin\$(Configuration)-$(Platform)\$(ProjectName)\$(ProjectNam
     <ClInclude Include="src\stpch.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\framebuffer.shader" />
+    <ClCompile Include="src\Stimpi\Core\Application.cpp" />
+    <ClCompile Include="src\Stimpi\Core\Event.cpp" />
+    <ClCompile Include="src\Stimpi\Core\InputManager.cpp" />
+    <ClCompile Include="src\Stimpi\Core\Layer.cpp" />
+    <ClCompile Include="src\Stimpi\Core\Time.cpp" />
+    <ClCompile Include="src\Stimpi\Core\Window.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\Animation\Sprite.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\BufferObject.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\FrameBuffer.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\OpenGL.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\OrthoCamera.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\RenderAPI.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\RenderCommand.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\Renderer2D.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\Shader.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\SubTexture.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\Texture.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\VertexArrayObject.cpp" />
+    <ClCompile Include="src\Stimpi\Log.cpp" />
+    <ClCompile Include="src\Stimpi\Platform\OpenGLBufferObject.cpp" />
+    <ClCompile Include="src\Stimpi\Platform\OpenGLFrameBuffer.cpp" />
+    <ClCompile Include="src\Stimpi\Platform\OpenGLRenderAPI.cpp" />
+    <ClCompile Include="src\Stimpi\Platform\OpenGLShader.cpp" />
+    <ClCompile Include="src\Stimpi\Platform\OpenGLTexture.cpp" />
+    <ClCompile Include="src\Stimpi\Platform\OpenGLVertexArrayObject.cpp" />
+    <ClCompile Include="src\Stimpi\Platform\Windows\WindowsPlatformUtils.cpp" />
+    <ClCompile Include="src\Stimpi\Scene\Camera.cpp" />
+    <ClCompile Include="src\Stimpi\Scene\CameraController.cpp" />
+    <ClCompile Include="src\Stimpi\Scene\Component.cpp" />
+    <ClCompile Include="src\Stimpi\Scene\Entity.cpp" />
+    <ClCompile Include="src\Stimpi\Scene\ResourceManager.cpp" />
+    <ClCompile Include="src\Stimpi\Scene\Scene.cpp" />
+    <ClCompile Include="src\Stimpi\Scene\SceneManager.cpp" />
+    <ClCompile Include="src\Stimpi\Scene\SceneSerializer.cpp" />
+    <ClCompile Include="src\Stimpi\Scene\Utils\SceneUtils.cpp" />
+    <ClCompile Include="src\stpch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GLAD\GLAD.vcxproj">
+      <Project>{5D4A857C-4981-860D-F26D-6C10DE83020F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="vendor\Box2D\Box2D.vcxproj">
+      <Project>{A434E80C-1049-10BE-D9CA-B31D459E0CEF}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

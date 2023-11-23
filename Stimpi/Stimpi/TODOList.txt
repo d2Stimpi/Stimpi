@@ -2,23 +2,12 @@ TODO Next:
 - Add GUID component
 	- Update HierarchyWindow
 - Rename _Window -> _Panel
-- Add Object picking (trough frame buffer attachment)
-
-[Scale - Objects - World]
-- Object scale in meters, Camera setup so that objects are in meter scale instead of pixel
-
-[Renderer2D]
-- Support for rotation
 
 [Material]
 - Create material that wraps shader and uniforms
 
 [EditorLayer]
 - (Maybe?) Add Scene ref to Windows/Panes as Context
-
-[OpenGLTestLayer]
-- Figure out clear separation of Editor / Game (Runtime)
-- Should act as a "demo" app
 
 [UI]
 - C# Script component (Much later)

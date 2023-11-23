@@ -1,172 +1,270 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Stimpi">
+      <UniqueIdentifier>{BBBDE9D1-A75F-14A8-901A-28FC7C5B9BF8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Stimpi\Core">
+      <UniqueIdentifier>{F3AE3502-5F64-AEF7-E858-A8CE540DA5FB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Stimpi\Graphics">
+      <UniqueIdentifier>{5B28DAE3-C7B3-47A8-D0C4-CA9C3CCFA3A8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Stimpi\Graphics\Animation">
+      <UniqueIdentifier>{0A4F754E-7611-A9D8-BFC1-37652BC381B6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Stimpi\Platform">
+      <UniqueIdentifier>{6F9C9464-DB27-0229-E438-851D50435E29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Stimpi\Platform\Windows">
+      <UniqueIdentifier>{A9457395-157D-BB2C-1E87-1F508A3DE225}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Stimpi\Scene">
+      <UniqueIdentifier>{184B064A-04AE-95EE-AD33-CEA499756171}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Stimpi\Scene\Utils">
+      <UniqueIdentifier>{783EAE31-6422-6F87-CD82-69DAB9855909}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Stimpi\Utils">
+      <UniqueIdentifier>{5BDF334A-4742-C3EE-F0C7-FBA4DC098F71}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Stimpi\Core\EntryPoint.h">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClInclude Include="src\Stimpi.h" />
+    <ClInclude Include="src\Stimpi\Core\Application.h">
+      <Filter>Stimpi\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Core\Core.h">
+      <Filter>Stimpi\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Core\EntryPoint.h">
+      <Filter>Stimpi\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Core\Event.h">
+      <Filter>Stimpi\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Core\InputManager.h">
+      <Filter>Stimpi\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Core\KeyCodes.h">
+      <Filter>Stimpi\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Core\Layer.h">
+      <Filter>Stimpi\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Core\MouseCodes.h">
+      <Filter>Stimpi\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Core\Time.h">
+      <Filter>Stimpi\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Core\Timestep.h">
+      <Filter>Stimpi\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Core\Window.h">
+      <Filter>Stimpi\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Graphics\Animation\Sprite.h">
+      <Filter>Stimpi\Graphics\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Graphics\BufferObject.h">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Graphics\FrameBuffer.h">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Graphics\Graphics.h">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Graphics\OpenGL.h">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Graphics\OrthoCamera.h">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Graphics\RenderAPI.h">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Graphics\RenderCommand.h">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Graphics\Renderer2D.h">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Graphics\Shader.h">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Graphics\SubTexture.h">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Graphics\Texture.h">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Graphics\VertexArrayObject.h">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Log.h">
+      <Filter>Stimpi</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Platform\OpenGLBufferObject.h">
+      <Filter>Stimpi\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Platform\OpenGLFrameBuffer.h">
+      <Filter>Stimpi\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Platform\OpenGLRenderAPI.h">
+      <Filter>Stimpi\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Platform\OpenGLShader.h">
+      <Filter>Stimpi\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Platform\OpenGLTexture.h">
+      <Filter>Stimpi\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Platform\OpenGLVertexArrayObject.h">
+      <Filter>Stimpi\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Scene\Camera.h">
+      <Filter>Stimpi\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Scene\CameraController.h">
+      <Filter>Stimpi\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Scene\Component.h">
+      <Filter>Stimpi\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Scene\Entity.h">
+      <Filter>Stimpi\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Scene\ResourceManager.h">
+      <Filter>Stimpi\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Scene\Scene.h">
+      <Filter>Stimpi\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Scene\SceneManager.h">
+      <Filter>Stimpi\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Scene\SceneSerializer.h">
+      <Filter>Stimpi\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Scene\ScriptableEntity.h">
+      <Filter>Stimpi\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Scene\Utils\SceneUtils.h">
+      <Filter>Stimpi\Scene\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Utils\PlatformUtils.h">
+      <Filter>Stimpi\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\stpch.h" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="src\Stimpi\Core\Application.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Log.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Core\Layer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Core\Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Graphics\OpenGL.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Stimpi\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Core\Event.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Graphics\Shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Graphics\VertexArrayObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Graphics\BufferObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Graphics\Renderer2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Platform\OpenGLBufferObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Platform\OpenGLVertexArrayObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Graphics\FrameBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Platform\OpenGLFrameBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Platform\OpenGLShader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Graphics\Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Platform\OpenGLTexture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Graphics\RenderAPI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Platform\OpenGLRenderAPI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Scene\Entity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Scene\Scene.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Stimpi\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Core\InputManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Stimpi\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Core\Layer.cpp">
+      <Filter>Stimpi\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Core\Time.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Stimpi\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\Stimpi\Scene\ResourceManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Scene\SceneManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Graphics\OrthoCamera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Scene\SceneSerializer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Graphics\RenderCommand.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Scene\Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Scene\CameraController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\stpch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Graphics\SubTexture.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\Stimpi\Core\Window.cpp">
+      <Filter>Stimpi\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Graphics\Animation\Sprite.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Stimpi\Graphics\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\BufferObject.cpp">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\FrameBuffer.cpp">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\OpenGL.cpp">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\OrthoCamera.cpp">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\RenderAPI.cpp">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\RenderCommand.cpp">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\Renderer2D.cpp">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\Shader.cpp">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\SubTexture.cpp">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\Texture.cpp">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\VertexArrayObject.cpp">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Log.cpp">
+      <Filter>Stimpi</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Platform\OpenGLBufferObject.cpp">
+      <Filter>Stimpi\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Platform\OpenGLFrameBuffer.cpp">
+      <Filter>Stimpi\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Platform\OpenGLRenderAPI.cpp">
+      <Filter>Stimpi\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Platform\OpenGLShader.cpp">
+      <Filter>Stimpi\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Platform\OpenGLTexture.cpp">
+      <Filter>Stimpi\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Platform\OpenGLVertexArrayObject.cpp">
+      <Filter>Stimpi\Platform</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Platform\Windows\WindowsPlatformUtils.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Stimpi\Platform\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="src\Stimpi\Scene\Utils\SceneUtils.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\Stimpi\Scene\Camera.cpp">
+      <Filter>Stimpi\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Scene\CameraController.cpp">
+      <Filter>Stimpi\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Scene\Component.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Stimpi\Scene</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\Stimpi\Core\Core.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Stimpi\Core\Application.h" />
-    <ClInclude Include="src\Stimpi.h" />
-    <ClInclude Include="src\Stimpi\Log.h" />
-    <ClInclude Include="src\Stimpi\Core\Layer.h" />
-    <ClInclude Include="src\Stimpi\Core\Event.h" />
-    <ClInclude Include="src\Stimpi\Core\Window.h" />
-    <ClInclude Include="src\Stimpi\Graphics\OpenGL.h" />
-    <ClInclude Include="src\Stimpi\Graphics\Shader.h" />
-    <ClInclude Include="src\Stimpi\Graphics\Graphics.h" />
-    <ClInclude Include="src\Stimpi\Graphics\VertexArrayObject.h" />
-    <ClInclude Include="src\Stimpi\Graphics\BufferObject.h" />
-    <ClInclude Include="src\Stimpi\Graphics\Renderer2D.h" />
-    <ClInclude Include="src\Stimpi\Platform\OpenGLBufferObject.h" />
-    <ClInclude Include="src\Stimpi\Platform\OpenGLVertexArrayObject.h" />
-    <ClInclude Include="src\Stimpi\Graphics\FrameBuffer.h" />
-    <ClInclude Include="src\Stimpi\Platform\OpenGLFrameBuffer.h" />
-    <ClInclude Include="src\Stimpi\Platform\OpenGLShader.h" />
-    <ClInclude Include="src\Stimpi\Graphics\Texture.h" />
-    <ClInclude Include="src\Stimpi\Platform\OpenGLTexture.h" />
-    <ClInclude Include="src\Stimpi\Platform\OpenGLRenderAPI.h" />
-    <ClInclude Include="src\Stimpi\Graphics\RenderAPI.h" />
-    <ClInclude Include="src\Stimpi\Scene\Scene.h" />
-    <ClInclude Include="src\Stimpi\Scene\Component.h" />
-    <ClInclude Include="src\Stimpi\Scene\Entity.h" />
-    <ClInclude Include="src\Stimpi\Core\InputManager.h" />
-    <ClInclude Include="src\Stimpi\Core\KeyCodes.h" />
-    <ClInclude Include="src\Stimpi\Core\Time.h" />
-    <ClInclude Include="src\Stimpi\Scene\ResourceManager.h" />
-    <ClInclude Include="src\Stimpi\Core\Timestep.h" />
-    <ClInclude Include="src\Stimpi\Scene\SceneManager.h" />
-    <ClInclude Include="src\Stimpi\Graphics\OrthoCamera.h" />
-    <ClInclude Include="src\Stimpi\Scene\SceneSerializer.h" />
-    <ClInclude Include="src\Stimpi\Graphics\RenderCommand.h" />
-    <ClInclude Include="src\Stimpi\Scene\ScriptableEntity.h" />
-    <ClInclude Include="src\Stimpi\Scene\Camera.h" />
-    <ClInclude Include="src\Stimpi\Scene\CameraController.h" />
-    <ClInclude Include="src\Stimpi\Core\MouseCodes.h" />
-    <ClInclude Include="src\stpch.h" />
-    <ClInclude Include="src\Stimpi\Graphics\SubTexture.h" />
-    <ClInclude Include="src\Stimpi\Graphics\Animation\Sprite.h" />
-    <ClInclude Include="src\Stimpi\Utils\PlatformUtils.h" />
-    <ClInclude Include="src\Stimpi\Scene\Utils\SceneUtils.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shaders\framebuffer.shader" />
+    <ClCompile Include="src\Stimpi\Scene\Entity.cpp">
+      <Filter>Stimpi\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Scene\ResourceManager.cpp">
+      <Filter>Stimpi\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Scene\Scene.cpp">
+      <Filter>Stimpi\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Scene\SceneManager.cpp">
+      <Filter>Stimpi\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Scene\SceneSerializer.cpp">
+      <Filter>Stimpi\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Scene\Utils\SceneUtils.cpp">
+      <Filter>Stimpi\Scene\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stpch.cpp" />
   </ItemGroup>
 </Project>
