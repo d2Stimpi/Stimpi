@@ -14,6 +14,9 @@ workspace "Stimpi"
 	yaml_inc = "../vendor/yaml-cpp/include"
 	imgui_inc = "../ImGUI"
 
+
+include "Dependancies"
+
 -- run other projects premake5.lua scripts
 include "Application"
 include "Editor"
@@ -23,4 +26,8 @@ group "Dependencies"
 	include "ImGUI"
 	include "GLAD"
 	include "Stimpi/vendor/Box2D"
+group ""
+
+group "Scripting"
+	include "Stimpi-ScriptCore"
 group ""

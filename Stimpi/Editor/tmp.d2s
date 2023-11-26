@@ -2,10 +2,16 @@ Scene:
   Entity:
     TagComponent:
       Tag: Camera
+    QuadComponent:
+      - 5.81672573
+      - -2.46092582
+      - 0
+      - 0
+      - 0
     CameraComponent:
       Position:
-        - 0
-        - 0
+        - 5.81672573
+        - -2.46092582
         - 0
       Rotation: 0
       Zoom: 1

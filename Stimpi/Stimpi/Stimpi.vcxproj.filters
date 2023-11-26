@@ -25,6 +25,9 @@
     <Filter Include="Stimpi\Scene\Utils">
       <UniqueIdentifier>{783EAE31-6422-6F87-CD82-69DAB9855909}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Stimpi\Scripting">
+      <UniqueIdentifier>{7DD8F909-69D1-185C-9203-FEE07E5BF867}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Stimpi\Utils">
       <UniqueIdentifier>{5BDF334A-4742-C3EE-F0C7-FBA4DC098F71}</UniqueIdentifier>
     </Filter>
@@ -154,10 +157,15 @@
     <ClInclude Include="src\Stimpi\Scene\Utils\SceneUtils.h">
       <Filter>Stimpi\Scene\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\Scripting\ScriptEngine.h">
+      <Filter>Stimpi\Scripting</Filter>
+    </ClInclude>
     <ClInclude Include="src\Stimpi\Utils\PlatformUtils.h">
       <Filter>Stimpi\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\stpch.h" />
+    <ClInclude Include="src\Stimpi\Scripting\ScriptGlue.h" />
+    <ClInclude Include="src\Stimpi\Utils\SystemUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Core\Application.cpp">
@@ -265,6 +273,11 @@
     <ClCompile Include="src\Stimpi\Scene\Utils\SceneUtils.cpp">
       <Filter>Stimpi\Scene\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Scripting\ScriptEngine.cpp">
+      <Filter>Stimpi\Scripting</Filter>
+    </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
+    <ClCompile Include="src\Stimpi\Scripting\ScriptGlue.cpp" />
+    <ClCompile Include="src\Stimpi\Utils\SystemUtils.cpp" />
   </ItemGroup>
 </Project>

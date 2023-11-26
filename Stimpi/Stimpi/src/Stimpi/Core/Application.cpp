@@ -7,6 +7,8 @@
 #include "Stimpi/Core/InputManager.h"
 #include "Stimpi/Core/Time.h"
 
+#include "Stimpi/Scripting/ScriptEngine.h"
+
 namespace Stimpi
 {
 	Application::Application()
@@ -24,7 +26,8 @@ namespace Stimpi
 		Stimpi::Log::Init();
 		m_Window.reset(Window::CreateAppWindow());
 		m_Context.CreateContext(m_Window.get());
-		//m_LayerStack.AttachOverlay(new EditorLayer(m_Window.get(), &m_Context.GetContext()));
+		// Init ScriptEngine runtime
+		ScriptEngine::Init();
 	}
 
 	void Application::Run()
@@ -52,6 +55,8 @@ namespace Stimpi
 
 			m_Window->SwapWindow();
 		};
+
+		ScriptEngine::Shutdown();
 	}
 
 	void Application::Stop()

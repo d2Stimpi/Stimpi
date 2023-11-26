@@ -1,6 +1,8 @@
 #include "stpch.h"
 #include "Stimpi/Utils/PlatformUtils.h"
 
+#include "Stimpi/Log.h"
+
 #include "Windows.h"
 #include <commdlg.h>
 #include <SDL.h>

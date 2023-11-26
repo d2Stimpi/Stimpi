@@ -44,6 +44,12 @@ struct fmt::formatter<glm::vec3> : fmt::formatter<std::string>
 	}
 };
 
+template<typename OStream, glm::length_t L, typename T, glm::qualifier Q>
+inline OStream& operator<<(OStream& os, const glm::vec<L, T, Q>& vector)
+{
+	return os << glm::to_string(vector);
+}
+
 // Core - engine log macros
 #define ST_CORE_TRACE(...)		Stimpi::Log::GetCoreLogger()->trace(__VA_ARGS__)
 #define ST_CORE_INFO(...)		Stimpi::Log::GetCoreLogger()->info(__VA_ARGS__)

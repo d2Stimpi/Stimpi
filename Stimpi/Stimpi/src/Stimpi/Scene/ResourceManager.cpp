@@ -4,6 +4,8 @@
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Log.h"
 
+#define DBG_LOG false
+
 namespace Stimpi
 {
 	ResourceManager::ResourceManager()
@@ -68,7 +70,7 @@ namespace Stimpi
 	{
 		if (auto search = m_TextureMap.find(fileName); search != m_TextureMap.end())
 		{
-			ST_CORE_INFO("[ResMgr] Texture {0} already loaded!", fileName);
+			if (DBG_LOG) ST_CORE_INFO("[ResMgr] Texture {0} already loaded!", fileName);
 			return search->second.get();
 		}
 

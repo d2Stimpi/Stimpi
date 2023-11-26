@@ -5,6 +5,8 @@
 #include <stb_image.h>
 #include "Stimpi/Log.h"
 
+#define DBG_LOG false
+
 namespace Stimpi
 {
 	OpenGLTexture::OpenGLTexture()
@@ -19,7 +21,7 @@ namespace Stimpi
 
 	OpenGLTexture::~OpenGLTexture()
 	{
-		ST_CORE_INFO("Texture {0} deleted", m_TextureID);
+		if(DBG_LOG) ST_CORE_INFO("Texture {0} deleted", m_TextureID);
 		Delete();
 	}
 
@@ -62,7 +64,7 @@ namespace Stimpi
 
 		stbi_set_flip_vertically_on_load(true); // TODO: Move somewhere on init
 		unsigned char* data = stbi_load(file.c_str(), (int*)&m_Width, (int*)&m_Height, (int*)&m_NumChannels, 0);
-		ST_CORE_INFO("Texture Loaded: {0}, numChannels: {1}", file.c_str(), m_NumChannels);
+		if (DBG_LOG) ST_CORE_INFO("Texture Loaded: {0}, numChannels: {1}", file.c_str(), m_NumChannels);
 		if (data)
 		{
 			glGenTextures(1, &m_TextureID);
@@ -108,7 +110,7 @@ namespace Stimpi
 
 	void OpenGLTexture::Bind()
 	{
-		if (m_TextureID != 0)	// TODO: fix this so it cant occure, move init to constructor
+		if (m_TextureID != 0)	// TODO: fix this so it cant occur, move init to constructor
 		{
 			glBindTexture(GL_TEXTURE_2D, m_TextureID);
 		}

@@ -26,7 +26,9 @@ project "Stimpi"
 		"../vendor/glm-0.9.9.7/glm",
 		"../vendor/yaml-cpp/include",
 		"../vendor/stbimg/",
-		"../GLAD/include"
+		"../GLAD/include",
+
+		"%{IncludeDir.mono}"
 	}
 
 	libdirs { "../vendor/SDL2-2.0.20/lib/x64" }		links { "SDL2" }
@@ -34,6 +36,12 @@ project "Stimpi"
 	libdirs { "../vendor/glfw/lib-vc2019" }			links { "glfw3" }
 	libdirs { "../bin/" .. outputdir .. "/GLAD" }	links { "GLAD" }
 	libdirs { "../bin/" .. outputdir .. "/Box2D" }	links { "Box2D" }
+
+	libdirs { "%{LibraryDir.mono}" }	links { "%{Library.mono}" }
+	links { "%{Library.Winmm}" }
+	links { "%{Library.Ws2}" }
+	links { "%{Library.Bcrypt}"}
+	links { "%{Library.Version}"}
 
 	defines
 	{ 
