@@ -59,6 +59,7 @@
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Dist|x64' ">
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Source\Actor.cs" />
     <Compile Include="Source\Entity.cs" />
     <Compile Include="Source\InternalCalls.cs" />
   </ItemGroup>

@@ -9,6 +9,8 @@
 
 #include "Stimpi/Utils/PlatformUtils.h"
 
+#include "Stimpi/Scripting/ScriptEngine.h"
+
 #include "ImGui/src/imgui.h"
 #include "ImGui/src/imgui_internal.h"
 
@@ -130,7 +132,7 @@ namespace Stimpi
 		{
 			ShowSelectedEntityComponents((bool)s_SelectedEntity);
 		}
-		ImGui::End(); // ComponentInspectorWidget
+		ImGui::End();
 	}
 
 	void SceneHierarchyWindow::TagComponentLayout(TagComponent& component)
@@ -170,6 +172,29 @@ namespace Stimpi
 			{
 				s_SelectedEntity.RemoveComponent<QuadComponent>();
 			}
+		}
+	}
+
+	void SceneHierarchyWindow::ScriptComponentLayout(ScriptComponent& component)
+	{
+		ImGui::Separator();
+		if (ImGui::CollapsingHeader("Script##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			static char scriptName[64];
+			strcpy(scriptName, component.m_ScriptName.c_str());
+
+			bool scriptClassExists = ScriptEngine::HasScriptClass(component.m_ScriptName);
+			if (!scriptClassExists)
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.3f, 0.2f, 1.0f));
+
+			if (ImGui::InputText("##ScriptComponent", scriptName, sizeof(scriptName), ImGuiInputTextFlags_EnterReturnsTrue))
+			{
+				component.m_ScriptName = std::string(scriptName);
+			}
+			EditorUtils::SetActiveItemCaptureKeyboard(false);
+
+			if (!scriptClassExists)
+				ImGui::PopStyleColor();
 		}
 	}
 
@@ -290,7 +315,7 @@ namespace Stimpi
 		if (ImGui::CollapsingHeader("Box Collider##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			ImGui::DragFloat2("Offset", glm::value_ptr(component.m_Offset));
-			ImGui::DragFloat2("Size", glm::value_ptr(component.m_Size));
+			ImGui::DragFloat2("Size##Collider", glm::value_ptr(component.m_Size));
 			ImGui::PushItemWidth(80.0f);
 			ImGui::DragFloat("Density", &component.m_Density, 0.01f, 0.0f, 1.0f);
 			ImGui::DragFloat("Friction", &component.m_Friction, 0.01f, 0.0f, 1.0f);
@@ -327,6 +352,14 @@ namespace Stimpi
 				if (ImGui::Selectable("Texture##AddComponent"))
 				{
 					s_SelectedEntity.AddComponent<TextureComponent>();
+				}
+			}
+
+			if (!s_SelectedEntity.HasComponent<ScriptComponent>())
+			{
+				if (ImGui::Selectable("Script##AddComponent"))
+				{
+					s_SelectedEntity.AddComponent<ScriptComponent>();
 				}
 			}
 
@@ -378,6 +411,12 @@ namespace Stimpi
 			{
 				auto& component = s_SelectedEntity.GetComponent<TextureComponent>();
 				TextureComponentLayout(component);
+			}
+
+			if (s_SelectedEntity.HasComponent<ScriptComponent>())
+			{
+				auto& component = s_SelectedEntity.GetComponent<ScriptComponent>();
+				ScriptComponentLayout(component);
 			}
 
 			if (s_SelectedEntity.HasComponent<CameraComponent>())

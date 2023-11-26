@@ -3,24 +3,26 @@ Scene:
     TagComponent:
       Tag: Entity
     QuadComponent:
-      - 10
-      - 12
+      - 4.28760767
+      - 2.45006132
       - 50
       - 40
       - 0
+    ScriptComponent:
+      ScriptName: Sandbox.Actor
     CameraComponent:
       Position:
-        - 0
-        - 0
+        - 4.28760767
+        - 2.45006132
         - 0
       Rotation: 0
       Zoom: 1
       ViewQuad:
         - 0
-        - 128
+        - 1280
         - 0
-        - 72
-      IsMain: true
+        - 720
+      IsMain: false
   Entity:
     TagComponent:
       Tag: Texture1

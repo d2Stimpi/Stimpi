@@ -73,7 +73,8 @@ namespace Stimpi
 		MonoAssembly* m_CoreAssembly = nullptr;
 		MonoImage* m_CoreAssemblyImage = nullptr;
 
-		ScriptClass m_EntityClass;
+		ScriptClass m_EntityClass; // TODO: remove
+		std::unordered_map<std::string, std::shared_ptr<ScriptClass>> m_EntityClasses;
 	};
 
 	static ScriptEngineData* s_Data;
@@ -86,8 +87,12 @@ namespace Stimpi
 		InitMono();
 		LoadAssembly("../resources/scripts/Stimpi-ScriptCore.dll");
 
+		Utils::PrintAssemblyTypes(s_Data->m_CoreAssembly);
+		LoadClassesFromAssembly(s_Data->m_CoreAssembly);
+
 		ScriptGlue::RegisterFucntions();
 
+#if 0
 		// Load the CS class
 		s_Data->m_EntityClass = ScriptClass("Stimpi", "Entity");
 
@@ -122,6 +127,7 @@ namespace Stimpi
 		//mono_add_internal_call("Stimpi.Hello::Sample", Sample);
 		MonoMethod* callNativeMethod = s_Data->m_EntityClass.GetMethod("CallNativeCode", 0);
 		s_Data->m_EntityClass.InvokeMethod(classObjInstance, callNativeMethod, nullptr);
+#endif
 	}
 
 	void ScriptEngine::Shutdown()
@@ -139,7 +145,46 @@ namespace Stimpi
 
 		s_Data->m_CoreAssembly = LoadMonoAssembly(filePath);
 		s_Data->m_CoreAssemblyImage = mono_assembly_get_image(s_Data->m_CoreAssembly);
-		//Utils::PrintAssemblyTypes(s_Data->m_CoreAssembly);
+	}
+
+	void ScriptEngine::LoadClassesFromAssembly(MonoAssembly* assembly)
+	{
+		MonoImage* image = mono_assembly_get_image(assembly);
+		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
+		int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
+		MonoClass* entityClass = GetClassInAssembly(assembly, "Stimpi", "Entity");
+
+		for (int32_t i = 0; i < numTypes; i++)
+		{
+			uint32_t cols[MONO_TYPEDEF_SIZE];
+			mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE);
+
+			const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
+			const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
+			std::string fullName;
+			if (strlen(nameSpace) == 0)
+				fullName = name;
+			else
+				fullName = fmt::format("{}.{}", nameSpace, name);
+
+			MonoClass* monoClass = GetClassInAssembly(assembly, nameSpace, name);
+			if (entityClass == monoClass)
+				continue;
+
+			bool isEntity = mono_class_is_subclass_of(monoClass, entityClass, false);
+			if (isEntity)
+				s_Data->m_EntityClasses[fullName] = std::make_shared<ScriptClass>(nameSpace, name);
+		}
+	}
+
+	bool ScriptEngine::HasScriptClass(const std::string& className)
+	{
+		return s_Data->m_EntityClasses.find(className) != s_Data->m_EntityClasses.end();
+	}
+
+	std::unordered_map<std::string, std::shared_ptr<Stimpi::ScriptClass>> ScriptEngine::GetEntityClasses()
+	{
+		return s_Data->m_EntityClasses;
 	}
 
 	void ScriptEngine::InitMono()
@@ -155,7 +200,8 @@ namespace Stimpi
 
 	void ScriptEngine::ShutdownMono()
 	{
-
+		s_Data->m_AppDomain = nullptr;
+		s_Data->m_RootDomain = nullptr;
 	}
 
 	MonoAssembly* ScriptEngine::LoadMonoAssembly(const std::string& assemblyPath)
@@ -239,6 +285,27 @@ namespace Stimpi
 		mono_runtime_invoke(method, instance, params, &exception);
 
 		return nullptr;
+	}
+
+	/* ======== ScriptInstance ======== */
+
+	ScriptInstance::ScriptInstance(std::shared_ptr<ScriptClass> scriptClass)
+		: m_ScriptClass(scriptClass)
+	{
+		m_Instance = m_ScriptClass->Instantiate();
+		m_OnCreateMethod = m_ScriptClass->GetMethod("OnCreate", 0);
+		m_OnUpdateMethod = m_ScriptClass->GetMethod("OnUpdate", 1);
+	}
+
+	void ScriptInstance::InvokeOnCreate()
+	{
+		m_ScriptClass->InvokeMethod(m_Instance, m_OnCreateMethod, nullptr);
+	}
+
+	void ScriptInstance::InvokeOnUpdate(float ts)
+	{
+		void* param = &ts;
+		m_ScriptClass->InvokeMethod(m_Instance, m_OnUpdateMethod, &param);
 	}
 
 }

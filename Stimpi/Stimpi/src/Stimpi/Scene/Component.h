@@ -5,6 +5,7 @@
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Scene/ScriptableEntity.h"
 #include "Stimpi/Scene/Camera.h"
+#include "Stimpi/Scripting/ScriptEngine.h"
 
 #include <glm/glm.hpp>
 #include <yaml-cpp/yaml.h>
@@ -208,6 +209,38 @@ namespace Stimpi
 			if (node["IsMain"])
 			{
 				m_IsMain = node["IsMain"].as<bool>();
+			}
+		}
+	};
+
+	// Scripting
+
+	struct ScriptComponent
+	{
+		std::string m_ScriptName;
+
+		// For runtime
+		std::shared_ptr<ScriptInstance> m_Instance;
+
+		ScriptComponent() = default;
+		ScriptComponent(const ScriptComponent&) = default;
+
+		void Serialize(YAML::Emitter& out)
+		{
+			out << YAML::Key << "ScriptComponent";
+			out << YAML::BeginMap;
+			{
+				out << YAML::Key << "ScriptName" << YAML::Value << m_ScriptName;
+			}
+			out << YAML::EndMap;
+		}
+
+		//De-serialize constructor
+		ScriptComponent(const YAML::Node& node)
+		{
+			if (node["ScriptName"])
+			{
+				m_ScriptName = node["ScriptName"].as<std::string>();
 			}
 		}
 	};

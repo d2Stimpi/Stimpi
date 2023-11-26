@@ -52,6 +52,16 @@ namespace Stimpi
 		// Update components based on interactions
 		void UpdateComponentDependacies(Timestep ts);
 
+		// Scripting
+		void InitializeScripts();
+		void UpdateScripts(Timestep ts);
+		void DeinitializeScritps();
+
+		// Physics
+		void InitializePhysics();
+		void UpdatePhysicsSimulation(Timestep ts);
+		void DeinitializePhysics();
+
 	private:
 		entt::registry m_Registry;
 		std::vector<Entity> m_Entities;

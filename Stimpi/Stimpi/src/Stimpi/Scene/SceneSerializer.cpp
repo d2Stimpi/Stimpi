@@ -57,6 +57,10 @@ namespace Stimpi
 				{
 					entity.AddComponent<TextureComponent>(TextureComponent(entityNode["TextureComponent"]));
 				}
+				if (entityNode["ScriptComponent"])
+				{
+					entity.AddComponent<ScriptComponent>(ScriptComponent(entityNode["ScriptComponent"]));
+				}
 				if (entityNode["CameraComponent"])
 				{
 					entity.AddComponent<CameraComponent>(CameraComponent(entityNode["CameraComponent"]));

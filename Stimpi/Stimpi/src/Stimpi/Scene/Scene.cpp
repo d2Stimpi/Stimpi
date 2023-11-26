@@ -12,6 +12,8 @@
 
 #include "Stimpi/Core/InputManager.h"
 
+#include "Stimpi/Scripting/ScriptEngine.h"
+
 #include "box2d/b2_world.h"
 #include "box2d/b2_body.h"
 #include "box2d/b2_fixture.h"
@@ -104,40 +106,11 @@ namespace Stimpi
 	{
 		UpdateComponentDependacies(ts);
 
-		// Update NativeScripts
-		if (m_RuntimeState == RuntimeState::RUNNING)
-		{
-			m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& ncs)
-				{
-					if (ncs.m_Instance)
-					{
-						ncs.m_Instance->OnUpdate(ts);
-					}
-				});
-		}
+		// Update Scripts
+		UpdateScripts(ts);
 
 		// Physics
-		if (m_RuntimeState == RuntimeState::RUNNING)
-		{
-			const int32_t velocityIterations = 6;
-			const int32_t positionIterations = 2;
-			m_PhysicsDWorld->Step(ts, velocityIterations, positionIterations);
-
-			m_Registry.view<RigidBody2DComponent>().each([=](auto e, RigidBody2DComponent& rb2d)
-				{
-					Entity entity = { e, this };
-					if (entity.HasComponent<QuadComponent>())
-					{
-						auto& quad = entity.GetComponent<QuadComponent>();
-
-						b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
-						const auto& position = body->GetPosition();
-						quad.m_Position.x = position.x - quad.HalfWidth();
-						quad.m_Position.y = position.y - quad.HalfHeight();
-						quad.m_Rotation = body->GetAngle();
-					}
-				});
-		}
+		UpdatePhysicsSimulation(ts);
 
 		/* When not in Running state, use Editor sourced camera */
 		if (m_RuntimeState == RuntimeState::STOPPED)
@@ -204,8 +177,76 @@ namespace Stimpi
 
 	void Scene::OnScenePlay()
 	{
+		InitializeScripts();
+		InitializePhysics();
+
+		m_Registry.view<CameraComponent>().each([=](auto entity, auto& ncs)
+			{
+				if (ncs.m_IsMain)
+				{
+					m_RenderCamera = ncs.m_Camera.get();
+				}
+			});
+
+		// Update Scene state last
 		m_RuntimeState = RuntimeState::RUNNING;
-		
+	}
+
+	void Scene::OnScenePause()
+	{
+		m_RuntimeState = RuntimeState::PAUSED;
+	}
+
+	void Scene::OnSceneResume()
+	{
+		m_RuntimeState = RuntimeState::RUNNING;
+	}
+
+	void Scene::OnSceneStop()
+	{
+		DeinitializeScritps();
+		DeinitializePhysics();
+
+		// Update Scene state last
+		m_RuntimeState = RuntimeState::STOPPED;
+	}
+
+	Stimpi::Entity Scene::MousePickEntity(float x, float y)
+	{
+		Entity picked = {};
+
+		m_Registry.view<QuadComponent>().each([this, &picked, x, y](auto entity, auto& quad)
+			{
+				if (quad.m_PickEnabled)
+				{
+					if (SceneUtils::IsPointInRotatedSquare({ x, y }, quad.Center(), quad.m_Size, quad.m_Rotation))
+					{
+						picked = Entity(entity, this);
+					}
+				}
+			});
+
+		return picked;
+	}
+
+	void Scene::UpdateComponentDependacies(Timestep ts)
+	{
+		m_Registry.view<CameraComponent>().each([this](auto e, CameraComponent camera)
+			{
+				Entity entitiy = { e, this };
+				if (entitiy.HasComponent<QuadComponent>())
+				{
+					auto& quad = entitiy.GetComponent<QuadComponent>();
+					auto camPos = camera.m_Camera->GetPosition();
+					camera.m_Camera->SetPosition({ quad.m_Position.x , quad.m_Position.y, camPos.z });
+				}
+			});
+	}
+
+	/* ======== Scripting ======== */
+
+	void Scene::InitializeScripts()
+	{
 		// Create NativeScripts
 		m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& ncs)
 			{
@@ -217,16 +258,69 @@ namespace Stimpi
 				}
 			});
 
-		m_Registry.view<CameraComponent>().each([=](auto entity, auto& ncs)
+		// Create C# scripts
+		m_Registry.view<ScriptComponent>().each([=](auto e, ScriptComponent& script)
 			{
-				if (ncs.m_IsMain)
+				// Verify that script exists
+				if (ScriptEngine::HasScriptClass(script.m_ScriptName))
 				{
-					m_RenderCamera = ncs.m_Camera.get();
+					const auto& entityClasses = ScriptEngine::GetEntityClasses();
+					std::shared_ptr<ScriptClass> entityClass = entityClasses.find(script.m_ScriptName)->second;
+
+					script.m_Instance = std::make_shared<ScriptInstance>(entityClass);
+					if (script.m_Instance)
+					{
+						script.m_Instance->InvokeOnCreate();
+					}
 				}
 			});
+	}
 
-		// Init Physics
-		m_PhysicsDWorld = new b2World({0.0f, -9.8f});
+	void Scene::UpdateScripts(Timestep ts)
+	{
+		if (m_RuntimeState == RuntimeState::RUNNING)
+		{
+			m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& ncs)
+				{
+					if (ncs.m_Instance)
+					{
+						ncs.m_Instance->OnUpdate(ts);
+					}
+				});
+
+			m_Registry.view<ScriptComponent>().each([=](auto e, ScriptComponent& script)
+				{
+					if (script.m_Instance)
+					{
+						script.m_Instance->InvokeOnUpdate(ts);
+					}
+				});
+		}
+	}
+
+	void Scene::DeinitializeScritps()
+	{
+		m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& ncs)
+			{
+				if (ncs.m_Instance)
+				{
+					ncs.m_Instance->OnDestroy();
+					ncs.DestroyScript(&ncs);
+				}
+			});
+		
+		/* C# Script onStop handling
+		* - Scene is reloaded and all entities are recreated,
+		*   script is destroyed automatically since its std::shared_ptr
+		*   TODO: Revisit if something needs to be done
+		*/
+	}
+
+	/* ======== Physics ======== */
+
+	void Scene::InitializePhysics()
+	{
+		m_PhysicsDWorld = new b2World({ 0.0f, -9.8f });
 		m_Registry.view<RigidBody2DComponent>().each([=](auto e, auto& rb2d)
 			{
 				Entity entity = { e, this };
@@ -262,66 +356,35 @@ namespace Stimpi
 			});
 	}
 
-	void Scene::OnScenePause()
+	void Scene::UpdatePhysicsSimulation(Timestep ts)
 	{
-		m_RuntimeState = RuntimeState::PAUSED;
-	}
+		if (m_RuntimeState == RuntimeState::RUNNING)
+		{
+			const int32_t velocityIterations = 6;
+			const int32_t positionIterations = 2;
+			m_PhysicsDWorld->Step(ts, velocityIterations, positionIterations);
 
-	void Scene::OnSceneResume()
-	{
-		m_RuntimeState = RuntimeState::RUNNING;
-	}
-
-	void Scene::OnSceneStop()
-	{
-		m_RuntimeState = RuntimeState::STOPPED;
-
-		/* Destroy NativeScripts */
-		m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& ncs)
-			{
-				if (ncs.m_Instance)
+			m_Registry.view<RigidBody2DComponent>().each([=](auto e, RigidBody2DComponent& rb2d)
 				{
-					ncs.m_Instance->OnDestroy();
-					ncs.DestroyScript(&ncs);
-				}
-			});
+					Entity entity = { e, this };
+					if (entity.HasComponent<QuadComponent>())
+					{
+						auto& quad = entity.GetComponent<QuadComponent>();
 
+						b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+						const auto& position = body->GetPosition();
+						quad.m_Position.x = position.x - quad.HalfWidth();
+						quad.m_Position.y = position.y - quad.HalfHeight();
+						quad.m_Rotation = body->GetAngle();
+					}
+				});
+		}
+	}
 
-		// De-Init Physics
+	void Scene::DeinitializePhysics()
+	{
 		delete m_PhysicsDWorld;
 		m_PhysicsDWorld = nullptr;
-	}
-
-	Stimpi::Entity Scene::MousePickEntity(float x, float y)
-	{
-		Entity picked = {};
-
-		m_Registry.view<QuadComponent>().each([this, &picked, x, y](auto entity, auto& quad)
-			{
-				if (quad.m_PickEnabled)
-				{
-					if (SceneUtils::IsPointInRotatedSquare({ x, y }, quad.Center(), quad.m_Size, quad.m_Rotation))
-					{
-						picked = Entity(entity, this);
-					}
-				}
-			});
-
-		return picked;
-	}
-
-	void Scene::UpdateComponentDependacies(Timestep ts)
-	{
-		m_Registry.view<CameraComponent>().each([this](auto e, CameraComponent camera)
-			{
-				Entity entitiy = { e, this };
-				if (entitiy.HasComponent<QuadComponent>())
-				{
-					auto& quad = entitiy.GetComponent<QuadComponent>();
-					auto camPos = camera.m_Camera->GetPosition();
-					camera.m_Camera->SetPosition({ quad.m_Position.x , quad.m_Position.y, camPos.z });
-				}
-			});
 	}
 
 }

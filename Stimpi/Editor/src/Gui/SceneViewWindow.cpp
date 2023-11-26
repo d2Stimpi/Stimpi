@@ -89,17 +89,20 @@ namespace Stimpi
 		if (selectedEntity && scene->GetRuntimeState() != RuntimeState::RUNNING)
 		{
 			static GizmoAction action = GizmoAction::NONE;
-			if (InputManager::Instance()->IsKeyPressed(ST_KEY_Q))
+			if (EditorUtils::WantCaptureKeyboard())
 			{
-				action = GizmoAction::NONE;
-			}
-			if (InputManager::Instance()->IsKeyPressed(ST_KEY_W))
-			{
-				action = GizmoAction::TRANSLATE;
-			}
-			if (InputManager::Instance()->IsKeyPressed(ST_KEY_E))
-			{
-				action = GizmoAction::SCALE;
+				if (InputManager::Instance()->IsKeyPressed(ST_KEY_Q))
+				{
+					action = GizmoAction::NONE;
+				}
+				if (InputManager::Instance()->IsKeyPressed(ST_KEY_W))
+				{
+					action = GizmoAction::TRANSLATE;
+				}
+				if (InputManager::Instance()->IsKeyPressed(ST_KEY_E))
+				{
+					action = GizmoAction::SCALE;
+				}
 			}
 
 			if (selectedEntity.HasComponent<QuadComponent>())

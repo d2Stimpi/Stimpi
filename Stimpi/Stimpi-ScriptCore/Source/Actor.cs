@@ -4,18 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Stimpi
+using Stimpi;
+
+namespace Sandbox
 {
-    class Entity
+    class Actor : Entity
     {
         public void OnCreate()
         {
-            Console.WriteLine("OnCreate Entity");
+            Console.WriteLine("OnCreate Actor");
         }
 
         public void OnUpdate(float ts)
         {
-            Console.WriteLine($"OnUpdate Entity - time step: {ts}");
+            Console.WriteLine($"OnUpdate Actor - time step: {ts}");
         }
     }
 }

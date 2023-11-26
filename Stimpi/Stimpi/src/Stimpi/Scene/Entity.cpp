@@ -29,6 +29,11 @@ namespace Stimpi
 			GetComponent<TextureComponent>().Serialize(out);
 		}
 
+		if (HasComponent<ScriptComponent>())
+		{
+			GetComponent<ScriptComponent>().Serialize(out);
+		}
+
 		if (HasComponent<CameraComponent>())
 		{
 			GetComponent<CameraComponent>().Serialize(out);
