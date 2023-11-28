@@ -2,6 +2,12 @@ Scene:
   Entity:
     TagComponent:
       Tag: Camera
+    QuadComponent:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
     CameraComponent:
       Position:
         - 0
@@ -11,9 +17,9 @@ Scene:
       Zoom: 1
       ViewQuad:
         - 0
-        - 128
+        - 64
         - 0
-        - 72
+        - 36
       IsMain: true
   Entity:
     TagComponent:
@@ -215,3 +221,16 @@ Scene:
       Friction: 0.5
       Restitution: 0
       RestitutionThreshold: 0.5
+  Entity:
+    TagComponent:
+      Tag: Movable1
+    QuadComponent:
+      - 16.8891068
+      - 27.8560677
+      - 5
+      - 5
+      - 0
+    TextureComponent:
+      FilePath: ../assets\textures\Capture.JPG
+    ScriptComponent:
+      ScriptName: Sandbox.Actor

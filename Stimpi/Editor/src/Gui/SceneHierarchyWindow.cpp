@@ -195,6 +195,12 @@ namespace Stimpi
 
 			if (!scriptClassExists)
 				ImGui::PopStyleColor();
+
+			ImGui::Separator();
+			if (ImGui::Button("Remove##Script"))
+			{
+				s_SelectedEntity.RemoveComponent<ScriptComponent>();
+			}
 		}
 	}
 

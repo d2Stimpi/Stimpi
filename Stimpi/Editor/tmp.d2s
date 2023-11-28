@@ -1,217 +1,58 @@
 Scene:
   Entity:
     TagComponent:
-      Tag: Camera
+      Tag: Entity
+    QuadComponent:
+      - 4.28760767
+      - 2.45006132
+      - 50
+      - 40
+      - 0
+    ScriptComponent:
+      ScriptName: Sandbox.Actor
     CameraComponent:
       Position:
-        - 0
-        - 0
+        - 4.28760767
+        - 2.45006132
         - 0
       Rotation: 0
       Zoom: 1
       ViewQuad:
         - 0
-        - 128
+        - 1280
         - 0
-        - 72
+        - 720
       IsMain: true
   Entity:
     TagComponent:
-      Tag: Box
+      Tag: Texture1
     QuadComponent:
-      - 44.0898247
-      - 41.9707756
-      - 10
-      - 10
+      - 100
+      - 20
+      - 50
+      - 40
       - 0
     TextureComponent:
-      FilePath: ../assets\textures\Capture.JPG
-    RigidBody2DComponent:
-      Type: Dynamic
-      FixedRotation: false
-    BoxCollider2DComponent:
-      Offset:
-        - 0
-        - 0
-      Size:
-        - 0.5
-        - 0.5
-      Density: 1
-      Friction: 1
-      Restitution: 0.270000011
-      RestitutionThreshold: 0.5
+      FilePath: ..\/assets/textures/Capture.jpg
   Entity:
     TagComponent:
-      Tag: Floor
+      Tag: Texture2
     QuadComponent:
-      - 12
-      - 8.30482006
-      - 64
-      - 5
-      - 0.400000006
-    TextureComponent:
-      FilePath: ../assets\textures\Picture1.jpg
-    RigidBody2DComponent:
-      Type: Static
-      FixedRotation: true
-    BoxCollider2DComponent:
-      Offset:
-        - 0
-        - 0
-      Size:
-        - 0.5
-        - 0.5
-      Density: 1
-      Friction: 0.5
-      Restitution: 0
-      RestitutionThreshold: 0.5
-  Entity:
-    TagComponent:
-      Tag: Wall
-    QuadComponent:
-      - 4
-      - 12
-      - 27
-      - 5
-      - -1.04999995
-    TextureComponent:
-      FilePath: ../assets\textures\Picture1.jpg
-    RigidBody2DComponent:
-      Type: Static
-      FixedRotation: true
-    BoxCollider2DComponent:
-      Offset:
-        - 0
-        - 0
-      Size:
-        - 0.5
-        - 0.5
-      Density: 1
-      Friction: 0.5
-      Restitution: 0
-      RestitutionThreshold: 0.5
-  Entity:
-    TagComponent:
-      Tag: Box2
-    QuadComponent:
-      - 19.8182793
-      - 44.2194443
-      - 6
-      - 6
+      - 200
+      - 20
+      - 50
+      - 40
       - 0
     TextureComponent:
-      FilePath: ../assets\textures\Capture.JPG
-    RigidBody2DComponent:
-      Type: Dynamic
-      FixedRotation: false
-    BoxCollider2DComponent:
-      Offset:
-        - 0
-        - 0
-      Size:
-        - 0.5
-        - 0.5
-      Density: 0.829999983
-      Friction: 1
-      Restitution: 0.74000001
-      RestitutionThreshold: 0.5
+      FilePath: ../assets/textures/Capture.jpg
   Entity:
     TagComponent:
-      Tag: Box3
+      Tag: Texture3
     QuadComponent:
-      - 43.7325439
-      - 64.4238968
-      - 2.65376925
-      - 6.651052
+      - 300
+      - 20
+      - 50
+      - 40
       - 0
     TextureComponent:
-      FilePath: ../assets\textures\Picture1.jpg
-    RigidBody2DComponent:
-      Type: Dynamic
-      FixedRotation: false
-    BoxCollider2DComponent:
-      Offset:
-        - 0
-        - 0
-      Size:
-        - 0.5
-        - 0.5
-      Density: 1
-      Friction: 0.5
-      Restitution: 0
-      RestitutionThreshold: 0.5
-  Entity:
-    TagComponent:
-      Tag: Box4
-    QuadComponent:
-      - 31
-      - 33
-      - 5
-      - 8
-      - 0
-    TextureComponent:
-      FilePath: ../assets\textures\Capture.JPG
-    RigidBody2DComponent:
-      Type: Dynamic
-      FixedRotation: false
-    BoxCollider2DComponent:
-      Offset:
-        - 0
-        - 0
-      Size:
-        - 0.5
-        - 0.5
-      Density: 1
-      Friction: 1
-      Restitution: 0
-      RestitutionThreshold: 0.5
-  Entity:
-    TagComponent:
-      Tag: T1
-    QuadComponent:
-      - 26
-      - 62
-      - 3
-      - 3
-      - 0
-    TextureComponent:
-      FilePath: ../assets\textures\Picture1.jpg
-    RigidBody2DComponent:
-      Type: Dynamic
-      FixedRotation: false
-    BoxCollider2DComponent:
-      Offset:
-        - 0
-        - 0
-      Size:
-        - 0.5
-        - 0.5
-      Density: 1
-      Friction: 0.5
-      Restitution: 0
-      RestitutionThreshold: 0.5
-  Entity:
-    TagComponent:
-      Tag: T2
-    QuadComponent:
-      - 34.3553352
-      - 62
-      - 2
-      - 2
-      - 0
-    TextureComponent:
-      FilePath: ../assets\textures\Picture1.jpg
-    RigidBody2DComponent:
-      Type: Dynamic
-      FixedRotation: false
-    BoxCollider2DComponent:
-      Offset:
-        - 0
-        - 0
-      Size:
-        - 1
-        - 1
-      Density: 1
-      Friction: 0.5
-      Restitution: 0
-      RestitutionThreshold: 0.5
+      FilePath: ../assets/textures/Picture1.jpg

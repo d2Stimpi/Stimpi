@@ -66,7 +66,7 @@ namespace Stimpi
 		m_BackgroundCamera = std::make_shared<Camera>(0.0f, 1280.0f, 0.0f, 720.0f);
 		m_BackgroundCamera->SetPosition({ 0.0f, 0.0f, 0.0f });
 
-		SceneManager::Instance()->LoadScene("..\/assets\/scenes\/SceneTest.data");
+		SceneManager::Instance()->LoadScene("..\/assets\/scenes\/StartScene.d2s");
 		OnSceneChangedListener onScneeChanged = [&]() {
 			ST_CORE_INFO("EditorLayer - onScneeChanged()");
 			

@@ -73,7 +73,7 @@ namespace Stimpi
 		MonoAssembly* m_CoreAssembly = nullptr;
 		MonoImage* m_CoreAssemblyImage = nullptr;
 
-		ScriptClass m_EntityClass; // TODO: remove
+		ScriptClass m_EntityClass; // Used for Entity ctor
 		std::unordered_map<std::string, std::shared_ptr<ScriptClass>> m_EntityClasses;
 	};
 
@@ -90,7 +90,10 @@ namespace Stimpi
 		Utils::PrintAssemblyTypes(s_Data->m_CoreAssembly);
 		LoadClassesFromAssembly(s_Data->m_CoreAssembly);
 
+		s_Data->m_EntityClass = ScriptClass("Stimpi", "Entity");
+
 		ScriptGlue::RegisterFucntions();
+		ScriptGlue::RegosterComponents();
 
 #if 0
 		// Load the CS class
@@ -255,6 +258,11 @@ namespace Stimpi
 		return instance;
 	}
 
+	MonoImage* ScriptEngine::GetCoreAssemblyImage()
+	{
+		return s_Data->m_CoreAssemblyImage;
+	}
+
 	/* ======== ScriptClass ======== */
 
 	ScriptClass::ScriptClass(const std::string& namespaceName, const std::string& className)
@@ -289,23 +297,34 @@ namespace Stimpi
 
 	/* ======== ScriptInstance ======== */
 
-	ScriptInstance::ScriptInstance(std::shared_ptr<ScriptClass> scriptClass)
-		: m_ScriptClass(scriptClass)
+	ScriptInstance::ScriptInstance(std::shared_ptr<ScriptClass> scriptClass, Entity entity)
+		: m_ScriptClass(scriptClass), m_Entity(entity)
 	{
 		m_Instance = m_ScriptClass->Instantiate();
+		m_Constructor = s_Data->m_EntityClass.GetMethod(".ctor", 1);
 		m_OnCreateMethod = m_ScriptClass->GetMethod("OnCreate", 0);
 		m_OnUpdateMethod = m_ScriptClass->GetMethod("OnUpdate", 1);
+
+		void* param = &entity;
+		m_ScriptClass->InvokeMethod(m_Instance, m_Constructor, &param);
+	}
+
+	ScriptInstance::~ScriptInstance()
+	{
+		ST_CORE_TRACE("Destroy ScriptInstance");
 	}
 
 	void ScriptInstance::InvokeOnCreate()
 	{
-		m_ScriptClass->InvokeMethod(m_Instance, m_OnCreateMethod, nullptr);
+		if (m_OnCreateMethod)
+			m_ScriptClass->InvokeMethod(m_Instance, m_OnCreateMethod, nullptr);
 	}
 
 	void ScriptInstance::InvokeOnUpdate(float ts)
 	{
 		void* param = &ts;
-		m_ScriptClass->InvokeMethod(m_Instance, m_OnUpdateMethod, &param);
+		if (m_OnUpdateMethod)
+			m_ScriptClass->InvokeMethod(m_Instance, m_OnUpdateMethod, &param);
 	}
 
 }

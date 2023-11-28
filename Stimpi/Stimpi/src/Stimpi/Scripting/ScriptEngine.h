@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Stimpi/Core/Core.h"
+#include "Stimpi/Scene/Entity.h"
 
 extern "C"
 {
@@ -8,6 +9,7 @@ extern "C"
 	typedef struct _MonoAssembly MonoAssembly;
 	typedef struct _MonoMethod MonoMethod; 
 	typedef struct _MonoObject MonoObject;
+	typedef struct _MonoImage MonoImage;
 }
 
 namespace Stimpi
@@ -25,6 +27,8 @@ namespace Stimpi
 
 		static bool HasScriptClass(const std::string& className);
 		static std::unordered_map<std::string, std::shared_ptr<ScriptClass>> GetEntityClasses();
+
+		static MonoImage* GetCoreAssemblyImage();
 	private:
 		static void InitMono();
 		static void ShutdownMono();
@@ -56,15 +60,17 @@ namespace Stimpi
 	class ScriptInstance
 	{
 	public:
-		ScriptInstance(std::shared_ptr<ScriptClass> scriptClass);
-		~ScriptInstance() { std::cout << "destructor ScriptInstance" << std::endl; }
+		ScriptInstance(std::shared_ptr<ScriptClass> scriptClass, Entity entity);
+		~ScriptInstance();
 
 		void InvokeOnCreate();
 		void InvokeOnUpdate(float ts);
 	private:
 		std::shared_ptr<ScriptClass> m_ScriptClass;
+		Entity m_Entity;
 
 		MonoObject* m_Instance = nullptr;
+		MonoMethod* m_Constructor = nullptr;
 		MonoMethod* m_OnCreateMethod = nullptr;
 		MonoMethod* m_OnUpdateMethod = nullptr;
 	};

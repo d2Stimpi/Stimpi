@@ -261,13 +261,14 @@ namespace Stimpi
 		// Create C# scripts
 		m_Registry.view<ScriptComponent>().each([=](auto e, ScriptComponent& script)
 			{
+				Entity entity = { e, this };
 				// Verify that script exists
 				if (ScriptEngine::HasScriptClass(script.m_ScriptName))
 				{
 					const auto& entityClasses = ScriptEngine::GetEntityClasses();
 					std::shared_ptr<ScriptClass> entityClass = entityClasses.find(script.m_ScriptName)->second;
 
-					script.m_Instance = std::make_shared<ScriptInstance>(entityClass);
+					script.m_Instance = std::make_shared<ScriptInstance>(entityClass, entity);
 					if (script.m_Instance)
 					{
 						script.m_Instance->InvokeOnCreate();

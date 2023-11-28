@@ -66,6 +66,15 @@ inline OStream& operator<<(OStream& os, const glm::vec<L, T, Q>& vector)
 			std::terminate(); \
 		} \
 	} while (false)
+
+
+	#define ST_CORE_ASSERT(x) \
+	do { \
+	if (x) \
+		{ \
+			std::terminate(); \
+		} \
+	} while (false)
 	
 #else
 	#define ST_CORE_ASSERT(x, ...) if(x) { Stimpi::Log::GetCoreLogger()->error(__VA_ARGS__); }
