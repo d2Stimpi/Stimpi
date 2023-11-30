@@ -32,7 +32,7 @@ Scene:
       - 50
       - 40
       - 0
-    TextureComponent:
+    SpriteComponent:
       FilePath: ..\/assets/textures/Capture.jpg
   Entity:
     TagComponent:
@@ -43,7 +43,7 @@ Scene:
       - 50
       - 40
       - 0
-    TextureComponent:
+    SpriteComponent:
       FilePath: ../assets/textures/Capture.jpg
   Entity:
     TagComponent:
@@ -54,5 +54,5 @@ Scene:
       - 50
       - 40
       - 0
-    TextureComponent:
+    SpriteComponent:
       FilePath: ../assets/textures/Picture1.jpg

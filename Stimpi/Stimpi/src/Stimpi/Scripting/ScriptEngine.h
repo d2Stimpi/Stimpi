@@ -10,6 +10,7 @@ extern "C"
 	typedef struct _MonoMethod MonoMethod; 
 	typedef struct _MonoObject MonoObject;
 	typedef struct _MonoImage MonoImage;
+	typedef struct _MonoDomain MonoDomain;
 }
 
 namespace Stimpi
@@ -29,6 +30,7 @@ namespace Stimpi
 		static std::unordered_map<std::string, std::shared_ptr<ScriptClass>> GetEntityClasses();
 
 		static MonoImage* GetCoreAssemblyImage();
+		static MonoDomain* GetAppDomain();
 	private:
 		static void InitMono();
 		static void ShutdownMono();

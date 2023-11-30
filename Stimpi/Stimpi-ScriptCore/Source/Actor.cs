@@ -11,30 +11,97 @@ namespace Sandbox
     class Actor : Entity
     {
         private QuadComponent m_Quad;
+        private Vector2 m_SavePosition;
+        private Vector2 m_SaveSize;
+        private float m_SaveRotation;
+
+        private SpriteComponent m_Sprite;
+        private float colorRatio = 1.0f / 255.0f;
 
         public override void OnCreate() 
         {
-            Console.WriteLine("OnCreate Actor");
+            string tag = GetComponent<TagComponent>().Tag;
+            Console.WriteLine($"OnCreate Actor - {tag}");
 
             m_Quad = GetComponent<QuadComponent>();
+            m_Sprite = GetComponent<SpriteComponent>();
         }
 
         public override void OnUpdate(float ts)
         {
             float speed = 15.0f;
+            
+            if (Input.IsKeyPressed(KeyCode.KEY_1))
+            {
+                if (m_Quad == null)
+                {
+                    Console.WriteLine("AddComponent<QuadComponent>");
+                    m_Quad = AddComponent<QuadComponent>();
 
-            Vector2 pos = m_Quad.Position;
+                    m_Quad.Position = m_SavePosition;
+                    m_Quad.Size = m_SaveSize;
+                    m_Quad.Rotation = m_SaveRotation;
+                }
+            }
 
-            if (Input.IsKeyPressed(KeyCode.KEY_W))
-                pos.Y += ts * speed;
-            if (Input.IsKeyPressed(KeyCode.KEY_S))
-                pos.Y -= ts * speed;
-            if (Input.IsKeyPressed(KeyCode.KEY_D))
-                pos.X += ts * speed;
-            if (Input.IsKeyPressed(KeyCode.KEY_A))
-                pos.X -= ts * speed;
+            if (Input.IsKeyPressed(KeyCode.KEY_2))
+            {
+                if (m_Quad != null)
+                {
+                    m_SavePosition = m_Quad.Position;
+                    m_SaveSize = m_Quad.Size;
+                    m_SaveRotation = m_Quad.Rotation;
 
-            m_Quad.Position = pos;
+                    Console.WriteLine("RemoveComponent<QuadComponent>");
+                    RemoveComponent<QuadComponent>();
+                    m_Quad = null;
+                }
+            }
+
+            // Check if QuadComponent is available
+            if (m_Quad != null)
+            {
+                Vector2 pos = m_Quad.Position;
+
+                if (Input.IsKeyPressed(KeyCode.KEY_W))
+                    pos.Y += ts * speed;
+                if (Input.IsKeyPressed(KeyCode.KEY_S))
+                    pos.Y -= ts * speed;
+                if (Input.IsKeyPressed(KeyCode.KEY_D))
+                    pos.X += ts * speed;
+                if (Input.IsKeyPressed(KeyCode.KEY_A))
+                    pos.X -= ts * speed;
+
+                Vector2 size = m_Quad.Size;
+                if (Input.IsKeyPressed(KeyCode.KEY_X))
+                {
+                    size.X += ts * speed;
+                    size.Y += ts * speed;
+                }
+                if (Input.IsKeyPressed(KeyCode.KEY_C))
+                {
+                    size.X -= ts * speed;
+                    size.Y -= ts * speed;
+                }
+
+                float rotation = m_Quad.Rotation;
+                if (Input.IsKeyPressed(KeyCode.KEY_Q))
+                    rotation += ts * speed;
+                if (Input.IsKeyPressed(KeyCode.KEY_E))
+                    rotation -= ts * speed;
+
+                m_Quad.Position = pos;
+                m_Quad.Size = size;
+                m_Quad.Rotation = rotation;
+            }
+
+            if (m_Sprite != null)
+            {
+                Color color = m_Sprite.Color;
+                color.R += colorRatio * ts * speed;
+                color.R %= 1.0f;
+                m_Sprite.Color = color;
+            }
         }
     }
 }

@@ -204,15 +204,17 @@ namespace Stimpi
 		}
 	}
 
-	void SceneHierarchyWindow::TextureComponentLayout(TextureComponent& component)
+	void SceneHierarchyWindow::SpriteComponentLayout(SpriteComponent& component)
 	{
 		ImGui::Separator();
-		if (ImGui::CollapsingHeader("Texture##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
+		if (ImGui::CollapsingHeader("Sprite##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			std::filesystem::path texturePath = component.m_FilePath.c_str();
 
+			ImGui::ColorEdit4("Color##SpriteColor", glm::value_ptr(component.m_Color));
+
 			ImGui::PushItemWidth(80.0f);
-			if (ImGui::Button("Texture##TextureComponent"))
+			if (ImGui::Button("Texture##SpriteComponent"))
 			{
 				std::string filePath = FileDialogs::OpenFile("Texture (*.jpg)\0*.jpg\0(*.png)\0*.png\0");
 				if (!filePath.empty())
@@ -221,7 +223,6 @@ namespace Stimpi
 				}
 			}
 			ImGui::PopItemWidth();
-
 
 			UIPayload::BeginTarget(PAYLOAD_TEXTURE, [&component](void* data, uint32_t size) {
 				std::string strData = std::string((char*)data, size);
@@ -235,10 +236,13 @@ namespace Stimpi
 			else
 				ImGui::Text("Add Texture");
 
+			//ImGui::SameLine();
+			ImGui::Checkbox("Enable Texture##Texture_SpriteComponent", &component.m_Enable);
+
 			ImGui::Separator();
 			if (ImGui::Button("Remove##Texture"))
 			{
-				s_SelectedEntity.RemoveComponent<TextureComponent>();
+				s_SelectedEntity.RemoveComponent<SpriteComponent>();
 			}
 		}
 	}
@@ -353,11 +357,11 @@ namespace Stimpi
 				}
 			}
 
-			if (!s_SelectedEntity.HasComponent<TextureComponent>())
+			if (!s_SelectedEntity.HasComponent<SpriteComponent>())
 			{
-				if (ImGui::Selectable("Texture##AddComponent"))
+				if (ImGui::Selectable("Sprite##AddComponent"))
 				{
-					s_SelectedEntity.AddComponent<TextureComponent>();
+					s_SelectedEntity.AddComponent<SpriteComponent>();
 				}
 			}
 
@@ -413,10 +417,10 @@ namespace Stimpi
 				QuadComponentLayout(component);
 			}
 
-			if (s_SelectedEntity.HasComponent<TextureComponent>())
+			if (s_SelectedEntity.HasComponent<SpriteComponent>())
 			{
-				auto& component = s_SelectedEntity.GetComponent<TextureComponent>();
-				TextureComponentLayout(component);
+				auto& component = s_SelectedEntity.GetComponent<SpriteComponent>();
+				SpriteComponentLayout(component);
 			}
 
 			if (s_SelectedEntity.HasComponent<ScriptComponent>())

@@ -263,6 +263,11 @@ namespace Stimpi
 		return s_Data->m_CoreAssemblyImage;
 	}
 
+	MonoDomain* ScriptEngine::GetAppDomain()
+	{
+		return s_Data->m_AppDomain;
+	}
+
 	/* ======== ScriptClass ======== */
 
 	ScriptClass::ScriptClass(const std::string& namespaceName, const std::string& className)

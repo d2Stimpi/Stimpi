@@ -7,7 +7,7 @@ Scene:
       - 100
       - 50
       - 50
-    TextureComponent:
+    SpriteComponent:
       FilePath: ..\/assets/textures/Picture1.jpg
     CameraComponent:
       Position:
@@ -37,7 +37,7 @@ Scene:
       - 20
       - 50
       - 40
-    TextureComponent:
+    SpriteComponent:
       FilePath: ..\/assets/textures/Capture.jpg
   Entity:
     TagComponent:
@@ -47,7 +47,7 @@ Scene:
       - 20
       - 50
       - 40
-    TextureComponent:
+    SpriteComponent:
       FilePath: ..\/assets/textures/Capture.jpg
   Entity:
     TagComponent:
@@ -57,5 +57,5 @@ Scene:
       - 20
       - 50
       - 40
-    TextureComponent:
+    SpriteComponent:
       FilePath: ..\/assets/textures/Picture1.jpg

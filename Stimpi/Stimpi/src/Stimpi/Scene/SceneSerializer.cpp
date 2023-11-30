@@ -53,9 +53,9 @@ namespace Stimpi
 				{
 					entity.AddComponent<QuadComponent>(QuadComponent(entityNode["QuadComponent"]));
 				}
-				if (entityNode["TextureComponent"])
+				if (entityNode["SpriteComponent"])
 				{
-					entity.AddComponent<TextureComponent>(TextureComponent(entityNode["TextureComponent"]));
+					entity.AddComponent<SpriteComponent>(SpriteComponent(entityNode["SpriteComponent"]));
 				}
 				if (entityNode["ScriptComponent"])
 				{

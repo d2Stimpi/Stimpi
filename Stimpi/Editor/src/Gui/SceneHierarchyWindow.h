@@ -25,7 +25,7 @@ namespace Stimpi
 		void TagComponentLayout(TagComponent& component);
 		void QuadComponentLayout(QuadComponent& component);
 		void ScriptComponentLayout(ScriptComponent& component);
-		void TextureComponentLayout(TextureComponent& component);
+		void SpriteComponentLayout(SpriteComponent& component);
 		void CameraComponentLayout(CameraComponent& component);
 		void RigidBody2DComponentLayout(RigidBody2DComponent& component);
 		void BoxCollider2DComponentLayout(BoxCollider2DComponent& component);

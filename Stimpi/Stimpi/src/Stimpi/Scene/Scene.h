@@ -71,6 +71,7 @@ namespace Stimpi
 		Camera* m_RenderCamera = nullptr; // Scene will use Camera Component in Runtime state
 		// Temp shader
 		std::shared_ptr<Stimpi::Shader> m_DefaultShader;
+		std::shared_ptr<Stimpi::Shader> m_DefaultSolidColorShader;
 
 		// Test
 		std::shared_ptr<SubTexture> m_SubTexture;

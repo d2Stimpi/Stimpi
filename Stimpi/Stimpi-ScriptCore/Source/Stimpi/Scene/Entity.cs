@@ -36,13 +36,13 @@ namespace Stimpi
             return component;
         }
 
-        public T CreateComponent<T>() where T : Component, new()
+        public T AddComponent<T>() where T : Component, new()
         {
             if (HasComponent<T>())
                 return null;
 
             Type componentType = typeof(T);
-            if (!InternalCalls.Entity_CreateComponent(ID, componentType))
+            if (!InternalCalls.Entity_AddComponent(ID, componentType))
                 return null;
 
             T component = new T() { Entity = this };

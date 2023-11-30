@@ -24,9 +24,9 @@ namespace Stimpi
 			GetComponent<QuadComponent>().Serialize(out);
 		}
 
-		if (HasComponent<TextureComponent>())
+		if (HasComponent<SpriteComponent>())
 		{
-			GetComponent<TextureComponent>().Serialize(out);
+			GetComponent<SpriteComponent>().Serialize(out);
 		}
 
 		if (HasComponent<ScriptComponent>())

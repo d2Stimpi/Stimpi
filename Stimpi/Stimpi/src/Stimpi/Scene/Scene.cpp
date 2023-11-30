@@ -51,6 +51,7 @@ namespace Stimpi
 
 		m_RuntimeState = RuntimeState::STOPPED;
 		m_DefaultShader.reset(Shader::CreateShader("..\/assets\/shaders\/shader.shader"));
+		m_DefaultSolidColorShader.reset(Shader::CreateShader("..\/assets\/shaders\/solidcolor.shader"));
 
 #if USE_TEST_STUFF
 		/* Test stuff below */
@@ -59,7 +60,7 @@ namespace Stimpi
 
 		s_TestObj = CreateEntity("ScriptedObj");
 		s_TestObj.AddComponent<QuadComponent>(glm::vec4{ 100.0f, 100.0f, 50.0f, 50.0f });
-		s_TestObj.AddComponent<TextureComponent>("..\/assets\/textures\/Picture1.jpg");
+		s_TestObj.AddComponent<SpriteComponent>("..\/assets\/textures\/Picture1.jpg");
 
 		auto camera = std::make_shared<Camera>(0.0f, 1280.0f, 0.0f, 720.0f);
 		s_TestObj.AddComponent<CameraComponent>(camera, true);
@@ -128,11 +129,20 @@ namespace Stimpi
 				if (entity.HasComponent<QuadComponent>())
 				{
 					auto& quad = entity.GetComponent<QuadComponent>();
-					if (entity.HasComponent<TextureComponent>())
+					if (entity.HasComponent<SpriteComponent>())
 					{
-						auto& texture = entity.GetComponent<TextureComponent>();
-						if (texture)
-							Renderer2D::Instace()->Submit(quad, quad.m_Rotation, texture, m_DefaultShader.get());
+						auto& sprite = entity.GetComponent<SpriteComponent>();
+						if (sprite.m_Texture)
+						{
+							if (sprite.m_Enable)
+								Renderer2D::Instace()->Submit(quad, quad.m_Rotation, sprite.m_Texture, m_DefaultShader.get());
+							else
+								Renderer2D::Instace()->Submit(quad, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
+						}
+						else
+						{
+							Renderer2D::Instace()->Submit(quad, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
+						}
 					}
 				}
 			}

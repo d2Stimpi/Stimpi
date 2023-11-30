@@ -30,7 +30,7 @@ Scene:
       - 10
       - 10
       - 0
-    TextureComponent:
+    SpriteComponent:
       FilePath: ../assets\textures\Capture.JPG
     RigidBody2DComponent:
       Type: Dynamic
@@ -55,7 +55,7 @@ Scene:
       - 64
       - 5
       - 0.400000006
-    TextureComponent:
+    SpriteComponent:
       FilePath: ../assets\textures\Picture1.jpg
     RigidBody2DComponent:
       Type: Static
@@ -80,7 +80,7 @@ Scene:
       - 27
       - 5
       - -1.04999995
-    TextureComponent:
+    SpriteComponent:
       FilePath: ../assets\textures\Picture1.jpg
     RigidBody2DComponent:
       Type: Static
@@ -105,7 +105,7 @@ Scene:
       - 6
       - 6
       - 0
-    TextureComponent:
+    SpriteComponent:
       FilePath: ../assets\textures\Capture.JPG
     RigidBody2DComponent:
       Type: Dynamic
@@ -130,7 +130,7 @@ Scene:
       - 2.65376925
       - 6.651052
       - 0
-    TextureComponent:
+    SpriteComponent:
       FilePath: ../assets\textures\Picture1.jpg
     RigidBody2DComponent:
       Type: Dynamic
@@ -155,7 +155,7 @@ Scene:
       - 5
       - 8
       - 0
-    TextureComponent:
+    SpriteComponent:
       FilePath: ../assets\textures\Capture.JPG
     RigidBody2DComponent:
       Type: Dynamic
@@ -180,7 +180,7 @@ Scene:
       - 3
       - 3
       - 0
-    TextureComponent:
+    SpriteComponent:
       FilePath: ../assets\textures\Picture1.jpg
     RigidBody2DComponent:
       Type: Dynamic
@@ -205,7 +205,7 @@ Scene:
       - 2
       - 2
       - 0
-    TextureComponent:
+    SpriteComponent:
       FilePath: ../assets\textures\Picture1.jpg
     RigidBody2DComponent:
       Type: Dynamic
@@ -230,7 +230,7 @@ Scene:
       - 5
       - 5
       - 0
-    TextureComponent:
+    SpriteComponent:
       FilePath: ../assets\textures\Capture.JPG
     ScriptComponent:
       ScriptName: Sandbox.Actor

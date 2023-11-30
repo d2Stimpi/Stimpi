@@ -88,17 +88,24 @@ namespace Stimpi
 		}
 	};
 
-	struct TextureComponent
+	struct SpriteComponent
 	{
+		// Sprite Texture
 		std::string m_FilePath = "";
 		Texture* m_Texture = nullptr;
+		bool m_Enable = false; // Will override color use
 
-		TextureComponent() = default;
-		TextureComponent(const TextureComponent&) = default;
-		TextureComponent(Texture* texture)
-			: m_FilePath(""), m_Texture(texture) {}
-		TextureComponent(const std::string& filePath)
-			: m_FilePath(filePath)
+		// Sprite Color
+		glm::vec4 m_Color = {1.0f, 1.0f, 1.0f, 1.0f };
+
+		SpriteComponent() = default;
+		SpriteComponent(const SpriteComponent&) = default;
+		SpriteComponent(Texture* texture)
+			: m_FilePath(""), m_Texture(texture), m_Enable(true) {}
+		SpriteComponent(glm::vec4 color)
+			: m_Color(color) {}
+		SpriteComponent(const std::string& filePath)
+			: m_FilePath(filePath), m_Enable(true)
 		{
 			m_Texture = ResourceManager::Instance()->LoadTexture(filePath);
 		}
@@ -118,19 +125,29 @@ namespace Stimpi
 			{
 				m_FilePath = filePath;
 				m_Texture = newTexture;
+				m_Enable = true;
 			}
 		}
 
 		void Serialize(YAML::Emitter& out)
 		{
-			out << YAML::Key << "TextureComponent";
+			out << YAML::Key << "SpriteComponent";
 			out << YAML::BeginMap;
-					out << YAML::Key << "FilePath" << YAML::Value << m_FilePath;
+				out << YAML::Key << "FilePath" << YAML::Value << m_FilePath;
+
+				out << YAML::Key << "Enabled" << YAML::Value << m_Enable;
+
+				out << YAML::Key << "Color" << YAML::Value;
+				out << YAML::BeginSeq;
+				{
+					out << m_Color.x << m_Color.y << m_Color.z << m_Color.w;
+				}
+				out << YAML::EndSeq;
 			out << YAML::EndMap;
 		}
 
 		//De-serialize constructor
-		TextureComponent(const YAML::Node& node)
+		SpriteComponent(const YAML::Node& node)
 		{
 			if (node["FilePath"])
 			{
@@ -141,6 +158,25 @@ namespace Stimpi
 			{
 				m_FilePath = "";
 				m_Texture = nullptr;
+			}
+
+			if (node["Enable"])
+			{
+				m_Enable = node["Enable"].as<bool>();
+			}
+			else
+			{
+				m_Enable = m_Texture != nullptr;
+			}
+
+			if (node["Color"])
+			{
+				YAML::Node view = node["Color"];
+				m_Color = glm::vec4(view[0].as<float>(), view[1].as<float>(), view[2].as<float>(), view[3].as<float>());
+			}
+			else
+			{
+				m_Color = glm::vec4( 1.0f, 1.0f, 1.0f, 1.0f );
 			}
 		}
 	};
