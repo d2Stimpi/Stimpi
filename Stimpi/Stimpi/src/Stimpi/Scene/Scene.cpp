@@ -180,6 +180,23 @@ namespace Stimpi
 		m_Entities.erase(std::remove(std::begin(m_Entities), std::end(m_Entities), entity));
 	}
 
+	Stimpi::Entity Scene::CopyEntity(const Entity entity)
+	{
+		Entity newEntity = { m_Registry.create(), this };
+		auto dst = newEntity.GetHandle();
+		for (auto [id, storage] : m_Registry.storage())
+		{
+			auto src = entity.GetHandle();
+			if (storage.contains(src))
+			{
+				storage.push(dst, storage.value(src));
+			}
+		}
+
+		m_Entities.push_back(newEntity);
+		return newEntity;
+	}
+
 	void Scene::SetCamera(Camera* camera)
 	{
 		m_SceneCamera = camera;

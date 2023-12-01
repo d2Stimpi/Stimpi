@@ -64,10 +64,13 @@ namespace Stimpi
 		ImGui::SameLine();
 		if (ImGui::Button("x##PlayButton"))
 		{
-			ST_CORE_INFO("Stop the scene.");
-			m_ActiveScene->OnSceneStop();
-			// Restore Scene form temp file
-			SceneManager::Instance()->LoadScene("tmp.d2s");
+			if (m_ActiveScene->GetRuntimeState() != RuntimeState::STOPPED)
+			{
+				ST_CORE_INFO("Stop the scene.");
+				m_ActiveScene->OnSceneStop();
+				// Restore Scene form temp file
+				SceneManager::Instance()->LoadScene("tmp.d2s");
+			}
 		}
 
 		ImGui::End();

@@ -3,6 +3,7 @@
 
 #include "Stimpi/Log.h"
 #include "Stimpi/Core/InputManager.h"
+#include "Stimpi/Core/KeyCodes.h"
 #include "Stimpi/Graphics/Renderer2D.h"
 
 #include "Stimpi/Scene/SceneManager.h"
@@ -17,9 +18,27 @@
 
 namespace Stimpi
 {
+
 	SceneViewWindow::SceneViewWindow()
 	{
 		m_Flags = ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoCollapse;
+
+		InputManager::Instance()->AddKeyboardEventHandler(new KeyboardEventHandler([](KeyboardEvent event) -> bool {
+				if (event.GetKeyCode() == ST_KEY_D && event.GetType() == KeyboardEventType::KEY_EVENT_DOWN )
+				{ 
+					auto scene = SceneManager::Instance()->GetActiveScene();
+					if (scene != nullptr && EditorUtils::WantCaptureKeyboard())
+					{
+						auto selectedEntity = SceneHierarchyWindow::GetSelectedEntity();
+						if (selectedEntity)
+						{
+							auto newEntity = scene->CopyEntity(selectedEntity);
+							SceneHierarchyWindow::SetPickedEntity(newEntity);
+						}
+					}
+				}
+				return false;
+			}));
 	}
 
 	SceneViewWindow::~SceneViewWindow()

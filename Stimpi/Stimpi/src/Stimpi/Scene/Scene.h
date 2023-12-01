@@ -35,6 +35,8 @@ namespace Stimpi
 		Entity GetEntityByHandle(entt::entity handle);
 		void RemoveEntity(Entity entity);
 
+		Entity CopyEntity(const Entity entity);
+
 		void SetCamera(Camera* camera);
 		Camera* GetCamera() { return m_SceneCamera; }
 		Camera* GetRenderCamera() { return m_RenderCamera; } // Use this for picking so it can work in runtime
