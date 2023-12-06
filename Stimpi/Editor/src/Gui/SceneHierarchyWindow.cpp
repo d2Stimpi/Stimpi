@@ -196,6 +196,32 @@ namespace Stimpi
 			if (!scriptClassExists)
 				ImGui::PopStyleColor();
 
+			/* Fields & Properties */
+			auto scriptClass = ScriptEngine::GetScriptClassByName(component.m_ScriptName);
+			if (scriptClass != nullptr)
+			{
+				ImGuiInputTextFlags fieldInputFlags = ImGuiInputTextFlags_EnterReturnsTrue;
+
+				ImGui::Separator();
+				auto fields = scriptClass->GetAllFields();
+				auto tagName = s_SelectedEntity.GetComponent<TagComponent>().m_Tag;
+				for (auto item : fields)
+				{
+					std::string fieldName = ScriptEngine::GetFieldName(item).c_str();
+
+					/* Populate with data from Entity's class Instance */
+					std::shared_ptr<ScriptInstance> scriptInstance = ScriptEngine::GetScriptInstance(s_SelectedEntity);
+					float fNum = 0.0f;
+					auto field = scriptInstance->GetScriptFieldFromMonoField(item);
+					field->ReadFieldValue(&fNum);
+					if (ImGui::InputFloat(fmt::format("{}##{}", fieldName, tagName).c_str(), &fNum, 0.0f, 0.0f, "%.3f", fieldInputFlags))
+					{
+						field->SetFieldValue(&fNum);
+					}
+				}
+			}
+
+
 			ImGui::Separator();
 			if (ImGui::Button("Remove##Script"))
 			{

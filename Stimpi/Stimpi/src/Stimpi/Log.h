@@ -58,7 +58,7 @@ inline OStream& operator<<(OStream& os, const glm::vec<L, T, Q>& vector)
 #define ST_CORE_CRITICAL(...)	Stimpi::Log::GetCoreLogger()->critical(__VA_ARGS__)
 
 #ifndef NDEBUG
-	#define ST_CORE_ASSERT(x, ...) \
+	#define ST_CORE_ASSERT_MSG(x, ...) \
 	do { \
 	if (x) \
 		{ \

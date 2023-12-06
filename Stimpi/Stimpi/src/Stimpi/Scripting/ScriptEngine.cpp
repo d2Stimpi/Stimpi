@@ -3,14 +3,28 @@
 
 #include "Stimpi/Log.h"
 #include "Stimpi/Utils/SystemUtils.h"
+
+#include "Stimpi/Scene/SceneManager.h"
+#include "Stimpi/Scene/Component.h"
+
 #include "Stimpi/Scripting/ScriptGlue.h"
 
 #include "mono/jit/jit.h"
 #include "mono/metadata/appdomain.h"
 #include "mono/metadata/assembly.h"
+#include "mono/metadata/attrdefs.h"
 
 namespace Stimpi
 {
+	enum class Accessibility : uint8_t
+	{
+		NONE = 0,
+		PRIVATE = (1 << 0),
+		INTERNAL = (1 << 1),
+		PROTECTED = (1 << 2),
+		PUBLIC = (1 << 3)
+	};
+
 	class Utils
 	{
 	public:
@@ -63,6 +77,99 @@ namespace Stimpi
 
 			return result;
 		}
+
+		static uint8_t GetFieldAccessibility(MonoClassField* field)
+		{
+			uint8_t accessibility = (uint8_t)Accessibility::NONE;
+			uint32_t accessFlag = mono_field_get_flags(field) & MONO_FIELD_ATTR_FIELD_ACCESS_MASK;
+
+			switch (accessFlag)
+			{
+				case MONO_FIELD_ATTR_PRIVATE:
+				{
+					accessibility = (uint8_t)Accessibility::PRIVATE;
+					break;
+				}
+				case MONO_FIELD_ATTR_FAM_AND_ASSEM:
+				{
+					accessibility |= (uint8_t)Accessibility::PROTECTED;
+					accessibility |= (uint8_t)Accessibility::INTERNAL;
+					break;
+				}
+				case MONO_FIELD_ATTR_ASSEMBLY:
+				{
+					accessibility = (uint8_t)Accessibility::INTERNAL;
+					break;
+				}
+				case MONO_FIELD_ATTR_FAMILY:
+				{
+					accessibility = (uint8_t)Accessibility::PROTECTED;
+					break;
+				}
+				case MONO_FIELD_ATTR_FAM_OR_ASSEM:
+				{
+					accessibility |= (uint8_t)Accessibility::PRIVATE;
+					accessibility |= (uint8_t)Accessibility::PROTECTED;
+					break;
+				}
+				case MONO_FIELD_ATTR_PUBLIC:
+				{
+					accessibility = (uint8_t)Accessibility::PUBLIC;
+					break;
+				}
+			}
+
+			return accessibility;
+		}
+
+		static uint8_t GetPropertyAccessibility(MonoProperty* property)
+		{
+			uint8_t accessibility = (uint8_t)Accessibility::NONE;
+
+			// Get a reference to the property's getter method
+			MonoMethod* propertyGetter = mono_property_get_get_method(property);
+			if (propertyGetter != nullptr)
+			{
+				// Extract the access flags from the getters flags
+				uint32_t accessFlag = mono_method_get_flags(propertyGetter, nullptr) & MONO_METHOD_ATTR_ACCESS_MASK;
+
+				switch (accessFlag)
+				{
+					case MONO_FIELD_ATTR_PRIVATE:
+					{
+						accessibility = (uint8_t)Accessibility::PRIVATE;
+						break;
+					}
+					case MONO_FIELD_ATTR_FAM_AND_ASSEM:
+					{
+						accessibility |= (uint8_t)Accessibility::PROTECTED;
+						accessibility |= (uint8_t)Accessibility::INTERNAL;
+						break;
+					}
+					case MONO_FIELD_ATTR_ASSEMBLY:
+					{
+						accessibility = (uint8_t)Accessibility::INTERNAL;
+						break;
+					}
+					case MONO_FIELD_ATTR_FAMILY:
+					{
+						accessibility = (uint8_t)Accessibility::PROTECTED;
+						break;
+					}
+					case MONO_FIELD_ATTR_FAM_OR_ASSEM:
+					{
+						accessibility |= (uint8_t)Accessibility::PRIVATE;
+						accessibility |= (uint8_t)Accessibility::PROTECTED;
+						break;
+					}
+					case MONO_FIELD_ATTR_PUBLIC:
+					{
+						accessibility = (uint8_t)Accessibility::PUBLIC;
+						break;
+					}
+				}
+			}
+		}
 	};
 
 	struct ScriptEngineData
@@ -75,6 +182,10 @@ namespace Stimpi
 
 		ScriptClass m_EntityClass; // Used for Entity ctor
 		std::unordered_map<std::string, std::shared_ptr<ScriptClass>> m_EntityClasses;
+
+		/* Scene data - Class Instances per entity */
+		std::shared_ptr<Scene> m_Scene;
+		std::unordered_map<uint32_t, std::shared_ptr<ScriptInstance>> m_EntityInstances;
 	};
 
 	static ScriptEngineData* s_Data;
@@ -83,6 +194,14 @@ namespace Stimpi
 	void ScriptEngine::Init()
 	{
 		s_Data = new ScriptEngineData;
+		s_Data->m_Scene = SceneManager::Instance()->GetActiveSceneRef();
+
+		OnSceneChangedListener onScneeChanged = [&]() {
+			s_Data->m_Scene = SceneManager::Instance()->GetActiveSceneRef();
+			// Re-create Script instances
+			CreateScriptInstances();
+		};
+		SceneManager::Instance()->RegisterOnSceneChangeListener(onScneeChanged);
 
 		InitMono();
 		LoadAssembly("../resources/scripts/Stimpi-ScriptCore.dll");
@@ -185,6 +304,18 @@ namespace Stimpi
 		return s_Data->m_EntityClasses.find(className) != s_Data->m_EntityClasses.end();
 	}
 
+	std::shared_ptr<ScriptClass> ScriptEngine::GetScriptClassByName(const std::string& className)
+	{
+		if (s_Data->m_EntityClasses.find(className) != s_Data->m_EntityClasses.end())
+		{
+			return s_Data->m_EntityClasses.find(className)->second;
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
 	std::unordered_map<std::string, std::shared_ptr<Stimpi::ScriptClass>> ScriptEngine::GetEntityClasses()
 	{
 		return s_Data->m_EntityClasses;
@@ -195,7 +326,7 @@ namespace Stimpi
 		mono_set_assemblies_path("mono/lib/4.5");
 
 		MonoDomain* rootDomain = mono_jit_init("StimpiJitRuntime");
-		ST_CORE_ASSERT(rootDomain == nullptr, "Invalid Mono JIT Domain");
+		ST_CORE_ASSERT_MSG(rootDomain == nullptr, "Invalid Mono JIT Domain");
 
 		// Store the root domain pointer
 		s_Data->m_RootDomain = rootDomain;
@@ -268,12 +399,84 @@ namespace Stimpi
 		return s_Data->m_AppDomain;
 	}
 
+	/*
+	*  Called each time Scene changes. Instantiate ScriptClasses that are used by Entities in the scene.
+	*  
+	*/
+	void ScriptEngine::CreateScriptInstances()
+	{
+		s_Data->m_EntityInstances.clear();
+
+		auto entities = s_Data->m_Scene->m_Entities;
+		for (Entity entity : entities)
+		{
+			if (entity.HasComponent<ScriptComponent>())
+			{
+				auto scriptComponent = entity.GetComponent<ScriptComponent>();
+				auto scriptClass = GetScriptClassByName(scriptComponent.m_ScriptName);
+				s_Data->m_EntityInstances[entity] = std::make_shared<ScriptInstance>(scriptClass, entity);
+			}
+		}
+	}
+
+	void ScriptEngine::OnScenePlay()
+	{
+		for (auto element : s_Data->m_EntityInstances)
+		{
+			auto instance = element.second;
+			instance->InvokeOnCreate();
+		}
+	}
+
+	void ScriptEngine::OnSceneUpdate(Timestep ts)
+	{
+		for (auto element : s_Data->m_EntityInstances)
+		{
+			auto instance = element.second;
+			instance->InvokeOnUpdate(ts);
+		}
+	}
+
+	void ScriptEngine::OnSceneStop()
+	{
+		s_Data->m_EntityInstances.clear();
+	}
+
+	std::shared_ptr<ScriptInstance> ScriptEngine::CreateScriptInstance(const std::string& className, Entity entity)
+	{
+		auto scriptClass = GetScriptClassByName(className);
+		if (scriptClass == nullptr)
+			return nullptr;
+
+		return std::make_shared<ScriptInstance>(scriptClass, entity);
+	}
+
+	std::shared_ptr<Stimpi::ScriptInstance> ScriptEngine::GetScriptInstance(Entity entity)
+	{
+		if (s_Data->m_EntityInstances.find(entity) != s_Data->m_EntityInstances.end())
+		{
+			return s_Data->m_EntityInstances.at(entity);
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	std::string ScriptEngine::GetFieldName(MonoClassField* field)
+	{
+		return mono_field_get_name(field);
+	}
+
 	/* ======== ScriptClass ======== */
 
 	ScriptClass::ScriptClass(const std::string& namespaceName, const std::string& className)
 		: m_Namespace(namespaceName), m_Name(className)
 	{
 		m_Class = ScriptEngine::GetClassInAssembly(s_Data->m_CoreAssembly, namespaceName.c_str(), className.c_str());
+		ST_CORE_ASSERT(!m_Class);
+
+		LoadFields();
 	}
 
 	MonoObject* ScriptClass::Instantiate()
@@ -300,6 +503,38 @@ namespace Stimpi
 		return nullptr;
 	}
 
+	MonoClassField* ScriptClass::GetField(const std::string& fieldName)
+	{
+		return mono_class_get_field_from_name(m_Class, fieldName.c_str());
+	}
+
+	void ScriptClass::LoadFields()
+	{
+		m_Fields.clear();
+		ST_CORE_INFO("Class: {}", mono_class_get_name(m_Class));
+
+		void* iter = nullptr;
+		MonoClassField* field;
+		while (field = mono_class_get_fields(m_Class, &iter))
+		{
+			MonoType* type = mono_field_get_type(field);
+			// Check if accessibility is public
+			uint8_t vis = Utils::GetFieldAccessibility(field);
+			if (vis & (uint8_t)Accessibility::PUBLIC)
+			{
+				m_Fields.push_back(field);
+				auto ttype = mono_type_get_type(type);
+				ST_CORE_INFO("Field:  {}", mono_field_get_name(field));
+				ST_CORE_INFO("Field: type {}, accessability {}", ttype, Utils::GetFieldAccessibility(field));
+			}
+		}
+	}
+
+	void ScriptClass::LoadProperties()
+	{
+
+	}
+
 	/* ======== ScriptInstance ======== */
 
 	ScriptInstance::ScriptInstance(std::shared_ptr<ScriptClass> scriptClass, Entity entity)
@@ -309,6 +544,14 @@ namespace Stimpi
 		m_Constructor = s_Data->m_EntityClass.GetMethod(".ctor", 1);
 		m_OnCreateMethod = m_ScriptClass->GetMethod("OnCreate", 0);
 		m_OnUpdateMethod = m_ScriptClass->GetMethod("OnUpdate", 1);
+
+		/* Populate Fields found in ScriptClass */
+		auto fields = m_ScriptClass->GetAllFields();
+		for (auto field : fields)
+		{
+			auto scriptField = std::make_shared<ScriptField>(this, field);
+			m_ScriptFields.push_back(scriptField);
+		}
 
 		void* param = &entity;
 		m_ScriptClass->InvokeMethod(m_Instance, m_Constructor, &param);
@@ -330,6 +573,44 @@ namespace Stimpi
 		void* param = &ts;
 		if (m_OnUpdateMethod)
 			m_ScriptClass->InvokeMethod(m_Instance, m_OnUpdateMethod, &param);
+	}
+
+	std::shared_ptr<Stimpi::ScriptField> ScriptInstance::GetScriptFieldFromMonoField(MonoClassField* field)
+	{
+		for (auto item : m_ScriptFields)
+		{
+			if (item->GetMonoField() == field)
+				return item;
+		}
+		return nullptr;
+	}
+
+	/* ======== ScriptField ======== */
+
+	ScriptField::ScriptField(ScriptInstance* instance, MonoClassField* field)
+		: m_Instance(instance), m_MonoField(field)
+	{
+		MonoType* monoType = mono_field_get_type(field);
+		uint32_t dataType = mono_type_get_type(monoType);
+		switch (dataType)
+		{
+		case MONO_TYPE_R4:
+
+			break;
+		default:
+			break;
+		}
+	}
+
+	// TODO: reading only initial value from C# and store it locally in ScriptEngine - rework stuff
+	void ScriptField::ReadFieldValue(void* value)
+	{
+		mono_field_get_value(m_Instance->GetInstance(), m_MonoField, value);
+	}
+
+	void ScriptField::SetFieldValue(void* value)
+	{
+		mono_field_set_value(m_Instance->GetInstance(), m_MonoField, value);
 	}
 
 }

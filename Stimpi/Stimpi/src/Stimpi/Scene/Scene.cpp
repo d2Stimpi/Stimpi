@@ -286,22 +286,7 @@ namespace Stimpi
 			});
 
 		// Create C# scripts
-		m_Registry.view<ScriptComponent>().each([=](auto e, ScriptComponent& script)
-			{
-				Entity entity = { e, this };
-				// Verify that script exists
-				if (ScriptEngine::HasScriptClass(script.m_ScriptName))
-				{
-					const auto& entityClasses = ScriptEngine::GetEntityClasses();
-					std::shared_ptr<ScriptClass> entityClass = entityClasses.find(script.m_ScriptName)->second;
-
-					script.m_Instance = std::make_shared<ScriptInstance>(entityClass, entity);
-					if (script.m_Instance)
-					{
-						script.m_Instance->InvokeOnCreate();
-					}
-				}
-			});
+		ScriptEngine::OnScenePlay();
 	}
 
 	void Scene::UpdateScripts(Timestep ts)
@@ -316,13 +301,7 @@ namespace Stimpi
 					}
 				});
 
-			m_Registry.view<ScriptComponent>().each([=](auto e, ScriptComponent& script)
-				{
-					if (script.m_Instance)
-					{
-						script.m_Instance->InvokeOnUpdate(ts);
-					}
-				});
+			ScriptEngine::OnSceneUpdate(ts);
 		}
 	}
 
@@ -337,11 +316,7 @@ namespace Stimpi
 				}
 			});
 		
-		/* C# Script onStop handling
-		* - Scene is reloaded and all entities are recreated,
-		*   script is destroyed automatically since its std::shared_ptr
-		*   TODO: Revisit if something needs to be done
-		*/
+		ScriptEngine::OnSceneStop();
 	}
 
 	/* ======== Physics ======== */

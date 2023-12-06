@@ -86,5 +86,6 @@ namespace Stimpi
 		friend class SceneSerializer;
 		friend class SceneHierarchyWindow;
 		friend class SceneViewWindow;
+		friend class ScriptEngine;
 	};
 }

@@ -35,9 +35,9 @@ namespace Stimpi
 		MonoType* monoType = mono_reflection_type_from_name(managedName.data(), ScriptEngine::GetCoreAssemblyImage());
 		if (monoType != nullptr)
 		{
-			s_EntityHasComponentFucntions[monoType] = [](Entity entity) { return entity.HasComponent<QuadComponent>(); };
-			s_EntityAddComponentFucntions[monoType] = [](Entity entity) { entity.AddComponent<QuadComponent>(); };
-			s_EntityRemoveComponentFucntions[monoType] = [](Entity entity) { entity.RemoveComponent<QuadComponent>(); };
+			s_EntityHasComponentFucntions[monoType] = [](Entity entity) { return entity.HasComponent<TComponent>(); };
+			s_EntityAddComponentFucntions[monoType] = [](Entity entity) { entity.AddComponent<TComponent>(); };
+			s_EntityRemoveComponentFucntions[monoType] = [](Entity entity) { entity.RemoveComponent<TComponent>(); };
 		}
 		else
 		{
@@ -54,7 +54,7 @@ namespace Stimpi
 		ST_CORE_ASSERT(!entity);
 
 		MonoType* managedType = mono_reflection_type_get_type(componentType);
-		ST_CORE_ASSERT(s_EntityHasComponentFucntions.find(managedType) == s_EntityHasComponentFucntions.end(), "Component not registerd");
+		ST_CORE_ASSERT_MSG(s_EntityHasComponentFucntions.find(managedType) == s_EntityHasComponentFucntions.end(), "Component not registerd");
 		return s_EntityHasComponentFucntions.at(managedType)(entity);
 	}
 
@@ -67,7 +67,7 @@ namespace Stimpi
 		ST_CORE_ASSERT(!entity);
 
 		MonoType* managedType = mono_reflection_type_get_type(componentType);
-		ST_CORE_ASSERT(s_EntityHasComponentFucntions.find(managedType) == s_EntityHasComponentFucntions.end(), "Component not registerd");
+		ST_CORE_ASSERT_MSG(s_EntityHasComponentFucntions.find(managedType) == s_EntityHasComponentFucntions.end(), "Component not registerd");
 		s_EntityAddComponentFucntions.at(managedType)(entity);
 		return s_EntityHasComponentFucntions.at(managedType)(entity);
 	}
@@ -80,7 +80,7 @@ namespace Stimpi
 		ST_CORE_ASSERT(!entity);
 
 		MonoType* managedType = mono_reflection_type_get_type(componentType);
-		ST_CORE_ASSERT(s_EntityHasComponentFucntions.find(managedType) == s_EntityHasComponentFucntions.end(), "Component not registerd");
+		ST_CORE_ASSERT_MSG(s_EntityHasComponentFucntions.find(managedType) == s_EntityHasComponentFucntions.end(), "Component not registerd");
 		s_EntityRemoveComponentFucntions.at(managedType)(entity);
 		return !s_EntityHasComponentFucntions.at(managedType)(entity);
 	}

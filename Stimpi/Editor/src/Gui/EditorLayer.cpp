@@ -24,7 +24,7 @@ namespace Stimpi
 	{
 		const char* glsl_version = "#version 330";
 
-		ST_CORE_ASSERT(window == nullptr, "Window not set for ImGui Layer!");
+		ST_CORE_ASSERT_MSG(window == nullptr, "Window not set for ImGui Layer!");
 		m_Window = (WindowSDL*)window;
 
 		// Setup Dear ImGui context

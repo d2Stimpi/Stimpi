@@ -11,11 +11,16 @@ extern "C"
 	typedef struct _MonoObject MonoObject;
 	typedef struct _MonoImage MonoImage;
 	typedef struct _MonoDomain MonoDomain;
+	typedef struct _MonoClassField MonoClassField;
+	typedef struct _MonoType MonoType;
+	typedef struct _MonoProperty MonoProperty;
 }
 
 namespace Stimpi
 {
 	class ScriptClass;
+	class ScriptInstance; 
+	class ScriptField;
 
 	class ST_API ScriptEngine
 	{
@@ -27,10 +32,24 @@ namespace Stimpi
 		static void LoadClassesFromAssembly(MonoAssembly* assembly);
 
 		static bool HasScriptClass(const std::string& className);
+		static std::shared_ptr<ScriptClass> GetScriptClassByName(const std::string& className);
 		static std::unordered_map<std::string, std::shared_ptr<ScriptClass>> GetEntityClasses();
 
 		static MonoImage* GetCoreAssemblyImage();
 		static MonoDomain* GetAppDomain();
+
+		static void CreateScriptInstances();
+		/* Scene state updates */
+		static void OnScenePlay();
+		static void OnSceneUpdate(Timestep ts);
+		static void OnSceneStop();
+
+		// Instance functions
+		static std::shared_ptr<ScriptInstance> CreateScriptInstance(const std::string& className, Entity entity);
+		static std::shared_ptr<ScriptInstance> GetScriptInstance(Entity entity);
+
+		// Field functions
+		static std::string GetFieldName(MonoClassField* field);
 	private:
 		static void InitMono();
 		static void ShutdownMono();
@@ -49,24 +68,37 @@ namespace Stimpi
 		ScriptClass(const std::string& namespaceName, const std::string& className);
 
 		MonoObject* Instantiate();
+
 		MonoMethod* GetMethod(const std::string& methodName, int parameterCount);
 		MonoObject* InvokeMethod(MonoObject* instance, MonoMethod* method, void** params);
 
+		MonoClassField* GetField(const std::string& fieldName);
+		std::vector<MonoClassField*>& GetAllFields() { return m_Fields; }
 	private:
+		void LoadFields();
+		void LoadProperties();
+
 		std::string m_Namespace;
 		std::string m_Name;
 
 		MonoClass* m_Class = nullptr;
+		std::vector<MonoClassField*> m_Fields;
 	};
 
-	class ScriptInstance
+	class ST_API ScriptInstance
 	{
 	public:
+		ScriptInstance() = default;
 		ScriptInstance(std::shared_ptr<ScriptClass> scriptClass, Entity entity);
 		~ScriptInstance();
 
 		void InvokeOnCreate();
 		void InvokeOnUpdate(float ts);
+
+		MonoObject* GetInstance() { return m_Instance; }
+		std::vector<std::shared_ptr<ScriptField>>& GetFields() { return m_ScriptFields; }
+
+		std::shared_ptr<ScriptField> GetScriptFieldFromMonoField(MonoClassField* field);
 	private:
 		std::shared_ptr<ScriptClass> m_ScriptClass;
 		Entity m_Entity;
@@ -75,5 +107,23 @@ namespace Stimpi
 		MonoMethod* m_Constructor = nullptr;
 		MonoMethod* m_OnCreateMethod = nullptr;
 		MonoMethod* m_OnUpdateMethod = nullptr;
+
+		/* Manage a collection of ScriptField objects that are wrappers around C# Field */
+		std::vector<std::shared_ptr<ScriptField>> m_ScriptFields;
+	};
+
+	class ST_API ScriptField
+	{
+	public:
+		ScriptField(ScriptInstance* instance, MonoClassField* field);
+
+		//void SetValue(void* value) { m_Field.m_Value = value; }
+		MonoClassField* GetMonoField() { return m_MonoField; }
+		void ReadFieldValue(void* value);
+		void SetFieldValue(void* value);
+	private:
+		ScriptInstance* m_Instance;
+		MonoClassField* m_MonoField;
+		void* m_Data;
 	};
 }

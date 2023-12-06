@@ -21,21 +21,21 @@ namespace Stimpi
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args)
 		{
-			ST_CORE_ASSERT(HasComponent<T>(), "Entity already has component");
+			ST_CORE_ASSERT_MSG(HasComponent<T>(), "Entity already has component");
 			return m_Scene->m_Registry.emplace<T>(m_Handle, std::forward<Args>(args)...);
 		}
 
 		template<typename T>
 		T& GetComponent()
 		{
-			ST_CORE_ASSERT(!HasComponent<T>(), "Entity does not have component");
+			ST_CORE_ASSERT_MSG(!HasComponent<T>(), "Entity does not have component");
 			return m_Scene->m_Registry.get<T>(m_Handle);
 		}
 
 		template<typename T>
 		void RemoveComponent()
 		{
-			ST_CORE_ASSERT(!HasComponent<T>(), "Entity does not have component");
+			ST_CORE_ASSERT_MSG(!HasComponent<T>(), "Entity does not have component");
 			m_Scene->m_Registry.remove<T>(m_Handle);
 		}
 

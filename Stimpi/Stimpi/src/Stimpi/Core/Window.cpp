@@ -17,7 +17,7 @@ namespace Stimpi
 			case Stimpi::WindowType::None: { ST_CORE_WARN("WindowImpl: not supported"); return nullptr; }
 			case Stimpi::WindowType::SDL: { return new WindowSDL(ST_WINDOW_WIDTH, ST_WINDOW_HEIGHT); }
 		}
-		ST_CORE_ASSERT(true, "WindowImpl unknown!");
+		ST_CORE_ASSERT_MSG(true, "WindowImpl unknown!");
 		return nullptr;
 	}
 
@@ -39,7 +39,7 @@ namespace Stimpi
 		// Init SDL
 		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
 		{
-			ST_CORE_ASSERT(true, "Failed to init SDL Error: {0}", SDL_GetError());
+			ST_CORE_ASSERT_MSG(true, "Failed to init SDL Error: {0}", SDL_GetError());
 		}
 
 		const char* glsl_version = "#version 330";

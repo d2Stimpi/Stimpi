@@ -24,16 +24,19 @@ namespace Stimpi
 		m_Flags = ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoCollapse;
 
 		InputManager::Instance()->AddKeyboardEventHandler(new KeyboardEventHandler([](KeyboardEvent event) -> bool {
-				if (event.GetKeyCode() == ST_KEY_D && event.GetType() == KeyboardEventType::KEY_EVENT_DOWN )
-				{ 
+				if (InputManager::Instance()->IsKeyPressed(ST_KEY_LCTRL) && event.GetKeyCode() == ST_KEY_C && event.GetType() == KeyboardEventType::KEY_EVENT_DOWN )
+				{
 					auto scene = SceneManager::Instance()->GetActiveScene();
-					if (scene != nullptr && EditorUtils::WantCaptureKeyboard())
+					if (scene->GetRuntimeState() == RuntimeState::STOPPED)
 					{
-						auto selectedEntity = SceneHierarchyWindow::GetSelectedEntity();
-						if (selectedEntity)
+						if (scene != nullptr && EditorUtils::WantCaptureKeyboard())
 						{
-							auto newEntity = scene->CopyEntity(selectedEntity);
-							SceneHierarchyWindow::SetPickedEntity(newEntity);
+							auto selectedEntity = SceneHierarchyWindow::GetSelectedEntity();
+							if (selectedEntity)
+							{
+								auto newEntity = scene->CopyEntity(selectedEntity);
+								SceneHierarchyWindow::SetPickedEntity(newEntity);
+							}
 						}
 					}
 				}

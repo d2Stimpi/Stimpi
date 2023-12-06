@@ -255,9 +255,6 @@ namespace Stimpi
 	{
 		std::string m_ScriptName;
 
-		// For runtime
-		std::shared_ptr<ScriptInstance> m_Instance;
-
 		ScriptComponent() = default;
 		ScriptComponent(const ScriptComponent&) = default;
 
@@ -320,7 +317,7 @@ namespace Stimpi
 			case BodyType::KINEMATIC: return "Kinematic";
 			}
 
-			ST_CORE_ASSERT(false, "Unknow Rigid Body type");
+			ST_CORE_ASSERT_MSG(false, "Unknow Rigid Body type");
 			return "Unknown";
 		}
 

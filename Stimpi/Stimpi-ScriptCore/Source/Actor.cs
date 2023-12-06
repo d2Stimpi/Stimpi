@@ -16,7 +16,8 @@ namespace Sandbox
         private float m_SaveRotation;
 
         private SpriteComponent m_Sprite;
-        private float colorRatio = 1.0f / 255.0f;
+        public float colorRatio = 1.0f / 255.0f;
+        public float speed = 15.0f;
 
         public override void OnCreate() 
         {
@@ -29,9 +30,8 @@ namespace Sandbox
 
         public override void OnUpdate(float ts)
         {
-            float speed = 15.0f;
             
-            if (Input.IsKeyPressed(KeyCode.KEY_1))
+            if (Input.IsKeyPressed(KeyCode.KEY_1) && Input.IsKeyPressed(KeyCode.KEY_LCTRL))
             {
                 if (m_Quad == null)
                 {
@@ -44,7 +44,7 @@ namespace Sandbox
                 }
             }
 
-            if (Input.IsKeyPressed(KeyCode.KEY_2))
+            if (Input.IsKeyPressed(KeyCode.KEY_2) && Input.IsKeyPressed(KeyCode.KEY_LCTRL))
             {
                 if (m_Quad != null)
                 {
