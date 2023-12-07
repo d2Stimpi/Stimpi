@@ -14,6 +14,14 @@
 #include "mono/metadata/assembly.h"
 #include "mono/metadata/attrdefs.h"
 
+/** TODO: fix issues:
+ *  - Component adds a Script -> Script needs to be instantiated and so. Atm it won't be "active" before scene is reloaded
+ *  - Editor crash when adding new script and attemtping to read Fields; Related to above issue.
+ * 
+ *  Features
+ *  - Find a better way to handle Field & Property data, keeping a local value, type handling...
+ */
+
 namespace Stimpi
 {
 	enum class Accessibility : uint8_t
@@ -413,8 +421,8 @@ namespace Stimpi
 			if (entity.HasComponent<ScriptComponent>())
 			{
 				auto scriptComponent = entity.GetComponent<ScriptComponent>();
-				auto scriptClass = GetScriptClassByName(scriptComponent.m_ScriptName);
-				s_Data->m_EntityInstances[entity] = std::make_shared<ScriptInstance>(scriptClass, entity);
+				auto scriptInstance = CreateScriptInstance(scriptComponent.m_ScriptName, entity);
+				s_Data->m_EntityInstances[entity] = scriptInstance;
 			}
 		}
 	}
@@ -440,6 +448,23 @@ namespace Stimpi
 	void ScriptEngine::OnSceneStop()
 	{
 		s_Data->m_EntityInstances.clear();
+	}
+
+	void ScriptEngine::OnScriptComponentAdd(const std::string& className, Entity entity)
+	{
+		// Remove previously used entry on the same entity
+		OnScriptComponentRemove(entity);
+
+		auto classInstance = CreateScriptInstance(className, entity);
+		s_Data->m_EntityInstances[entity] = classInstance;
+	}
+
+	void ScriptEngine::OnScriptComponentRemove(Entity entity)
+	{
+		if (s_Data->m_EntityInstances.find(entity) != s_Data->m_EntityInstances.end())
+		{
+			s_Data->m_EntityInstances.erase(entity);
+		}
 	}
 
 	std::shared_ptr<ScriptInstance> ScriptEngine::CreateScriptInstance(const std::string& className, Entity entity)

@@ -44,6 +44,10 @@ namespace Stimpi
 		static void OnSceneUpdate(Timestep ts);
 		static void OnSceneStop();
 
+		/* Script component */
+		static void OnScriptComponentAdd(const std::string& className, Entity entity);
+		static void OnScriptComponentRemove(Entity entity);
+
 		// Instance functions
 		static std::shared_ptr<ScriptInstance> CreateScriptInstance(const std::string& className, Entity entity);
 		static std::shared_ptr<ScriptInstance> GetScriptInstance(Entity entity);

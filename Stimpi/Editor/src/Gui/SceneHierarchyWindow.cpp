@@ -189,14 +189,19 @@ namespace Stimpi
 
 			if (ImGui::InputText("##ScriptComponent", scriptName, sizeof(scriptName), ImGuiInputTextFlags_EnterReturnsTrue))
 			{
-				component.m_ScriptName = std::string(scriptName);
+				// Instantiate the Script only if it is new or changed
+				if (std::string(scriptName) != component.m_ScriptName)
+				{
+					component.m_ScriptName = std::string(scriptName);
+					ScriptEngine::OnScriptComponentAdd(component.m_ScriptName, s_SelectedEntity);
+				}
 			}
 			EditorUtils::SetActiveItemCaptureKeyboard(false);
 
 			if (!scriptClassExists)
 				ImGui::PopStyleColor();
 
-			/* Fields & Properties */
+			// Fields & Properties
 			auto scriptClass = ScriptEngine::GetScriptClassByName(component.m_ScriptName);
 			if (scriptClass != nullptr)
 			{
@@ -209,7 +214,7 @@ namespace Stimpi
 				{
 					std::string fieldName = ScriptEngine::GetFieldName(item).c_str();
 
-					/* Populate with data from Entity's class Instance */
+					// Populate with data from Entity's class Instance
 					std::shared_ptr<ScriptInstance> scriptInstance = ScriptEngine::GetScriptInstance(s_SelectedEntity);
 					float fNum = 0.0f;
 					auto field = scriptInstance->GetScriptFieldFromMonoField(item);
@@ -225,6 +230,7 @@ namespace Stimpi
 			ImGui::Separator();
 			if (ImGui::Button("Remove##Script"))
 			{
+				ScriptEngine::OnScriptComponentRemove(s_SelectedEntity);
 				s_SelectedEntity.RemoveComponent<ScriptComponent>();
 			}
 		}
