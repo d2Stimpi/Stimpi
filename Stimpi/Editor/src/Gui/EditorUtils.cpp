@@ -40,4 +40,22 @@ namespace Stimpi
 		return ImVec2(pos.x + winPos.x, winPos.y + winSize.y - pos.y);
 	}
 
+	bool EditorUtils::IsPositionInCurrentWindow(ImVec2 pos)
+	{
+		ImVec2 winPos = ImGui::GetCursorScreenPos();
+		ImVec2 winSize = ImGui::GetCurrentWindow()->SizeFull;
+
+		// Y axis is flipped
+		ImVec2 min = { winPos.x, winPos.y - winSize.y };
+		ImVec2 max = { winPos.x + winSize.x, winPos.y };
+
+		if ((pos.x >= min.x) && (pos.x <= max.x) &&
+			(pos.y >= min.y) && (pos.y <= max.y))
+		{
+			return true;
+		}
+
+		return false;
+	}
+
 }

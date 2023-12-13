@@ -91,4 +91,46 @@ namespace Stimpi
             }
         }
     }
+
+    public enum BodyType
+    {
+        STATIC = 0,
+        DYNAMIC,
+        KINETIC
+    }
+
+    public class RigidBody2DComponent : Component
+    {
+        public BodyType Type
+        {
+            get
+            {
+                if (!InternalCalls.RigidBody2DComponent_GetRigidBodyType(Entity.ID, out int outType))
+                    Console.WriteLine($"Entity {Entity.ID} does not have RigidBody2DComponent (get type)");
+
+                return (BodyType)outType;
+            }
+            set
+            {
+                if (!InternalCalls.RigidBody2DComponent_SetRigidBodyType(Entity.ID, (int)value))
+                    Console.WriteLine($"Entity {Entity.ID} does not have RigidBody2DComponent (set type)");
+            }
+        }
+
+        public bool FixedRotation
+        {
+            get
+            {
+                if (!InternalCalls.RigidBody2DComponent_GetFixedRotation(Entity.ID, out bool outFixedRotation))
+                    Console.WriteLine($"Entity {Entity.ID} does not have RigidBody2DComponent (get type)");
+
+                return outFixedRotation;
+            }
+            set
+            {
+                if (!InternalCalls.RigidBody2DComponent_SetFixedRotation(Entity.ID, value))
+                    Console.WriteLine($"Entity {Entity.ID} does not have RigidBody2DComponent (set type)");
+            }
+        }
+    }
 }

@@ -39,12 +39,12 @@ namespace Stimpi
 		static MonoDomain* GetAppDomain();
 
 		static void CreateScriptInstances();
-		/* Scene state updates */
+		// Scene state updates
 		static void OnScenePlay();
 		static void OnSceneUpdate(Timestep ts);
 		static void OnSceneStop();
 
-		/* Script component */
+		// Script component
 		static void OnScriptComponentAdd(const std::string& className, Entity entity);
 		static void OnScriptComponentRemove(Entity entity);
 
@@ -54,6 +54,9 @@ namespace Stimpi
 
 		// Field functions
 		static std::string GetFieldName(MonoClassField* field);
+
+		// UI Stuff
+		static std::vector<std::string>& GetScriptClassNames();
 	private:
 		static void InitMono();
 		static void ShutdownMono();

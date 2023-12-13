@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Gui\Components\SearchPopup.h" />
     <ClInclude Include="src\Gui\Components\UIPayload.h" />
     <ClInclude Include="src\Gui\ContentBrowserWindow.h" />
     <ClInclude Include="src\Gui\EditorLayer.h" />
@@ -152,6 +153,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
+    <ClCompile Include="src\Gui\Components\SearchPopup.cpp" />
     <ClCompile Include="src\Gui\Components\UIPayload.cpp" />
     <ClCompile Include="src\Gui\ContentBrowserWindow.cpp" />
     <ClCompile Include="src\Gui\EditorLayer.cpp" />

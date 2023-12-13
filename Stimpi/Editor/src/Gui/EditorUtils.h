@@ -18,5 +18,8 @@ namespace Stimpi
 		// Window position calculations
 		static glm::vec2 PositionInCurentWindow(glm::vec2 pos);
 		static ImVec2 PositionInCurentWindow(ImVec2 pos);
+
+		// Bound checks
+		static bool IsPositionInCurrentWindow(ImVec2 pos);
 	};
 }

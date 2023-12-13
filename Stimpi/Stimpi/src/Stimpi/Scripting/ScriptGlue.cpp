@@ -8,6 +8,8 @@
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/SceneManager.h"
 
+#include "box2d/b2_body.h"
+
 #include "mono/metadata/appdomain.h"
 #include "mono/metadata/reflection.h"
 
@@ -264,6 +266,122 @@ namespace Stimpi
 
 #pragma endregion Input
 
+#pragma region RigidBody2DComponent
+
+	static bool RigidBody2DComponent_GetRigidBodyType(uint32_t entityID, int* outType)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<RigidBody2DComponent>();
+		if (hasComponent)
+		{
+			*outType = (int)entity.GetComponent<RigidBody2DComponent>().m_Type;
+		}
+
+		return hasComponent;
+	}
+
+	static bool RigidBody2DComponent_SetRigidBodyType(uint32_t entityID, int type)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<RigidBody2DComponent>();
+		if (hasComponent)
+		{
+			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+			rb2d.m_Type = (RigidBody2DComponent::BodyType)type;
+		}
+
+		return hasComponent;
+	}
+
+	static bool RigidBody2DComponent_GetFixedRotation(uint32_t entityID, bool* outFixedRotation)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<RigidBody2DComponent>();
+		if (hasComponent)
+		{
+			*outFixedRotation = (int)entity.GetComponent<RigidBody2DComponent>().m_FixedRotation;
+		}
+
+		return hasComponent;
+	}
+
+	static bool RigidBody2DComponent_SetFixedRotation(uint32_t entityID, bool fixedRotation)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<RigidBody2DComponent>();
+		if (hasComponent)
+		{
+			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+			rb2d.m_FixedRotation = fixedRotation;
+		}
+
+		return hasComponent;
+	}
+
+#pragma endregion RigidBody2DComponent
+
+#pragma region Pysics
+
+	static bool Physics_ApplyForce(uint32_t entityID, glm::vec2 force, glm::vec2 point, bool wake)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<RigidBody2DComponent>();
+		if (hasComponent)
+		{
+			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+			b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+			body->ApplyForce({ force.x, force.y }, { point.x, point.y }, wake);
+		}
+
+		return hasComponent;
+	}
+
+	static bool Physics_ApplyForceCenter(uint32_t entityID, glm::vec2 force, bool wake)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<RigidBody2DComponent>();
+		if (hasComponent)
+		{
+			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+			b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+			body->ApplyForceToCenter({ force.x, force.y }, wake);
+		}
+
+		return hasComponent;
+	}
+
+#pragma endregion Pysics
+
 	void ScriptGlue::RegisterFucntions()
 	{
 		// Components
@@ -286,8 +404,18 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(SpriteComponent_GetColor);
 		ST_ADD_INTERNAL_CALL(SpriteComponent_SetColor);
 
+		// RigidBody2DComponent
+		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_GetRigidBodyType);
+		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_SetRigidBodyType);
+		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_GetFixedRotation);
+		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_SetFixedRotation);
+
 		// Input
 		ST_ADD_INTERNAL_CALL(Input_IsKeyPressed);
+
+		// Physics
+		ST_ADD_INTERNAL_CALL(Physics_ApplyForce);
+		ST_ADD_INTERNAL_CALL(Physics_ApplyForceCenter);
 	}
 
 	void ScriptGlue::RegosterComponents()

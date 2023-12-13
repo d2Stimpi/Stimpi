@@ -26,11 +26,19 @@ namespace Sandbox
 
             m_Quad = GetComponent<QuadComponent>();
             m_Sprite = GetComponent<SpriteComponent>();
+
+            RigidBody2DComponent rb2d = GetComponent<RigidBody2DComponent>();
+            if (rb2d != null)
+            {
+                Console.WriteLine($"Rigid Body type used: {rb2d.Type}");
+                rb2d.Type = BodyType.DYNAMIC;
+                Console.WriteLine($"Rigid Body fixed rotation: {rb2d.FixedRotation}");
+                rb2d.FixedRotation = true;
+            }
         }
 
         public override void OnUpdate(float ts)
-        {
-            
+        {            
             if (Input.IsKeyPressed(KeyCode.KEY_1) && Input.IsKeyPressed(KeyCode.KEY_LCTRL))
             {
                 if (m_Quad == null)

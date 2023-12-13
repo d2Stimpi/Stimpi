@@ -188,7 +188,8 @@ namespace Stimpi
 		MonoAssembly* m_CoreAssembly = nullptr;
 		MonoImage* m_CoreAssemblyImage = nullptr;
 
-		ScriptClass m_EntityClass; // Used for Entity ctor
+		ScriptClass m_EntityClass; // Used for Examples - to be removed
+		std::vector<std::string> m_ScriptClassNames;
 		std::unordered_map<std::string, std::shared_ptr<ScriptClass>> m_EntityClasses;
 
 		/* Scene data - Class Instances per entity */
@@ -303,7 +304,10 @@ namespace Stimpi
 
 			bool isEntity = mono_class_is_subclass_of(monoClass, entityClass, false);
 			if (isEntity)
+			{
+				s_Data->m_ScriptClassNames.push_back(fullName);
 				s_Data->m_EntityClasses[fullName] = std::make_shared<ScriptClass>(nameSpace, name);
+			}
 		}
 	}
 
@@ -491,6 +495,11 @@ namespace Stimpi
 	std::string ScriptEngine::GetFieldName(MonoClassField* field)
 	{
 		return mono_field_get_name(field);
+	}
+
+	std::vector<std::string>& ScriptEngine::GetScriptClassNames()
+	{
+		return s_Data->m_ScriptClassNames;
 	}
 
 	/* ======== ScriptClass ======== */

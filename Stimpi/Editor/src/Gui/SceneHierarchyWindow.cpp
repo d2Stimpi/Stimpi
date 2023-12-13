@@ -2,6 +2,7 @@
 #include "Gui/SceneHierarchyWindow.h"
 
 #include "Gui/Components/UIPayload.h"
+#include "Gui/Components/SearchPopup.h"
 #include "Gui/EditorUtils.h"
 
 #include "Stimpi/Scene/SceneManager.h"
@@ -187,6 +188,60 @@ namespace Stimpi
 			if (!scriptClassExists)
 				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.3f, 0.2f, 1.0f));
 
+			
+			// TODO: pull out Search combo and make it a reusable UI Feature Component
+			static bool showPopup = false;
+			ImGui::InputText("##ScriptComponentPreview", scriptName, sizeof(scriptName), ImGuiInputTextFlags_ReadOnly);
+			if (ImGui::IsItemClicked())
+			{
+				ImGui::SetNextWindowPos(ImGui::GetMousePos());
+				ImGui::OpenPopup("ScriptSelectPoput");
+				showPopup = true;
+			}
+			
+			if (showPopup)
+			{
+				auto filterData = ScriptEngine::GetScriptClassNames();
+				if (SearchPopup::OnImGuiRender("ScriptSelectPoput", &showPopup, filterData))
+				{
+					component.m_ScriptName = SearchPopup::GetSelection();
+					ScriptEngine::OnScriptComponentAdd(component.m_ScriptName, s_SelectedEntity);
+				}
+#if 0
+				if (ImGui::BeginPopup("ScriptSelectPoput"))
+				{
+					auto scriptClassNames = ScriptEngine::GetScriptClassNames();
+					if (scriptClassNames.empty() == false)
+					{
+						if (ImGui::BeginListBox("##ScriptSelectList"))
+						{
+							static std::string selected = scriptClassNames.front();
+							for (auto name : scriptClassNames)
+							{
+								const bool isSelected = (name.compare(selected) == 0);
+								if (ImGui::Selectable(name.c_str(), isSelected))
+								{
+									selected = name;
+
+									component.m_ScriptName = name;
+									ScriptEngine::OnScriptComponentAdd(component.m_ScriptName, s_SelectedEntity);
+
+									// Close the script picker
+									showPopup = false;
+								}
+
+								if (isSelected)
+									ImGui::SetItemDefaultFocus();
+							}
+							ImGui::EndListBox();
+						}
+					}
+					ImGui::EndPopup();
+				}
+#endif
+			}
+			// WIP - end
+
 			if (ImGui::InputText("##ScriptComponent", scriptName, sizeof(scriptName), ImGuiInputTextFlags_EnterReturnsTrue))
 			{
 				// Instantiate the Script only if it is new or changed
@@ -225,7 +280,6 @@ namespace Stimpi
 					}
 				}
 			}
-
 
 			ImGui::Separator();
 			if (ImGui::Button("Remove##Script"))

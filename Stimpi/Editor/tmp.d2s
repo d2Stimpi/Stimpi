@@ -8,14 +8,6 @@ Scene:
       - 50
       - 40
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 1
     ScriptComponent:
       ScriptName: Sandbox.Actor
     CameraComponent:

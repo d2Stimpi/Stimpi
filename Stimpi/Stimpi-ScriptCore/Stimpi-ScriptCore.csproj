@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\Actor.cs" />
+    <Compile Include="Source\PhysicsActor.cs" />
     <Compile Include="Source\Stimpi\Color.cs" />
     <Compile Include="Source\Stimpi\Scene\Components.cs" />
     <Compile Include="Source\Stimpi\Scene\Entity.cs" />
