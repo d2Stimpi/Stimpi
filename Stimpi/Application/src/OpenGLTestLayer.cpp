@@ -21,7 +21,7 @@ OpenGLTestLayer::OpenGLTestLayer()
 void OpenGLTestLayer::OnAttach() 
 {
 	ST_TRACE("{0}: OnAttach", m_DebugName); 
-	Stimpi::Renderer2D::Instace()->EnableLocalRendering(true);
+	Stimpi::Renderer2D::Instance()->EnableLocalRendering(true);
 }
 
 void OpenGLTestLayer::OnDetach()
@@ -32,8 +32,8 @@ void OpenGLTestLayer::OnDetach()
 void OpenGLTestLayer::Update(Stimpi::Timestep ts)
 {
 	// Custom Rendering stuff
-	auto canvasWidth = Stimpi::Renderer2D::Instace()->GetCanvasWidth();
-	auto canvasHeight = Stimpi::Renderer2D::Instace()->GetCanvasHeight();
+	auto canvasWidth = Stimpi::Renderer2D::Instance()->GetCanvasWidth();
+	auto canvasHeight = Stimpi::Renderer2D::Instance()->GetCanvasHeight();
 
 	//ST_INFO("FB size: {0}, {1}", canvasWidth, canvasHeight);
 
@@ -42,14 +42,14 @@ void OpenGLTestLayer::Update(Stimpi::Timestep ts)
 
 	s_testureShader->SetUniform("u_Projection", s_bgCamera->GetProjectionMatrix());
 
-	Stimpi::Renderer2D::Instace()->BeginScene(s_bgCamera->GetOrthoCamera());
-	Stimpi::Renderer2D::Instace()->Submit({ 0.0f, 0.0f, canvasWidth, canvasHeight }, s_bgShader.get());
-	Stimpi::Renderer2D::Instace()->Submit({ 0.0f, 0.0f, s_bgCamera->GetViewportWidth(), s_bgCamera->GetViewportHeight() }, s_Texture, s_testureShader.get());
-	Stimpi::Renderer2D::Instace()->EndScene();
+	Stimpi::Renderer2D::Instance()->BeginScene(s_bgCamera->GetOrthoCamera());
+	Stimpi::Renderer2D::Instance()->Submit({ 0.0f, 0.0f, canvasWidth, canvasHeight }, s_bgShader.get());
+	Stimpi::Renderer2D::Instance()->Submit({ 0.0f, 0.0f, s_bgCamera->GetViewportWidth(), s_bgCamera->GetViewportHeight() }, s_Texture, s_testureShader.get());
+	Stimpi::Renderer2D::Instance()->EndScene();
 
-	Stimpi::Renderer2D::Instace()->StartFrame();
-	Stimpi::Renderer2D::Instace()->DrawFrame();
-	Stimpi::Renderer2D::Instace()->EndFrame();
+	Stimpi::Renderer2D::Instance()->StartFrame();
+	Stimpi::Renderer2D::Instance()->DrawFrame();
+	Stimpi::Renderer2D::Instance()->EndFrame();
 }
 
 void OpenGLTestLayer::OnEvent(Stimpi::Event* e)

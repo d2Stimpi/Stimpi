@@ -15,13 +15,10 @@
 #include "Stimpi/Graphics/SubTexture.h"
 #include "Stimpi/Graphics/VertexArrayObject.h"
 
-#define VERTEX_CMD_CAPACITY (6 * 10000) // 6 vertex per quad, 10k quads
-#define VERTEX_ARRAY_SIZE	(192 * 1000) // Layout{3,3,2} quad szie * 1000 (max 1k squares per call)  
+#define VERTEX_CMD_CAPACITY			(6 * 10000) // 6 vertex per quad, 10k quads
+#define VERTEX_ARRAY_SIZE_QUADS		(192 * 1000) // Layout{3,3,2} quad szie * 1000 (max 1k squares per call)  
+#define VERTEX_ARRAY_SIZE_CIRCLES	(240 * 1000) // Layout{3,3,2,1,1} quad szie * 1000 (max 1k squares per call)  
 #define RENDERER_DBG	(true)
-
-/* TODO:
-* - Finish configuring of non-ui (editor) rendering. Rendering of FrameBuffer
-*/
 
 namespace Stimpi
 {
@@ -31,7 +28,7 @@ namespace Stimpi
 		Renderer2D();
 		~Renderer2D();
 
-		static Renderer2D* Instace();
+		static Renderer2D* Instance();
 
 		void EnableLocalRendering(bool enable) { m_LocalRendering = enable; };
 		bool IsLocalRendering() { return m_LocalRendering; }
@@ -54,11 +51,17 @@ namespace Stimpi
 		void Submit(glm::vec4 quad, float rotation, Shader* shader);
 		void Submit(glm::vec4 quad, float rotation, glm::vec3 color, Shader* shader);
 
+		// TODO: SubTexture rendering - UVs
 		// Rendering by Transforms
 		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, Texture* texture, Shader* shader);
 		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, SubTexture* subtexture, Shader* shader);
-		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, Shader* shader);
-		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color, Shader* shader);
+		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, Shader* shader, glm::vec2 minUV = { 0.0f, 0.0f }, glm::vec2 maxUV = { 1.0f, 1.0f });
+		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color, Shader* shader, glm::vec2 minUV = { 0.0f, 0.0f }, glm::vec2 maxUV = { 1.0f, 1.0f });
+
+		// TODO: maybe add stuff like DrawQuad
+
+		// Circle shape rendering
+		void DrawCircle(glm::vec3 pos, glm::vec2 scale, glm::vec3 color, float thickness, float fade);
 
 		// Event Callbacks
 		void ResizeCanvas(uint32_t width, uint32_t height);
@@ -77,11 +80,14 @@ namespace Stimpi
 
 	private:
 		void Flush();
+		void FlushCircle();
 		void RenderFrameBuffer(); // Used for Application to handle displaying of FBs ourselves
 
 		void PushQuadVertexData(RenderCommand* cmd, glm::vec4 quad, glm::vec3 color = { 1.0f, 1.0f, 1.0f }, glm::vec2 min = { 0.0f, 0.0f }, glm::vec2 max = { 1.0f, 1.0f });
 		void PushTransformedVertexData(RenderCommand* cmd, glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color = { 1.0f, 1.0f, 1.0f }, glm::vec2 min = { 0.0f, 0.0f }, glm::vec2 max = { 1.0f, 1.0f });
+		
 		void DrawRenderCmd(std::shared_ptr<RenderCommand>& renderCmd);
+		void DrawCirlceRenderCmd(std::shared_ptr<RenderCommand>& renderCmd);
 
 		void CheckCapacity();
 		void CheckTextureBatching(Texture* texture);
@@ -93,15 +99,23 @@ namespace Stimpi
 		bool m_LocalRendering = false;
 
 		RenderAPI* m_RenderAPI;
-		std::shared_ptr<FrameBuffer> m_FrameBuffer;
+		OrthoCamera* m_ActiveCamera;
+
+		// Quad rendering
 		std::shared_ptr<VertexArrayObject> m_VAO;
 		std::shared_ptr<BufferObject> m_VBO;
-
-		OrthoCamera* m_ActiveCamera;
 		std::vector<std::shared_ptr<RenderCommand>> m_RenderCmds;
 		std::vector<std::shared_ptr<RenderCommand>>::iterator m_ActiveRenderCmdIter;
 
+		// Circle rendering
+		std::shared_ptr<VertexArrayObject> m_CircleVAO;
+		std::shared_ptr<BufferObject> m_CircleVBO;
+		std::shared_ptr<Shader> m_CircleShader;
+		std::vector<std::shared_ptr<RenderCommand>> m_CircleRenderCmds;
+		std::vector<std::shared_ptr<RenderCommand>>::iterator m_CircleActiveRenderCmdIter;
+
 		// For local rendering
+		std::shared_ptr<FrameBuffer> m_FrameBuffer;
 		std::shared_ptr<Shader> m_RenderFrameBufferShader;
 		std::shared_ptr<RenderCommand> m_RenderFrameBufferCmd;
 

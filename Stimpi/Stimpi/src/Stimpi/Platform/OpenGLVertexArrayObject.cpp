@@ -6,7 +6,25 @@
 
 namespace Stimpi
 {
-	OpenGLVertexArrayObject::OpenGLVertexArrayObject(const DataLayout& layout)
+	static GLenum GLDataTypeFromLayoutDataType(ShaderDataType type)
+	{
+		switch (type)
+		{
+		case Stimpi::ShaderDataType::Int:		return GL_INT;
+		case Stimpi::ShaderDataType::Int2:		return GL_INT;
+		case Stimpi::ShaderDataType::Int3:		return GL_INT;
+		case Stimpi::ShaderDataType::Int4:		return GL_INT;
+		case Stimpi::ShaderDataType::Float:		return GL_FLOAT;
+		case Stimpi::ShaderDataType::Float2:	return GL_FLOAT;
+		case Stimpi::ShaderDataType::Float3:	return GL_FLOAT;
+		case Stimpi::ShaderDataType::Float4:	return GL_FLOAT;
+		}
+
+		ST_CORE_CRITICAL("Unknown GL data type!");
+		return GL_INT;
+	}
+
+	OpenGLVertexArrayObject::OpenGLVertexArrayObject(const VertexBufferLayout& layout)
 		: VertexArrayObject(layout)
 	{
 		glGenVertexArrays(1, &m_ID);
@@ -29,23 +47,14 @@ namespace Stimpi
 
 	void OpenGLVertexArrayObject::EnableVertexAttribArray()
 	{
-		// position attribute
-		if (m_Layout.m_PosSize > 0)
+		int attributeIndex = 0;
+		for (auto layout : m_Layout)
 		{
-			glVertexAttribPointer(0, m_Layout.m_PosSize, GL_FLOAT, GL_FALSE, m_Layout.m_Stride, (void*)m_Layout.m_PosOffset);
-			glEnableVertexAttribArray(0);
-		}
-		// color attribute
-		if (m_Layout.m_ColorSize > 0)
-		{
-			glVertexAttribPointer(1, m_Layout.m_ColorSize, GL_FLOAT, GL_FALSE, m_Layout.m_Stride, (void*)m_Layout.m_ColorOffset);
-			glEnableVertexAttribArray(1);
-		}
-		// texture coord attribute
-		if (m_Layout.m_TexSize > 0)
-		{
-			glVertexAttribPointer(2, m_Layout.m_TexSize, GL_FLOAT, GL_FALSE, m_Layout.m_Stride, (void*)m_Layout.m_TexOffset);
-			glEnableVertexAttribArray(2);
+			glVertexAttribPointer(attributeIndex, layout.m_Size, GLDataTypeFromLayoutDataType(layout.m_Type), GL_FALSE, m_Layout.m_Stride, (void*)layout.m_Offset);
+			glEnableVertexAttribArray(attributeIndex);
+
+			attributeIndex++;
 		}
 	}
+
 }

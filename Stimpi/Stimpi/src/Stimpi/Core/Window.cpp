@@ -92,8 +92,8 @@ namespace Stimpi
 
 	void WindowSDL::OnResizeEvent(uint32_t width, uint32_t height)
 	{
-		if (Renderer2D::Instace()->IsLocalRendering()) // Do not resize for editor rendering
-			Renderer2D::Instace()->ResizeCanvas(width, height);
+		if (Renderer2D::Instance()->IsLocalRendering()) // Do not resize for editor rendering
+			Renderer2D::Instance()->ResizeCanvas(width, height);
 	}
 
 	SDL_Window* GetSDLWindow(Window* window)

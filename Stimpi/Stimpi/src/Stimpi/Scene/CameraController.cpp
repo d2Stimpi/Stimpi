@@ -65,10 +65,17 @@ namespace Stimpi
 					startPosition = glm::vec2(e.GetX(), e.GetY());
 					cameraStartPos = m_Camera->GetPosition();
 				}
-				movePosition = startPosition - glm::vec2(e.GetX(), e.GetY());
-				movePosition = movePosition * m_Camera->GetZoomFactor() * s_ControllerScale;
-				m_Camera->SetPosition(cameraStartPos + glm::vec3{ movePosition.x, -movePosition.y, 0.0f });
-				buttonHold = true;
+
+				if ((e.GetType() != MouseEventType::MOUSE_EVENT_WHEELUP && e.GetType() != MouseEventType::MOUSE_EVENT_WHEELDOWN))
+				{
+					movePosition = startPosition - glm::vec2(e.GetX(), e.GetY());
+					movePosition = movePosition * m_Camera->GetZoomFactor() * s_ControllerScale;
+					m_Camera->SetPosition(cameraStartPos + glm::vec3{ movePosition.x, -movePosition.y, 0.0f });
+					buttonHold = true;
+
+					ST_CORE_INFO("Event: {}, {} - type {}", e.GetX(), e.GetY(), (int)e.GetType());
+					ST_CORE_INFO("Move pos: {}", movePosition);
+				}
 			}
 			else
 			{
@@ -93,23 +100,6 @@ namespace Stimpi
 
 	void CameraController::Update(Timestep ts)
 	{
-		if (m_Camera != nullptr)
-		{
-			// Disabled - TODO: consider other keys
-			/*
-			static float moveSpeed = 400.0f;
-			static float zoomSpeed = 10.0f;
-
-			// Movement WASD
-			if (InputManager::IsKeyPressed(ST_KEY_W))
-				m_Camera->Translate({ 0.0f, moveSpeed * ts, 0.0f });
-			if (InputManager::IsKeyPressed(ST_KEY_S))
-				m_Camera->Translate({ 0.0f, -moveSpeed * ts, 0.0f });
-			if (InputManager::IsKeyPressed(ST_KEY_D))
-				m_Camera->Translate({ moveSpeed * ts, 0.0f, 0.0f });
-			if (InputManager::IsKeyPressed(ST_KEY_A))
-				m_Camera->Translate({ -moveSpeed * ts, 0.0f, 0.0f });
-			*/
-		}
+		
 	}
 }

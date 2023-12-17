@@ -24,6 +24,11 @@ namespace Stimpi
 			GetComponent<QuadComponent>().Serialize(out);
 		}
 
+		if (HasComponent<CircleComponent>())
+		{
+			GetComponent<CircleComponent>().Serialize(out);
+		}
+
 		if (HasComponent<SpriteComponent>())
 		{
 			GetComponent<SpriteComponent>().Serialize(out);

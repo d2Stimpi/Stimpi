@@ -8,6 +8,20 @@ Scene:
       - 50
       - 40
       - 0
+    CircleComponent:
+      Position:
+        - 44
+        - 32
+      Size:
+        - 18
+        - 17
+      Color:
+        - 1
+        - 0.70588237
+        - 0.0509803928
+        - 1
+      Thickness: 0.349999994
+      Fade: 0.532999992
     ScriptComponent:
       ScriptName: Sandbox.Actor
     CameraComponent:

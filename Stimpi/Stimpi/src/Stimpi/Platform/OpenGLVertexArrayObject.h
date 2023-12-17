@@ -7,7 +7,7 @@ namespace Stimpi
 	class OpenGLVertexArrayObject : public VertexArrayObject
 	{
 	public:
-		OpenGLVertexArrayObject(const DataLayout& layout);
+		OpenGLVertexArrayObject(const VertexBufferLayout& layout);
 		~OpenGLVertexArrayObject();
 
 		void BindArray() override;

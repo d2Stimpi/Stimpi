@@ -163,8 +163,8 @@ namespace Stimpi
 		ImGui::Separator();
 		if (ImGui::CollapsingHeader("Quad##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			ImGui::DragFloat2("Position", glm::value_ptr(component.m_Position));
-			ImGui::DragFloat2("Size", glm::value_ptr(component.m_Size));
+			ImGui::DragFloat2("Position##Quad", glm::value_ptr(component.m_Position));
+			ImGui::DragFloat2("Size##Quad", glm::value_ptr(component.m_Size));
 			ImGui::PushItemWidth(80.0f);
 			ImGui::DragFloat("Rotation", &component.m_Rotation, 0.01);
 			ImGui::PopItemWidth();
@@ -172,6 +172,28 @@ namespace Stimpi
 			if (ImGui::Button("Remove##Quad"))
 			{
 				s_SelectedEntity.RemoveComponent<QuadComponent>();
+			}
+		}
+	}
+
+	void SceneHierarchyWindow::CircleComponentLayout(CircleComponent& component)
+	{
+		ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue;
+
+		ImGui::Separator();
+		if (ImGui::CollapsingHeader("Circle##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::DragFloat2("Position##Circle", glm::value_ptr(component.m_Position));
+			ImGui::DragFloat2("Size##Circle", glm::value_ptr(component.m_Size));
+			ImGui::ColorEdit4("Color##CircleColor", glm::value_ptr(component.m_Color));
+			ImGui::PushItemWidth(80.0f);
+			ImGui::DragFloat("Thickness", &component.m_Thickness, 0.01);
+			ImGui::DragFloat("Fade", &component.m_Fade, 0.001);
+			ImGui::PopItemWidth();
+			ImGui::Separator();
+			if (ImGui::Button("Remove##Circle"))
+			{
+				s_SelectedEntity.RemoveComponent<CircleComponent>();
 			}
 		}
 	}
@@ -185,11 +207,6 @@ namespace Stimpi
 			strcpy(scriptName, component.m_ScriptName.c_str());
 
 			bool scriptClassExists = ScriptEngine::HasScriptClass(component.m_ScriptName);
-			if (!scriptClassExists)
-				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.3f, 0.2f, 1.0f));
-
-			
-			// TODO: pull out Search combo and make it a reusable UI Feature Component
 			static bool showPopup = false;
 			ImGui::InputText("##ScriptComponentPreview", scriptName, sizeof(scriptName), ImGuiInputTextFlags_ReadOnly);
 			if (ImGui::IsItemClicked())
@@ -207,54 +224,7 @@ namespace Stimpi
 					component.m_ScriptName = SearchPopup::GetSelection();
 					ScriptEngine::OnScriptComponentAdd(component.m_ScriptName, s_SelectedEntity);
 				}
-#if 0
-				if (ImGui::BeginPopup("ScriptSelectPoput"))
-				{
-					auto scriptClassNames = ScriptEngine::GetScriptClassNames();
-					if (scriptClassNames.empty() == false)
-					{
-						if (ImGui::BeginListBox("##ScriptSelectList"))
-						{
-							static std::string selected = scriptClassNames.front();
-							for (auto name : scriptClassNames)
-							{
-								const bool isSelected = (name.compare(selected) == 0);
-								if (ImGui::Selectable(name.c_str(), isSelected))
-								{
-									selected = name;
-
-									component.m_ScriptName = name;
-									ScriptEngine::OnScriptComponentAdd(component.m_ScriptName, s_SelectedEntity);
-
-									// Close the script picker
-									showPopup = false;
-								}
-
-								if (isSelected)
-									ImGui::SetItemDefaultFocus();
-							}
-							ImGui::EndListBox();
-						}
-					}
-					ImGui::EndPopup();
-				}
-#endif
 			}
-			// WIP - end
-
-			if (ImGui::InputText("##ScriptComponent", scriptName, sizeof(scriptName), ImGuiInputTextFlags_EnterReturnsTrue))
-			{
-				// Instantiate the Script only if it is new or changed
-				if (std::string(scriptName) != component.m_ScriptName)
-				{
-					component.m_ScriptName = std::string(scriptName);
-					ScriptEngine::OnScriptComponentAdd(component.m_ScriptName, s_SelectedEntity);
-				}
-			}
-			EditorUtils::SetActiveItemCaptureKeyboard(false);
-
-			if (!scriptClassExists)
-				ImGui::PopStyleColor();
 
 			// Fields & Properties
 			auto scriptClass = ScriptEngine::GetScriptClassByName(component.m_ScriptName);
@@ -443,6 +413,14 @@ namespace Stimpi
 				}
 			}
 
+			if (!s_SelectedEntity.HasComponent<CircleComponent>())
+			{
+				if (ImGui::Selectable("Circle##AddComponent"))
+				{
+					s_SelectedEntity.AddComponent<CircleComponent>();
+				}
+			}
+
 			if (!s_SelectedEntity.HasComponent<SpriteComponent>())
 			{
 				if (ImGui::Selectable("Sprite##AddComponent"))
@@ -501,6 +479,12 @@ namespace Stimpi
 			{
 				auto& component = s_SelectedEntity.GetComponent<QuadComponent>();
 				QuadComponentLayout(component);
+			}
+
+			if (s_SelectedEntity.HasComponent<CircleComponent>())
+			{
+				auto& component = s_SelectedEntity.GetComponent<CircleComponent>();
+				CircleComponentLayout(component);
 			}
 
 			if (s_SelectedEntity.HasComponent<SpriteComponent>())

@@ -96,6 +96,11 @@ namespace Stimpi
 		glUniform1i(glGetUniformLocation(m_ID, name.c_str()), value);
 	}
 
+	void OpenGLShader::SetUniformImpl(const std::string& name, float value)
+	{
+		glUniform1f(glGetUniformLocation(m_ID, name.c_str()), value);
+	}
+
 	void OpenGLShader::SetUniformImpl(const std::string& name, glm::vec2 value)
 	{
 		glUniform2fv(glGetUniformLocation(m_ID, name.c_str()), 1, &value[0]);
@@ -126,7 +131,7 @@ namespace Stimpi
 			if (!success)
 			{
 				glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-				ST_CORE_ERROR("{0} shader copilation error: {1}", type, infoLog);
+				ST_CORE_ERROR("{0} shader compilation error: {1}", type, infoLog);
 			}
 		}
 		else

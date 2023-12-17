@@ -22,6 +22,8 @@
  *  - Find a better way to handle Field & Property data, keeping a local value, type handling...
  */
 
+#define SCRIPTENGINE_DBG	(false)
+
 namespace Stimpi
 {
 	enum class Accessibility : uint8_t
@@ -43,7 +45,7 @@ namespace Stimpi
 			const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
 			int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
 
-			ST_CORE_INFO("=== PrintAssemblyTypes ===");
+			if (SCRIPTENGINE_DBG) ST_CORE_INFO("=== PrintAssemblyTypes ===");
 			for (int32_t i = 0; i < numTypes; i++)
 			{
 				uint32_t cols[MONO_TYPEDEF_SIZE];
@@ -52,9 +54,9 @@ namespace Stimpi
 				const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
 				const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
 
-				ST_CORE_INFO("{0}.{1}", nameSpace, name);
+				if (SCRIPTENGINE_DBG) ST_CORE_INFO("{0}.{1}", nameSpace, name);
 			}
-			ST_CORE_INFO("==========================");
+			if (SCRIPTENGINE_DBG) ST_CORE_INFO("==========================");
 		}
 
 		static bool CheckMonoError(MonoError& error)
@@ -545,7 +547,7 @@ namespace Stimpi
 	void ScriptClass::LoadFields()
 	{
 		m_Fields.clear();
-		ST_CORE_INFO("Class: {}", mono_class_get_name(m_Class));
+		if (SCRIPTENGINE_DBG) ST_CORE_INFO("Class: {}", mono_class_get_name(m_Class));
 
 		void* iter = nullptr;
 		MonoClassField* field;
@@ -558,8 +560,8 @@ namespace Stimpi
 			{
 				m_Fields.push_back(field);
 				auto ttype = mono_type_get_type(type);
-				ST_CORE_INFO("Field:  {}", mono_field_get_name(field));
-				ST_CORE_INFO("Field: type {}, accessability {}", ttype, Utils::GetFieldAccessibility(field));
+				if (SCRIPTENGINE_DBG) ST_CORE_INFO("Field:  {}", mono_field_get_name(field));
+				if (SCRIPTENGINE_DBG) ST_CORE_INFO("Field: type {}, accessability {}", ttype, Utils::GetFieldAccessibility(field));
 			}
 		}
 	}
@@ -593,7 +595,7 @@ namespace Stimpi
 
 	ScriptInstance::~ScriptInstance()
 	{
-		ST_CORE_TRACE("Destroy ScriptInstance");
+		if (SCRIPTENGINE_DBG) ST_CORE_TRACE("Destroy ScriptInstance");
 	}
 
 	void ScriptInstance::InvokeOnCreate()

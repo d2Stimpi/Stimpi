@@ -20,27 +20,54 @@ namespace Stimpi
 		// TODO: get global window size? what size is FB?
 		m_FrameBuffer.reset(FrameBuffer::CreateFrameBuffer({ 1280, 720, 4 }));
 
-		//Init VAO, VBO
-		m_VAO.reset(VertexArrayObject::CreateVertexArrayObject({ 3, 3, 2 }));
-		m_VAO->BindArray();
+		// Init Quad rendering VAO, VBO
+		m_VAO.reset(VertexArrayObject::CreateVertexArrayObject({
+			{ ShaderDataType::Float3, "a_Position"	},
+			{ ShaderDataType::Float3, "a_Color"		},
+			{ ShaderDataType::Float2, "a_TexCoord"	}
+ 		}));
+  		m_VAO->BindArray();
 
 		m_VBO.reset(BufferObject::CreateBufferObject(BufferObjectType::ARRAY_BUFFER));
 		m_VBO->BindBuffer();
-		m_VBO->InitBuffer(VERTEX_ARRAY_SIZE);
+		m_VBO->InitBuffer(VERTEX_ARRAY_SIZE_QUADS);
 
 		m_VAO->EnableVertexAttribArray();
+
+		// Init Circle rendering VAO, VBO
+		m_CircleVAO.reset(VertexArrayObject::CreateVertexArrayObject({
+			{ ShaderDataType::Float3, "a_Position"	},
+			{ ShaderDataType::Float3, "a_Color"		},
+			{ ShaderDataType::Float2, "a_TexCoord"	},
+			{ ShaderDataType::Float,  "a_Thickness" },
+			{ ShaderDataType::Float,  "a_Fade"		}
+		}));
+		m_CircleVAO->BindArray();
+
+		m_CircleVBO.reset(BufferObject::CreateBufferObject(BufferObjectType::ARRAY_BUFFER));
+		m_CircleVBO->BindBuffer();
+		m_CircleVBO->InitBuffer(VERTEX_ARRAY_SIZE_CIRCLES);
+
+		// Build VAO layout
+		m_CircleVAO->EnableVertexAttribArray();
 
 		// Debug data
 		m_DrawCallCnt = 0;
 		m_RenderedCmdCnt = 0;
 
-		// Init cmd storage
+		// Init Quad cmd storage
 		m_RenderCmds.emplace_back(std::make_shared<RenderCommand>(m_VAO->VertexSize()));
 		m_ActiveRenderCmdIter = std::end(m_RenderCmds) - 1;
 
+		// Init Circle cmd storage
+		m_CircleRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_CircleVAO->VertexSize()));
+		m_CircleActiveRenderCmdIter = std::end(m_CircleRenderCmds) - 1;
+
 		// For local rendering of FBs
 		m_RenderFrameBufferShader.reset(Shader::CreateShader("..\/assets\/shaders\/framebuffer.shader"));
+		m_CircleShader.reset(Shader::CreateShader("..\/assets\/shaders\/circle.shader"));
 		m_RenderFrameBufferCmd = std::make_shared<RenderCommand>(m_VAO->VertexSize());
+
 		// Populate fixed data, shader uniform is set every frame
 		m_RenderFrameBufferCmd->m_Texture = m_FrameBuffer->GetTexture();
 		m_RenderFrameBufferCmd->m_Shader = m_RenderFrameBufferShader.get();
@@ -52,7 +79,7 @@ namespace Stimpi
 		m_RenderAPI = nullptr;
 	}
 
-	Renderer2D* Renderer2D::Instace()
+	Renderer2D* Renderer2D::Instance()
 	{
 		static auto m_Instace = std::make_unique<Renderer2D>();
 		return m_Instace.get();
@@ -67,14 +94,13 @@ namespace Stimpi
 	// New
 	void Renderer2D::BeginScene(OrthoCamera* camera)
 	{
-		auto currnetCmd = *m_ActiveRenderCmdIter;
-
 		m_ActiveCamera = camera;
 	}
 
 	void Renderer2D::EndScene()
 	{
 		Flush();
+		FlushCircle();
 	}
 	
 	void Renderer2D::Submit(glm::vec4 quad, Texture* texture, Shader* shader)
@@ -201,15 +227,16 @@ namespace Stimpi
 		}
 	}
 
-	void Renderer2D::Submit(glm::vec3 pos, glm::vec2 scale, float rotation, Shader* shader)
+	void Renderer2D::Submit(glm::vec3 pos, glm::vec2 scale, float rotation, Shader* shader, glm::vec2 minUV/*{ 0.0f, 0.0f }*/, glm::vec2 maxUV/*{ 1.0f, 1.0f }*/)
 	{
 		Submit(pos, scale, rotation, (Texture*)nullptr, shader);
 	}
 
-	void Renderer2D::Submit(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color, Shader* shader)
+	void Renderer2D::Submit(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color, Shader* shader, glm::vec2 minUV/*{ 0.0f, 0.0f }*/, glm::vec2 maxUV/*{ 1.0f, 1.0f }*/)
 	{
 		auto currnetCmd = *m_ActiveRenderCmdIter;
 
+		CheckCapacity();
 		// Flush if we have a texture set from other Submits or shader changed
 		if ((currnetCmd->m_Texture != nullptr) || (currnetCmd->m_Shader != shader))
 		{
@@ -217,8 +244,38 @@ namespace Stimpi
 			currnetCmd = *m_ActiveRenderCmdIter;
 		}
 
-		PushTransformedVertexData(currnetCmd.get(), pos, scale, rotation, color);
+		PushTransformedVertexData(currnetCmd.get(), pos, scale, rotation, color, minUV, maxUV);
 		currnetCmd->m_Shader = shader;
+	}
+
+	void Renderer2D::DrawCircle(glm::vec3 pos, glm::vec2 scale, glm::vec3 color, float thickness, float fade)
+	{
+		/*m_CircleShader->SetUniform("u_thickness", thickness);
+		m_CircleShader->SetUniform("u_fade", fade);
+
+		Submit(pos, scale, 0.0f, color, m_CircleShader.get(), { -1.0f, -1.0f }, { 1.0f, 1.0f });*/
+
+		auto currnetCmd = *m_CircleActiveRenderCmdIter;
+		auto cmd = currnetCmd.get();
+		glm::vec2 minUV = { -1.0f, -1.0f };
+		glm::vec2 maxUV = { 1.0f, 1.0f };
+
+		CheckCapacity();
+
+		// Set cmd data
+		currnetCmd->m_Shader = m_CircleShader.get();
+
+		// Apply transforms
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) *
+			glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f));
+
+		cmd->PushCircleVertex(transform * s_QuadVertexPosition[0], color, { minUV.x, minUV.y }, thickness, fade);
+		cmd->PushCircleVertex(transform * s_QuadVertexPosition[1], color, { maxUV.x, minUV.y }, thickness, fade);
+		cmd->PushCircleVertex(transform * s_QuadVertexPosition[2], color, { maxUV.x, maxUV.y }, thickness, fade);
+
+		cmd->PushCircleVertex(transform * s_QuadVertexPosition[2], color, { maxUV.x, maxUV.y }, thickness, fade);
+		cmd->PushCircleVertex(transform * s_QuadVertexPosition[3], color, { minUV.x, maxUV.y }, thickness, fade);
+		cmd->PushCircleVertex(transform * s_QuadVertexPosition[0], color, { minUV.x, minUV.y }, thickness, fade);
 	}
 
 	void Renderer2D::Flush()
@@ -236,6 +293,23 @@ namespace Stimpi
 
 		m_RenderCmds.emplace_back(std::make_shared<RenderCommand>(m_VAO->VertexSize()));
 		m_ActiveRenderCmdIter = std::end(m_RenderCmds) - 1;
+	}
+
+	void Renderer2D::FlushCircle()
+	{
+		auto currnetCmd = *m_CircleActiveRenderCmdIter;
+
+		if (currnetCmd->m_Shader == nullptr)
+		{
+			// No data to qualify as a valid RenderCommand
+			return;
+		}
+
+		// For now set ViewProj camera uniform here
+		currnetCmd->m_Shader->SetUniform("u_ViewProjection", m_ActiveCamera->GetViewProjectionMatrix());
+
+		m_CircleRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_CircleVAO->VertexSize()));
+		m_CircleActiveRenderCmdIter = std::end(m_CircleRenderCmds) - 1;
 	}
 
 	void Renderer2D::FlushScene()
@@ -279,6 +353,14 @@ namespace Stimpi
 				DrawRenderCmd(renderCmd);
 		}
 		m_RenderedCmdCnt = m_RenderCmds.size() - 1; // last won't be filled with data
+
+		for (auto renderCmd : m_CircleRenderCmds)
+		{
+			// Skip last as it won't be filled with data
+			if (renderCmd != *m_CircleActiveRenderCmdIter)
+				DrawCirlceRenderCmd(renderCmd);
+		}
+		m_RenderedCmdCnt += m_CircleRenderCmds.size() - 1;
 	}
 
 	void Renderer2D::EndFrame()
@@ -320,6 +402,23 @@ namespace Stimpi
 		shader->ClearBufferedUniforms();
 	}
 
+	void Renderer2D::DrawCirlceRenderCmd(std::shared_ptr<RenderCommand>& renderCmd)
+	{
+		auto shader = renderCmd->m_Shader;
+
+		shader->Use();
+		shader->SetBufferedUniforms();
+
+		m_CircleVAO->BindArray();
+		m_CircleVBO->BindBuffer();
+
+		m_CircleVBO->BufferSubData(0, renderCmd->Size(), renderCmd->CircleData());
+		m_RenderAPI->DrawArrays(DrawElementsMode::TRIANGLES, 0, renderCmd->m_VertexCount);
+		m_DrawCallCnt++;
+
+		shader->ClearBufferedUniforms();
+	}
+
 	void Renderer2D::ShowDebugData()
 	{
 		if (RENDERER_DBG)
@@ -340,10 +439,16 @@ namespace Stimpi
 	void Renderer2D::CheckCapacity()
 	{
 		auto currnetCmd = *m_ActiveRenderCmdIter;
+		auto currentCricleCmd = *m_CircleActiveRenderCmdIter;
 
 		if (currnetCmd->m_VertexCount >= VERTEX_CMD_CAPACITY)
 		{
 			Flush();
+		}
+
+		if (currentCricleCmd->m_VertexCount >= VERTEX_CMD_CAPACITY)
+		{
+			FlushCircle();
 		}
 	}
 
@@ -368,6 +473,10 @@ namespace Stimpi
 		m_RenderCmds.clear();
 		m_RenderCmds.emplace_back(std::make_shared<RenderCommand>(m_VAO->VertexSize()));
 		m_ActiveRenderCmdIter = std::end(m_RenderCmds) - 1;
+
+		m_CircleRenderCmds.clear();
+		m_CircleRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_CircleVAO->VertexSize()));
+		m_CircleActiveRenderCmdIter = std::end(m_CircleRenderCmds) - 1;
 	}
 
 	void Renderer2D::PushQuadVertexData(RenderCommand* cmd, glm::vec4 quad, glm::vec3 color /*= { 1.0f, 1.0f, 1.0f }*/, glm::vec2 min /*= { 0.0f, 0.0f }*/, glm::vec2 max /*= { 1.0f, 1.0f }*/)

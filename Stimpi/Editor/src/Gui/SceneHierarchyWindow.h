@@ -24,6 +24,7 @@ namespace Stimpi
 		// Inspect UI layout parts
 		void TagComponentLayout(TagComponent& component);
 		void QuadComponentLayout(QuadComponent& component);
+		void CircleComponentLayout(CircleComponent& component);
 		void ScriptComponentLayout(ScriptComponent& component);
 		void SpriteComponentLayout(SpriteComponent& component);
 		void CameraComponentLayout(CameraComponent& component);

@@ -51,7 +51,7 @@ namespace Stimpi
 
 	void SceneViewWindow::OnImGuiRender()
 	{
-		auto frameBuffer = Renderer2D::Instace()->GetFrameBuffer();
+		auto frameBuffer = Renderer2D::Instance()->GetFrameBuffer();
 		auto scene = SceneManager::Instance()->GetActiveScene();
 		auto camera = scene->GetRenderCamera();
 

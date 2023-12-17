@@ -3,11 +3,11 @@
 
 #include "Stimpi/Graphics/Graphics.h"
 #include "Stimpi/Platform/OpenGLVertexArrayObject.h"
-#include "Stimpi/Log.h"
 
 namespace Stimpi
 {
-	VertexArrayObject::VertexArrayObject(const DataLayout& layout)
+
+	VertexArrayObject::VertexArrayObject(const VertexBufferLayout& layout)
 		: m_Layout(layout)
 	{
 
@@ -18,7 +18,7 @@ namespace Stimpi
 
 	}
 
-	VertexArrayObject* VertexArrayObject::CreateVertexArrayObject(const DataLayout& layout)
+	VertexArrayObject* VertexArrayObject::CreateVertexArrayObject(const VertexBufferLayout& layout)
 	{
 		switch (Graphics::GetAPI())
 		{
@@ -29,4 +29,5 @@ namespace Stimpi
 		ST_CORE_CRITICAL("Unknown GraphicsAPI");
 		return nullptr;
 	}
+
 }

@@ -70,7 +70,7 @@ namespace Stimpi
 		OnSceneChangedListener onScneeChanged = [&]() {
 			ST_CORE_INFO("EditorLayer - onScneeChanged()");
 			
-			Renderer2D::Instace()->FlushScene();
+			Renderer2D::Instance()->FlushScene();
 
 			m_Scene = SceneManager::Instance()->GetActiveSceneRef();
 			m_Scene->SetCamera(m_EditorCamera.get());
@@ -99,7 +99,7 @@ namespace Stimpi
 	void EditorLayer::OnAttach()
 	{
 		ST_CORE_TRACE("{0}: OnAttach", m_DebugName);
-		Renderer2D::Instace()->EnableLocalRendering(false);
+		Renderer2D::Instance()->EnableLocalRendering(false);
 	}
 
 	void EditorLayer::OnDetach()
@@ -237,8 +237,8 @@ namespace Stimpi
 			{
 				ST_CORE_INFO("Combo - Resolution: Secleted index {0}", current_resolution);
 				//Resize Scene Canvas
-				if (current_resolution == 0) Renderer2D::Instace()->ResizeCanvas(1920, 1080);
-				if (current_resolution == 1) Renderer2D::Instace()->ResizeCanvas(1280, 720);
+				if (current_resolution == 0) Renderer2D::Instance()->ResizeCanvas(1920, 1080);
+				if (current_resolution == 1) Renderer2D::Instance()->ResizeCanvas(1280, 720);
 			};
 			ImGui::Separator();
 			ImGui::Text("Application FPS");
@@ -272,8 +272,8 @@ namespace Stimpi
 		
 
 		// Custom Rendering stuff
-		auto canvasWidth = Stimpi::Renderer2D::Instace()->GetCanvasWidth();
-		auto canvasHeight = Stimpi::Renderer2D::Instace()->GetCanvasHeight();
+		auto canvasWidth = Stimpi::Renderer2D::Instance()->GetCanvasWidth();
+		auto canvasHeight = Stimpi::Renderer2D::Instance()->GetCanvasHeight();
 
 		m_BackgroundCamera->Resize(0.0f, canvasWidth, 0.0f, canvasHeight);
 		m_ShaderChecker->SetUniform("u_Projection", m_BackgroundCamera->GetProjectionMatrix());
@@ -282,9 +282,9 @@ namespace Stimpi
 		// Render Checker Background for editor
 		if (showCheckerboard)
 		{
-			Stimpi::Renderer2D::Instace()->BeginScene(m_BackgroundCamera->GetOrthoCamera());
-			Stimpi::Renderer2D::Instace()->Submit({ 0.0f, 0.0f, canvasWidth, canvasHeight }, m_ShaderChecker.get());
-			Stimpi::Renderer2D::Instace()->EndScene();
+			Stimpi::Renderer2D::Instance()->BeginScene(m_BackgroundCamera->GetOrthoCamera());
+			Stimpi::Renderer2D::Instance()->Submit({ 0.0f, 0.0f, canvasWidth, canvasHeight }, m_ShaderChecker.get());
+			Stimpi::Renderer2D::Instance()->EndScene();
 		}
 
 		m_Scene->OnUpdate(ts);
@@ -292,7 +292,7 @@ namespace Stimpi
 		/* Scene View - render after scene so Gizmo won't lag behind 1 frame */
 		m_SceneViewWindow.OnImGuiRender();
 
-		auto renderer = Renderer2D::Instace();
+		auto renderer = Renderer2D::Instance();
 		renderer->StartFrame();
 		renderer->DrawFrame();
 		renderer->EndFrame();

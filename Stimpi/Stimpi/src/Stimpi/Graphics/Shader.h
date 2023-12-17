@@ -18,7 +18,7 @@
 
 namespace Stimpi
 {
-	using shader_variant = std::variant<int, glm::vec2, glm::vec3, glm::vec4, glm::mat4>;
+	using shader_variant = std::variant<int, float, glm::vec2, glm::vec3, glm::vec4, glm::mat4>;
 
 	class ST_API Shader
 	{
@@ -38,6 +38,7 @@ namespace Stimpi
 
 	private:
 		virtual void SetUniformImpl(const std::string& name, int value) = 0;
+		virtual void SetUniformImpl(const std::string& name, float value) = 0;
 		virtual void SetUniformImpl(const std::string& name, glm::vec2 value) = 0;
 		virtual void SetUniformImpl(const std::string& name, glm::vec3 value) = 0;
 		virtual void SetUniformImpl(const std::string& name, glm::vec4 value) = 0;

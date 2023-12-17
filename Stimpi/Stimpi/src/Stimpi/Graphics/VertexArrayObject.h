@@ -2,6 +2,7 @@
 
 #include "Stimpi/Core/Core.h"
 #include "Stimpi/Graphics/Graphics.h"
+#include "Stimpi/Log.h"
 
 /* 
 *  Usage:
@@ -16,30 +17,89 @@
 
 namespace Stimpi
 {
-
-	struct ST_API DataLayout
+	enum class ShaderDataType
 	{
-		uint32_t m_PosSize;
-		uint32_t m_ColorSize;
-		uint32_t m_TexSize;
-		uint32_t m_Stride;
-		uint32_t m_PosOffset;
-		uint32_t m_ColorOffset;
-		uint32_t m_TexOffset;
-		
-		DataLayout(uint32_t posLen, uint32_t colorLen, uint32_t textLen) : m_PosSize(posLen), m_ColorSize(colorLen), m_TexSize(textLen)
+		Int = 0, Int2, Int3, Int4,
+		Float, Float2, Float3, Float4,
+	};
+
+	static uint32_t ShaderDataTypeSize(ShaderDataType type)
+	{
+		switch (type)
 		{
-			m_Stride = (uint32_t)sizeof(float) * (m_PosSize + m_ColorSize + m_TexSize);
-			m_PosOffset = 0;
-			m_ColorOffset = sizeof(float) * m_PosSize;
-			m_TexOffset = (uint32_t)sizeof(float) * (m_PosSize + m_ColorSize);
+		case Stimpi::ShaderDataType::Int:		return sizeof(uint32_t);
+		case Stimpi::ShaderDataType::Int2:		return sizeof(uint32_t) * 2;
+		case Stimpi::ShaderDataType::Int3:		return sizeof(uint32_t) * 3;
+		case Stimpi::ShaderDataType::Int4:		return sizeof(uint32_t) * 4;
+		case Stimpi::ShaderDataType::Float:		return sizeof(float);
+		case Stimpi::ShaderDataType::Float2:	return sizeof(float) * 2;
+		case Stimpi::ShaderDataType::Float3:	return sizeof(float) * 3;
+		case Stimpi::ShaderDataType::Float4:	return sizeof(float) * 4;
 		}
+
+		ST_CORE_CRITICAL("Unknown Shader data type!");
+		return 0;
+	}
+
+	static uint32_t ShaderDataTypeLength(ShaderDataType type)
+	{
+		switch (type)
+		{
+		case Stimpi::ShaderDataType::Int:		return 1;
+		case Stimpi::ShaderDataType::Int2:		return 2;
+		case Stimpi::ShaderDataType::Int3:		return 3;
+		case Stimpi::ShaderDataType::Int4:		return 4;
+		case Stimpi::ShaderDataType::Float:		return 1;
+		case Stimpi::ShaderDataType::Float2:	return 2;
+		case Stimpi::ShaderDataType::Float3:	return 3;
+		case Stimpi::ShaderDataType::Float4:	return 4;
+		}
+
+		ST_CORE_CRITICAL("Unknown Shader data type!");
+		return 0;
+	}
+
+	struct ST_API LayoutData
+	{
+		ShaderDataType m_Type;
+		std::string m_Name;
+
+		uint32_t m_Offset;
+		uint32_t m_Size;
+
+		LayoutData(ShaderDataType type, const std::string& name)
+			: m_Type(type), m_Name(name)
+		{
+			m_Size = ShaderDataTypeLength(type);
+			m_Offset = 0;
+		}
+	};
+
+	struct ST_API VertexBufferLayout
+	{
+		std::vector<LayoutData> m_Layout;
+		uint32_t m_Stride;
+
+		VertexBufferLayout() {} // Temp default ctor
+		VertexBufferLayout(std::initializer_list<LayoutData> list)
+		{
+			m_Stride = 0;
+			for (auto item : list)
+			{
+				item.m_Offset = m_Stride;
+				m_Stride += ShaderDataTypeSize(item.m_Type);
+				m_Layout.push_back(item);
+			}
+		}
+
+		std::vector<LayoutData>::iterator begin() { return m_Layout.begin(); }
+		std::vector<LayoutData>::iterator end() { return m_Layout.end(); }
 	};
 
 	class ST_API VertexArrayObject
 	{
 	public:
-		VertexArrayObject(const DataLayout& layout);
+		VertexArrayObject(const VertexBufferLayout& layout);
 		virtual ~VertexArrayObject();
 
 		// Called from Renderer with proper VertexArray ID
@@ -51,9 +111,9 @@ namespace Stimpi
 		uint32_t VertexSize() { return m_Layout.m_Stride; }
 
 		// Create VAO based on Renderer API type (OpenGL)
-		static VertexArrayObject* CreateVertexArrayObject(const DataLayout& layout);
+		static VertexArrayObject* CreateVertexArrayObject(const VertexBufferLayout& layout);
 
 	protected:
-		DataLayout m_Layout;
+		VertexBufferLayout m_Layout;
 	};
 }

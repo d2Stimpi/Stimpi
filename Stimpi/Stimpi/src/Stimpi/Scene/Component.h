@@ -88,6 +88,86 @@ namespace Stimpi
 		}
 	};
 
+	struct CircleComponent
+	{
+		glm::vec2 m_Position = { 0.0f, 0.0f };
+		glm::vec2 m_Size = { 0.0f, 0.0f };
+		glm::vec4 m_Color = { 1.0f, 1.0f, 1.0f, 1.0f };
+		float m_Thickness = 1.0f;
+		float m_Fade = 0.005;
+
+		CircleComponent() = default;
+		CircleComponent(const CircleComponent&) = default;
+		CircleComponent(glm::vec2 pos, glm::vec2 size, float thickness, float fade)
+			: m_Position(pos), m_Size(size), m_Thickness(thickness), m_Fade(fade)
+		{
+		}
+
+		void Serialize(YAML::Emitter& out)
+		{
+			out << YAML::Key << "CircleComponent";
+			out << YAML::BeginMap;
+			{
+				out << YAML::Key << "Position" << YAML::Value;
+				out << YAML::BeginSeq;
+				{
+					out << m_Position.x << m_Position.y;
+				}
+				out << YAML::EndSeq;
+
+				out << YAML::Key << "Size" << YAML::Value;
+				out << YAML::BeginSeq;
+				{
+					out << m_Size.x << m_Size.y;
+				}
+				out << YAML::EndSeq;
+
+				out << YAML::Key << "Color" << YAML::Value;
+				out << YAML::BeginSeq;
+				{
+					out << m_Color.r << m_Color.g << m_Color.b << m_Color.a;
+				}
+				out << YAML::EndSeq;
+
+				out << YAML::Key << "Thickness" << YAML::Value << m_Thickness;
+				out << YAML::Key << "Fade" << YAML::Value << m_Fade;
+			}
+			out << YAML::EndMap;
+		}
+
+		//De-serialize constructor
+		CircleComponent(const YAML::Node& node)
+		{
+			if (node["Position"])
+			{
+				YAML::Node view = node["Position"];
+				m_Position = glm::vec2(view[0].as<float>(), view[1].as<float>());
+			}
+
+			if (node["Size"])
+			{
+				YAML::Node view = node["Size"];
+				m_Size = glm::vec2(view[0].as<float>(), view[1].as<float>());
+			}
+
+			if (node["Color"])
+			{
+				YAML::Node view = node["Color"];
+				m_Color = glm::vec4(view[0].as<float>(), view[1].as<float>(), view[2].as<float>(), view[3].as<float>());
+			}
+
+			if (node["Thickness"])
+			{
+				m_Thickness = node["Thickness"].as<float>();
+			}
+
+			if (node["Fade"])
+			{
+				m_Fade = node["Fade"].as<float>();
+			}
+		}
+	};
+
 	struct SpriteComponent
 	{
 		// Sprite Texture

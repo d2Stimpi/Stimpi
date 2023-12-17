@@ -122,7 +122,7 @@ namespace Stimpi
 		// Scene Rendering
 		if (m_RenderCamera)
 		{
-			Stimpi::Renderer2D::Instace()->BeginScene(m_RenderCamera->GetOrthoCamera());
+			Stimpi::Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
 
 			for (auto entity : m_Entities)
 			{
@@ -135,23 +135,33 @@ namespace Stimpi
 						if (sprite.m_Texture)
 						{
 							if (sprite.m_Enable)
-								Renderer2D::Instace()->Submit(quad, quad.m_Rotation, sprite.m_Texture, m_DefaultShader.get());
+								Renderer2D::Instance()->Submit(quad, quad.m_Rotation, sprite.m_Texture, m_DefaultShader.get());
 							else
-								Renderer2D::Instace()->Submit(quad, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
+								Renderer2D::Instance()->Submit(quad, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
 						}
 						else
 						{
-							Renderer2D::Instace()->Submit(quad, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
+							Renderer2D::Instance()->Submit(quad, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
 						}
 					}
 				}
 			}
+
+			m_Registry.view<CircleComponent>().each([=](auto entity, CircleComponent& circle)
+				{
+					glm::vec3 position = { circle.m_Position.x, circle.m_Position.y, 1.0f };
+					Renderer2D::Instance()->DrawCircle(position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
+				});
+
 #if USE_TEST_STUFF
 			//Stimpi::Renderer2D::Instace()->Submit(glm::vec4{ 150.0f, 250.0f, 150.0f, 150.0f }, m_SubTexture.get(), m_DefaultShader.get());
-			Stimpi::Renderer2D::Instace()->Submit(glm::vec3{ 225.0f, 220.0f, 0.0f }, glm::vec2{ 50.0f, 40.0f }, 15.0f, m_TestTexture, m_DefaultShader.get());
-			Stimpi::Renderer2D::Instace()->Submit(glm::vec4{ 350.0f, 250.0f, 150.0f, 150.0f }, 45.0f, m_TestTexture, m_DefaultShader.get());
+			Stimpi::Renderer2D::Instance()->Submit(glm::vec3{ 225.0f, 220.0f, 0.0f }, glm::vec2{ 50.0f, 40.0f }, 15.0f, m_TestTexture, m_DefaultShader.get());
+			Stimpi::Renderer2D::Instance()->Submit(glm::vec4{ 350.0f, 250.0f, 150.0f, 150.0f }, 45.0f, m_TestTexture, m_DefaultShader.get());
+			Stimpi::Renderer2D::Instance()->DrawCircle(glm::vec3{ 50.0f, 40.0f, 0.0f }, glm::vec2{ 50.0f, 50.0f }, glm::vec3{ 0.35f, 0.85f, 0.2f }, 0.02f, 0.005f);
+			Stimpi::Renderer2D::Instance()->DrawCircle(glm::vec3{ 80.0f, 60.0f, 0.0f }, glm::vec2{ 50.0f, 50.0f }, glm::vec3{ 0.35f, 0.85f, 0.2f }, 0.5f, 0.005f);
+			Stimpi::Renderer2D::Instance()->DrawCircle(glm::vec3{ 120.0f, 80.0f, 0.0f }, glm::vec2{ 50.0f, 50.0f }, glm::vec3{ 0.35f, 0.85f, 0.2f }, 1.0f, 0.5f);
 #endif
-			Stimpi::Renderer2D::Instace()->EndScene();
+			Stimpi::Renderer2D::Instance()->EndScene();
 		}
 	}
 

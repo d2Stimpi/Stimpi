@@ -18,6 +18,7 @@ namespace Stimpi
 	
 	private:
 		void SetUniformImpl(const std::string& name, int value) override;
+		void SetUniformImpl(const std::string& name, float value) override;
 		void SetUniformImpl(const std::string& name, glm::vec2 value) override;
 		void SetUniformImpl(const std::string& name, glm::vec3 value) override;
 		void SetUniformImpl(const std::string& name, glm::vec4 value) override;
@@ -25,7 +26,7 @@ namespace Stimpi
 
 		void CheckForErrors(unsigned int shader, std::string type) override;
 
-		/* Data memebers */
+		/* Data members */
 		unsigned int m_ID;
 	};
 }
