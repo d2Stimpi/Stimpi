@@ -52,19 +52,7 @@ namespace Stimpi
 			if (m_ActiveScene)
 			{
 				// Add Entity pop-up
-				if (ImGui::IsWindowHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
-				{
-					ImGui::OpenPopup("scene_hierarchy");
-				}
-
-				if (ImGui::BeginPopup("scene_hierarchy"))
-				{
-					if (ImGui::Selectable("Add Entity"))
-					{
-						s_SelectedEntity = m_ActiveScene->CreateEntity("NewEntity");
-					}
-					ImGui::EndPopup();
-				}
+				CreateEntityPopup();
 
 				if (ImGui::TreeNodeEx((void*)&m_ActiveScene, node_flags | ImGuiTreeNodeFlags_DefaultOpen, "Scene"))
 				{
@@ -520,6 +508,54 @@ namespace Stimpi
 		else
 		{
 			ImGui::Text("Nothing selected");
+		}
+	}
+
+	void SceneHierarchyWindow::CreateEntityPopup()
+	{
+		if (ImGui::IsWindowHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+		{
+			ImGui::OpenPopup("CreateEntityPopup");
+		}
+
+		if (ImGui::BeginPopup("CreateEntityPopup"))
+		{
+			if (ImGui::Selectable("Empty Entity"))
+			{
+				s_SelectedEntity = m_ActiveScene->CreateEntity("NewEntity");
+			}
+
+			if (ImGui::BeginMenu("Scene"))
+			{
+				if (ImGui::MenuItem("Camera"))
+				{
+					s_SelectedEntity = m_ActiveScene->CreateEntity("Camera_Object");
+					s_SelectedEntity.AddComponent<QuadComponent>();
+					s_SelectedEntity.AddComponent<CameraComponent>(std::make_shared<Camera>(), false);
+				}
+
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu("Primitive"))
+			{
+				if (ImGui::MenuItem("Sprite"))
+				{
+					s_SelectedEntity = m_ActiveScene->CreateEntity("Sprite_Object");
+					s_SelectedEntity.AddComponent<QuadComponent>(glm::vec2(0.0f, 0.0f), glm::vec2(10.0f, 10.0f), 0.0f);
+					s_SelectedEntity.AddComponent<SpriteComponent>();
+				}
+
+				if (ImGui::MenuItem("Circle"))
+				{
+					s_SelectedEntity = m_ActiveScene->CreateEntity("Circle_Object");
+					s_SelectedEntity.AddComponent<CircleComponent>(glm::vec2(0.0f, 0.0f), glm::vec2(10.0f, 10.0f));
+				}
+
+				ImGui::EndMenu();
+			}
+
+			ImGui::EndPopup();
 		}
 	}
 

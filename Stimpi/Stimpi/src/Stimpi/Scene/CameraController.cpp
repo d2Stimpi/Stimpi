@@ -73,8 +73,8 @@ namespace Stimpi
 					m_Camera->SetPosition(cameraStartPos + glm::vec3{ movePosition.x, -movePosition.y, 0.0f });
 					buttonHold = true;
 
-					ST_CORE_INFO("Event: {}, {} - type {}", e.GetX(), e.GetY(), (int)e.GetType());
-					ST_CORE_INFO("Move pos: {}", movePosition);
+					//ST_CORE_INFO("Event: {}, {} - type {}", e.GetX(), e.GetY(), (int)e.GetType());
+					//ST_CORE_INFO("Move pos: {}", movePosition);
 				}
 			}
 			else

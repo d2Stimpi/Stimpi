@@ -13,6 +13,9 @@
     <Filter Include="Stimpi\Graphics\Animation">
       <UniqueIdentifier>{0A4F754E-7611-A9D8-BFC1-37652BC381B6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Stimpi\Physics">
+      <UniqueIdentifier>{2D4CED0A-191A-E110-02AE-5137EE1ABD75}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Stimpi\Platform">
       <UniqueIdentifier>{6F9C9464-DB27-0229-E438-851D50435E29}</UniqueIdentifier>
     </Filter>
@@ -44,6 +47,9 @@
       <Filter>Stimpi\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Stimpi\Core\Event.h">
+      <Filter>Stimpi\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Core\EventQueue.h">
       <Filter>Stimpi\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Stimpi\Core\InputManager.h">
@@ -109,6 +115,12 @@
     <ClInclude Include="src\Stimpi\Log.h">
       <Filter>Stimpi</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\Physics\ContactListener.h">
+      <Filter>Stimpi\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Physics\Physics.h">
+      <Filter>Stimpi\Physics</Filter>
+    </ClInclude>
     <ClInclude Include="src\Stimpi\Platform\OpenGLBufferObject.h">
       <Filter>Stimpi\Platform</Filter>
     </ClInclude>
@@ -160,12 +172,16 @@
     <ClInclude Include="src\Stimpi\Scripting\ScriptEngine.h">
       <Filter>Stimpi\Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\Scripting\ScriptGlue.h">
+      <Filter>Stimpi\Scripting</Filter>
+    </ClInclude>
     <ClInclude Include="src\Stimpi\Utils\PlatformUtils.h">
       <Filter>Stimpi\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\Utils\SystemUtils.h">
+      <Filter>Stimpi\Utils</Filter>
+    </ClInclude>
     <ClInclude Include="src\stpch.h" />
-    <ClInclude Include="src\Stimpi\Scripting\ScriptGlue.h" />
-    <ClInclude Include="src\Stimpi\Utils\SystemUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Core\Application.cpp">
@@ -225,6 +241,9 @@
     <ClCompile Include="src\Stimpi\Log.cpp">
       <Filter>Stimpi</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Physics\ContactListener.cpp">
+      <Filter>Stimpi\Physics</Filter>
+    </ClCompile>
     <ClCompile Include="src\Stimpi\Platform\OpenGLBufferObject.cpp">
       <Filter>Stimpi\Platform</Filter>
     </ClCompile>
@@ -276,8 +295,12 @@
     <ClCompile Include="src\Stimpi\Scripting\ScriptEngine.cpp">
       <Filter>Stimpi\Scripting</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Scripting\ScriptGlue.cpp">
+      <Filter>Stimpi\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Utils\SystemUtils.cpp">
+      <Filter>Stimpi\Utils</Filter>
+    </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
-    <ClCompile Include="src\Stimpi\Scripting\ScriptGlue.cpp" />
-    <ClCompile Include="src\Stimpi\Utils\SystemUtils.cpp" />
   </ItemGroup>
 </Project>

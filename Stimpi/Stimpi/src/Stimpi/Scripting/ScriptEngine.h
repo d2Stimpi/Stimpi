@@ -2,6 +2,7 @@
 
 #include "Stimpi/Core/Core.h"
 #include "Stimpi/Scene/Entity.h"
+#include "Stimpi/Physics/Physics.h"
 
 extern "C"
 {
@@ -102,6 +103,10 @@ namespace Stimpi
 		void InvokeOnCreate();
 		void InvokeOnUpdate(float ts);
 
+		/* Physics methods */
+		void InvokeOnCollisionBegin(Collision collision);
+		void InvokeOnCollisionEnd(Collision collision);
+
 		MonoObject* GetInstance() { return m_Instance; }
 		std::vector<std::shared_ptr<ScriptField>>& GetFields() { return m_ScriptFields; }
 
@@ -114,6 +119,10 @@ namespace Stimpi
 		MonoMethod* m_Constructor = nullptr;
 		MonoMethod* m_OnCreateMethod = nullptr;
 		MonoMethod* m_OnUpdateMethod = nullptr;
+
+		/* Physics methods */
+		MonoMethod* m_OnCollisionBegin = nullptr;
+		MonoMethod* m_OnCollisionEnd = nullptr;
 
 		/* Manage a collection of ScriptField objects that are wrappers around C# Field */
 		std::vector<std::shared_ptr<ScriptField>> m_ScriptFields;

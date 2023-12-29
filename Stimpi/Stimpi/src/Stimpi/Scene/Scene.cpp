@@ -7,6 +7,7 @@
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Scene/Utils/SceneUtils.h"
+#include "Stimpi/Physics/ContactListener.h"
 
 #include "Stimpi/Graphics/Renderer2D.h"
 
@@ -52,6 +53,10 @@ namespace Stimpi
 		m_RuntimeState = RuntimeState::STOPPED;
 		m_DefaultShader.reset(Shader::CreateShader("..\/assets\/shaders\/shader.shader"));
 		m_DefaultSolidColorShader.reset(Shader::CreateShader("..\/assets\/shaders\/solidcolor.shader"));
+
+		// Collision listener for Box2D
+		m_ContactListener = std::make_unique<ContactListener>();
+		m_ContactListener->SetContext(this);
 
 #if USE_TEST_STUFF
 		/* Test stuff below */
@@ -167,7 +172,10 @@ namespace Stimpi
 
 	void Scene::OnEvent(Event* event)
 	{
-
+		EventDispatcher<PhysicsEvent> eventDispatcher;
+		eventDispatcher.Dispatch(event, [&](PhysicsEvent* e) -> bool {
+			return ProcessPhysicsEvent(e);;
+		});
 	}
 
 	Entity Scene::CreateEntity(const std::string& name)
@@ -333,7 +341,7 @@ namespace Stimpi
 
 	void Scene::InitializePhysics()
 	{
-		m_PhysicsDWorld = new b2World({ 0.0f, -9.8f });
+		m_PhysicsWorld = new b2World({ 0.0f, -9.8f });
 		m_Registry.view<RigidBody2DComponent>().each([=](auto e, auto& rb2d)
 			{
 				Entity entity = { e, this };
@@ -345,8 +353,9 @@ namespace Stimpi
 					bodyDef.type = Rigidbody2DTypeToBox2DType(rb2d.m_Type);
 					bodyDef.position.Set(quad.Center().x, quad.Center().y);
 					bodyDef.angle = quad.m_Rotation;
+					bodyDef.userData.pointer = (uint32_t)entity;
 
-					b2Body* body = m_PhysicsDWorld->CreateBody(&bodyDef);
+					b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);
 					body->SetFixedRotation(rb2d.m_FixedRotation);
 					rb2d.m_RuntimeBody = body;
 
@@ -367,6 +376,8 @@ namespace Stimpi
 					}
 				}
 			});
+
+		m_PhysicsWorld->SetContactListener(m_ContactListener.get());
 	}
 
 	void Scene::UpdatePhysicsSimulation(Timestep ts)
@@ -375,7 +386,7 @@ namespace Stimpi
 		{
 			const int32_t velocityIterations = 6;
 			const int32_t positionIterations = 2;
-			m_PhysicsDWorld->Step(ts, velocityIterations, positionIterations);
+			m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
 
 			m_Registry.view<RigidBody2DComponent>().each([=](auto e, RigidBody2DComponent& rb2d)
 				{
@@ -396,8 +407,40 @@ namespace Stimpi
 
 	void Scene::DeinitializePhysics()
 	{
-		delete m_PhysicsDWorld;
-		m_PhysicsDWorld = nullptr;
+		delete m_PhysicsWorld;
+		m_PhysicsWorld = nullptr;
+	}
+
+	bool Scene::ProcessPhysicsEvent(PhysicsEvent* event)
+	{
+		// Check for correct Scene runtime state first
+		if (m_RuntimeState != RuntimeState::RUNNING)
+		{
+			return false;
+		}
+
+		Collision collisionData = event->GetCollisionData();
+		Entity owner = { (entt::entity)collisionData.m_Owner, this };
+		
+		if (owner.HasComponent<ScriptComponent>())
+		{
+			auto instance = ScriptEngine::GetScriptInstance(owner);
+			ST_CORE_ASSERT_MSG(!instance, "Processing physics event, but no Script instance!");
+
+			if (event->GetType() == PhysicsEventType::COLLISION_BEGIN)
+			{
+				instance->InvokeOnCollisionBegin(event->GetCollisionData());
+				return true;
+			}
+
+			if (event->GetType() == PhysicsEventType::COLLISION_END)
+			{
+				instance->InvokeOnCollisionEnd(event->GetCollisionData());
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 }

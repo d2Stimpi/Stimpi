@@ -60,13 +60,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\Actor.cs" />
-    <Compile Include="Source\PhysicsActor.cs" />
-    <Compile Include="Source\Stimpi\Color.cs" />
-    <Compile Include="Source\Stimpi\Scene\Components.cs" />
-    <Compile Include="Source\Stimpi\Scene\Entity.cs" />
     <Compile Include="Source\Input.cs" />
     <Compile Include="Source\InternalCalls.cs" />
     <Compile Include="Source\KeyCode.cs" />
+    <Compile Include="Source\PhysicsActor.cs" />
+    <Compile Include="Source\Stimpi\Color.cs" />
+    <Compile Include="Source\Stimpi\Physics\Collision.cs" />
+    <Compile Include="Source\Stimpi\Physics\Physics.cs" />
+    <Compile Include="Source\Stimpi\Scene\Components.cs" />
+    <Compile Include="Source\Stimpi\Scene\Entity.cs" />
     <Compile Include="Source\Stimpi\Vector2.cs" />
   </ItemGroup>
   <ItemGroup>

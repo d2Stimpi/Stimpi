@@ -162,6 +162,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Core\Core.h" />
     <ClInclude Include="src\Stimpi\Core\EntryPoint.h" />
     <ClInclude Include="src\Stimpi\Core\Event.h" />
+    <ClInclude Include="src\Stimpi\Core\EventQueue.h" />
     <ClInclude Include="src\Stimpi\Core\InputManager.h" />
     <ClInclude Include="src\Stimpi\Core\KeyCodes.h" />
     <ClInclude Include="src\Stimpi\Core\Layer.h" />
@@ -183,6 +184,8 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Graphics\Texture.h" />
     <ClInclude Include="src\Stimpi\Graphics\VertexArrayObject.h" />
     <ClInclude Include="src\Stimpi\Log.h" />
+    <ClInclude Include="src\Stimpi\Physics\ContactListener.h" />
+    <ClInclude Include="src\Stimpi\Physics\Physics.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLBufferObject.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLFrameBuffer.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLRenderAPI.h" />
@@ -225,6 +228,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClCompile Include="src\Stimpi\Graphics\Texture.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\VertexArrayObject.cpp" />
     <ClCompile Include="src\Stimpi\Log.cpp" />
+    <ClCompile Include="src\Stimpi\Physics\ContactListener.cpp" />
     <ClCompile Include="src\Stimpi\Platform\OpenGLBufferObject.cpp" />
     <ClCompile Include="src\Stimpi\Platform\OpenGLFrameBuffer.cpp" />
     <ClCompile Include="src\Stimpi\Platform\OpenGLRenderAPI.cpp" />

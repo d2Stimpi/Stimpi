@@ -525,7 +525,7 @@ namespace Stimpi
 		MonoMethod* monoMethod = mono_class_get_method_from_name(m_Class, methodName.c_str(), parameterCount);
 		if (monoMethod == nullptr)
 		{
-			ST_CORE_ERROR("[ScriptClass] Error finding method {}", methodName);
+			ST_CORE_WARN("[ScriptClass] Error finding method {}", methodName);
 		}
 
 		return monoMethod;
@@ -581,6 +581,10 @@ namespace Stimpi
 		m_OnCreateMethod = m_ScriptClass->GetMethod("OnCreate", 0);
 		m_OnUpdateMethod = m_ScriptClass->GetMethod("OnUpdate", 1);
 
+		/* Physics methods */
+		m_OnCollisionBegin = m_ScriptClass->GetMethod("OnCollisionBegin", 1);
+		m_OnCollisionEnd = m_ScriptClass->GetMethod("OnCollisionEnd", 1);
+
 		/* Populate Fields found in ScriptClass */
 		auto fields = m_ScriptClass->GetAllFields();
 		for (auto field : fields)
@@ -609,6 +613,20 @@ namespace Stimpi
 		void* param = &ts;
 		if (m_OnUpdateMethod)
 			m_ScriptClass->InvokeMethod(m_Instance, m_OnUpdateMethod, &param);
+	}
+
+	void ScriptInstance::InvokeOnCollisionBegin(Collision collision)
+	{
+		void* param = &collision;
+		if (m_OnCollisionBegin)
+			m_ScriptClass->InvokeMethod(m_Instance, m_OnCollisionBegin, &param);
+	}
+
+	void ScriptInstance::InvokeOnCollisionEnd(Collision collision)
+	{
+		void* param = &collision;
+		if (m_OnCollisionEnd)
+			m_ScriptClass->InvokeMethod(m_Instance, m_OnCollisionEnd, &param);
 	}
 
 	std::shared_ptr<Stimpi::ScriptField> ScriptInstance::GetScriptFieldFromMonoField(MonoClassField* field)

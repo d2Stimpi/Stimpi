@@ -342,7 +342,7 @@ namespace Stimpi
 
 #pragma region Pysics
 
-	static bool Physics_ApplyForce(uint32_t entityID, glm::vec2 force, glm::vec2 point, bool wake)
+	static bool Physics_ApplyForce(uint32_t entityID, glm::vec2* force, glm::vec2* point, bool wake)
 	{
 		bool hasComponent = false;
 		auto scene = SceneManager::Instance()->GetActiveScene();
@@ -355,13 +355,13 @@ namespace Stimpi
 		{
 			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
 			b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
-			body->ApplyForce({ force.x, force.y }, { point.x, point.y }, wake);
+			body->ApplyForce({ force->x, force->y }, { point->x, point->y }, wake);
 		}
 
 		return hasComponent;
 	}
 
-	static bool Physics_ApplyForceCenter(uint32_t entityID, glm::vec2 force, bool wake)
+	static bool Physics_ApplyForceCenter(uint32_t entityID, glm::vec2* force, bool wake)
 	{
 		bool hasComponent = false;
 		auto scene = SceneManager::Instance()->GetActiveScene();
@@ -374,7 +374,45 @@ namespace Stimpi
 		{
 			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
 			b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
-			body->ApplyForceToCenter({ force.x, force.y }, wake);
+			body->ApplyForceToCenter({ force->x, force->y }, wake);
+		}
+
+		return hasComponent;
+	}
+
+	static bool Physics_ApplyLinearImpulse(uint32_t entityID, glm::vec2* impulse, glm::vec2* point, bool wake)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<RigidBody2DComponent>();
+		if (hasComponent)
+		{
+			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+			b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+			body->ApplyLinearImpulse({ impulse->x, impulse->y }, { point->x, point->y }, wake);
+		}
+
+		return hasComponent;
+	}
+
+	static bool Physics_ApplyLinearImpulseCenter(uint32_t entityID, glm::vec2* impulse, bool wake)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<RigidBody2DComponent>();
+		if (hasComponent)
+		{
+			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+			b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+			body->ApplyLinearImpulseToCenter({ impulse->x, impulse->y }, wake);
 		}
 
 		return hasComponent;
@@ -416,6 +454,8 @@ namespace Stimpi
 		// Physics
 		ST_ADD_INTERNAL_CALL(Physics_ApplyForce);
 		ST_ADD_INTERNAL_CALL(Physics_ApplyForceCenter);
+		ST_ADD_INTERNAL_CALL(Physics_ApplyLinearImpulse);
+		ST_ADD_INTERNAL_CALL(Physics_ApplyLinearImpulseCenter);
 	}
 
 	void ScriptGlue::RegosterComponents()

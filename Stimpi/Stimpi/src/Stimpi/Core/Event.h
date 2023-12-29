@@ -6,12 +6,15 @@
 #include "Stimpi/Core/Core.h"
 #include "Stimpi/Log.h"
 
+#include "Stimpi/Physics/Physics.h"
+
 namespace Stimpi
 {
-	enum class EventType {None = 0, WindowEvent, KeyboardEvent, MouseEvent, UnknownEvent };
+	enum class EventType {None = 0, WindowEvent, KeyboardEvent, MouseEvent, PhysicsEvent, UnknownEvent };
 	enum class KeyboardEventType {NONE = 0, KEY_EVENT_DOWN, KEY_EVENT_UP, KEY_EVENT_REPEAT };
 	enum class MouseEventType { NONE = 0, MOUSE_EVENT_BUTTONDOWN, MOUSE_EVENT_BUTTONUP, MOUSE_EVENT_BUTTONHOLD, MOUSE_EVENT_WHEELUP, MOUSE_EVENT_WHEELDOWN, MOUSE_EVENT_MOTION };
 	enum class WindowEventType { NONE = 0, WINDOW_EVENT_QUIT, WINDOW_EVENT_RESIZE};
+	enum class PhysicsEventType { NONE = 0, COLLISION_BEGIN, COLLISION_END };
 
 	/* Helper dbg stringify functions */
 	static std::string GetStringKeyboardEvent(KeyboardEventType e)
@@ -48,6 +51,17 @@ namespace Stimpi
 		case WindowEventType::NONE:					return std::string("NONE");
 		case WindowEventType::WINDOW_EVENT_QUIT:	return std::string("WINDOW_EVENT_QUIT");
 		case WindowEventType::WINDOW_EVENT_RESIZE:	return std::string("WINDOW_EVENT_RESIZE");
+		default: return std::string("NONE");
+		}
+	}
+
+	static std::string GetStringPhysicsEvent(PhysicsEventType e)
+	{
+		switch (e)
+		{
+		case PhysicsEventType::NONE:			return std::string("NONE");
+		case PhysicsEventType::COLLISION_BEGIN:	return std::string("COLLISION_BEGIN");
+		case PhysicsEventType::COLLISION_END:	return std::string("COLLISION_END");
 		default: return std::string("NONE");
 		}
 	}
@@ -136,12 +150,13 @@ namespace Stimpi
 	class ST_API WindowEvent : public Event
 	{
 	public:
-		WindowEvent(WindowEventType type, uint32_t width, uint32_t height) : Event(EventType::WindowEvent), m_Type(type), m_Width(width), m_Height(height) {}
+		WindowEvent(WindowEventType type, uint32_t width, uint32_t height)
+			: Event(EventType::WindowEvent), m_Type(type), m_Width(width), m_Height(height) {}
 		~WindowEvent() {}
 
 		void LogEvent() { ST_CORE_TRACE("WindowEventType: {0}", GetStringWindowEvent(m_Type)); }
 
-		static WindowEvent* CreateWindowEvnet(SDL_Event e);
+		static WindowEvent* CreateWindowEvent(SDL_Event e);
 
 		WindowEventType GetType() { return m_Type; }
 		uint32_t GetWidth() { return m_Width; }
@@ -151,6 +166,30 @@ namespace Stimpi
 		WindowEventType m_Type;
 		uint32_t m_Width;
 		uint32_t m_Height;
+	};
+
+	class ST_API PhysicsEvent : public Event
+	{
+	public:
+		PhysicsEvent()
+			: Event(EventType::PhysicsEvent), m_Type(PhysicsEventType::NONE), m_Collision({})
+		{}
+		PhysicsEvent(PhysicsEventType type, Collision collision)
+			: Event(EventType::PhysicsEvent), m_Type(type), m_Collision(collision)
+		{}
+		~PhysicsEvent() {}
+
+		void LogEvent() { ST_CORE_TRACE("PhysicsEventType: {0}", GetStringPhysicsEvent(m_Type)); }
+
+		static PhysicsEvent* CreatePhysicsEvent(PhysicsEventType type, Collision collision);
+
+		PhysicsEventType GetType() { return m_Type; }
+		Collision GetCollisionData() { return m_Collision; }
+
+		static EventType GetStaticType() { return EventType::PhysicsEvent; }
+	private:
+		PhysicsEventType m_Type;
+		Collision m_Collision;
 	};
 
 	/* Used to enable passing unprocessed Raw SDLEvnets to ImGui */

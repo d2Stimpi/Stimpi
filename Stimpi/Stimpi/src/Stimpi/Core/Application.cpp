@@ -4,6 +4,7 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Core/Layer.h"
 
+#include "Stimpi/Core/EventQueue.h"
 #include "Stimpi/Core/InputManager.h"
 #include "Stimpi/Core/Time.h"
 
@@ -117,5 +118,15 @@ namespace Stimpi
 				m_LayerStack.OnEvent(event);
 			}
 		}
+
+		// Process Event Queues
+		// TODO: pass events to LayerStack
+		auto keyEvents = EventQueue<PhysicsEvent>::GetEvents();
+		for (auto event : keyEvents)
+		{
+			//event->LogEvent();
+			m_LayerStack.OnEvent(event.get());
+		}
+		EventQueue<PhysicsEvent>::Flush();
 	}
 }

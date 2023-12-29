@@ -144,6 +144,9 @@ namespace Stimpi
 				//ST_CORE_INFO("ImGui texture uv: {0}, {1}", uvLog.x, uvLog.y);
 			}
 		}
+
+		// Pass events to the Scene
+		m_Scene->OnEvent(e);
 	}
 
 	void EditorLayer::SetDarkThemeStyle()

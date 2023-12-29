@@ -98,7 +98,7 @@ namespace Stimpi
 
 		CircleComponent() = default;
 		CircleComponent(const CircleComponent&) = default;
-		CircleComponent(glm::vec2 pos, glm::vec2 size, float thickness, float fade)
+		CircleComponent(glm::vec2 pos, glm::vec2 size, float thickness = 1.0f, float fade = 0.005f)
 			: m_Position(pos), m_Size(size), m_Thickness(thickness), m_Fade(fade)
 		{
 		}
@@ -187,7 +187,8 @@ namespace Stimpi
 		SpriteComponent(const std::string& filePath)
 			: m_FilePath(filePath), m_Enable(true)
 		{
-			m_Texture = ResourceManager::Instance()->LoadTexture(filePath);
+			if (!m_FilePath.empty())
+				m_Texture = ResourceManager::Instance()->LoadTexture(filePath);
 		}
 
 		operator Texture* () const { return m_Texture; }
@@ -232,7 +233,8 @@ namespace Stimpi
 			if (node["FilePath"])
 			{
 				m_FilePath = node["FilePath"].as<std::string>();
-				m_Texture = ResourceManager::Instance()->LoadTexture(m_FilePath);
+				if (!m_FilePath.empty())
+					m_Texture = ResourceManager::Instance()->LoadTexture(m_FilePath);
 			}
 			else
 			{

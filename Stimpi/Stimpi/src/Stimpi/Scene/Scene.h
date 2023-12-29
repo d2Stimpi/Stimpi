@@ -19,6 +19,7 @@ class b2World;
 namespace Stimpi
 {
 	class Entity;
+	class ContactListener;
 
 	enum class RuntimeState { STOPPED = 0, RUNNING, PAUSED };
 
@@ -63,6 +64,7 @@ namespace Stimpi
 		void InitializePhysics();
 		void UpdatePhysicsSimulation(Timestep ts);
 		void DeinitializePhysics();
+		bool ProcessPhysicsEvent(PhysicsEvent* event);
 
 	private:
 		entt::registry m_Registry;
@@ -80,7 +82,8 @@ namespace Stimpi
 		Texture* m_TestTexture;
 
 		// Physics
-		b2World* m_PhysicsDWorld = nullptr;
+		b2World* m_PhysicsWorld = nullptr;
+		std::shared_ptr <ContactListener> m_ContactListener;
 
 		friend class Entity;
 		friend class SceneSerializer;

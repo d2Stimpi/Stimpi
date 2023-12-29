@@ -60,5 +60,9 @@ namespace Stimpi
         public extern static bool Physics_ApplyForce(uint entityID, ref Vector2 force, ref Vector2 point, bool wake);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool Physics_ApplyForceCenter(uint entityID, ref Vector2 force, bool wake);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool Physics_ApplyLinearImpulse(uint entityID, ref Vector2 impulse, ref Vector2 point, bool wake);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool Physics_ApplyLinearImpulseCenter(uint entityID, ref Vector2 impulse, bool wake);
     }
 }

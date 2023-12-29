@@ -33,6 +33,8 @@ namespace Stimpi
 		void AddComponentLayout();
 
 		void ShowSelectedEntityComponents(bool show);
+
+		void CreateEntityPopup();
 	private:
 		bool m_Show = true;
 		bool m_ShowInspect = true;

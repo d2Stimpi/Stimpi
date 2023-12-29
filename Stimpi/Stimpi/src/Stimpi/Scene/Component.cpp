@@ -1,5 +1,6 @@
 #include "stpch.h"
 #include "Stimpi/Scene/Component.h"
+#include "Stimpi/Scene/SceneManager.h"
 
 namespace Stimpi
 {
@@ -7,7 +8,12 @@ namespace Stimpi
 
 	static void OnQuadConstruct(entt::registry& reg, entt::entity ent)
 	{
-
+		Entity entity = { ent, s_ActiveScene };
+		if (entity.HasComponent<CameraComponent>())
+		{
+			auto& quad = entity.GetComponent<QuadComponent>();
+			quad.m_PickEnabled = false;
+		}
 	}
 
 	static void OnCameraConstruct(entt::registry& reg, entt::entity ent)
@@ -46,8 +52,6 @@ namespace Stimpi
 
 	void ComponentObserver::DeinitOnConstructObservers(entt::registry& reg)
 	{
-		s_ActiveScene = nullptr;
-
 		// on_construct
 		reg.on_construct<QuadComponent>().disconnect<&OnQuadConstruct>();
 		reg.on_construct<CameraComponent>().disconnect<&OnCameraConstruct>();

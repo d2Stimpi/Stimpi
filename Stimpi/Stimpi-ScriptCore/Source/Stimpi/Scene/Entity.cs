@@ -67,5 +67,15 @@ namespace Stimpi
         {
             Console.WriteLine($"OnUpdate Entity - time step: {ts}");
         }
+
+        public virtual void OnCollisionBegin(Collision collision)
+        {
+            Console.WriteLine($"OnCollision Begin - entities: {ID}, {collision.EntityID}");
+        }
+
+        public virtual void OnCollisionEnd(Collision collision)
+        {
+            Console.WriteLine($"OnCollision End - entities: {ID}, {collision.EntityID}");
+        }
     }
 }

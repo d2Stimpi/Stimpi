@@ -9,6 +9,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Gui\Components\SearchPopup.h">
+      <Filter>Gui\Components</Filter>
+    </ClInclude>
     <ClInclude Include="src\Gui\Components\UIPayload.h">
       <Filter>Gui\Components</Filter>
     </ClInclude>
@@ -39,10 +42,12 @@
     <ClInclude Include="src\Gui\SpriteAnimPanel.h">
       <Filter>Gui</Filter>
     </ClInclude>
-    <ClInclude Include="src\Gui\Components\SearchPopup.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
+    <ClCompile Include="src\Gui\Components\SearchPopup.cpp">
+      <Filter>Gui\Components</Filter>
+    </ClCompile>
     <ClCompile Include="src\Gui\Components\UIPayload.cpp">
       <Filter>Gui\Components</Filter>
     </ClCompile>
@@ -73,6 +78,5 @@
     <ClCompile Include="src\Gui\SpriteAnimPanel.cpp">
       <Filter>Gui</Filter>
     </ClCompile>
-    <ClCompile Include="src\Gui\Components\SearchPopup.cpp" />
   </ItemGroup>
 </Project>

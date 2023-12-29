@@ -100,7 +100,7 @@ namespace Stimpi
 	/******************************************************************************************/
 	/******************************** WindowEvent *********************************************/
 
-	WindowEvent* WindowEvent::CreateWindowEvnet(SDL_Event e)
+	WindowEvent* WindowEvent::CreateWindowEvent(SDL_Event e)
 	{
 		WindowEventType type{};
 		uint32_t width = 0;
@@ -123,6 +123,12 @@ namespace Stimpi
 		return new WindowEvent(type, width, height);
 	}
 
+	/******************************************************************************************/
+	/******************************** PhysicsEvent ********************************************/
+	PhysicsEvent* PhysicsEvent::CreatePhysicsEvent(PhysicsEventType type, Collision collision)
+	{
+		return new PhysicsEvent(type, collision);
+	}
 
 	/******************************************************************************************/
 	/******************************** UnknowEvent *********************************************/
@@ -134,13 +140,14 @@ namespace Stimpi
 	/******************************************************************************************/
 	/******************************** EventFactory ********************************************/
 
+	//TODO: rename to SDL Event Factory
 	Event* EventFactory::EventCreate(SDL_Event e)
 	{
 		switch (GetEventType(e))
 		{
 		case EventType::KeyboardEvent:  return KeyboardEvent::CreateKeyboardEvent(e);
 		case EventType::MouseEvent:		return MouseEvent::CreateMouseEvent(e);
-		case EventType::WindowEvent:	return WindowEvent::CreateWindowEvnet(e);
+		case EventType::WindowEvent:	return WindowEvent::CreateWindowEvent(e);
 		default: if (ST_EVENT_DBG) ST_CORE_WARN("EventCreate: Unknow event!"); return UnknownEvent::CreateUnknownEvent(e);
 		}
 	}
