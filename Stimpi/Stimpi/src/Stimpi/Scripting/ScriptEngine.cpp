@@ -210,7 +210,7 @@ namespace Stimpi
 		OnSceneChangedListener onScneeChanged = [&]() {
 			s_Data->m_Scene = SceneManager::Instance()->GetActiveSceneRef();
 			// Re-create Script instances
-			CreateScriptInstances();
+			//CreateScriptInstances();
 		};
 		SceneManager::Instance()->RegisterOnSceneChangeListener(onScneeChanged);
 
@@ -414,8 +414,8 @@ namespace Stimpi
 	}
 
 	/*
-	*  Called each time Scene changes. Instantiate ScriptClasses that are used by Entities in the scene.
-	*  
+	*  [Obsolete] Called each time Scene changes. Instantiate ScriptClasses that are used by Entities in the scene.
+	*  - Instances are cleared in Scene ctor
 	*/
 	void ScriptEngine::CreateScriptInstances()
 	{
@@ -431,6 +431,11 @@ namespace Stimpi
 				s_Data->m_EntityInstances[entity] = scriptInstance;
 			}
 		}
+	}
+
+	void ScriptEngine::ClearScriptInstances()
+	{
+		s_Data->m_EntityInstances.clear();
 	}
 
 	void ScriptEngine::OnScenePlay()
@@ -487,6 +492,19 @@ namespace Stimpi
 		if (s_Data->m_EntityInstances.find(entity) != s_Data->m_EntityInstances.end())
 		{
 			return s_Data->m_EntityInstances.at(entity);
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	MonoObject* ScriptEngine::GetManagedInstance(uint32_t entityID)
+	{
+		if (s_Data->m_EntityInstances.find(entityID) != s_Data->m_EntityInstances.end())
+		{
+			auto instance = s_Data->m_EntityInstances.at(entityID);
+			return instance->GetInstance();
 		}
 		else
 		{

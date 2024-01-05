@@ -58,6 +58,24 @@ namespace Stimpi
             InternalCalls.Entity_RemoveComponent(ID, componentType);
         }
 
+        public Entity FindEntityByName(string name)
+        {
+            uint entityID = InternalCalls.Entity_FindEntityByName(name);
+            if (entityID != 0)
+                return new Entity(entityID);
+
+            return null;
+        }
+
+        public T As<T>() where T : Entity, new()
+        {
+            object instance = InternalCalls.GetScriptInstace(ID);
+            if (instance is T)
+                return instance as T;
+
+            return null;
+        }
+
         public virtual void OnCreate()
         {
             Console.WriteLine("OnCreate Entity");

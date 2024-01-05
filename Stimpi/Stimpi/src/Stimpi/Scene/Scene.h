@@ -34,6 +34,7 @@ namespace Stimpi
 
 		Entity CreateEntity(const std::string& name = "");
 		Entity GetEntityByHandle(entt::entity handle);
+		Entity FindentityByName(std::string_view name);
 		void RemoveEntity(Entity entity);
 
 		Entity CopyEntity(const Entity entity);

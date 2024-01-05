@@ -38,6 +38,22 @@ namespace Stimpi
 		}
 	}
 
+	static void OnScriptConstruct(entt::registry& reg, entt::entity ent)
+	{
+		Entity entity = { ent, s_ActiveScene };
+
+		if (entity.HasComponent<ScriptComponent>())
+		{
+			ScriptComponent component = entity.GetComponent<ScriptComponent>();
+			if (!component.m_ScriptName.empty())
+			{
+				//TODO: Check if already created
+				ScriptEngine::OnScriptComponentAdd(component.m_ScriptName, entity);
+			}
+		}
+		
+	}
+
 	void ComponentObserver::InitOnConstructObservers(entt::registry& reg, Scene* scene)
 	{
 		s_ActiveScene = scene;
@@ -45,6 +61,7 @@ namespace Stimpi
 		// on_construct
 		reg.on_construct<QuadComponent>().connect<&OnQuadConstruct>();
 		reg.on_construct<CameraComponent>().connect<&OnCameraConstruct>();
+		reg.on_construct<ScriptComponent>().connect<&OnScriptConstruct>();
 
 		// on_destroy
 		reg.on_destroy<CameraComponent>().connect<&OnCameraDestruct>();
@@ -55,6 +72,7 @@ namespace Stimpi
 		// on_construct
 		reg.on_construct<QuadComponent>().disconnect<&OnQuadConstruct>();
 		reg.on_construct<CameraComponent>().disconnect<&OnCameraConstruct>();
+		reg.on_construct<ScriptComponent>().disconnect<&OnScriptConstruct>();
 
 		// on_destroy
 		reg.on_destroy<CameraComponent>().disconnect<&OnCameraDestruct>();

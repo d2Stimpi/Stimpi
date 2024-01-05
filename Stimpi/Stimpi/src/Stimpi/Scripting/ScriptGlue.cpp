@@ -9,6 +9,7 @@
 #include "Stimpi/Scene/SceneManager.h"
 
 #include "box2d/b2_body.h"
+#include "box2d/b2_math.h"
 
 #include "mono/metadata/appdomain.h"
 #include "mono/metadata/reflection.h"
@@ -87,6 +88,25 @@ namespace Stimpi
 		return !s_EntityHasComponentFucntions.at(managedType)(entity);
 	}
 
+	static uint32_t Entity_FindEntityByName(MonoString* name)
+	{
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		
+		char* nameCStr = mono_string_to_utf8(name);
+		Entity entity = scene->FindentityByName(nameCStr);
+		mono_free(nameCStr);
+
+		if (!entity)
+			return 0;
+
+		return entity;
+	}
+
+	static MonoObject* GetScriptInstace(uint32_t entityID)
+	{
+		return ScriptEngine::GetManagedInstance(entityID);
+	}
 	
 
 #pragma endregion Component
@@ -338,10 +358,53 @@ namespace Stimpi
 		return hasComponent;
 	}
 
+	static bool RigidBody2DComponent_GetTransform(uint32_t entityID, glm::vec2* outPosition, float* outAngle)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<RigidBody2DComponent>();
+		if (hasComponent)
+		{
+			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+			b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+			b2Transform transform = body->GetTransform();
+			
+			*outPosition = glm::vec2(transform.p.x, transform.p.y);
+			*outAngle = transform.q.GetAngle();
+		}
+
+		return hasComponent;
+	}
+
+	static bool RigidBody2DComponent_SetTransform(uint32_t entityID, glm::vec2* position, float angle)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<RigidBody2DComponent>();
+		if (hasComponent)
+		{
+			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+			b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+			b2Vec2 pos = b2Vec2(position->x, position->y);
+			body->SetTransform(pos, angle);
+		}
+
+		return hasComponent;
+	}
+
 #pragma endregion RigidBody2DComponent
 
 #pragma region Pysics
 
+	// TODO: move under RigidBody2D section
 	static bool Physics_ApplyForce(uint32_t entityID, glm::vec2* force, glm::vec2* point, bool wake)
 	{
 		bool hasComponent = false;
@@ -361,6 +424,7 @@ namespace Stimpi
 		return hasComponent;
 	}
 
+	// TODO: move under RigidBody2D section
 	static bool Physics_ApplyForceCenter(uint32_t entityID, glm::vec2* force, bool wake)
 	{
 		bool hasComponent = false;
@@ -380,6 +444,7 @@ namespace Stimpi
 		return hasComponent;
 	}
 
+	// TODO: move under RigidBody2D section
 	static bool Physics_ApplyLinearImpulse(uint32_t entityID, glm::vec2* impulse, glm::vec2* point, bool wake)
 	{
 		bool hasComponent = false;
@@ -399,6 +464,7 @@ namespace Stimpi
 		return hasComponent;
 	}
 
+	// TODO: move under RigidBody2D section
 	static bool Physics_ApplyLinearImpulseCenter(uint32_t entityID, glm::vec2* impulse, bool wake)
 	{
 		bool hasComponent = false;
@@ -426,6 +492,8 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(Entity_HasComponent);
 		ST_ADD_INTERNAL_CALL(Entity_AddComponent);
 		ST_ADD_INTERNAL_CALL(Entity_RemoveComponent);
+		ST_ADD_INTERNAL_CALL(Entity_FindEntityByName);
+		ST_ADD_INTERNAL_CALL(GetScriptInstace);
 
 		// TagComponent
 		ST_ADD_INTERNAL_CALL(TagComponent_GetString);
@@ -447,6 +515,10 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_SetRigidBodyType);
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_GetFixedRotation);
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_SetFixedRotation);
+
+		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_GetTransform);
+		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_SetTransform);
+
 
 		// Input
 		ST_ADD_INTERNAL_CALL(Input_IsKeyPressed);

@@ -50,6 +50,9 @@ namespace Stimpi
 		m_Registry.create();
 		ComponentObserver::InitOnConstructObservers(m_Registry, this);
 
+		// Clear script instances - they are created in OnScriptConstruct
+		ScriptEngine::ClearScriptInstances();
+
 		m_RuntimeState = RuntimeState::STOPPED;
 		m_DefaultShader.reset(Shader::CreateShader("..\/assets\/shaders\/shader.shader"));
 		m_DefaultSolidColorShader.reset(Shader::CreateShader("..\/assets\/shaders\/solidcolor.shader"));
@@ -190,6 +193,18 @@ namespace Stimpi
 	Stimpi::Entity Scene::GetEntityByHandle(entt::entity handle)
 	{
 		return Entity(handle, this);
+	}
+
+	Stimpi::Entity Scene::FindentityByName(std::string_view name)
+	{
+		auto view = m_Registry.view<TagComponent>();
+		for (auto entity : view)
+		{
+			const TagComponent& tag = view.get<TagComponent>(entity);
+			if (tag.m_Tag == name)
+				return Entity{ entity, this };
+		}
+		return {};
 	}
 
 	void Scene::RemoveEntity(Entity entity)

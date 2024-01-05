@@ -85,3 +85,53 @@ Scene:
       Friction: 0.5
       Restitution: 0
       RestitutionThreshold: 0.5
+  Entity:
+    TagComponent:
+      Tag: Sprite_Object
+    QuadComponent:
+      - 48.3922577
+      - 18.0025826
+      - 10
+      - 10
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 0.877451003
+        - 0.210760266
+        - 0.210760266
+        - 1
+    RigidBody2DComponent:
+      Type: Dynamic
+      FixedRotation: true
+    BoxCollider2DComponent:
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    TagComponent:
+      Tag: Player
+    QuadComponent:
+      - 70.1935501
+      - 38.1522522
+      - 10
+      - 10
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 0.921568632
+        - 0.662477076
+        - 0.243944645
+        - 1
+    ScriptComponent:
+      ScriptName: Sandbox.Actor

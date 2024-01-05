@@ -132,5 +132,18 @@ namespace Stimpi
                     Console.WriteLine($"Entity {Entity.ID} does not have RigidBody2DComponent (set type)");
             }
         }
+
+        public bool GetTransform(out Vector2 position, out float angle)
+        {
+            bool retVal = InternalCalls.RigidBody2DComponent_GetTransform(Entity.ID, out Vector2 pos, out float ang);
+            position = pos;
+            angle = ang;
+            return retVal;
+        }
+
+        public bool SetTransform(Vector2 position, float angle)
+        {
+            return InternalCalls.RigidBody2DComponent_SetTransform(Entity.ID, ref position, ref angle);
+        }
     }
 }

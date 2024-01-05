@@ -9,13 +9,17 @@ namespace Stimpi
 {
     public class InternalCalls
     {
-        /* Components */
+        /* Entity & Components */
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool Entity_HasComponent(uint entityID, Type componentType);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool Entity_AddComponent(uint entityID, Type componentType);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool Entity_RemoveComponent(uint entityID, Type componentType);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static uint Entity_FindEntityByName(string name);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static object GetScriptInstace(uint entityID);
 
         /* TagComponent */
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -50,6 +54,10 @@ namespace Stimpi
         public extern static bool RigidBody2DComponent_GetFixedRotation(uint entityID, out bool outFixedRotation);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool RigidBody2DComponent_SetFixedRotation(uint entityID, bool fixedRotation);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool RigidBody2DComponent_GetTransform(uint entityID, out Vector2 outPosition, out float outAngle);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool RigidBody2DComponent_SetTransform(uint entityID, ref Vector2 position, ref float angle);
 
         /* Input */
         [MethodImplAttribute(MethodImplOptions.InternalCall)]

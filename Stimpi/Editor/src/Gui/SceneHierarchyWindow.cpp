@@ -229,12 +229,15 @@ namespace Stimpi
 
 					// Populate with data from Entity's class Instance
 					std::shared_ptr<ScriptInstance> scriptInstance = ScriptEngine::GetScriptInstance(s_SelectedEntity);
-					float fNum = 0.0f;
-					auto field = scriptInstance->GetScriptFieldFromMonoField(item);
-					field->ReadFieldValue(&fNum);
-					if (ImGui::InputFloat(fmt::format("{}##{}", fieldName, tagName).c_str(), &fNum, 0.0f, 0.0f, "%.3f", fieldInputFlags))
+					if (scriptInstance != nullptr)
 					{
-						field->SetFieldValue(&fNum);
+						float fNum = 0.0f;
+						auto field = scriptInstance->GetScriptFieldFromMonoField(item);
+						field->ReadFieldValue(&fNum);
+						if (ImGui::InputFloat(fmt::format("{}##{}", fieldName, tagName).c_str(), &fNum, 0.0f, 0.0f, "%.3f", fieldInputFlags))
+						{
+							field->SetFieldValue(&fNum);
+						}
 					}
 				}
 			}
