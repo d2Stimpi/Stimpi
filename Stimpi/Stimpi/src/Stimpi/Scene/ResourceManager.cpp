@@ -24,6 +24,30 @@ namespace Stimpi
 		return m_Instance.get();
 	}
 
+	void ResourceManager::SetProjectPathInternal(const std::filesystem::path projectPath)
+	{
+		m_ProjectDir = projectPath;
+		NotifyOnSceneChange();
+	}
+
+	std::filesystem::path ResourceManager::GetProjectPathInternal()
+	{
+		return m_ProjectDir;
+	}
+
+	std::filesystem::path ResourceManager::GetDefaultProjectPathInternal()
+	{
+		return DEFAULT_PROJECT_PATH;
+	}
+
+	void ResourceManager::NotifyOnSceneChange()
+	{
+		for (auto listener : m_OnProjectChangedListeners)
+		{
+			listener();
+		}
+	}
+
 	void ResourceManager::ClearFile(const std::string& fileName)
 	{
 		std::ofstream outFile;

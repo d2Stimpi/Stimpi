@@ -4,6 +4,8 @@
 #include "Stimpi/Log.h"
 
 #include "Windows.h"
+#include <ShlObj_core.h>
+#include <ShObjIdl.h>
 #include <commdlg.h>
 #include <SDL.h>
 #include <SDL_syswm.h>
@@ -57,6 +59,33 @@ namespace Stimpi
 		{
 			return ofn.lpstrFile;
 		}
+		return std::string();
+	}
+
+	std::string FileDialogs::OpenFolder()
+	{
+		SDL_Window* sdlWindow = SDL_GL_GetCurrentWindow();
+		SDL_SysWMinfo wmInfo;
+		SDL_VERSION(&wmInfo.version);
+		SDL_GetWindowWMInfo(sdlWindow, &wmInfo);
+		HWND hwnd = wmInfo.info.win.window;
+
+		BROWSEINFO bfn;
+		TCHAR szDir[260] = { 0 };
+		ZeroMemory(&bfn, sizeof(BROWSEINFO));
+		bfn.ulFlags = BIF_USENEWUI;
+		bfn.lpszTitle = L"Caption";
+		bfn.hwndOwner = hwnd;
+		bfn.pszDisplayName = szDir;
+
+		LPITEMIDLIST lpItem = SHBrowseForFolder(&bfn);
+		if (lpItem != NULL)
+		{
+			CHAR szPath[260] = { 0 };
+			SHGetPathFromIDListA(lpItem, szPath);
+			return szPath;
+		}
+
 		return std::string();
 	}
 }

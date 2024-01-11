@@ -13,6 +13,7 @@
 #include "Gui/Gizmo2D.h"
 
 #include "Stimpi/Scene/SceneManager.h"
+#include "Stimpi/Scene/ResourceManager.h"
 
 #include <SDL.h>
 #include <SDL_opengl.h>
@@ -82,6 +83,15 @@ namespace Stimpi
 
 		m_Scene = SceneManager::Instance()->GetActiveSceneRef();
 		m_Scene->SetCamera(m_EditorCamera.get());
+
+		// Project listener
+		OnProjectChangedListener onProjectChanged = [&]() {
+			ST_CORE_INFO("EditorLayer - onProjectChanged()");
+
+			m_ContentBrowserWindow.OnProjectChanged();
+		};
+		ResourceManager::Instance()->RegisterOnProjectChangedListener(onProjectChanged);
+
 
 		// Window/Panel context set
 		SetupComponentContext(m_Scene.get());

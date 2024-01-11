@@ -5,6 +5,7 @@
 
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/SceneSerializer.h"
+#include "Stimpi/Scene/ResourceManager.h"
 
 #include "Stimpi/Utils/PlatformUtils.h"
 
@@ -29,7 +30,7 @@ namespace Stimpi
 	{
 		if (ImGui::BeginMainMenuBar())
 		{
-			if (ImGui::BeginMenu("Menu"))
+			if (ImGui::BeginMenu("File"))
 			{
 				if (ImGui::MenuItem("New Scene"))
 				{
@@ -68,6 +69,23 @@ namespace Stimpi
 
 				ImGui::EndMenu();
 			}
+			// File - end
+
+			if (ImGui::BeginMenu("Project"))
+			{
+				if (ImGui::MenuItem("Open"))
+				{
+					std::string filePath = FileDialogs::OpenFolder();
+					if (!filePath.empty())
+					{
+						ResourceManager::SetProjectPath(filePath);
+					}
+				}
+
+				ImGui::EndMenu();
+			}
+
+
 			ImGui::EndMainMenuBar();
 		}
 	}

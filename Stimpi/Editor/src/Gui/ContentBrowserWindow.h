@@ -10,6 +10,7 @@ namespace Stimpi
 		ContentBrowserWindow();
 
 		void OnImGuiRender();
+		void OnProjectChanged();
 
 	private:
 		std::filesystem::path m_CurrentDirectory;

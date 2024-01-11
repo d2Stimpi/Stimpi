@@ -1,6 +1,7 @@
 #include "Gui/ContentBrowserWindow.h"
 
 #include "Stimpi/Log.h"
+#include "Stimpi/Scene/ResourceManager.h"
 #include "Gui/Components/UIPayload.h"
 
 #include "ImGui/src/imgui.h"
@@ -10,7 +11,7 @@ namespace Stimpi
 	static const std::filesystem::path s_AssetsPath = "../assets";
 
 	ContentBrowserWindow::ContentBrowserWindow()
-		: m_CurrentDirectory(s_AssetsPath)
+		: m_CurrentDirectory(ResourceManager::GetProjectPath())
 	{
 
 	}
@@ -19,7 +20,7 @@ namespace Stimpi
 	{
 		ImGui::Begin("Content Browser");
 
-		if (m_CurrentDirectory != std::filesystem::path(s_AssetsPath))
+		if (m_CurrentDirectory != std::filesystem::path(ResourceManager::GetProjectPath()))
 		{
 			if (ImGui::Button("<-"))
 			{
@@ -30,7 +31,7 @@ namespace Stimpi
 		for (auto& directoryEntry : std::filesystem::directory_iterator(m_CurrentDirectory))
 		{
 			const auto& path = directoryEntry.path();
-			auto relativePath = std::filesystem::relative(path, s_AssetsPath);
+			auto relativePath = std::filesystem::relative(path, ResourceManager::GetProjectPath());
 			std::string filenameStr = relativePath.filename().string();
 			if (directoryEntry.is_directory())
 			{
@@ -57,6 +58,11 @@ namespace Stimpi
 		}
 
 		ImGui::End();
+	}
+
+	void ContentBrowserWindow::OnProjectChanged()
+	{
+		m_CurrentDirectory = ResourceManager::GetProjectPath();
 	}
 
 }
