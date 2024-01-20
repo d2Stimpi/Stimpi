@@ -7,14 +7,16 @@
 #include "Stimpi/Log.h"
 
 #include "Stimpi/Physics/Physics.h"
+#include "Stimpi/Utils/PlatformUtils.h"
 
 namespace Stimpi
 {
-	enum class EventType {None = 0, WindowEvent, KeyboardEvent, MouseEvent, PhysicsEvent, UnknownEvent };
+	enum class EventType {None = 0, WindowEvent, KeyboardEvent, MouseEvent, PhysicsEvent, SystemShellEvent, UnknownEvent };
 	enum class KeyboardEventType {NONE = 0, KEY_EVENT_DOWN, KEY_EVENT_UP, KEY_EVENT_REPEAT };
 	enum class MouseEventType { NONE = 0, MOUSE_EVENT_BUTTONDOWN, MOUSE_EVENT_BUTTONUP, MOUSE_EVENT_BUTTONHOLD, MOUSE_EVENT_WHEELUP, MOUSE_EVENT_WHEELDOWN, MOUSE_EVENT_MOTION };
 	enum class WindowEventType { NONE = 0, WINDOW_EVENT_QUIT, WINDOW_EVENT_RESIZE};
 	enum class PhysicsEventType { NONE = 0, COLLISION_BEGIN, COLLISION_END };
+	enum class SystemShellEventType { NONE = 0, SH_CREATED, SH_UPDATED, SH_DELETED, SH_RENAMED };
 
 	/* Helper dbg stringify functions */
 	static std::string GetStringKeyboardEvent(KeyboardEventType e)
@@ -62,6 +64,19 @@ namespace Stimpi
 		case PhysicsEventType::NONE:			return std::string("NONE");
 		case PhysicsEventType::COLLISION_BEGIN:	return std::string("COLLISION_BEGIN");
 		case PhysicsEventType::COLLISION_END:	return std::string("COLLISION_END");
+		default: return std::string("NONE");
+		}
+	}
+
+	static std::string GetStringSystemShellEvent(SystemShellEventType e)
+	{
+		switch (e)
+		{
+		case SystemShellEventType::NONE:		return std::string("NONE");
+		case SystemShellEventType::SH_CREATED:	return std::string("SH_CREATED");
+		case SystemShellEventType::SH_UPDATED:	return std::string("SH_MODIFIED");
+		case SystemShellEventType::SH_DELETED:	return std::string("SH_DELETED");
+		case SystemShellEventType::SH_RENAMED:	return std::string("SH_RENAMED");
 		default: return std::string("NONE");
 		}
 	}
@@ -190,6 +205,32 @@ namespace Stimpi
 	private:
 		PhysicsEventType m_Type;
 		Collision m_Collision;
+	};
+
+	class ST_API SystemShellEvent : public Event
+	{
+	public:
+		SystemShellEvent()
+			: Event(EventType::SystemShellEvent), m_Type(SystemShellEventType::NONE), m_FilePath({}), m_NewFilePath({})
+		{}
+		SystemShellEvent(SystemShellEventType type, const std::string& filePath, const std::string& newFilePath)
+			: Event(EventType::SystemShellEvent), m_Type(type), m_FilePath(filePath), m_NewFilePath(newFilePath)
+		{}
+		~SystemShellEvent() {}
+
+		void LogEvent() { ST_CORE_TRACE("SystemShellEvent: {0}", GetStringSystemShellEvent(m_Type)); }
+
+		static SystemShellEvent* CreateSystemShellEvent(ShellEvetData eventData);
+
+		SystemShellEventType GetType() { return m_Type; }
+		std::string GetFilePath() { return m_FilePath; }
+		std::string GetNewFilePath() { return m_NewFilePath; }
+
+		static EventType GetStaticType() { return EventType::SystemShellEvent; }
+	private:
+		SystemShellEventType m_Type;
+		std::string m_FilePath;
+		std::string m_NewFilePath;	// For SH_RENAMED event
 	};
 
 	/* Used to enable passing unprocessed Raw SDLEvnets to ImGui */

@@ -30,7 +30,10 @@ namespace Stimpi
 		static void Shutdown();
 
 		static void LoadAssembly(const std::string& filePath);
+		static void UnloadAssembly(const std::string& filePath);
 		static void LoadClassesFromAssembly(MonoAssembly* assembly);
+
+		static void ReloadAssembly();
 
 		static bool HasScriptClass(const std::string& className);
 		static std::shared_ptr<ScriptClass> GetScriptClassByName(const std::string& className);

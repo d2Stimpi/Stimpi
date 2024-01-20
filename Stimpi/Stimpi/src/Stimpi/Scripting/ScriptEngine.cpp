@@ -2,8 +2,11 @@
 #include "Stimpi/Scripting/ScriptEngine.h"
 
 #include "Stimpi/Log.h"
+#include "Stimpi/Core/Event.h"
 #include "Stimpi/Utils/SystemUtils.h"
+#include "Stimpi/Utils/FileWatcher.h"
 
+#include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Component.h"
 
@@ -197,6 +200,8 @@ namespace Stimpi
 		/* Scene data - Class Instances per entity */
 		std::shared_ptr<Scene> m_Scene;
 		std::unordered_map<uint32_t, std::shared_ptr<ScriptInstance>> m_EntityInstances;
+
+		FileWatchListener m_OnScriptUpdated;
 	};
 
 	static ScriptEngineData* s_Data;
@@ -225,42 +230,18 @@ namespace Stimpi
 		ScriptGlue::RegisterFucntions();
 		ScriptGlue::RegosterComponents();
 
-#if 0
-		// Load the CS class
-		s_Data->m_EntityClass = ScriptClass("Stimpi", "Entity");
-
-		// Allocate instance of CS class
-		MonoObject* classObjInstance = s_Data->m_EntityClass.Instantiate();
-
-		// Get a method
-		MonoMethod* printFloatMethod = s_Data->m_EntityClass.GetMethod("PrintFloatVar", 0);
-		s_Data->m_EntityClass.InvokeMethod(classObjInstance, printFloatMethod, nullptr);
-
-		// Example - call method with a param
-		MonoMethod* doStuffMethod = s_Data->m_EntityClass.GetMethod("DoSomeStuff", 1);
-		float value = 10.0f;
-		void* param = &value;
-		s_Data->m_EntityClass.InvokeMethod(classObjInstance, doStuffMethod, &param);
-		s_Data->m_EntityClass.InvokeMethod(classObjInstance, printFloatMethod, nullptr);
-
-		// Read field 
-		/*MonoClassField* floatField = mono_class_get_field_from_name(csClass, "PublicFloatVar");
-		value = 8.0f;
-		mono_field_set_value(classObjInstance, floatField, &value);
-		mono_runtime_invoke(printFloatMethod, classObjInstance, nullptr, &exception);
-		*/
-
-		MonoMethod* printMsgMethod = s_Data->m_EntityClass.GetMethod("PrintMessage", 2);
-		MonoString* msg = mono_string_new(s_Data->m_AppDomain, "Hello there C#");
-		float param2 = 11.0f;
-		void* params[] = { msg, &param2 };
-		s_Data->m_EntityClass.InvokeMethod(classObjInstance, printMsgMethod, params);
-
-		// Internal call example
-		//mono_add_internal_call("Stimpi.Hello::Sample", Sample);
-		MonoMethod* callNativeMethod = s_Data->m_EntityClass.GetMethod("CallNativeCode", 0);
-		s_Data->m_EntityClass.InvokeMethod(classObjInstance, callNativeMethod, nullptr);
-#endif
+		// Register Hot reload watcher
+		s_Data->m_OnScriptUpdated = [](SystemShellEvent* event)
+		{
+			ST_CORE_INFO("ScriptEngine - sh event {}", (int)event->GetType());
+			if (event->GetType() == SystemShellEventType::SH_UPDATED)
+			{
+				ReloadAssembly();
+			}
+		};
+		// TODO: change when properly handling projects
+		auto scirptPath = std::filesystem::absolute(ResourceManager::GetProjectPath()) / "\\..\\resources\\scripts\\Stimpi-ScriptCore.dll";
+		FileWatcher::AddWatcher("D:\\GitHub\\Stimpi\\resources\\scripts\\Stimpi-ScriptCore.dll", s_Data->m_OnScriptUpdated);
 	}
 
 	void ScriptEngine::Shutdown()
@@ -268,6 +249,10 @@ namespace Stimpi
 		ShutdownMono();
 		delete s_Data;
 		s_Data = nullptr;
+
+		// TODO: change when properly handling projects
+		auto scirptPath = ResourceManager::GetProjectPath() / "../resources/scripts/Stimpi-ScriptCore.dll";
+		FileWatcher::RemoveWatcher("D:\\GitHub\\Stimpi\\resources\\scripts\\Stimpi-ScriptCore.dll");
 	}
 
 	void ScriptEngine::LoadAssembly(const std::string& filePath)
@@ -278,6 +263,38 @@ namespace Stimpi
 
 		s_Data->m_CoreAssembly = LoadMonoAssembly(filePath);
 		s_Data->m_CoreAssemblyImage = mono_assembly_get_image(s_Data->m_CoreAssembly);
+	}
+
+	void ScriptEngine::UnloadAssembly(const std::string& filePath)
+	{
+		if (s_Data->m_AppDomain != nullptr)
+		{
+			mono_domain_set(s_Data->m_RootDomain, true);
+			mono_domain_unload(s_Data->m_AppDomain);
+
+			// Clear internal data. TODO: handle multiple DLLs
+			s_Data->m_ScriptClassNames.clear();
+			s_Data->m_EntityClasses.clear();
+		}
+	}
+
+	void ScriptEngine::ReloadAssembly()
+	{
+		// TODO: manage all .dll files in a folder
+
+		UnloadAssembly("../resources/scripts/Stimpi-ScriptCore.dll");
+		LoadAssembly("../resources/scripts/Stimpi-ScriptCore.dll");
+
+		Utils::PrintAssemblyTypes(s_Data->m_CoreAssembly);
+		LoadClassesFromAssembly(s_Data->m_CoreAssembly);
+
+		// Recreate base Entity ScpritClass because CoreAssembly changed
+		s_Data->m_EntityClass = ScriptClass("Stimpi", "Entity");
+
+		ScriptGlue::RegisterFucntions();
+		ScriptGlue::RegosterComponents();
+
+		CreateScriptInstances();
 	}
 
 	void ScriptEngine::LoadClassesFromAssembly(MonoAssembly* assembly)
@@ -414,8 +431,7 @@ namespace Stimpi
 	}
 
 	/*
-	*  [Obsolete] Called each time Scene changes. Instantiate ScriptClasses that are used by Entities in the scene.
-	*  - Instances are cleared in Scene ctor
+	*  Called when reloading assembly
 	*/
 	void ScriptEngine::CreateScriptInstances()
 	{

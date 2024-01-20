@@ -1,7 +1,11 @@
 #include "stpch.h"
 #include "Event.h"
 
+#include <SDL_syswm.h>
+#include <ShlObj_core.h>
+
 #define ST_EVENT_DBG false
+#define ST_EVENT_DBG_UNKNOWN_ONLY false
 
 namespace Stimpi
 {
@@ -125,13 +129,45 @@ namespace Stimpi
 
 	/******************************************************************************************/
 	/******************************** PhysicsEvent ********************************************/
+
 	PhysicsEvent* PhysicsEvent::CreatePhysicsEvent(PhysicsEventType type, Collision collision)
 	{
 		return new PhysicsEvent(type, collision);
 	}
 
 	/******************************************************************************************/
+	/******************************** SystemShellEvent ****************************************/
+
+	Stimpi::SystemShellEvent* SystemShellEvent::CreateSystemShellEvent(ShellEvetData eventData)
+	{
+		SystemShellEventType type = SystemShellEventType::NONE;
+		std::string filePath = eventData.m_FilePath;
+		std::string newFilePath = eventData.m_NewFilePath;
+
+		switch (eventData.m_Event)
+		{
+		case SHCNE_UPDATEITEM: 
+			type = SystemShellEventType::SH_UPDATED;
+			break;
+		case SHCNE_CREATE:
+			type = SystemShellEventType::SH_CREATED;
+			break;
+		case SHCNE_DELETE:
+			type = SystemShellEventType::SH_DELETED;
+			break;
+		case SHCNE_RENAMEITEM:
+			type = SystemShellEventType::SH_RENAMED;
+			break;
+		default:
+			break;
+		}
+
+		return new SystemShellEvent(type, filePath, newFilePath);
+	}
+
+	/******************************************************************************************/
 	/******************************** UnknowEvent *********************************************/
+
 	UnknownEvent* UnknownEvent::CreateUnknownEvent(SDL_Event e)
 	{
 		return new UnknownEvent();
@@ -148,7 +184,7 @@ namespace Stimpi
 		case EventType::KeyboardEvent:  return KeyboardEvent::CreateKeyboardEvent(e);
 		case EventType::MouseEvent:		return MouseEvent::CreateMouseEvent(e);
 		case EventType::WindowEvent:	return WindowEvent::CreateWindowEvent(e);
-		default: if (ST_EVENT_DBG) ST_CORE_WARN("EventCreate: Unknow event!"); return UnknownEvent::CreateUnknownEvent(e);
+		default: if (ST_EVENT_DBG || ST_EVENT_DBG_UNKNOWN_ONLY) ST_CORE_WARN("EventCreate: Unknow event: {}", e.type); return UnknownEvent::CreateUnknownEvent(e);
 		}
 	}
 
@@ -168,7 +204,6 @@ namespace Stimpi
 			return EventType::WindowEvent;
 		default:
 			return EventType::None;
-			break;
 		}
 	}
 }

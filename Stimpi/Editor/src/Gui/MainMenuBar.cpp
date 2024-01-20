@@ -7,7 +7,10 @@
 #include "Stimpi/Scene/SceneSerializer.h"
 #include "Stimpi/Scene/ResourceManager.h"
 
+#include "Stimpi/Scripting/ScriptEngine.h"
+
 #include "Stimpi/Utils/PlatformUtils.h"
+#include "Stimpi/Utils/FileWatcher.h"
 
 #include "ImGui/src/imgui.h"
 #include "ImGui/src/imgui_internal.h"
@@ -85,6 +88,45 @@ namespace Stimpi
 				ImGui::EndMenu();
 			}
 
+			if (ImGui::BeginMenu("Mono"))
+			{
+				if (ImGui::MenuItem("Reload"))
+				{
+					ScriptEngine::ReloadAssembly();
+				}
+
+				ImGui::EndMenu();
+			}
+
+			// Temp Test stuff
+			if (ImGui::BeginMenu("Test"))
+			{
+				if (ImGui::MenuItem("Folder Watcher"))
+				{
+					std::filesystem::path assetsPath = ResourceManager::GetProjectPath();
+					FileWatcher::AddWatcher(std::filesystem::absolute(assetsPath), FileWatchListener([](SystemShellEvent* e) {
+							ST_CORE_INFO("Watcher - received event: [{}] {} - {}", (int)e->GetEventType(), e->GetFilePath(), e->GetNewFilePath());
+						}));
+				}
+
+				if (ImGui::MenuItem("File Watcher"))
+				{
+					std::filesystem::path assetsPath = ResourceManager::GetProjectPath();
+					std::string filePathStr = std::filesystem::absolute(assetsPath).string() + "\\file.txt";
+					std::filesystem::path filePath = filePathStr;
+					FileWatcher::AddWatcher(std::filesystem::absolute(filePath), FileWatchListener([](SystemShellEvent* e) {
+							ST_CORE_INFO("Watcher - received event: [{}] {} - {}", (int)e->GetEventType(), e->GetFilePath(), e->GetNewFilePath());
+						}));
+				}
+
+				if (ImGui::MenuItem("Remove Watcher"))
+				{
+					std::filesystem::path assetsPath = ResourceManager::GetProjectPath();
+					FileWatcher::RemoveWatcher(std::filesystem::absolute(assetsPath));
+				}
+
+				ImGui::EndMenu();
+			}
 
 			ImGui::EndMainMenuBar();
 		}

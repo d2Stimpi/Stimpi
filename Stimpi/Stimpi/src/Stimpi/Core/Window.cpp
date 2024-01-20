@@ -1,13 +1,38 @@
 #include "stpch.h"
 #include "Window.h"
 
-#include <glad/glad.h>
-
 #include "Stimpi/Graphics/Renderer2D.h"
+#include "Stimpi/Utils/FileWatcher.h"
+#include "Stimpi/Utils/PlatformUtils.h"
+#include "Stimpi/Core/Event.h"
+
+#include <glad/glad.h>
+#include <SDL_syswm.h>
+#include <CommCtrl.h>
 
 namespace Stimpi
 {
-	// Atm here window type is selected
+	static LRESULT CALLBACK SubClassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
+	{
+		ShellEvetData event;
+
+		if (uMsg == STSHELL_USER_EVENT)
+		{
+			ShellUtils::ProcessEvent(wParam, lParam, &event);
+			if (event.m_Event != 0)
+			{
+				ST_CORE_INFO("ShellEvet: {} - {} : {}", event.m_Event, event.m_FilePath, event.m_NewFilePath);
+				// TODO: pass event to FileWatcher
+				std::shared_ptr<SystemShellEvent> shEvent = std::make_shared<SystemShellEvent>();
+				shEvent.reset(SystemShellEvent::CreateSystemShellEvent(event));
+				FileWatcher::ProcessShellEvent(shEvent);
+			}
+		}
+
+		return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+	}
+
+	// Window type is selected
 	auto s_WindowImplType = WindowType::SDL;
 
 	Window* Window::CreateAppWindow()
@@ -60,6 +85,14 @@ namespace Stimpi
 
 		m_ID = SDL_GetWindowID(m_Window);
 
+		// Enable processing System events
+		uint8_t state = SDL_EventState(SDL_SYSWMEVENT, SDL_ENABLE);
+
+		// Create a sub window class in order to capture ShellEvents
+		SDL_SysWMinfo wmInfo;
+		SDL_VERSION(&wmInfo.version);
+		SDL_GetWindowWMInfo(m_Window, &wmInfo);
+		SetWindowSubclass(wmInfo.info.win.window, &SubClassProc, 1, 0);
 	}
 
 	void WindowSDL::Deinit()

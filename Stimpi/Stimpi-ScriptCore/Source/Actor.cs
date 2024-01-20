@@ -18,6 +18,7 @@ namespace Sandbox
         private SpriteComponent m_Sprite;
         public float colorRatio = 1.0f / 255.0f;
         public float speed = 15.0f;
+        public float test = 147.0f;
 
         public override void OnCreate() 
         {
