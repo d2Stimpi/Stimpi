@@ -24,6 +24,8 @@ namespace Stimpi
 		void LoadScene(const std::string& filePath);
 		void SaveScene(const std::string& filePath);
 
+		void LoadStartingScene();
+
 		void RegisterOnSceneChangeListener(OnSceneChangedListener listener) { m_OnSceneChangeListeners.emplace_back(listener); }
 	private:
 		void NotifyOnSceneChange();

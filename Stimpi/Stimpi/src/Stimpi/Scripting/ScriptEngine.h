@@ -71,6 +71,8 @@ namespace Stimpi
 		static MonoClass* GetClassInAssembly(MonoAssembly* assembly, const char* namespaceName, const char* className);
 		static MonoObject* InstantiateClass(MonoClass* monoClass);
 
+		static std::filesystem::path GetCoreScriptPath();
+
 		friend ScriptClass;
 	};
 

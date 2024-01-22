@@ -1,0 +1,6 @@
+Project:
+  Name: Sandbox
+  StartingScene: StartScene.d2s
+  ProjectDir: "D:/GitHub/Stimpi"
+  AssetsSubDir: "assets"
+  ScriptsSubDir: "resources/scripts"

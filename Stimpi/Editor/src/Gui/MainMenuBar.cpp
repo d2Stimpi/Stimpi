@@ -3,6 +3,8 @@
 
 #include "Stimpi/Log.h"
 
+#include "Stimpi/Core/Project.h"
+
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/SceneSerializer.h"
 #include "Stimpi/Scene/ResourceManager.h"
@@ -78,10 +80,21 @@ namespace Stimpi
 			{
 				if (ImGui::MenuItem("Open"))
 				{
-					std::string filePath = FileDialogs::OpenFolder();
+					//std::string filePath = FileDialogs::OpenFolder();
+					std::string filePath = FileDialogs::OpenFile("d2S Project (*.d2sproj)\0*.d2sproj\0");
 					if (!filePath.empty())
 					{
-						ResourceManager::SetProjectPath(filePath);
+						Project::Load(filePath);
+					}
+				}
+
+				if (ImGui::MenuItem("Save"))
+				{
+					std::string projectFilePath = FileDialogs::SaveFile("d2S Project (*.d2sproj)\0*.d2sproj\0");
+					projectFilePath.append(".d2sproj");
+					if (!projectFilePath.empty())
+					{
+						Project::Save(projectFilePath);
 					}
 				}
 

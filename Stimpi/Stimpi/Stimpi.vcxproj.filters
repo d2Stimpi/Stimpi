@@ -183,6 +183,8 @@
     </ClInclude>
     <ClInclude Include="src\stpch.h" />
     <ClInclude Include="src\Stimpi\Utils\FileWatcher.h" />
+    <ClInclude Include="src\Stimpi\Core\Project.h" />
+    <ClInclude Include="src\Stimpi\Core\ProjectSerializer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Core\Application.cpp">
@@ -304,5 +306,7 @@
     </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
     <ClCompile Include="src\Stimpi\Utils\FileWatcher.cpp" />
+    <ClCompile Include="src\Stimpi\Core\Project.cpp" />
+    <ClCompile Include="src\Stimpi\Core\ProjectSerializer.cpp" />
   </ItemGroup>
 </Project>

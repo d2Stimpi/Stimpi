@@ -4,13 +4,16 @@
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Log.h"
 
+#include "Stimpi/Core/Project.h"
+
 #define DBG_LOG false
 
 namespace Stimpi
 {
 	ResourceManager::ResourceManager()
 	{
-
+		// Load the default "Sandbox" project
+		Project::Load("../Sandbox.d2sproj");
 	}
 
 	ResourceManager::~ResourceManager()
@@ -24,15 +27,19 @@ namespace Stimpi
 		return m_Instance.get();
 	}
 
-	void ResourceManager::SetProjectPathInternal(const std::filesystem::path projectPath)
-	{
-		m_ProjectDir = projectPath;
-		NotifyOnSceneChange();
-	}
-
 	std::filesystem::path ResourceManager::GetProjectPathInternal()
 	{
-		return m_ProjectDir;
+		return Project::GetProjectDir();
+	}
+
+	std::filesystem::path ResourceManager::GetAssetsPathInternal()
+	{
+		return Project::GetAssestsDir();
+	}
+
+	std::filesystem::path ResourceManager::GetScriptsPathInternal()
+	{
+		return Project::GetScriptsDir();
 	}
 
 	std::filesystem::path ResourceManager::GetDefaultProjectPathInternal()

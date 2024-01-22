@@ -205,7 +205,8 @@ namespace Stimpi
 	};
 
 	static ScriptEngineData* s_Data;
-	
+	static std::string s_CoreScriptName = "Stimpi-ScriptCore.dll";
+	static std::string s_CoreScriptDir = "../resources/scripts";
 
 	void ScriptEngine::Init()
 	{
@@ -220,7 +221,7 @@ namespace Stimpi
 		SceneManager::Instance()->RegisterOnSceneChangeListener(onScneeChanged);
 
 		InitMono();
-		LoadAssembly("../resources/scripts/Stimpi-ScriptCore.dll");
+		LoadAssembly(GetCoreScriptPath().string());
 
 		Utils::PrintAssemblyTypes(s_Data->m_CoreAssembly);
 		LoadClassesFromAssembly(s_Data->m_CoreAssembly);
@@ -239,9 +240,10 @@ namespace Stimpi
 				ReloadAssembly();
 			}
 		};
-		// TODO: change when properly handling projects
-		auto scirptPath = std::filesystem::absolute(ResourceManager::GetProjectPath()) / "\\..\\resources\\scripts\\Stimpi-ScriptCore.dll";
-		FileWatcher::AddWatcher("D:\\GitHub\\Stimpi\\resources\\scripts\\Stimpi-ScriptCore.dll", s_Data->m_OnScriptUpdated);
+
+		// Note: full path required for file watcher
+		auto scirptPath = std::filesystem::absolute(ResourceManager::GetScriptsPath()) / "Stimpi-ScriptCore.dll";
+		FileWatcher::AddWatcher(scirptPath, s_Data->m_OnScriptUpdated);
 	}
 
 	void ScriptEngine::Shutdown()
@@ -250,9 +252,9 @@ namespace Stimpi
 		delete s_Data;
 		s_Data = nullptr;
 
-		// TODO: change when properly handling projects
-		auto scirptPath = ResourceManager::GetProjectPath() / "../resources/scripts/Stimpi-ScriptCore.dll";
-		FileWatcher::RemoveWatcher("D:\\GitHub\\Stimpi\\resources\\scripts\\Stimpi-ScriptCore.dll");
+		// Note: full path required for file watcher
+		auto scirptPath = ResourceManager::GetScriptsPath() / "Stimpi-ScriptCore.dll";
+		FileWatcher::RemoveWatcher(scirptPath);
 	}
 
 	void ScriptEngine::LoadAssembly(const std::string& filePath)
@@ -282,8 +284,8 @@ namespace Stimpi
 	{
 		// TODO: manage all .dll files in a folder
 
-		UnloadAssembly("../resources/scripts/Stimpi-ScriptCore.dll");
-		LoadAssembly("../resources/scripts/Stimpi-ScriptCore.dll");
+		UnloadAssembly(GetCoreScriptPath().string());
+		LoadAssembly(GetCoreScriptPath().string());
 
 		Utils::PrintAssemblyTypes(s_Data->m_CoreAssembly);
 		LoadClassesFromAssembly(s_Data->m_CoreAssembly);
@@ -418,6 +420,12 @@ namespace Stimpi
 		mono_runtime_object_init(instance);
 
 		return instance;
+	}
+
+	std::filesystem::path ScriptEngine::GetCoreScriptPath()
+	{
+		std::filesystem::path coreScriptDir(s_CoreScriptDir);
+		return coreScriptDir / s_CoreScriptName;
 	}
 
 	MonoImage* ScriptEngine::GetCoreAssemblyImage()

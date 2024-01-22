@@ -1,6 +1,7 @@
 #include "stpch.h"
 #include "Stimpi/Scene/SceneManager.h"
 
+#include "Stimpi/Core/Project.h"
 #include "Stimpi/Scene/SceneSerializer.h"
 
 namespace Stimpi
@@ -40,6 +41,11 @@ namespace Stimpi
 	{
 		SceneSerializer serializer(m_ActiveScene.get());
 		serializer.Serialize(filePath);
+	}
+
+	void SceneManager::LoadStartingScene()
+	{
+		LoadScene(Project::GetStartingScenePath().string());
 	}
 
 	void SceneManager::NotifyOnSceneChange()

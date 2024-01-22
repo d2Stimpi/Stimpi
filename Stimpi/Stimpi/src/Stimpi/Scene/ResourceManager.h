@@ -4,7 +4,6 @@
 #include "Stimpi/Graphics/Texture.h"
 
 #include <yaml-cpp/yaml.h>
-
 #include <filesystem>
 
 #define DEFAULT_PROJECT_PATH "../assets";
@@ -22,8 +21,9 @@ namespace Stimpi
 		static ResourceManager* Instance();
 
 		// Project management
-		static void SetProjectPath(const std::filesystem::path projectPath) { Instance()->SetProjectPathInternal(projectPath); }
 		static std::filesystem::path GetProjectPath() { return Instance()->GetProjectPathInternal(); }
+		static std::filesystem::path GetAssetsPath() { return Instance()->GetAssetsPathInternal(); }
+		static std::filesystem::path GetScriptsPath() { return Instance()->GetScriptsPathInternal(); }
 		static std::filesystem::path GetDefaultProjectPath() { return Instance()->GetDefaultProjectPathInternal(); }
 
 		void ClearFile(const std::string& fileName);
@@ -41,8 +41,9 @@ namespace Stimpi
 
 		void RegisterOnProjectChangedListener(OnProjectChangedListener listener) { m_OnProjectChangedListeners.emplace_back(listener); }
 	private:
-		void SetProjectPathInternal(const std::filesystem::path projectPath);
 		std::filesystem::path GetProjectPathInternal();
+		std::filesystem::path GetAssetsPathInternal();
+		std::filesystem::path GetScriptsPathInternal();
 		std::filesystem::path GetDefaultProjectPathInternal();
 		
 		void NotifyOnSceneChange();
