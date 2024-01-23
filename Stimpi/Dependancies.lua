@@ -13,4 +13,7 @@ Library["Winmm"] = "Winmm.lib"
 Library["Ws2"] = "Ws2_32.lib"
 Library["Bcrypt"] = "Bcrypt.lib"
 Library["Version"] = "Version.lib"
+
+-- Windows dependancies
+Library["Comctl32"] = "Comctl32.lib"
 	

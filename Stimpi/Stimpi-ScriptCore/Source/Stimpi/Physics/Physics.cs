@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Stimpi
 {
-    class Physics
+    public class Physics
     {
         public static bool ApplyForce(uint entityID, Vector2 force, Vector2 point, bool wake)
         {

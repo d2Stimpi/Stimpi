@@ -30,4 +30,5 @@ group ""
 
 group "Scripting"
 	include "Stimpi-ScriptCore"
+	include "Sandbox-Script"
 group ""

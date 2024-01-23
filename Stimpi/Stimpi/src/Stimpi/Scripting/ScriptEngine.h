@@ -29,8 +29,8 @@ namespace Stimpi
 		static void Init();
 		static void Shutdown();
 
-		static void LoadAssembly(const std::string& filePath);
-		static void UnloadAssembly(const std::string& filePath);
+		static void LoadAssembly();
+		static void UnloadAssembly();
 		static void LoadClassesFromAssembly(MonoAssembly* assembly);
 
 		static void ReloadAssembly();
@@ -72,6 +72,7 @@ namespace Stimpi
 		static MonoObject* InstantiateClass(MonoClass* monoClass);
 
 		static std::filesystem::path GetCoreScriptPath();
+		static std::filesystem::path GetClientScriptPath();
 
 		friend ScriptClass;
 	};
@@ -80,7 +81,7 @@ namespace Stimpi
 	{
 	public:
 		ScriptClass() = default;
-		ScriptClass(const std::string& namespaceName, const std::string& className);
+		ScriptClass(const std::string& namespaceName, const std::string& className, MonoAssembly* monoAssembly);
 
 		MonoObject* Instantiate();
 

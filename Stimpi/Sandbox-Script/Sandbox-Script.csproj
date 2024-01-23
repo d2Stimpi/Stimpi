@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
-    <ProjectGuid>{46AD663E-B2C3-64D4-FB3A-F0F56790355C}</ProjectGuid>
+    <ProjectGuid>{362CB993-22FA-AC99-0B8E-1DC0F7FA88FE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Stimpi-ScriptCore</RootNamespace>
-    <AssemblyName>Stimpi-ScriptCore</AssemblyName>
+    <RootNamespace>Sandbox-Script</RootNamespace>
+    <AssemblyName>Sandbox-Script</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
     <OutputPath>..\resources\scripts\</OutputPath>
-    <BaseIntermediateOutputPath>..\resources\scripts\intermediates\Debug\Stimpi-ScriptCore\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\resources\scripts\intermediates\Debug\Sandbox-Script\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -31,7 +31,7 @@
     <DebugSymbols>true</DebugSymbols>
     <Optimize>true</Optimize>
     <OutputPath>..\resources\scripts\</OutputPath>
-    <BaseIntermediateOutputPath>..\resources\scripts\intermediates\Release\Stimpi-ScriptCore\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\resources\scripts\intermediates\Release\Sandbox-Script\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -43,7 +43,7 @@
     <DebugSymbols>false</DebugSymbols>
     <Optimize>true</Optimize>
     <OutputPath>..\resources\scripts\</OutputPath>
-    <BaseIntermediateOutputPath>..\resources\scripts\intermediates\Dist\Stimpi-ScriptCore\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\resources\scripts\intermediates\Dist\Sandbox-Script\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -56,17 +56,15 @@
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Dist|x64' ">
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Source\Input.cs" />
-    <Compile Include="Source\InternalCalls.cs" />
-    <Compile Include="Source\KeyCode.cs" />
-    <Compile Include="Source\Stimpi\Color.cs" />
-    <Compile Include="Source\Stimpi\Physics\Collision.cs" />
-    <Compile Include="Source\Stimpi\Physics\Physics.cs" />
-    <Compile Include="Source\Stimpi\Scene\Components.cs" />
-    <Compile Include="Source\Stimpi\Scene\Entity.cs" />
-    <Compile Include="Source\Stimpi\Vector2.cs" />
+    <Compile Include="Source\Actor.cs" />
+    <Compile Include="Source\PhysicsActor.cs" />
+    <Compile Include="Source\Player.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Stimpi-ScriptCore\Stimpi-ScriptCore.csproj">
+      <Project>{46AD663E-B2C3-64D4-FB3A-F0F56790355C}</Project>
+      <Name>Stimpi-ScriptCore</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

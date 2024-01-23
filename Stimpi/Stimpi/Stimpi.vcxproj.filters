@@ -64,6 +64,12 @@
     <ClInclude Include="src\Stimpi\Core\MouseCodes.h">
       <Filter>Stimpi\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\Core\Project.h">
+      <Filter>Stimpi\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Core\ProjectSerializer.h">
+      <Filter>Stimpi\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\Stimpi\Core\Time.h">
       <Filter>Stimpi\Core</Filter>
     </ClInclude>
@@ -175,6 +181,9 @@
     <ClInclude Include="src\Stimpi\Scripting\ScriptGlue.h">
       <Filter>Stimpi\Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\Utils\FileWatcher.h">
+      <Filter>Stimpi\Utils</Filter>
+    </ClInclude>
     <ClInclude Include="src\Stimpi\Utils\PlatformUtils.h">
       <Filter>Stimpi\Utils</Filter>
     </ClInclude>
@@ -182,9 +191,6 @@
       <Filter>Stimpi\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\stpch.h" />
-    <ClInclude Include="src\Stimpi\Utils\FileWatcher.h" />
-    <ClInclude Include="src\Stimpi\Core\Project.h" />
-    <ClInclude Include="src\Stimpi\Core\ProjectSerializer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Core\Application.cpp">
@@ -197,6 +203,12 @@
       <Filter>Stimpi\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Core\Layer.cpp">
+      <Filter>Stimpi\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Core\Project.cpp">
+      <Filter>Stimpi\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Core\ProjectSerializer.cpp">
       <Filter>Stimpi\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Core\Time.cpp">
@@ -301,12 +313,12 @@
     <ClCompile Include="src\Stimpi\Scripting\ScriptGlue.cpp">
       <Filter>Stimpi\Scripting</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Utils\FileWatcher.cpp">
+      <Filter>Stimpi\Utils</Filter>
+    </ClCompile>
     <ClCompile Include="src\Stimpi\Utils\SystemUtils.cpp">
       <Filter>Stimpi\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
-    <ClCompile Include="src\Stimpi\Utils\FileWatcher.cpp" />
-    <ClCompile Include="src\Stimpi\Core\Project.cpp" />
-    <ClCompile Include="src\Stimpi\Core\ProjectSerializer.cpp" />
   </ItemGroup>
 </Project>

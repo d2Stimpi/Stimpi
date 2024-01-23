@@ -90,7 +90,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Comctl32.lib;SDL2.lib;yaml-cppd.lib;glfw3.lib;..\vendor\mono\lib\Debug\libmono-static-sgen.lib;Winmm.lib;Ws2_32.lib;Bcrypt.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;yaml-cppd.lib;glfw3.lib;..\vendor\mono\lib\Debug\libmono-static-sgen.lib;Winmm.lib;Ws2_32.lib;Bcrypt.lib;Version.lib;Comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\vendor\SDL2-2.0.20\lib\x64;..\vendor\yaml-cpp\Debug;..\vendor\glfw\lib-vc2019;..\bin\Debug-windows-x86_64\GLAD;..\bin\Debug-windows-x86_64\Box2D;..\vendor\mono\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>..\bin\Debug-windows-x86_64\Stimpi\Stimpi.lib</ImportLibrary>
     </Link>
@@ -119,7 +119,7 @@ IF EXIST ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bi
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>SDL2.lib;yaml-cppd.lib;glfw3.lib;..\vendor\mono\lib\Release\libmono-static-sgen.lib;Winmm.lib;Ws2_32.lib;Bcrypt.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;yaml-cppd.lib;glfw3.lib;..\vendor\mono\lib\Release\libmono-static-sgen.lib;Winmm.lib;Ws2_32.lib;Bcrypt.lib;Version.lib;Comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\vendor\SDL2-2.0.20\lib\x64;..\vendor\yaml-cpp\Debug;..\vendor\glfw\lib-vc2019;..\bin\Release-windows-x86_64\GLAD;..\bin\Release-windows-x86_64\Box2D;..\vendor\mono\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>..\bin\Release-windows-x86_64\Stimpi\Stimpi.lib</ImportLibrary>
     </Link>
@@ -147,7 +147,7 @@ IF EXIST ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>SDL2.lib;yaml-cppd.lib;glfw3.lib;..\vendor\mono\lib\Dist\libmono-static-sgen.lib;Winmm.lib;Ws2_32.lib;Bcrypt.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;yaml-cppd.lib;glfw3.lib;..\vendor\mono\lib\Dist\libmono-static-sgen.lib;Winmm.lib;Ws2_32.lib;Bcrypt.lib;Version.lib;Comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\vendor\SDL2-2.0.20\lib\x64;..\vendor\yaml-cpp\Debug;..\vendor\glfw\lib-vc2019;..\bin\Dist-windows-x86_64\GLAD;..\bin\Dist-windows-x86_64\Box2D;..\vendor\mono\lib\Dist;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>..\bin\Dist-windows-x86_64\Stimpi\Stimpi.lib</ImportLibrary>
     </Link>

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Stimpi
 {
-    class Input
+    public class Input
     {
         public static bool IsKeyPressed(KeyCode keycode)
         {

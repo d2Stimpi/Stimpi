@@ -42,6 +42,7 @@ project "Stimpi"
 	links { "%{Library.Ws2}" }
 	links { "%{Library.Bcrypt}"}
 	links { "%{Library.Version}"}
+	links { "%{Library.Comctl32}"}
 
 	defines
 	{ 

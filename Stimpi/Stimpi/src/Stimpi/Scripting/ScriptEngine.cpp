@@ -193,6 +193,9 @@ namespace Stimpi
 		MonoAssembly* m_CoreAssembly = nullptr;
 		MonoImage* m_CoreAssemblyImage = nullptr;
 
+		MonoAssembly* m_ClientAssembly = nullptr;
+		MonoImage* m_ClientAssemblyImage = nullptr;
+
 		ScriptClass m_EntityClass; // Used for Examples - to be removed
 		std::vector<std::string> m_ScriptClassNames;
 		std::unordered_map<std::string, std::shared_ptr<ScriptClass>> m_EntityClasses;
@@ -208,6 +211,8 @@ namespace Stimpi
 	static std::string s_CoreScriptName = "Stimpi-ScriptCore.dll";
 	static std::string s_CoreScriptDir = "../resources/scripts";
 
+	static std::string s_ClientScriptName = "Sandbox-Script.dll";
+
 	void ScriptEngine::Init()
 	{
 		s_Data = new ScriptEngineData;
@@ -221,12 +226,13 @@ namespace Stimpi
 		SceneManager::Instance()->RegisterOnSceneChangeListener(onScneeChanged);
 
 		InitMono();
-		LoadAssembly(GetCoreScriptPath().string());
+		LoadAssembly();
 
 		Utils::PrintAssemblyTypes(s_Data->m_CoreAssembly);
+		Utils::PrintAssemblyTypes(s_Data->m_ClientAssembly);
 		LoadClassesFromAssembly(s_Data->m_CoreAssembly);
 
-		s_Data->m_EntityClass = ScriptClass("Stimpi", "Entity");
+		s_Data->m_EntityClass = ScriptClass("Stimpi", "Entity", s_Data->m_CoreAssembly);
 
 		ScriptGlue::RegisterFucntions();
 		ScriptGlue::RegosterComponents();
@@ -241,9 +247,11 @@ namespace Stimpi
 			}
 		};
 
-		// Note: full path required for file watcher
-		auto scirptPath = std::filesystem::absolute(ResourceManager::GetScriptsPath()) / "Stimpi-ScriptCore.dll";
-		FileWatcher::AddWatcher(scirptPath, s_Data->m_OnScriptUpdated);
+		// Note: full absolute path required for file watcher
+		auto coreScirptPath = std::filesystem::absolute(ResourceManager::GetScriptsPath()) / s_CoreScriptName;
+		auto clientScirptPath = std::filesystem::absolute(ResourceManager::GetScriptsPath()) / s_ClientScriptName;
+		FileWatcher::AddWatcher(coreScirptPath, s_Data->m_OnScriptUpdated);
+		FileWatcher::AddWatcher(clientScirptPath, s_Data->m_OnScriptUpdated);
 	}
 
 	void ScriptEngine::Shutdown()
@@ -252,22 +260,26 @@ namespace Stimpi
 		delete s_Data;
 		s_Data = nullptr;
 
-		// Note: full path required for file watcher
-		auto scirptPath = ResourceManager::GetScriptsPath() / "Stimpi-ScriptCore.dll";
-		FileWatcher::RemoveWatcher(scirptPath);
+		auto coreScirptPath = ResourceManager::GetScriptsPath() / s_CoreScriptName;
+		auto clientScirptPath = ResourceManager::GetScriptsPath() / s_ClientScriptName;
+		FileWatcher::RemoveWatcher(coreScirptPath);
+		FileWatcher::RemoveWatcher(clientScirptPath);
 	}
 
-	void ScriptEngine::LoadAssembly(const std::string& filePath)
+	void ScriptEngine::LoadAssembly()
 	{
 		// Create an App Domain
 		s_Data->m_AppDomain = mono_domain_create_appdomain("StimpiScriptRuntime", nullptr);
 		mono_domain_set(s_Data->m_AppDomain, true);
 
-		s_Data->m_CoreAssembly = LoadMonoAssembly(filePath);
+		s_Data->m_CoreAssembly = LoadMonoAssembly(GetCoreScriptPath().string());
 		s_Data->m_CoreAssemblyImage = mono_assembly_get_image(s_Data->m_CoreAssembly);
+		// Load Client Assembly
+		s_Data->m_ClientAssembly = LoadMonoAssembly(GetClientScriptPath().string());
+		s_Data->m_ClientAssemblyImage = mono_assembly_get_image(s_Data->m_ClientAssembly);
 	}
 
-	void ScriptEngine::UnloadAssembly(const std::string& filePath)
+	void ScriptEngine::UnloadAssembly()
 	{
 		if (s_Data->m_AppDomain != nullptr)
 		{
@@ -284,14 +296,15 @@ namespace Stimpi
 	{
 		// TODO: manage all .dll files in a folder
 
-		UnloadAssembly(GetCoreScriptPath().string());
-		LoadAssembly(GetCoreScriptPath().string());
+		UnloadAssembly();
+		LoadAssembly();
 
 		Utils::PrintAssemblyTypes(s_Data->m_CoreAssembly);
+		Utils::PrintAssemblyTypes(s_Data->m_ClientAssembly);
 		LoadClassesFromAssembly(s_Data->m_CoreAssembly);
 
 		// Recreate base Entity ScpritClass because CoreAssembly changed
-		s_Data->m_EntityClass = ScriptClass("Stimpi", "Entity");
+		s_Data->m_EntityClass = ScriptClass("Stimpi", "Entity", s_Data->m_CoreAssembly);
 
 		ScriptGlue::RegisterFucntions();
 		ScriptGlue::RegosterComponents();
@@ -301,10 +314,10 @@ namespace Stimpi
 
 	void ScriptEngine::LoadClassesFromAssembly(MonoAssembly* assembly)
 	{
-		MonoImage* image = mono_assembly_get_image(assembly);
+		MonoImage* image = mono_assembly_get_image(s_Data->m_ClientAssembly);
 		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
 		int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
-		MonoClass* entityClass = GetClassInAssembly(assembly, "Stimpi", "Entity");
+		MonoClass* entityClass = GetClassInAssembly(s_Data->m_CoreAssembly, "Stimpi", "Entity");
 
 		for (int32_t i = 0; i < numTypes; i++)
 		{
@@ -319,7 +332,7 @@ namespace Stimpi
 			else
 				fullName = fmt::format("{}.{}", nameSpace, name);
 
-			MonoClass* monoClass = GetClassInAssembly(assembly, nameSpace, name);
+			MonoClass* monoClass = GetClassInAssembly(s_Data->m_ClientAssembly, nameSpace, name);
 			if (entityClass == monoClass)
 				continue;
 
@@ -327,7 +340,7 @@ namespace Stimpi
 			if (isEntity)
 			{
 				s_Data->m_ScriptClassNames.push_back(fullName);
-				s_Data->m_EntityClasses[fullName] = std::make_shared<ScriptClass>(nameSpace, name);
+				s_Data->m_EntityClasses[fullName] = std::make_shared<ScriptClass>(nameSpace, name, s_Data->m_ClientAssembly);
 			}
 		}
 	}
@@ -428,6 +441,11 @@ namespace Stimpi
 		return coreScriptDir / s_CoreScriptName;
 	}
 
+	std::filesystem::path ScriptEngine::GetClientScriptPath()
+	{
+		return ResourceManager::GetScriptsPath() / s_ClientScriptName;
+	}
+
 	MonoImage* ScriptEngine::GetCoreAssemblyImage()
 	{
 		return s_Data->m_CoreAssemblyImage;
@@ -491,7 +509,8 @@ namespace Stimpi
 		OnScriptComponentRemove(entity);
 
 		auto classInstance = CreateScriptInstance(className, entity);
-		s_Data->m_EntityInstances[entity] = classInstance;
+		if (classInstance)
+			s_Data->m_EntityInstances[entity] = classInstance;
 	}
 
 	void ScriptEngine::OnScriptComponentRemove(Entity entity)
@@ -548,10 +567,10 @@ namespace Stimpi
 
 	/* ======== ScriptClass ======== */
 
-	ScriptClass::ScriptClass(const std::string& namespaceName, const std::string& className)
+	ScriptClass::ScriptClass(const std::string& namespaceName, const std::string& className, MonoAssembly* monoAssembly)
 		: m_Namespace(namespaceName), m_Name(className)
 	{
-		m_Class = ScriptEngine::GetClassInAssembly(s_Data->m_CoreAssembly, namespaceName.c_str(), className.c_str());
+		m_Class = ScriptEngine::GetClassInAssembly(monoAssembly, namespaceName.c_str(), className.c_str());
 		ST_CORE_ASSERT(!m_Class);
 
 		LoadFields();
