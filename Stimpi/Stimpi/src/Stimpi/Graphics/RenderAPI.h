@@ -23,6 +23,8 @@ namespace Stimpi
 		virtual void DrawElements(DrawElementsMode mode, uint32_t count, uint32_t offset) = 0;
 		virtual void DrawArrays(DrawElementsMode mode, uint32_t first, uint32_t count) = 0;
 
+		virtual void SetLineWidth(float width) = 0;
+
 		static RenderAPI* CreateRenderAPI();
 	private:
 	};

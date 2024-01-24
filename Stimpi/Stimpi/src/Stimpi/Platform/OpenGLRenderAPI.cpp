@@ -64,4 +64,9 @@ namespace Stimpi
 	{
 		glDrawArrays(OpenGLDrawMode(mode), first, count);
 	}
+
+	void OpenGLRenderAPI::SetLineWidth(float width)
+	{
+		glLineWidth(width);
+	}
 }

@@ -17,7 +17,8 @@
 
 #define VERTEX_CMD_CAPACITY			(6 * 10000) // 6 vertex per quad, 10k quads
 #define VERTEX_ARRAY_SIZE_QUADS		(192 * 1000) // Layout{3,3,2} quad szie * 1000 (max 1k squares per call)  
-#define VERTEX_ARRAY_SIZE_CIRCLES	(240 * 1000) // Layout{3,3,2,1,1} quad szie * 1000 (max 1k squares per call)  
+#define VERTEX_ARRAY_SIZE_CIRCLES	(240 * 1000) // Layout{3,3,2,1,1} cirlce szie * 1000 (max 1k squares per call)  
+#define VERTEX_ARRAY_SIZE_LINES		(144 * 1000) // Layout{3,3} line szie * 1000 (max 1k squares per call)  
 #define RENDERER_DBG	(true)
 
 namespace Stimpi
@@ -63,6 +64,10 @@ namespace Stimpi
 		// Circle shape rendering
 		void DrawCircle(glm::vec3 pos, glm::vec2 scale, glm::vec3 color, float thickness, float fade);
 
+		// Line rendering
+		void SetLineWidth(float width);
+		void DrawLine(glm::vec3 p0, glm::vec3 p1, glm::vec3 color);
+
 		// Event Callbacks
 		void ResizeCanvas(uint32_t width, uint32_t height);
 
@@ -81,6 +86,7 @@ namespace Stimpi
 	private:
 		void Flush();
 		void FlushCircle();
+		void FlushLine();
 		void RenderFrameBuffer(); // Used for Application to handle displaying of FBs ourselves
 
 		void PushQuadVertexData(RenderCommand* cmd, glm::vec4 quad, glm::vec3 color = { 1.0f, 1.0f, 1.0f }, glm::vec2 min = { 0.0f, 0.0f }, glm::vec2 max = { 1.0f, 1.0f });
@@ -88,6 +94,7 @@ namespace Stimpi
 		
 		void DrawRenderCmd(std::shared_ptr<RenderCommand>& renderCmd);
 		void DrawCirlceRenderCmd(std::shared_ptr<RenderCommand>& renderCmd);
+		void DrawLineRenderCmd(std::shared_ptr<RenderCommand>& renderCmd);
 
 		void CheckCapacity();
 		void CheckTextureBatching(Texture* texture);
@@ -113,6 +120,13 @@ namespace Stimpi
 		std::shared_ptr<Shader> m_CircleShader;
 		std::vector<std::shared_ptr<RenderCommand>> m_CircleRenderCmds;
 		std::vector<std::shared_ptr<RenderCommand>>::iterator m_CircleActiveRenderCmdIter;
+
+		// Line rendering
+		std::shared_ptr<VertexArrayObject> m_LineVAO;
+		std::shared_ptr<BufferObject> m_LineVBO;
+		std::shared_ptr<Shader> m_LineShader;
+		std::vector<std::shared_ptr<RenderCommand>> m_LineRenderCmds;
+		std::vector<std::shared_ptr<RenderCommand>>::iterator m_LineActiveRenderCmdIter;
 
 		// For local rendering
 		std::shared_ptr<FrameBuffer> m_FrameBuffer;

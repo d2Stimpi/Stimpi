@@ -51,6 +51,20 @@ namespace Stimpi
 		// Build VAO layout
 		m_CircleVAO->EnableVertexAttribArray();
 
+		// Init Line rendering VAO, VBO
+		m_LineVAO.reset(VertexArrayObject::CreateVertexArrayObject({
+			{ ShaderDataType::Float3, "a_Position"	},
+			{ ShaderDataType::Float3, "a_Color"		}
+			}));
+		m_LineVAO->BindArray();
+
+		m_LineVBO.reset(BufferObject::CreateBufferObject(BufferObjectType::ARRAY_BUFFER));
+		m_LineVBO->BindBuffer();
+		m_LineVBO->InitBuffer(VERTEX_ARRAY_SIZE_LINES);
+
+		// Build VAO layout
+		m_LineVAO->EnableVertexAttribArray();
+
 		// Debug data
 		m_DrawCallCnt = 0;
 		m_RenderedCmdCnt = 0;
@@ -63,9 +77,14 @@ namespace Stimpi
 		m_CircleRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_CircleVAO->VertexSize()));
 		m_CircleActiveRenderCmdIter = std::end(m_CircleRenderCmds) - 1;
 
+		// Init Line cmd storage
+		m_LineRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_LineVAO->VertexSize()));
+		m_LineActiveRenderCmdIter = std::end(m_LineRenderCmds) - 1;
+
+		m_CircleShader.reset(Shader::CreateShader("..\/assets\/shaders\/circle.shader"));
+		m_LineShader.reset(Shader::CreateShader("..\/assets\/shaders\/line.shader"));
 		// For local rendering of FBs
 		m_RenderFrameBufferShader.reset(Shader::CreateShader("..\/assets\/shaders\/framebuffer.shader"));
-		m_CircleShader.reset(Shader::CreateShader("..\/assets\/shaders\/circle.shader"));
 		m_RenderFrameBufferCmd = std::make_shared<RenderCommand>(m_VAO->VertexSize());
 
 		// Populate fixed data, shader uniform is set every frame
@@ -101,6 +120,7 @@ namespace Stimpi
 	{
 		Flush();
 		FlushCircle();
+		FlushLine();
 	}
 	
 	void Renderer2D::Submit(glm::vec4 quad, Texture* texture, Shader* shader)
@@ -278,6 +298,25 @@ namespace Stimpi
 		cmd->PushCircleVertex(transform * s_QuadVertexPosition[0], color, { minUV.x, minUV.y }, thickness, fade);
 	}
 
+	void Renderer2D::SetLineWidth(float width)
+	{
+		m_RenderAPI->SetLineWidth(width);
+	}
+
+	void Renderer2D::DrawLine(glm::vec3 p0, glm::vec3 p1, glm::vec3 color)
+	{
+		auto currentCmd = *m_LineActiveRenderCmdIter;
+		auto cmd = currentCmd.get();
+
+		CheckCapacity();
+
+		// Set cmd data
+		currentCmd->m_Shader = m_LineShader.get();
+
+		cmd->PushLineVertex(p0, color);
+		cmd->PushLineVertex(p1, color);
+	}
+
 	void Renderer2D::Flush()
 	{
 		auto currnetCmd = *m_ActiveRenderCmdIter;
@@ -310,6 +349,23 @@ namespace Stimpi
 
 		m_CircleRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_CircleVAO->VertexSize()));
 		m_CircleActiveRenderCmdIter = std::end(m_CircleRenderCmds) - 1;
+	}
+
+	void Renderer2D::FlushLine()
+	{
+		auto currnetCmd = *m_LineActiveRenderCmdIter;
+
+		if (currnetCmd->m_Shader == nullptr)
+		{
+			// No data to qualify as a valid RenderCommand
+			return;
+		}
+
+		// For now set ViewProj camera uniform here
+		currnetCmd->m_Shader->SetUniform("u_ViewProjection", m_ActiveCamera->GetViewProjectionMatrix());
+
+		m_LineRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_LineVAO->VertexSize()));
+		m_LineActiveRenderCmdIter = std::end(m_LineRenderCmds) - 1;
 	}
 
 	void Renderer2D::FlushScene()
@@ -361,6 +417,14 @@ namespace Stimpi
 				DrawCirlceRenderCmd(renderCmd);
 		}
 		m_RenderedCmdCnt += m_CircleRenderCmds.size() - 1;
+
+		for (auto renderCmd : m_LineRenderCmds)
+		{
+			// Skip last as it won't be filled with data
+			if (renderCmd != *m_LineActiveRenderCmdIter)
+				DrawLineRenderCmd(renderCmd);
+		}
+		m_RenderedCmdCnt += m_LineRenderCmds.size() - 1;
 	}
 
 	void Renderer2D::EndFrame()
@@ -419,6 +483,23 @@ namespace Stimpi
 		shader->ClearBufferedUniforms();
 	}
 
+	void Renderer2D::DrawLineRenderCmd(std::shared_ptr<RenderCommand>& renderCmd)
+	{
+		auto shader = renderCmd->m_Shader;
+
+		shader->Use();
+		shader->SetBufferedUniforms();
+
+		m_LineVAO->BindArray();
+		m_LineVBO->BindBuffer();
+
+		m_LineVBO->BufferSubData(0, renderCmd->Size(), renderCmd->LineData());
+		m_RenderAPI->DrawArrays(DrawElementsMode::LINES, 0, renderCmd->m_VertexCount);
+		m_DrawCallCnt++;
+
+		shader->ClearBufferedUniforms();
+	}
+
 	void Renderer2D::ShowDebugData()
 	{
 		if (RENDERER_DBG)
@@ -440,6 +521,7 @@ namespace Stimpi
 	{
 		auto currnetCmd = *m_ActiveRenderCmdIter;
 		auto currentCricleCmd = *m_CircleActiveRenderCmdIter;
+		auto currentLineCmd = *m_LineActiveRenderCmdIter;
 
 		if (currnetCmd->m_VertexCount >= VERTEX_CMD_CAPACITY)
 		{
@@ -449,6 +531,11 @@ namespace Stimpi
 		if (currentCricleCmd->m_VertexCount >= VERTEX_CMD_CAPACITY)
 		{
 			FlushCircle();
+		}
+
+		if (currentLineCmd->m_VertexCount >= VERTEX_CMD_CAPACITY)
+		{
+			FlushLine();
 		}
 	}
 
@@ -477,6 +564,10 @@ namespace Stimpi
 		m_CircleRenderCmds.clear();
 		m_CircleRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_CircleVAO->VertexSize()));
 		m_CircleActiveRenderCmdIter = std::end(m_CircleRenderCmds) - 1;
+
+		m_LineRenderCmds.clear();
+		m_LineRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_LineVAO->VertexSize()));
+		m_LineActiveRenderCmdIter = std::end(m_LineRenderCmds) - 1;
 	}
 
 	void Renderer2D::PushQuadVertexData(RenderCommand* cmd, glm::vec4 quad, glm::vec3 color /*= { 1.0f, 1.0f, 1.0f }*/, glm::vec2 min /*= { 0.0f, 0.0f }*/, glm::vec2 max /*= { 1.0f, 1.0f }*/)

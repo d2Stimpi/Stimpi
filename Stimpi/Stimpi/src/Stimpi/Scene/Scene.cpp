@@ -162,6 +162,11 @@ namespace Stimpi
 				});
 
 #if USE_TEST_STUFF
+			Stimpi::Renderer2D::Instance()->SetLineWidth(3.0f);
+			Stimpi::Renderer2D::Instance()->DrawLine(glm::vec3(50.0f, 40.0f, 0.0f), glm::vec3(80.0f, 40.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f));
+			Stimpi::Renderer2D::Instance()->DrawLine(glm::vec3(80.0f, 40.0f, 0.0f), glm::vec3(80.0f, 60.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f));
+			Stimpi::Renderer2D::Instance()->DrawLine(glm::vec3(80.0f, 60.0f, 0.0f), glm::vec3(50.0f, 60.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f));
+			Stimpi::Renderer2D::Instance()->DrawLine(glm::vec3(50.0f, 60.0f, 0.0f), glm::vec3(50.0f, 40.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f));
 			//Stimpi::Renderer2D::Instace()->Submit(glm::vec4{ 150.0f, 250.0f, 150.0f, 150.0f }, m_SubTexture.get(), m_DefaultShader.get());
 			Stimpi::Renderer2D::Instance()->Submit(glm::vec3{ 225.0f, 220.0f, 0.0f }, glm::vec2{ 50.0f, 40.0f }, 15.0f, m_TestTexture, m_DefaultShader.get());
 			Stimpi::Renderer2D::Instance()->Submit(glm::vec4{ 350.0f, 250.0f, 150.0f, 150.0f }, 45.0f, m_TestTexture, m_DefaultShader.get());

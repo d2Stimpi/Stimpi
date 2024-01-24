@@ -21,5 +21,7 @@ namespace Stimpi
 		
 		void DrawArrays(DrawElementsMode mode, uint32_t first, uint32_t count) override;
 		void DrawElements(DrawElementsMode mode, uint32_t count, uint32_t offset) override;
+
+		void SetLineWidth(float width) override;
 	};
 }
