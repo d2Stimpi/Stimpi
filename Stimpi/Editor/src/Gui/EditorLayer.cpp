@@ -223,9 +223,12 @@ namespace Stimpi
 		m_ContentBrowserWindow.OnImGuiRender();
 		/* Scene Hierarchy */
 		m_SceneHierarchyWindow.OnImGuiRender();
-		/*Sprite & Animation */
+		/* Sprite & Animation */
 		m_SpriteAnimPanel.OnUpdate(ts);
 		m_SpriteAnimPanel.OnImGuiRender();
+		/* Global Stats and Configs */
+		m_EditorConfigWindow.OnImGuiRender();
+		m_SceneConfigWindow.OnImGuiRender();
 
 		// Camera movement update - only when in Stopped state
 		if (m_Scene->GetRuntimeState() == RuntimeState::STOPPED)
@@ -236,48 +239,6 @@ namespace Stimpi
 				m_CameraController->Update(ts);
 		}
 
-		// TODO: move show_scene_config_window to class
-		static bool showCheckerboard = true;
-		if (show_scene_config_window)
-		{
-			ImGui::Begin("Scene Config", &show_scene_config_window);
-			ImGui::Text("Resolution");
-			const char* resolution_items[] = { "1920x1080", "1280x720" };
-			static int current_resolution = 1;
-			const float combo_width = ImGui::GetWindowWidth() * 0.80f;
-			ImGui::SetNextItemWidth(combo_width);
-			if (ImGui::Combo("##Resolution", &current_resolution, resolution_items, IM_ARRAYSIZE(resolution_items)))
-			{
-				ST_CORE_INFO("Combo - Resolution: Secleted index {0}", current_resolution);
-				//Resize Scene Canvas
-				if (current_resolution == 0) Renderer2D::Instance()->ResizeCanvas(1920, 1080);
-				if (current_resolution == 1) Renderer2D::Instance()->ResizeCanvas(1280, 720);
-			};
-			ImGui::Separator();
-			ImGui::Text("Application FPS");
-			const char* fps_items[] = { "60fps", "48fps", "24fps" };
-			static int current_fps = 0;
-			ImGui::SetNextItemWidth(combo_width);
-			if (ImGui::Combo("##FPS", &current_fps, fps_items, 3))
-			{
-				if (current_fps == 0) Time::Instance()->SetFPS(60);
-				if (current_fps == 1) Time::Instance()->SetFPS(48);
-				if (current_fps == 2) Time::Instance()->SetFPS(24);
-			};
-			ImGui::Separator();
-			
-			ImGui::Checkbox("Show CheckerBoard BG", &showCheckerboard);
-
-			ImGui::End(); //Config window
-		}
-		
-		static bool closeWidget2 = true;
-		ImGui::Begin("Game Stats", &closeWidget2);
-		ImGui::Text("Application FPS %.1f", Time::Instance()->GetActiveFPS());
-		ImGui::Text("Average %.1f ms/frame", 1000.0f / Time::Instance()->GetActiveFPS());
-		//if (ImGui::Button("Close Me"))
-		//	closeWidget2 = false;
-		ImGui::End();
 
 		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
 		if (show_demo_window)
@@ -293,7 +254,7 @@ namespace Stimpi
 		m_ShaderChecker->SetUniform("u_resolution", glm::vec2(canvasWidth, canvasHeight));
 
 		// Render Checker Background for editor
-		if (showCheckerboard)
+		if (m_SceneConfigWindow.ShowCheckerboardBg())
 		{
 			Stimpi::Renderer2D::Instance()->BeginScene(m_BackgroundCamera->GetOrthoCamera());
 			Stimpi::Renderer2D::Instance()->Submit({ 0.0f, 0.0f, canvasWidth, canvasHeight }, m_ShaderChecker.get());

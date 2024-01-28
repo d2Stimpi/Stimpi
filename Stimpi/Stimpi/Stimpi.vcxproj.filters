@@ -320,5 +320,6 @@
       <Filter>Stimpi\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
+    <ClCompile Include="src\Stimpi\Physics\Physics.cpp" />
   </ItemGroup>
 </Project>

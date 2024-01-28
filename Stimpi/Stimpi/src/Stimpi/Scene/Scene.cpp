@@ -8,6 +8,7 @@
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Scene/Utils/SceneUtils.h"
 #include "Stimpi/Physics/ContactListener.h"
+#include "Stimpi/Physics/Physics.h"
 
 #include "Stimpi/Graphics/Renderer2D.h"
 
@@ -109,6 +110,8 @@ namespace Stimpi
 	Scene::~Scene()
 	{
 		ComponentObserver::DeinitOnConstructObservers(m_Registry);
+
+		//ResourceManager::Instance()->UnloadTextures();
 	}
 
 	void Scene::OnUpdate(Timestep ts)
@@ -152,6 +155,20 @@ namespace Stimpi
 							Renderer2D::Instance()->Submit(quad, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
 						}
 					}
+
+					// Draw debug RigidBody Collider outline
+					if (Physics::ShowColliderOutlineEnabled())
+					{
+						if (entity.HasComponent<BoxCollider2DComponent>())
+						{
+							auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+							glm::vec3 outlineColor(0.80f, 0.3f, 0.2f);
+							glm::vec3 outlinePos(quad.Center() + bc2d.m_Offset, 0.0f);
+							glm::vec2 outlineSize(bc2d.m_Size.x * quad.m_Size.x * 2.0f, bc2d.m_Size.y * quad.m_Size.y * 2.0f);
+
+							Stimpi::Renderer2D::Instance()->DrawQuad(outlinePos, outlineSize, quad.m_Rotation, outlineColor);
+						}
+					}
 				}
 			}
 
@@ -163,6 +180,7 @@ namespace Stimpi
 
 #if USE_TEST_STUFF
 			Stimpi::Renderer2D::Instance()->SetLineWidth(3.0f);
+			Stimpi::Renderer2D::Instance()->DrawQuad(glm::vec3(50.0f, 40.0f, 0.0f), glm::vec2(40.0f, 30.0f), 0.0f, glm::vec3(1.0f, 0.0f, 1.0f));
 			Stimpi::Renderer2D::Instance()->DrawLine(glm::vec3(50.0f, 40.0f, 0.0f), glm::vec3(80.0f, 40.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f));
 			Stimpi::Renderer2D::Instance()->DrawLine(glm::vec3(80.0f, 40.0f, 0.0f), glm::vec3(80.0f, 60.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f));
 			Stimpi::Renderer2D::Instance()->DrawLine(glm::vec3(80.0f, 60.0f, 0.0f), glm::vec3(50.0f, 60.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f));
@@ -375,10 +393,6 @@ namespace Stimpi
 					bodyDef.angle = quad.m_Rotation;
 					bodyDef.userData.pointer = (uint32_t)entity;
 
-					b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);
-					body->SetFixedRotation(rb2d.m_FixedRotation);
-					rb2d.m_RuntimeBody = body;
-
 					if (entity.HasComponent<BoxCollider2DComponent>())
 					{
 						auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
@@ -392,7 +406,18 @@ namespace Stimpi
 						fixtureDef.friction = bc2d.m_Friction;
 						fixtureDef.restitution = bc2d.m_Restitution;
 						fixtureDef.restitutionThreshold = bc2d.m_RestitutionThreshold;
+
+						bodyDef.position.Set(quad.Center().x + bc2d.m_Offset.x, quad.Center().y + bc2d.m_Offset.y);
+						b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);
+						body->SetFixedRotation(rb2d.m_FixedRotation);
 						body->CreateFixture(&fixtureDef);
+						rb2d.m_RuntimeBody = body;
+					}
+					else
+					{
+						b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);
+						body->SetFixedRotation(rb2d.m_FixedRotation);
+						rb2d.m_RuntimeBody = body;
 					}
 				}
 			});
@@ -420,6 +445,14 @@ namespace Stimpi
 						quad.m_Position.x = position.x - quad.HalfWidth();
 						quad.m_Position.y = position.y - quad.HalfHeight();
 						quad.m_Rotation = body->GetAngle();
+
+						// Updated quad position by Collider offset
+						if (entity.HasComponent<BoxCollider2DComponent>())
+						{
+							auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+							quad.m_Position.x -= bc2d.m_Offset.x;
+							quad.m_Position.y -= bc2d.m_Offset.y;
+						}
 					}
 				});
 		}

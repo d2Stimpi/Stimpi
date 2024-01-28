@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Stimpi/Core/Core.h"
+
 namespace Stimpi
 {
 	struct Collision
@@ -13,5 +15,12 @@ namespace Stimpi
 			: m_ColliderEntityID(colliderID)
 		{
 		}
+	};
+
+	class ST_API Physics
+	{
+	public:
+		static void ShowColliderOutline(bool enable);
+		static bool ShowColliderOutlineEnabled();
 	};
 }

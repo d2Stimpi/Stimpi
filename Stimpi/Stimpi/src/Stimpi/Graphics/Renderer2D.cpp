@@ -90,6 +90,8 @@ namespace Stimpi
 		// Populate fixed data, shader uniform is set every frame
 		m_RenderFrameBufferCmd->m_Texture = m_FrameBuffer->GetTexture();
 		m_RenderFrameBufferCmd->m_Shader = m_RenderFrameBufferShader.get();
+
+		SetLineWidth(DEFAULT_LINE_WIDTH);
 	}
 
 	Renderer2D::~Renderer2D()
@@ -315,6 +317,18 @@ namespace Stimpi
 
 		cmd->PushLineVertex(p0, color);
 		cmd->PushLineVertex(p1, color);
+	}
+
+	void Renderer2D::DrawQuad(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color)
+	{
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) *
+			glm::rotate(glm::mat4(1.0f), rotation/*glm::radians(rotation)*/, glm::vec3(0.0f, 0.0f, 1.0f)) *
+			glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f));
+
+		DrawLine(transform * s_QuadVertexPosition[0], transform * s_QuadVertexPosition[1], color);
+		DrawLine(transform * s_QuadVertexPosition[1], transform * s_QuadVertexPosition[2], color);
+		DrawLine(transform * s_QuadVertexPosition[2], transform * s_QuadVertexPosition[3], color);
+		DrawLine(transform * s_QuadVertexPosition[3], transform * s_QuadVertexPosition[0], color);
 	}
 
 	void Renderer2D::Flush()

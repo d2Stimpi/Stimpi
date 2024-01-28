@@ -16,6 +16,8 @@
 #include "Gui/MainManuBar.h"
 #include "Gui/PlayPanel.h"
 #include "Gui/SpriteAnimPanel.h"
+#include "Gui/Config/EditorConfig.h"
+#include "Gui/Config/SceneConfig.h"
 
 #include "ImGui/src/imgui.h"
 
@@ -49,6 +51,10 @@ namespace Stimpi
 		ContentBrowserWindow m_ContentBrowserWindow;
 		
 		SpriteAnimPanel m_SpriteAnimPanel;
+
+		//Global stats/config
+		EditorConfig m_EditorConfigWindow;
+		SceneConfig m_SceneConfigWindow;
 
 		//Scene data
 		std::shared_ptr<Scene> m_Scene;

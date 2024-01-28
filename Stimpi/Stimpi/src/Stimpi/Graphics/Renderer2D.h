@@ -20,6 +20,7 @@
 #define VERTEX_ARRAY_SIZE_CIRCLES	(240 * 1000) // Layout{3,3,2,1,1} cirlce szie * 1000 (max 1k squares per call)  
 #define VERTEX_ARRAY_SIZE_LINES		(144 * 1000) // Layout{3,3} line szie * 1000 (max 1k squares per call)  
 #define RENDERER_DBG	(true)
+#define DEFAULT_LINE_WIDTH	(3.0f)
 
 namespace Stimpi
 {
@@ -67,6 +68,7 @@ namespace Stimpi
 		// Line rendering
 		void SetLineWidth(float width);
 		void DrawLine(glm::vec3 p0, glm::vec3 p1, glm::vec3 color);
+		void DrawQuad(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color);
 
 		// Event Callbacks
 		void ResizeCanvas(uint32_t width, uint32_t height);
