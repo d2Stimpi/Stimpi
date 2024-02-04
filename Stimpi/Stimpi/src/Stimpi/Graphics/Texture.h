@@ -17,13 +17,15 @@ namespace Stimpi
 		virtual void Resize(uint32_t width, uint32_t height) = 0;
 		virtual unsigned int GetTextureID() = 0;
 
-		virtual bool Loaded() = 0;
-
 		uint32_t GetWidth() { return m_Width; }
 		uint32_t GetHeight() { return m_Height; }
 
 		static Texture* CreateTexture(std::string file);
 		static Texture* CreateFrameBufferTexture();
+
+		// AssetManager
+		static Texture* Create(std::string file) { return CreateTexture(file); }
+		virtual bool Loaded() = 0;
 	protected:
 		uint32_t m_Width{ 0 };
 		uint32_t m_Height{ 0 };

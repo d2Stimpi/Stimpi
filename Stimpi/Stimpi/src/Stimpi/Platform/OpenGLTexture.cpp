@@ -5,7 +5,7 @@
 #include <stb_image.h>
 #include "Stimpi/Log.h"
 
-#define DBG_LOG false
+#define DBG_LOG true
 
 namespace Stimpi
 {

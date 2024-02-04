@@ -194,6 +194,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Platform\OpenGLShader.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLTexture.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLVertexArrayObject.h" />
+    <ClInclude Include="src\Stimpi\Scene\Assets\AssetManager.h" />
     <ClInclude Include="src\Stimpi\Scene\Camera.h" />
     <ClInclude Include="src\Stimpi\Scene\CameraController.h" />
     <ClInclude Include="src\Stimpi\Scene\Component.h" />
@@ -206,6 +207,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Scene\Utils\SceneUtils.h" />
     <ClInclude Include="src\Stimpi\Scripting\ScriptEngine.h" />
     <ClInclude Include="src\Stimpi\Scripting\ScriptGlue.h" />
+    <ClInclude Include="src\Stimpi\Utils\FilePath.h" />
     <ClInclude Include="src\Stimpi\Utils\FileWatcher.h" />
     <ClInclude Include="src\Stimpi\Utils\PlatformUtils.h" />
     <ClInclude Include="src\Stimpi\Utils\SystemUtils.h" />
@@ -242,6 +244,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClCompile Include="src\Stimpi\Platform\OpenGLTexture.cpp" />
     <ClCompile Include="src\Stimpi\Platform\OpenGLVertexArrayObject.cpp" />
     <ClCompile Include="src\Stimpi\Platform\Windows\WindowsPlatformUtils.cpp" />
+    <ClCompile Include="src\Stimpi\Scene\Assets\AssetManager.cpp" />
     <ClCompile Include="src\Stimpi\Scene\Camera.cpp" />
     <ClCompile Include="src\Stimpi\Scene\CameraController.cpp" />
     <ClCompile Include="src\Stimpi\Scene\Component.cpp" />
@@ -253,6 +256,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClCompile Include="src\Stimpi\Scene\Utils\SceneUtils.cpp" />
     <ClCompile Include="src\Stimpi\Scripting\ScriptEngine.cpp" />
     <ClCompile Include="src\Stimpi\Scripting\ScriptGlue.cpp" />
+    <ClCompile Include="src\Stimpi\Utils\FilePath.cpp" />
     <ClCompile Include="src\Stimpi\Utils\FileWatcher.cpp" />
     <ClCompile Include="src\Stimpi\Utils\SystemUtils.cpp" />
     <ClCompile Include="src\stpch.cpp">

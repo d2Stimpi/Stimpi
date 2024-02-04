@@ -15,6 +15,8 @@ namespace Stimpi
 
 		unsigned int GetShaderID() override;
 		void Use() override;
+
+		virtual bool Loaded() override;
 	
 	private:
 		void SetUniformImpl(const std::string& name, int value) override;

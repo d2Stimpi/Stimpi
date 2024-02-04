@@ -191,6 +191,8 @@
       <Filter>Stimpi\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\stpch.h" />
+    <ClInclude Include="src\Stimpi\Utils\FilePath.h" />
+    <ClInclude Include="src\Stimpi\Scene\Assets\AssetManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Core\Application.cpp">
@@ -321,5 +323,7 @@
     </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
     <ClCompile Include="src\Stimpi\Physics\Physics.cpp" />
+    <ClCompile Include="src\Stimpi\Utils\FilePath.cpp" />
+    <ClCompile Include="src\Stimpi\Scene\Assets\AssetManager.cpp" />
   </ItemGroup>
 </Project>

@@ -91,6 +91,11 @@ namespace Stimpi
 		glUseProgram(m_ID);
 	}
 
+	bool OpenGLShader::Loaded()
+	{
+		return m_ID != 0;
+	}
+
 	void OpenGLShader::SetUniformImpl(const std::string& name, int value)
 	{
 		glUniform1i(glGetUniformLocation(m_ID, name.c_str()), value);

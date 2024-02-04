@@ -7,6 +7,8 @@
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Scene/Utils/SceneUtils.h"
+#include "Stimpi/Scene/Assets/AssetManager.h"
+
 #include "Stimpi/Physics/ContactListener.h"
 #include "Stimpi/Physics/Physics.h"
 
@@ -62,6 +64,27 @@ namespace Stimpi
 		m_ContactListener = std::make_unique<ContactListener>();
 		m_ContactListener->SetContext(this);
 
+		
+		// AssetManager test 
+		AssetHandle assetHandle = AssetManager::GetAsset<Texture>({ ResourceManager::GetAssetsPath() / "textures", "Picture1.jpg" });
+		AssetHandle assetHandle2 = AssetManager::GetAsset<Texture>({ ResourceManager::GetAssetsPath() / "sprite_sheets", "sonic-sprite-sheet.png" });
+		AssetManager::Release(assetHandle);
+		assetHandle = AssetManager::GetAsset<Texture>({ ResourceManager::GetAssetsPath() / "textures", "Picture1.jpg" });
+		Asset asset = AssetManager::GetAsset(assetHandle);
+
+ 		auto refTexture = AssetManager::GetAsset(assetHandle).As<Texture>();
+ 		if (refTexture)
+ 		{
+ 			ST_CORE_WARN("refTexture id {}", refTexture->GetTextureID());
+			AssetManager::Release(assetHandle);
+			AssetManager::Release(assetHandle);
+			AssetManager::Release(assetHandle2);
+ 			ST_CORE_WARN("assetHandle {}", (uint32_t)assetHandle);
+ 		}
+ 		else
+ 		{
+ 			ST_CORE_WARN("refTexture not valid asset");
+ 		}
 #if USE_TEST_STUFF
 		/* Test stuff below */
 		m_SubTexture = std::make_shared<SubTexture>(ResourceManager::Instance()->LoadTexture("..\/assets\/sprite_sheets\/sonic-sprite-sheet.png"), glm::vec2{ 0.0f, 0.0f }, glm::vec2{ 150.0f, 150.0f });

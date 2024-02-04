@@ -36,6 +36,9 @@ namespace Stimpi
 
 		static Shader* CreateShader(const std::string& fileName);
 
+		// AssetManager
+		static Shader* Create(std::string& file) { return CreateShader(file); }
+		virtual bool Loaded() = 0;
 	private:
 		virtual void SetUniformImpl(const std::string& name, int value) = 0;
 		virtual void SetUniformImpl(const std::string& name, float value) = 0;

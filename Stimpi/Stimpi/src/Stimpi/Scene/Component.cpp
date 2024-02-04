@@ -54,6 +54,18 @@ namespace Stimpi
 		
 	}
 
+	// Sprite
+	static void OnSpriteConstruct(entt::registry& reg, entt::entity ent)
+	{
+
+	}
+
+	static void OnSpriteDestruct(entt::registry& reg, entt::entity ent)
+	{
+		Entity entity = { ent, s_ActiveScene };
+		// TODO: release resources here
+	}
+
 	void ComponentObserver::InitOnConstructObservers(entt::registry& reg, Scene* scene)
 	{
 		s_ActiveScene = scene;
@@ -62,9 +74,11 @@ namespace Stimpi
 		reg.on_construct<QuadComponent>().connect<&OnQuadConstruct>();
 		reg.on_construct<CameraComponent>().connect<&OnCameraConstruct>();
 		reg.on_construct<ScriptComponent>().connect<&OnScriptConstruct>();
+		reg.on_construct<SpriteComponent>().connect<&OnSpriteConstruct>();
 
 		// on_destroy
 		reg.on_destroy<CameraComponent>().connect<&OnCameraDestruct>();
+		reg.on_destroy<SpriteComponent>().connect<&OnSpriteDestruct>();
 	}
 
 	void ComponentObserver::DeinitOnConstructObservers(entt::registry& reg)
