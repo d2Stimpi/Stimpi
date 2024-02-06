@@ -2,9 +2,11 @@
 
 #include "Stimpi/Core/Core.h"
 #include "Stimpi/Graphics/Texture.h"
+#include "Stimpi/Graphics/Shader.h"
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Scene/ScriptableEntity.h"
 #include "Stimpi/Scene/Camera.h"
+#include "Stimpi/Scene/Assets/AssetManager.h"
 #include "Stimpi/Scripting/ScriptEngine.h"
 
 #include <glm/glm.hpp>
@@ -172,7 +174,7 @@ namespace Stimpi
 	{
 		// Sprite Texture
 		std::string m_FilePath = "";
-		Texture* m_Texture = nullptr;
+		AssetHandle m_TextureHandle = {};
 		bool m_Enable = false; // Will override color use
 
 		// Sprite Color
@@ -180,18 +182,19 @@ namespace Stimpi
 
 		SpriteComponent() = default;
 		SpriteComponent(const SpriteComponent&) = default;
-		SpriteComponent(Texture* texture)
-			: m_FilePath(""), m_Texture(texture), m_Enable(true) {}
 		SpriteComponent(glm::vec4 color)
 			: m_Color(color) {}
 		SpriteComponent(const std::string& filePath)
 			: m_FilePath(filePath), m_Enable(true)
 		{
 			if (!m_FilePath.empty())
-				m_Texture = ResourceManager::Instance()->LoadTexture(filePath);
+			{
+				m_TextureHandle = AssetManager::GetAsset<Texture>(filePath);
+			}
 		}
 
-		operator Texture* () const { return m_Texture; }
+		//operator Texture* () const { return m_Texture; }
+		operator Texture* () const { return AssetManager::GetAssetData<Texture>(m_TextureHandle); }
 
 		void SetTexture(const std::string& filePath)
 		{
@@ -201,11 +204,28 @@ namespace Stimpi
 		// Used for DragDropTarget
 		void SetPayload(const std::string& filePath)
 		{
+			// Check if we are trying to load the same asset and skip if true
+			if (m_TextureHandle.IsValid())
+			{
+				Asset textureAsset = AssetManager::GetAsset(m_TextureHandle);
+				FilePath newPath = { filePath };
+				// Check only asset name rather than the full path
+				if (newPath.GetFileName() == textureAsset.GetName())
+				{
+					return;
+				}
+				else
+				{
+					AssetManager::Release(m_TextureHandle);
+				}
+			}
+			// Load new asset
+			m_TextureHandle = AssetManager::GetAsset<Texture>(filePath);
+
 			auto newTexture = ResourceManager::Instance()->LoadTexture(filePath);
 			if (newTexture != nullptr)
 			{
 				m_FilePath = filePath;
-				m_Texture = newTexture;
 				m_Enable = true;
 			}
 		}
@@ -234,12 +254,13 @@ namespace Stimpi
 			{
 				m_FilePath = node["FilePath"].as<std::string>();
 				if (!m_FilePath.empty())
-					m_Texture = ResourceManager::Instance()->LoadTexture(m_FilePath);
+				{
+					m_TextureHandle = AssetManager::GetAsset<Texture>(m_FilePath);
+				}
 			}
 			else
 			{
 				m_FilePath = "";
-				m_Texture = nullptr;
 			}
 
 			if (node["Enable"])
@@ -248,7 +269,8 @@ namespace Stimpi
 			}
 			else
 			{
-				m_Enable = m_Texture != nullptr;
+				//m_Enable = m_Texture != nullptr;
+				m_Enable = m_TextureHandle.IsValid();
 			}
 
 			if (node["Color"])

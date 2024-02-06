@@ -9,7 +9,7 @@ namespace Stimpi
 {
 	Texture::~Texture()
 	{
-
+		//ST_CORE_INFO("~Texture");
 	}
 
 	Texture* Texture::CreateTexture(std::string file)

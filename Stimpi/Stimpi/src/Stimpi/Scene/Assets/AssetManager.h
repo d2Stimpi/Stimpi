@@ -4,20 +4,25 @@
 #include "Stimpi/Core/Core.h"
 #include "Stimpi/Utils/FilePath.h"
 
+#include "Stimpi/Graphics/Texture.h"
+#include "Stimpi/Graphics/Shader.h"
+
 #include <filesystem>
+
+/**
+ * TODO: Add clearAll() - for scene change like stuff? and app shutdown
+ */
+
+#define ASSETMANAGER_DBG (true)
 
 namespace Stimpi
 {
-	// Forward asset classes
-	class Texture;
-	class Shader;
-
 	enum class AssetType { NONE = 0, TEXTURE, SHADER };
 
 	/**
 	 *	AssetHandle
 	 */
-	class AssetHandle
+	class ST_API AssetHandle
 	{
 	public:
 		AssetHandle() : m_Handle(0) {}
@@ -37,7 +42,6 @@ namespace Stimpi
 			m_Magic = s_MagiCouter;
 
 		}
-
 
 		uint32_t GetIndex() { return m_Index; }
 		uint32_t GetMagic() { return m_Magic; }
@@ -102,13 +106,11 @@ namespace Stimpi
 		friend class AssetManager;
 	};
 
-
-
 	/**
 	 *	AssetProvider
 	 */
 	template <typename T>
-	struct AssetProviderData
+	struct ST_API AssetProviderData
 	{
 		std::vector<T*> m_Data;	// with T* we get a data pool like vector, and we can reuse the slot
 		std::vector<uint32_t> m_MagicNumbers;
@@ -117,7 +119,7 @@ namespace Stimpi
 	};
 
 	template <typename T>
-	class AssetProvider
+	class ST_API AssetProvider
 	{
 	public:
 		static AssetHandle NewAssetHandle(FilePath filePath)
@@ -153,44 +155,20 @@ namespace Stimpi
 		static void IncrementRef(uint32_t index)
 		{
 			m_ProviderData.m_RefCounters[index]++;
-			//std::cout << " > count = " << m_ProviderData.m_RefCounters[index] << std::endl;
 		}
 
-		static uint32_t DecrementRef(uint32_t index)
+		static uint32_t DecrementRef(AssetHandle& handle)
 		{
+			uint32_t index = handle.GetIndex();
 			if (--m_ProviderData.m_RefCounters[index] == 0)
 			{
 				delete m_ProviderData.m_Data[index];
 				m_ProviderData.m_Data[index] = nullptr;
-				//std::cout << "Deleted resource index " << index << std::endl;
+				ST_CORE_WARN("AssetManager - delete {}, index {}", AssetManager::GetAsset(handle).GetName(), index);
 
 				m_ProviderData.m_FreeSlots.push_back(index);
 			}
 			return m_ProviderData.m_RefCounters[index];
-		}
-
-		static AssetHandle GetAssetHandle(FilePath filePath, Asset& asset)
-		{
-			AssetHandle handle;
-			std::string name = filePath.GetFileName();
-
-			if (m_NameAssets.find(name) != m_NameAssets.end())
-			{
-				Asset asset = m_NameAssets[name];
-				handle = asset.GetHandle();
-				IncrementRef(handle.GetIndex());
-			}
-			else
-			{
-				Asset asset;
-				handle = NewAssetHandle(filePath);
-				asset = { filePath };
-				asset.m_Type = GetType();
-				asset.m_Handle = handle;
-				m_NameAssets[name] = asset;
-			}
-
-			return handle;
 		}
 
 		static T* GetAssetData(AssetHandle handle)
@@ -205,12 +183,24 @@ namespace Stimpi
 			}
 		}
 
+		static void ReleaseAll()
+		{
+			for (auto data : m_ProviderData.m_Data)
+			{
+				delete data;
+			}
+			m_ProviderData.m_Data.clear();
+			m_ProviderData.m_FreeSlots.clear();
+			m_ProviderData.m_MagicNumbers.clear();
+			m_ProviderData.m_RefCounters.clear();
+		}
+
 		static AssetType GetType() { return AssetType::NONE; }
 
 	private:
 		static AssetProviderData<T> m_ProviderData;
 	};
-	template <typename T> AssetProviderData<T> AssetProvider<T>::m_ProviderData;
+	//template <typename T> ST_API AssetProviderData<T> AssetProvider<T>::m_ProviderData;
 
 	// AssetProvider specializations
 	template <> AssetType AssetProvider<Texture>::GetType() { return AssetType::TEXTURE; }
@@ -219,7 +209,7 @@ namespace Stimpi
 	/**
 	 *	AssetManager
 	 */
-	class AssetManager
+	class ST_API AssetManager
 	{
 	public:
 
@@ -245,6 +235,8 @@ namespace Stimpi
 				m_NameAssets[name] = asset;
 				m_Assets[handle] = asset;
 			}
+
+			if (ASSETMANAGER_DBG) ST_CORE_INFO("DBG::AssetManager - assets count: {} - {}", m_Assets.size(), m_NameAssets.size());
 
 			return handle;
 		}
@@ -277,10 +269,10 @@ namespace Stimpi
 				switch (asset.GetType())
 				{
 				case AssetType::TEXTURE:
-					refCnt = AssetProvider<Texture>::DecrementRef(handle.GetIndex());
+					refCnt = AssetProvider<Texture>::DecrementRef(handle);
 					break;
 				case AssetType::SHADER:
-					refCnt = AssetProvider<Shader>::DecrementRef(handle.GetIndex());
+					refCnt = AssetProvider<Shader>::DecrementRef(handle);
 					break;
 				case AssetType::NONE:
 				default:
@@ -296,6 +288,14 @@ namespace Stimpi
 					handle = {};
 				}
 			}
+		}
+
+		static void ReleaseAll()
+		{
+			m_Assets.clear();
+			m_NameAssets.clear();
+			AssetProvider<Texture>::ReleaseAll();
+			AssetProvider<Shader>::ReleaseAll();
 		}
 
 	private:

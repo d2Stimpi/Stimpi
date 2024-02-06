@@ -7,3 +7,6 @@
 
 #ignore files
 *.user
+
+#script intermeds
+Stimpi/resources/scripts

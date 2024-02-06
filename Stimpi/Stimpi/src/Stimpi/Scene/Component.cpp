@@ -64,6 +64,9 @@ namespace Stimpi
 	{
 		Entity entity = { ent, s_ActiveScene };
 		// TODO: release resources here
+		SpriteComponent sprite = entity.GetComponent<SpriteComponent>();
+		if (sprite.m_TextureHandle.IsValid())
+			AssetManager::Release(sprite.m_TextureHandle);
 	}
 
 	void ComponentObserver::InitOnConstructObservers(entt::registry& reg, Scene* scene)
