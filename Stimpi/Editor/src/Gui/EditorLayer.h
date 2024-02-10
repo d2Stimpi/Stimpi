@@ -16,7 +16,7 @@
 #include "Gui/MainManuBar.h"
 #include "Gui/PlayPanel.h"
 #include "Gui/SpriteAnimPanel.h"
-#include "Gui/Config/EditorConfig.h"
+#include "Gui/Stats/EditorConfig.h"
 #include "Gui/Config/SceneConfig.h"
 
 #include "ImGui/src/imgui.h"

@@ -140,8 +140,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Gui\Components\SearchPopup.h" />
+    <ClInclude Include="src\Gui\Components\Thumbnail.h" />
     <ClInclude Include="src\Gui\Components\UIPayload.h" />
-    <ClInclude Include="src\Gui\Config\EditorConfig.h" />
+    <ClInclude Include="src\Gui\Stats\EditorConfig.h" />
     <ClInclude Include="src\Gui\Config\SceneConfig.h" />
     <ClInclude Include="src\Gui\ContentBrowserWindow.h" />
     <ClInclude Include="src\Gui\EditorLayer.h" />
@@ -156,8 +157,9 @@
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
     <ClCompile Include="src\Gui\Components\SearchPopup.cpp" />
+    <ClCompile Include="src\Gui\Components\Thumbnail.cpp" />
     <ClCompile Include="src\Gui\Components\UIPayload.cpp" />
-    <ClCompile Include="src\Gui\Config\EditorConfig.cpp" />
+    <ClCompile Include="src\Gui\Stats\EditorConfig.cpp" />
     <ClCompile Include="src\Gui\Config\SceneConfig.cpp" />
     <ClCompile Include="src\Gui\ContentBrowserWindow.cpp" />
     <ClCompile Include="src\Gui\EditorLayer.cpp" />

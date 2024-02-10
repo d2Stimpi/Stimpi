@@ -19,9 +19,9 @@ Scene:
       Zoom: 1
       ViewQuad:
         - 0
-        - 1280
+        - 128
         - 0
-        - 720
+        - 72
       IsMain: true
   Entity:
     TagComponent:
@@ -74,3 +74,100 @@ Scene:
         - 1
         - 1
         - 1
+  Entity:
+    TagComponent:
+      Tag: Circle_Object
+    CircleComponent:
+      Position:
+        - 47
+        - 37
+      Size:
+        - 10
+        - 10
+      Rotation: 0
+      Color:
+        - 1
+        - 0.549019635
+        - 0.301960796
+        - 1
+      Thickness: 1
+      Fade: 0.00499999989
+    RigidBody2DComponent:
+      Type: Dynamic
+      FixedRotation: true
+    BoxCollider2DComponent:
+      Shape: 1
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 0.810000002
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    TagComponent:
+      Tag: Sprite_Object
+    QuadComponent:
+      - 7.01936054
+      - 13.2954826
+      - 72.2658005
+      - 5.21032476
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 0.850980401
+        - 0.678431392
+        - 0.819607854
+        - 1
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: true
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    TagComponent:
+      Tag: movable
+    QuadComponent:
+      - 57.9716034
+      - 38.4825745
+      - 10
+      - 10
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 0.411764711
+        - 0.588235319
+        - 1
+        - 1
+    RigidBody2DComponent:
+      Type: Dynamic
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5

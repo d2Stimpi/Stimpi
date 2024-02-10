@@ -22,6 +22,7 @@
 #include "box2d/b2_body.h"
 #include "box2d/b2_fixture.h"
 #include "box2d/b2_polygon_shape.h"
+#include "box2d/b2_circle_shape.h"
 
 // TODO: remove eventually
 #define USE_TEST_STUFF false
@@ -168,17 +169,70 @@ namespace Stimpi
 							glm::vec3 outlinePos(quad.Center() + bc2d.m_Offset, 0.0f);
 							glm::vec2 outlineSize(bc2d.m_Size.x * quad.m_Size.x * 2.0f, bc2d.m_Size.y * quad.m_Size.y * 2.0f);
 
-							Stimpi::Renderer2D::Instance()->DrawQuad(outlinePos, outlineSize, quad.m_Rotation, outlineColor);
+							if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::BOX)
+							{
+								Stimpi::Renderer2D::Instance()->DrawQuad(outlinePos, outlineSize, quad.m_Rotation, outlineColor);
+							}
+							else if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::CIRLCE)
+							{
+								glm::vec2 circleOutlineSize(bc2d.m_Size.x * quad.m_Size.x * 2.0f, bc2d.m_Size.x * quad.m_Size.x * 2.0f);
+								Stimpi::Renderer2D::Instance()->DrawCircle(outlinePos, circleOutlineSize, outlineColor, 0.06f, 0.0f);
+							}
+						}
+					}
+				}
+				else if (entity.HasComponent<CircleComponent>())
+				{
+					auto& circle = entity.GetComponent<CircleComponent>();
+					if (entity.HasComponent<SpriteComponent>())
+					{
+						auto& sprite = entity.GetComponent<SpriteComponent>();
+						if (sprite.m_TextureHandle.IsValid() && sprite.m_Enable)
+						{
+							glm::vec3 position = { circle.m_Position.x, circle.m_Position.y, 1.0f };
+							Renderer2D::Instance()->Submit(position, circle.m_Size, circle.m_Rotation, sprite, m_DefaultShader.get());
+						}
+						else
+						{
+							glm::vec3 position = { circle.m_Position.x, circle.m_Position.y, 1.0f };
+							Renderer2D::Instance()->DrawCircle(position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
+						}
+					}
+					else
+					{
+						glm::vec3 position = { circle.m_Position.x, circle.m_Position.y, 1.0f };
+						Renderer2D::Instance()->DrawCircle(position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
+					}
+
+					// Draw debug RigidBody Collider outline
+					if (Physics::ShowColliderOutlineEnabled())
+					{
+						if (entity.HasComponent<BoxCollider2DComponent>())
+						{
+							auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+							glm::vec3 outlineColor(0.80f, 0.3f, 0.2f);
+							glm::vec3 outlinePos(circle.Center() + bc2d.m_Offset, 0.0f);
+							glm::vec2 outlineSize(bc2d.m_Size.x * circle.m_Size.x * 2.0f, bc2d.m_Size.y * circle.m_Size.y * 2.0f);
+
+							if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::BOX)
+							{
+								Stimpi::Renderer2D::Instance()->DrawQuad(outlinePos, outlineSize, circle.m_Rotation, outlineColor);
+							}
+							else if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::CIRLCE)
+							{
+								glm::vec2 circleOutlineSize(bc2d.m_Size.x * circle.m_Size.x * 2.0f, bc2d.m_Size.x * circle.m_Size.x * 2.0f);
+								Stimpi::Renderer2D::Instance()->DrawCircle(outlinePos, circleOutlineSize, outlineColor, 0.06f, 0.0f);
+							}
 						}
 					}
 				}
 			}
 
-			m_Registry.view<CircleComponent>().each([=](auto entity, CircleComponent& circle)
+			/*m_Registry.view<CircleComponent>().each([=](auto entity, CircleComponent& circle)
 				{
 					glm::vec3 position = { circle.m_Position.x, circle.m_Position.y, 1.0f };
 					Renderer2D::Instance()->DrawCircle(position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
-				});
+				});*/
 
 #if USE_TEST_STUFF
 			Stimpi::Renderer2D::Instance()->SetLineWidth(3.0f);
@@ -385,31 +439,57 @@ namespace Stimpi
 		m_Registry.view<RigidBody2DComponent>().each([=](auto e, auto& rb2d)
 			{
 				Entity entity = { e, this };
-				if (entity.HasComponent<QuadComponent>())
+				if (entity.HasComponent<QuadComponent>() || entity.HasComponent<CircleComponent>())
 				{
-					auto& quad = entity.GetComponent<QuadComponent>();
+					glm::vec2 center(0.0f, 0.0f);
+					glm::vec2 size(0.0f, 0.0f);
+					float rotation = 0.0f;
+
+					if (entity.HasComponent<QuadComponent>())
+					{
+						auto& quad = entity.GetComponent<QuadComponent>();
+						center = quad.Center();
+						size = quad.m_Size;
+						rotation = quad.m_Rotation;
+					}
+					else if (entity.HasComponent<CircleComponent>())
+					{
+						auto& cicle = entity.GetComponent<CircleComponent>();
+						center = cicle.Center();
+						size = cicle.m_Size;
+						rotation = cicle.m_Rotation;
+					}
 
 					b2BodyDef bodyDef;
 					bodyDef.type = Rigidbody2DTypeToBox2DType(rb2d.m_Type);
-					bodyDef.position.Set(quad.Center().x, quad.Center().y);
-					bodyDef.angle = quad.m_Rotation;
+					bodyDef.position.Set(center.x, center.y);
+					bodyDef.angle = rotation;
 					bodyDef.userData.pointer = (uint32_t)entity;
 
 					if (entity.HasComponent<BoxCollider2DComponent>())
 					{
 						auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
-
-						b2PolygonShape boxShape;
-						boxShape.SetAsBox(bc2d.m_Size.x * quad.m_Size.x, bc2d.m_Size.y * quad.m_Size.y);
-
 						b2FixtureDef fixtureDef;
-						fixtureDef.shape = &boxShape;
+						b2PolygonShape boxShape;
+						b2CircleShape circleShape;
+
+						if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::BOX)
+						{
+							boxShape.SetAsBox(bc2d.m_Size.x * size.x, bc2d.m_Size.y * size.y);
+							fixtureDef.shape = &boxShape;
+						}
+						else if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::CIRLCE)
+						{
+							circleShape.m_radius = bc2d.m_Size.x * size.x;
+							fixtureDef.shape = &circleShape;
+						}
+
 						fixtureDef.density = bc2d.m_Density;
 						fixtureDef.friction = bc2d.m_Friction;
 						fixtureDef.restitution = bc2d.m_Restitution;
 						fixtureDef.restitutionThreshold = bc2d.m_RestitutionThreshold;
 
-						bodyDef.position.Set(quad.Center().x + bc2d.m_Offset.x, quad.Center().y + bc2d.m_Offset.y);
+						bodyDef.position.Set(center.x + bc2d.m_Offset.x, center.y + bc2d.m_Offset.y);
 						b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);
 						body->SetFixedRotation(rb2d.m_FixedRotation);
 						body->CreateFixture(&fixtureDef);
@@ -454,6 +534,25 @@ namespace Stimpi
 							auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
 							quad.m_Position.x -= bc2d.m_Offset.x;
 							quad.m_Position.y -= bc2d.m_Offset.y;
+						}
+					}
+
+					if (entity.HasComponent<CircleComponent>())
+					{
+						auto& circle = entity.GetComponent<CircleComponent>();
+
+						b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+						const auto& position = body->GetPosition();
+						circle.m_Position.x = position.x;
+						circle.m_Position.y = position.y;
+						circle.m_Rotation = body->GetAngle();
+
+						// Updated quad position by Collider offset
+						if (entity.HasComponent<BoxCollider2DComponent>())
+						{
+							auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+							circle.m_Position.x -= bc2d.m_Offset.x;
+							circle.m_Position.y -= bc2d.m_Offset.y;
 						}
 					}
 				});

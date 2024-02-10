@@ -371,6 +371,27 @@ namespace Stimpi
 		ImGui::Separator();
 		if (ImGui::CollapsingHeader("Box Collider##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
 		{
+			const char* colliderShapeStrings[] = { "Box", "Circle" };
+			const char* currentColliderShapeString = colliderShapeStrings[(int)component.m_ColliderShape];
+
+			if (ImGui::BeginCombo("Collider Shape", currentColliderShapeString))
+			{
+				for (int i = 0; i <= 1; i++)
+				{
+					bool isSelected = currentColliderShapeString == colliderShapeStrings[i];
+					if (ImGui::Selectable(colliderShapeStrings[i], isSelected))
+					{
+						currentColliderShapeString = colliderShapeStrings[i];
+						component.m_ColliderShape = (BoxCollider2DComponent::Collider2DShape)i;
+					}
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+
+				ImGui::EndCombo();
+			}
+
 			ImGui::DragFloat2("Offset", glm::value_ptr(component.m_Offset));
 			ImGui::DragFloat2("Size##Collider", glm::value_ptr(component.m_Size));
 			ImGui::PushItemWidth(80.0f);

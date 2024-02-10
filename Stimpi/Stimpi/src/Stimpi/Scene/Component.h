@@ -94,6 +94,7 @@ namespace Stimpi
 	{
 		glm::vec2 m_Position = { 0.0f, 0.0f };
 		glm::vec2 m_Size = { 0.0f, 0.0f };
+		float m_Rotation{ 0.0f };
 		glm::vec4 m_Color = { 1.0f, 1.0f, 1.0f, 1.0f };
 		float m_Thickness = 1.0f;
 		float m_Fade = 0.005;
@@ -104,6 +105,9 @@ namespace Stimpi
 			: m_Position(pos), m_Size(size), m_Thickness(thickness), m_Fade(fade)
 		{
 		}
+
+		operator glm::vec4() const { return glm::vec4(m_Position.x, m_Position.y, m_Size.x, m_Size.y); }
+		glm::vec2 Center() { return glm::vec2(m_Position.x, m_Position.y); }
 
 		void Serialize(YAML::Emitter& out)
 		{
@@ -123,6 +127,8 @@ namespace Stimpi
 					out << m_Size.x << m_Size.y;
 				}
 				out << YAML::EndSeq;
+
+				out << YAML::Key << "Rotation" << YAML::Value << m_Rotation;
 
 				out << YAML::Key << "Color" << YAML::Value;
 				out << YAML::BeginSeq;
@@ -150,6 +156,11 @@ namespace Stimpi
 			{
 				YAML::Node view = node["Size"];
 				m_Size = glm::vec2(view[0].as<float>(), view[1].as<float>());
+			}
+
+			if (node["Rotation"])
+			{
+				m_Rotation = node["Rotation"].as<float>();
 			}
 
 			if (node["Color"])
@@ -465,6 +476,9 @@ namespace Stimpi
 
 	struct BoxCollider2DComponent
 	{
+		enum class Collider2DShape { BOX = 0, CIRLCE };
+
+		Collider2DShape m_ColliderShape = Collider2DShape::BOX;
 		glm::vec2 m_Offset = { 0.0f, 0.0f };
 		glm::vec2 m_Size = { 0.5f, 0.5f };	// Represents the 1m unit and Renderer's quad size
 
@@ -484,6 +498,8 @@ namespace Stimpi
 			out << YAML::Key << "BoxCollider2DComponent";
 			out << YAML::BeginMap;
 			{
+				out << YAML::Key << "Shape" << YAML::Value << (uint32_t)m_ColliderShape;
+
 				out << YAML::Key << "Offset" << YAML::Value;
 				out << YAML::BeginSeq;
 				{
@@ -512,6 +528,11 @@ namespace Stimpi
 		//De-serialize constructor
 		BoxCollider2DComponent(const YAML::Node& node)
 		{
+			if (node["Shape"])
+			{
+				m_ColliderShape = (Collider2DShape)node["Shape"].as<uint32_t>();
+			}
+
 			if (node["Offset"])
 			{
 				YAML::Node offset = node["Offset"];

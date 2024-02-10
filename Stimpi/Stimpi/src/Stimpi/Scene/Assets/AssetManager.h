@@ -298,6 +298,12 @@ namespace Stimpi
 			AssetProvider<Shader>::ReleaseAll();
 		}
 
+		// Debug data
+		static uint32_t GetLoadedAssetsCount()
+		{
+			return m_Assets.size();
+		}
+
 	private:
 		static std::unordered_map<uint32_t, Asset> m_Assets;
 		static std::unordered_map<std::string, Asset> m_NameAssets;

@@ -42,8 +42,9 @@
     <ClInclude Include="src\Gui\SpriteAnimPanel.h">
       <Filter>Gui</Filter>
     </ClInclude>
-    <ClInclude Include="src\Gui\Config\EditorConfig.h" />
+    <ClInclude Include="src\Gui\Stats\EditorConfig.h" />
     <ClInclude Include="src\Gui\Config\SceneConfig.h" />
+    <ClInclude Include="src\Gui\Components\Thumbnail.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
@@ -80,7 +81,8 @@
     <ClCompile Include="src\Gui\SpriteAnimPanel.cpp">
       <Filter>Gui</Filter>
     </ClCompile>
-    <ClCompile Include="src\Gui\Config\EditorConfig.cpp" />
+    <ClCompile Include="src\Gui\Stats\EditorConfig.cpp" />
     <ClCompile Include="src\Gui\Config\SceneConfig.cpp" />
+    <ClCompile Include="src\Gui\Components\Thumbnail.cpp" />
   </ItemGroup>
 </Project>
