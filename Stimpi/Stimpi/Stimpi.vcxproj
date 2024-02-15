@@ -169,6 +169,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Core\MouseCodes.h" />
     <ClInclude Include="src\Stimpi\Core\Project.h" />
     <ClInclude Include="src\Stimpi\Core\ProjectSerializer.h" />
+    <ClInclude Include="src\Stimpi\Utils\ThreadPool.h" />
     <ClInclude Include="src\Stimpi\Core\Time.h" />
     <ClInclude Include="src\Stimpi\Core\Timestep.h" />
     <ClInclude Include="src\Stimpi\Core\Window.h" />
@@ -259,6 +260,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClCompile Include="src\Stimpi\Utils\FilePath.cpp" />
     <ClCompile Include="src\Stimpi\Utils\FileWatcher.cpp" />
     <ClCompile Include="src\Stimpi\Utils\SystemUtils.cpp" />
+    <ClCompile Include="src\Stimpi\Utils\ThreadPool.cpp" />
     <ClCompile Include="src\stpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

@@ -13,6 +13,7 @@ namespace Stimpi
 		FilePath(std::filesystem::path dir, std::string name);
 		FilePath(std::filesystem::path fullPath);
 		FilePath(std::string fullPath);
+		FilePath(const char* fullPath);
 
 		std::filesystem::path& GetDir() { return m_FileDir; }
 		std::filesystem::path& GetPath() { return m_FilePath; }

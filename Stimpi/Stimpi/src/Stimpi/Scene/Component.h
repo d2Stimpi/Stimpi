@@ -204,8 +204,21 @@ namespace Stimpi
 			}
 		}
 
-		//operator Texture* () const { return m_Texture; }
 		operator Texture* () const { return AssetManager::GetAssetData<Texture>(m_TextureHandle); }
+
+		bool TextureLoaded()
+		{
+			bool loaded = false;
+
+			if (m_TextureHandle.IsValid())
+			{
+				Texture* texture = AssetManager::GetAssetData<Texture>(m_TextureHandle);
+				if (texture)
+					loaded = texture->Loaded();
+			}
+
+			return loaded;
+		}
 
 		void SetTexture(const std::string& filePath)
 		{

@@ -23,4 +23,9 @@ namespace Stimpi
 	{
 	}
 
+	FilePath::FilePath(const char* fullPath)
+		: FilePath(std::string(fullPath))
+	{
+	}
+
 }

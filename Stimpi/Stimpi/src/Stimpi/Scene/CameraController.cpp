@@ -58,7 +58,7 @@ namespace Stimpi
 			}
 
 			static glm::vec3 cameraStartPos;
-			if (InputManager::Instance()->IsMouseButtonPressed(ST_BUTTON_MIDDLE) && zoomHold == false)
+			if (InputManager::Instance()->IsMouseButtonPressed(ST_BUTTON_RIGHT) && zoomHold == false)
 			{
 				if (!buttonHold)	// Start of MMB hold
 				{

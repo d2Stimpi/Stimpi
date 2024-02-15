@@ -173,7 +173,8 @@ namespace Stimpi
 				calcPos = EditorUtils::PositionInCurentWindow(calcPos);
 				ImVec2 uv_min = ImVec2(0.0f, 1.0f);
 				ImVec2 uv_max = ImVec2(1.0f, 0.0f);
-				ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)camTexture->GetTextureID(), ImVec2(calcPos.x - iconSize.x / 2, calcPos.y - iconSize.y / 2), ImVec2(calcPos.x + iconSize.x / 2, calcPos.y + iconSize.y / 2), uv_min, uv_max);
+				if (camTexture->Loaded())
+					ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)camTexture->GetTextureID(), ImVec2(calcPos.x - iconSize.x / 2, calcPos.y - iconSize.y / 2), ImVec2(calcPos.x + iconSize.x / 2, calcPos.y + iconSize.y / 2), uv_min, uv_max);
 				
 				// Cam bounds
 				camPos = camera.m_Camera->GetPosition(); // Reset Camera position

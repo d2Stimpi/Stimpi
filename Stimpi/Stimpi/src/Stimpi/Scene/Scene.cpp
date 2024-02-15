@@ -146,7 +146,7 @@ namespace Stimpi
 					if (entity.HasComponent<SpriteComponent>())
 					{
 						auto& sprite = entity.GetComponent<SpriteComponent>();
-						if (sprite.m_TextureHandle.IsValid())
+						if (sprite.TextureLoaded())
 						{
 							if (sprite.m_Enable)
 								Renderer2D::Instance()->Submit(quad, quad.m_Rotation, sprite, m_DefaultShader.get());
@@ -187,7 +187,7 @@ namespace Stimpi
 					if (entity.HasComponent<SpriteComponent>())
 					{
 						auto& sprite = entity.GetComponent<SpriteComponent>();
-						if (sprite.m_TextureHandle.IsValid() && sprite.m_Enable)
+						if (sprite.TextureLoaded() && sprite.m_Enable)
 						{
 							glm::vec3 position = { circle.m_Position.x, circle.m_Position.y, 1.0f };
 							Renderer2D::Instance()->Submit(position, circle.m_Size, circle.m_Rotation, sprite, m_DefaultShader.get());
@@ -227,12 +227,6 @@ namespace Stimpi
 					}
 				}
 			}
-
-			/*m_Registry.view<CircleComponent>().each([=](auto entity, CircleComponent& circle)
-				{
-					glm::vec3 position = { circle.m_Position.x, circle.m_Position.y, 1.0f };
-					Renderer2D::Instance()->DrawCircle(position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
-				});*/
 
 #if USE_TEST_STUFF
 			Stimpi::Renderer2D::Instance()->SetLineWidth(3.0f);

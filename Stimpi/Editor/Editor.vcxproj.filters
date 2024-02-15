@@ -45,6 +45,7 @@
     <ClInclude Include="src\Gui\Stats\EditorConfig.h" />
     <ClInclude Include="src\Gui\Config\SceneConfig.h" />
     <ClInclude Include="src\Gui\Components\Thumbnail.h" />
+    <ClInclude Include="src\Gui\Nodes\NodePanel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
@@ -84,5 +85,6 @@
     <ClCompile Include="src\Gui\Stats\EditorConfig.cpp" />
     <ClCompile Include="src\Gui\Config\SceneConfig.cpp" />
     <ClCompile Include="src\Gui\Components\Thumbnail.cpp" />
+    <ClCompile Include="src\Gui\Nodes\NodePanel.cpp" />
   </ItemGroup>
 </Project>

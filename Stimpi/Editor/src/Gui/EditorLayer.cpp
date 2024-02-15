@@ -229,6 +229,8 @@ namespace Stimpi
 		/* Global Stats and Configs */
 		m_EditorConfigWindow.OnImGuiRender();
 		m_SceneConfigWindow.OnImGuiRender();
+		/* Node Panel */
+		m_NodePanel.OnImGuiRender();
 
 		// Camera movement update - only when in Stopped state
 		if (m_Scene->GetRuntimeState() == RuntimeState::STOPPED)

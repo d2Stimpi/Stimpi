@@ -17,6 +17,9 @@
 #include "ImGui/src/imgui.h"
 #include "ImGui/src/imgui_internal.h"
 
+// Window show toggle includes
+#include "Gui/Nodes/NodePanel.h"
+
 #include <SDL.h>
 
 namespace Stimpi
@@ -101,6 +104,17 @@ namespace Stimpi
 				ImGui::EndMenu();
 			}
 
+			if (ImGui::BeginMenu("Window"))
+			{
+				if (ImGui::MenuItem("Node Panel", nullptr, NodePanel::IsVisible()))
+				{
+					NodePanel::ShowWindow(!NodePanel::IsVisible());
+				}
+
+				ImGui::EndMenu();
+			}
+
+#if 0
 			if (ImGui::BeginMenu("Mono"))
 			{
 				if (ImGui::MenuItem("Reload"))
@@ -140,7 +154,7 @@ namespace Stimpi
 
 				ImGui::EndMenu();
 			}
-
+#endif
 			ImGui::EndMainMenuBar();
 		}
 	}

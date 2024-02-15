@@ -11,14 +11,8 @@ namespace Stimpi
 	
 	SpriteAnimPanel::SpriteAnimPanel()
 	{
-		// Sonic sprite test
-		/*
-		auto texture = ResourceManager::Instance()->LoadTexture("..\/assets\/sprite_sheets\/sonic_run_1.png");
-		m_SubTextureDisplay = std::make_shared<SubTexture>(texture, glm::vec2{ 0.0f, 0.0f }, glm::vec2{ 42, 42 });
-		*/
 		// Nero sprite test
-		auto texture = ResourceManager::Instance()->LoadTexture("..\/assets\/sprite_sheets\/nero_slap_anim-sheet.png");
-		m_SubTextureDisplay = std::make_shared<SubTexture>(texture, glm::vec2{ 0.0f, 0.0f }, glm::vec2{ 24, 24 });
+		m_SubTextureDisplay = std::make_shared<SubTexture>("..\/assets\/sprite_sheets\/nero_slap_anim-sheet.png", glm::vec2{ 0.0f, 0.0f }, glm::vec2{ 24, 24 });
 		m_Sptire = std::make_shared<Sprite>(m_SubTextureDisplay.get(), 5, 1);
 		m_LoopAnim = m_Sptire->GetLooping();
 		m_Duration = m_Sptire->GetDuration();
@@ -59,7 +53,8 @@ namespace Stimpi
 			ImVec2 uvMin = ImVec2{ textureMin.x, textureMax.y };
 			ImVec2 uvMax = ImVec2{ textureMax.x, textureMin.y };
 
-			ImGui::Image((ImTextureID)m_SubTextureDisplay->GetTextureID(), ImVec2{ 80 , 80 }, uvMin, uvMax);
+			if (m_SubTextureDisplay->GetTexture()->Loaded())
+				ImGui::Image((ImTextureID)m_SubTextureDisplay->GetTextureID(), ImVec2{ 80 , 80 }, uvMin, uvMax);
 
 			ImGui::PushItemWidth(40);
 			if (spriteState != SpriteState::RUNNING)

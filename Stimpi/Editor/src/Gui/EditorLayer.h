@@ -18,6 +18,8 @@
 #include "Gui/SpriteAnimPanel.h"
 #include "Gui/Stats/EditorConfig.h"
 #include "Gui/Config/SceneConfig.h"
+// Test - WIP
+#include "Gui/Nodes/NodePanel.h"
 
 #include "ImGui/src/imgui.h"
 
@@ -55,6 +57,9 @@ namespace Stimpi
 		//Global stats/config
 		EditorConfig m_EditorConfigWindow;
 		SceneConfig m_SceneConfigWindow;
+
+		//Test-WIP
+		NodePanel m_NodePanel;
 
 		//Scene data
 		std::shared_ptr<Scene> m_Scene;

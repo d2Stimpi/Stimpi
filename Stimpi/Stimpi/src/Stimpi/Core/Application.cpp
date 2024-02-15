@@ -7,6 +7,8 @@
 #include "Stimpi/Core/EventQueue.h"
 #include "Stimpi/Core/InputManager.h"
 #include "Stimpi/Core/Time.h"
+#include "Stimpi/Scene/Assets/AssetManager.h"
+#include "Stimpi/Utils/ThreadPool.h"
 
 #include "Stimpi/Scripting/ScriptEngine.h"
 
@@ -29,6 +31,8 @@ namespace Stimpi
 		m_Context.CreateContext(m_Window.get());
 		// Init ScriptEngine runtime
 		ScriptEngine::Init();
+		// Create resource loader thread pool
+		ThreadPool::InitResourceLoadingThreadPool();
 	}
 
 	void Application::Run()
@@ -58,6 +62,7 @@ namespace Stimpi
 		};
 
 		ScriptEngine::Shutdown();
+		AssetManager::ReleaseAll();
 	}
 
 	void Application::Stop()

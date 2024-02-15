@@ -115,7 +115,8 @@ namespace Stimpi
 		}
 		else
 		{
-			return nullptr;
+			//return nullptr;
+			return texture;
 		}
 	}
 

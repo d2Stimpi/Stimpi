@@ -2,6 +2,7 @@
 
 #include "Stimpi/Core/Core.h"
 #include "Stimpi/Graphics/Texture.h"
+#include "Stimpi/Scene/Assets/AssetManager.h"
 
 #include "stpch.h"
 #include <glm/glm.hpp>
@@ -11,8 +12,11 @@ namespace Stimpi
 	class ST_API SubTexture
 	{
 	public:
-		SubTexture(Texture* texture, glm::vec2 min, glm::vec2 max);
+		SubTexture(FilePath filePath, glm::vec2 min, glm::vec2 max);
 		~SubTexture();
+
+		void Initialize();
+		bool Loaded();
 
 		void SetSubRegion(glm::vec2 min, glm::vec2 max);
 		void SetSubRegion(uint32_t index);
@@ -23,14 +27,17 @@ namespace Stimpi
 		glm::vec2 GetUVMin() { return m_UVmin; }
 		glm::vec2 GetUVMax() { return m_UVmax; }
 
-		Texture* GetTexture() { return m_Texture; }
-		unsigned int GetTextureID() { return m_Texture->GetTextureID(); }
+		Texture* GetTexture() { return AssetManager::GetAsset(m_TextureHandle).As<Texture>(); }
+		unsigned int GetTextureID() { return GetTexture()->GetTextureID(); }
 
 	private:
-		Texture* m_Texture;
-		glm::vec2 m_UVmin;
-		glm::vec2 m_UVmax;
-		uint32_t m_SubWidth;
-		uint32_t m_SubHeight;
+		bool m_Loaded = false;
+		AssetHandle m_TextureHandle = {};
+		glm::vec2 m_min = { 0.0f, 0.0f };
+		glm::vec2 m_max = { 0.0f, 0.0f };
+		glm::vec2 m_UVmin = { 0.0f, 0.0f };
+		glm::vec2 m_UVmax = { 0.0f, 0.0f };
+		uint32_t m_SubWidth = 0;
+		uint32_t m_SubHeight = 0;
 	};
 }
