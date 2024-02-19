@@ -7,7 +7,6 @@
 
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/SceneSerializer.h"
-#include "Stimpi/Scene/ResourceManager.h"
 
 #include "Stimpi/Scripting/ScriptEngine.h"
 

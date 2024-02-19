@@ -18,6 +18,7 @@ namespace Stimpi
 		std::filesystem::path& GetDir() { return m_FileDir; }
 		std::filesystem::path& GetPath() { return m_FilePath; }
 		std::string& GetFileName() { return m_FileName; }
+		std::string GetFileExtension() { return m_FilePath.extension().string(); }
 
 		std::string string() { return m_FilePath.string(); }
 

@@ -1,8 +1,6 @@
 #include "stpch.h"
 #include "Gui/SpriteAnimPanel.h"
 
-#include "Stimpi/Scene/ResourceManager.h"
-
 #include "ImGui/src/imgui.h"
 #include "ImGui/src/imgui_internal.h"
 

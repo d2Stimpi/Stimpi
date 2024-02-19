@@ -46,6 +46,7 @@
     <ClInclude Include="src\Gui\Config\SceneConfig.h" />
     <ClInclude Include="src\Gui\Components\Thumbnail.h" />
     <ClInclude Include="src\Gui\Nodes\NodePanel.h" />
+    <ClInclude Include="src\Gui\Utils\Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />

@@ -13,7 +13,7 @@
  * TODO: Add clearAll() - for scene change like stuff? and app shutdown
  */
 
-#define ASSETMANAGER_DBG (true)
+#define ASSETMANAGER_DBG (false)
 
 namespace Stimpi
 {
@@ -224,6 +224,33 @@ namespace Stimpi
 				Asset asset = m_NameAssets[name];
 				handle = asset.GetHandle();
 				AssetProvider<T>::IncrementRef(handle.GetIndex());
+			}
+			else
+			{
+				Asset asset;
+				handle = AssetProvider<T>::NewAssetHandle(filePath);
+				asset = { filePath };
+				asset.m_Type = AssetProvider<T>::GetType();
+				asset.m_Handle = handle;
+				m_NameAssets[name] = asset;
+				m_Assets[handle] = asset;
+			}
+
+			if (ASSETMANAGER_DBG) ST_CORE_INFO("DBG::AssetManager - assets count: {} - {}", m_Assets.size(), m_NameAssets.size());
+
+			return handle;
+		}
+
+		template <typename T>
+		static AssetHandle GetAssetNoRefCount(FilePath filePath)
+		{
+			AssetHandle handle;
+			std::string name = filePath.GetFileName();
+
+			if (m_NameAssets.find(name) != m_NameAssets.end())
+			{
+				Asset asset = m_NameAssets[name];
+				handle = asset.GetHandle();
 			}
 			else
 			{

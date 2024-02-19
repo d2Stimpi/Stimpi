@@ -9,6 +9,17 @@ namespace Stimpi
 {
 	bool s_Show = false;
 
+	NodePanel::NodePanel()
+	{
+		m_HeaderImage = AssetManager::GetAsset<Texture>("..\/assets\/textures\/Gradient2.png");
+		//m_HeaderImage = AssetManager::GetAsset<Texture>("..\/assets\/textures\/sovingradient.png");
+	}
+
+	NodePanel::~NodePanel()
+	{
+		AssetManager::Release(m_HeaderImage);
+	}
+
 	void NodePanel::OnImGuiRender()
 	{
 		if (s_Show)
@@ -41,14 +52,16 @@ namespace Stimpi
 			ImGui::InvisibleButton("canvas", canvas_sz, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
 			const bool is_hovered = ImGui::IsItemHovered(); // Hovered
 			const bool is_active = ImGui::IsItemActive();   // Held
-			ImVec2 origin(canvas_p0.x + scrolling.x, canvas_p0.y + scrolling.y); // scrolled origin
-			const ImVec2 mouse_pos_in_canvas(io.MousePos.x - origin.x, io.MousePos.y - origin.y);
 
 			if (is_active && ImGui::IsMouseDragging(ImGuiMouseButton_Right))
 			{
 				scrolling.x += io.MouseDelta.x;
 				scrolling.y += io.MouseDelta.y;
 			}
+			//ImGui::IsMouseHoveringRect()
+
+			ImVec2 origin(canvas_p0.x + scrolling.x, canvas_p0.y + scrolling.y); // scrolled origin
+			const ImVec2 mouse_pos_in_canvas(io.MousePos.x - origin.x, io.MousePos.y - origin.y);
 
 			// Draw grid + all lines in the canvas
 			draw_list->PushClipRect(canvas_p0, canvas_p1, true);
@@ -59,32 +72,30 @@ namespace Stimpi
 				for (float y = fmodf(scrolling.y, GRID_STEP); y < canvas_sz.y; y += GRID_STEP)
 					draw_list->AddLine(ImVec2(canvas_p0.x, canvas_p0.y + y), ImVec2(canvas_p1.x, canvas_p0.y + y), IM_COL32(200, 200, 200, 40));
 			}
-			draw_list->AddRectFilled({ origin.x + 20.0f * scale, origin.y + 20.0f * scale }, { origin.x + 200.0f * scale, origin.y + 100.0f * scale }, IM_COL32(220, 220, 220, 255), 12.0f * scale);
-			draw_list->PopClipRect();
-
-			/*
-			if (scale != 1.0f)
+			// Draw node frame
+			draw_list->AddRectFilled({ origin.x + 20.0f * scale, origin.y + 20.0f * scale }, { origin.x + 300.0f * scale, origin.y + 150.0f * scale }, IM_COL32(120, 120, 120, 255), 15.0f * scale);
+			
+			ImVec2 uv_min = ImVec2(0.0f, 1.0f);
+			ImVec2 uv_max = ImVec2(1.0f, 0.0f);
+			auto texture = AssetManager::GetAsset(m_HeaderImage).As<Texture>();
+			if (texture->Loaded())
 			{
-				auto vertex = draw_list->VtxBuffer.Data + drawListStartVertexIndex;
-				auto vertexEnd = draw_list->VtxBuffer.Data + draw_list->_VtxCurrentIdx + draw_list->_CmdHeader.VtxOffset;
+				draw_list->AddImageRounded((void*)(intptr_t)texture->GetTextureID(),
+					{ origin.x + 20.0f * scale, origin.y + 20.0f * scale }, { origin.x + 300.0f * scale, origin.y + 50.0f * scale },
+					uv_min, uv_max, IM_COL32(225, 30, 30, 255), 15 * scale, ImDrawFlags_RoundCornersTop);
+			}
 
-				while (vertex < vertexEnd)
-				{
-					vertex->pos.x = vertex->pos.x * scale + viewTransformPosition.x;
-					vertex->pos.y = vertex->pos.y * scale + viewTransformPosition.y;
-					++vertex;
-				}
-
-				// Move clip rectangles to screen space.
-				for (int i = drawListFirstCommandIndex; i < draw_list->CmdBuffer.size(); ++i)
-				{
-					auto& command = draw_list->CmdBuffer[i];
-					command.ClipRect.x = command.ClipRect.x * scale + viewTransformPosition.x;
-					command.ClipRect.y = command.ClipRect.y * scale + viewTransformPosition.y;
-					command.ClipRect.z = command.ClipRect.z * scale + viewTransformPosition.x;
-					command.ClipRect.w = command.ClipRect.w * scale + viewTransformPosition.y;
-				}
-			}*/
+			/*ImU32 col_a = ImGui::GetColorU32(IM_COL32(200, 30, 30, 255));
+			ImU32 col_b = ImGui::GetColorU32(IM_COL32(30, 30, 30, 255));
+			draw_list->AddRectFilledMultiColor({ origin.x + 22.0f * scale, origin.y + 22.0f * scale }, { origin.x + 198.0f * scale, origin.y + 40.0f * scale }, col_a, col_b, col_b, col_a);
+			*/
+			ImGui::SetWindowFontScale(scale);
+			draw_list->AddText({ origin.x + 45.0f * scale, origin.y + 20.0f * scale }, IM_COL32(255, 255, 255, 255), "Node name");
+			ImGui::SetWindowFontScale(1.0f);
+			
+			//draw_list->ChannelsSetCurrent()
+			
+			draw_list->PopClipRect();
 
 
 

@@ -154,6 +154,7 @@
     <ClInclude Include="src\Gui\SceneHierarchyWindow.h" />
     <ClInclude Include="src\Gui\SceneViewWindow.h" />
     <ClInclude Include="src\Gui\SpriteAnimPanel.h" />
+    <ClInclude Include="src\Gui\Utils\Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />

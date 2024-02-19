@@ -8,7 +8,7 @@
 #include <stb_image.h>
 #include <chrono>
 
-#define DBG_LOG true
+#define DBG_LOG false
 
 namespace Stimpi
 {
@@ -87,7 +87,7 @@ namespace Stimpi
 			loadData->m_Data = stbi_load(file.c_str(), (int*)&loadData->m_Width, (int*)&loadData->m_Height, (int*)&loadData->m_NumChannels, 0);
 			if (loadData->m_Data)
 			{
-				ST_CORE_INFO(" ** Texture data is loaded {}", loadData->m_FileName);
+				if (DBG_LOG) ST_CORE_INFO(" ** Texture data is loaded {}", loadData->m_FileName);
 			}
 			else
 			{
@@ -105,7 +105,7 @@ namespace Stimpi
 			if (m_LoadFuture.wait_for(1ns) == std::future_status::ready)
 			{
 				GenerateTexture(m_LoadFuture.get());
-				ST_CORE_INFO(" ** Texture data is loaded");
+				if (DBG_LOG) ST_CORE_INFO(" ** Texture data is loaded");
 			}
 		}
 	}

@@ -77,7 +77,7 @@ namespace Stimpi
 
 				while (!m_ThreadPool->m_Shutdown || (m_ThreadPool->m_Shutdown && !m_ThreadPool->m_TaskQueue.empty()))
 				{
-					ST_CORE_INFO("- thread worker {} waiting", m_ID);
+					//ST_CORE_INFO("- thread worker {} waiting", m_ID);
 					m_ThreadPool->m_ConditionVariable.wait(lock, [this] {
 						return this->m_ThreadPool->m_Shutdown || !this->m_ThreadPool->m_TaskQueue.empty();
 					});
