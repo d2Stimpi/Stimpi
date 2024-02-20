@@ -2,6 +2,7 @@
 
 #include "Stimpi/Log.h"
 #include "Stimpi/Scene/ResourceManager.h"
+#include "Stimpi/Core/Project.h"
 #include "Gui/Components/UIPayload.h"
 
 #include "ImGui/src/imgui.h"
@@ -15,7 +16,11 @@ namespace Stimpi
 	ContentBrowserWindow::ContentBrowserWindow()
 		: m_CurrentDirectory(ResourceManager::GetAssetsPath())
 	{
-
+		// Trigger load of used icons
+		// TODO: isolate to a class that manages UI resources
+		AssetManager::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/folder.png");
+		AssetManager::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/shader.png");
+		AssetManager::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/scene.png");
 	}
 
 	void ContentBrowserWindow::OnImGuiRender()
@@ -43,55 +48,59 @@ namespace Stimpi
 				auto relativePath = std::filesystem::relative(path, ResourceManager::GetAssetsPath());
 				std::string filenameStr = relativePath.filename().string();
 
-				if (directoryEntry.is_directory())
+				ImGuiStyle& style = ImGui::GetStyle();
+				ImVec2 itemSpacing = style.ItemSpacing;
+
+				AssetHandle asset;
+				ThumbnailType type = GetThumbnailTypeFromFile(path);
+				switch (type)
 				{
-					if (ImGui::Button(filenameStr.c_str()))
-					{
-						m_CurrentDirectory /= path.filename();
-						OnCurrentDirChange();
-					}
+				case ThumbnailType::NONE:
+					asset = AssetManager::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/shader.png");
+					break;
+				case ThumbnailType::DIRECTORY:
+					asset = AssetManager::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/folder.png");
+					break;
+				case ThumbnailType::TEXTURE:
+					asset = AssetManager::GetAssetNoRefCount<Texture>(path);
+					break;
+				case ThumbnailType::SHADER:
+					asset = AssetManager::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/shader.png");
+					break;
+				case ThumbnailType::SCENE:
+					asset = AssetManager::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/scene.png");
+					break;
+				default:
+					break;
 				}
-				else
+
+				Texture* texture = AssetManager::GetAsset(asset).As<Texture>();
+				if (texture->Loaded())
 				{
-					ImGuiStyle& style = ImGui::GetStyle();
-					ImVec2 itemSpacing = style.ItemSpacing;
-
-					if (GetThumbnailTypeFromFile(path) == ThumbnailType::TEXTURE)
+					if (Thumbnail::Button(filenameStr.c_str(), texture, cursor, THUMBNAIL_SIZE))
 					{
-						AssetHandle asset = AssetManager::GetAssetNoRefCount<Texture>(path);
-						Texture* texture = AssetManager::GetAsset(asset).As<Texture>();
-						if (texture->Loaded())
+						if (type == ThumbnailType::DIRECTORY)
 						{
-							if (Thumbnail::Button(filenameStr.c_str(), texture, cursor, THUMBNAIL_SIZE))
-							{
-
-							}
-							// Check when to drop to next line for drawing (2xWidth because ImGui::SameLine moves cursor after the check)
-							if (winSize.x > cursor.x - startCursor.x + 2 * THUMBNAIL_WIDTH)
-								ImGui::SameLine();
-							cursor = ImGui::GetCursorScreenPos();
+							m_CurrentDirectory /= path.filename();
+							OnCurrentDirChange();
 						}
 					}
-					else
-					{
-						if (ImGui::Button(filenameStr.c_str()))
-						{
+					// Check when to drop to next line for drawing (2xWidth because ImGui::SameLine moves cursor after the check)
+					if (winSize.x > cursor.x - startCursor.x + 2 * THUMBNAIL_WIDTH)
+						ImGui::SameLine();
+					cursor = ImGui::GetCursorScreenPos();
+				}
 
-						}
-					}
-
-					// Drag & Drop handling
-					if (relativePath.extension().string() == ".jpg" || relativePath.extension().string() == ".JPG" || relativePath.extension().string() == ".png")
-					{
-						UIPayload::BeginSource(PAYLOAD_TEXTURE, path.string().c_str(), path.string().length(), filenameStr.c_str());
-					}
-					if (relativePath.extension().string() == ".d2s")
-					{
-						UIPayload::BeginSource(PAYLOAD_SCENE, path.string().c_str(), path.string().length(), filenameStr.c_str());
-					}
+				// Drag & Drop handling
+				if (relativePath.extension().string() == ".jpg" || relativePath.extension().string() == ".JPG" || relativePath.extension().string() == ".png")
+				{
+					UIPayload::BeginSource(PAYLOAD_TEXTURE, path.string().c_str(), path.string().length(), filenameStr.c_str());
+				}
+				if (relativePath.extension().string() == ".d2s")
+				{
+					UIPayload::BeginSource(PAYLOAD_SCENE, path.string().c_str(), path.string().length(), filenameStr.c_str());
 				}
 			}
-
 			ImGui::End();
 		}
 	}

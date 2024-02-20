@@ -5,14 +5,18 @@
 
 #include "ImGui/src/imgui.h"
 
+#include <filesystem>
+
 namespace Stimpi
 {
 	enum class ThumbnailType { NONE = 0, DIRECTORY, TEXTURE, SHADER, SCENE };
 
 	static ThumbnailType GetThumbnailTypeFromFile(FilePath filePath)
 	{
-		std::string extension = filePath.GetFileExtension();
+		if (std::filesystem::is_directory(filePath))
+			return ThumbnailType::DIRECTORY;
 
+		std::string extension = filePath.GetFileExtension();
 		if (extension == ".png" || extension == ".PNG" || extension == ".jpg" || extension == ".JPG")
 			return ThumbnailType::TEXTURE;
 		if (extension == ".shader")

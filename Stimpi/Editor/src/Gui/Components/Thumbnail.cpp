@@ -1,6 +1,7 @@
 #include "stpch.h"
 #include "Gui/Components/Thumbnail.h"
 
+#include "Stimpi/Log.h"
 #include "Gui/Utils/Utils.h"
 #include "ImGui/src/imgui_internal.h""
 
@@ -16,12 +17,12 @@ namespace Stimpi
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
 
 		// Invisible button to catch input
-		if (ImGui::InvisibleButton(name, size, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight))
-		{
-			retVal = true; // TODO: handle double click  ImGui::IsMouseDoubleClicked(0)
-		}
+		ImGui::InvisibleButton(name, size, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
 		const bool hovered = ImGui::IsItemHovered(); // Hovered
-
+		if (hovered)
+		{
+			retVal = ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left);
+		}
 
 		// Draw thumbnail image section
 		// 1# Frame spacing and text font size
