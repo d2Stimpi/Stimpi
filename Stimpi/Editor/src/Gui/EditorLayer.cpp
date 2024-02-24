@@ -220,6 +220,7 @@ namespace Stimpi
 		/* Runtime controls */
 		m_PlayPanel.OnImGuiRender();
 		/* Content Browser */
+		m_ContentBrowserWindow.OnUpdate(ts);
 		m_ContentBrowserWindow.OnImGuiRender();
 		/* Scene Hierarchy */
 		m_SceneHierarchyWindow.OnImGuiRender();

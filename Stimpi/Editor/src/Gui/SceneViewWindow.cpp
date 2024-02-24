@@ -55,7 +55,9 @@ namespace Stimpi
 		auto scene = SceneManager::Instance()->GetActiveScene();
 		auto camera = scene->GetRenderCamera();
 
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("OpenGL Main Scene View", &m_Show, m_Flags);
+		ImGui::PopStyleVar();
 		ImGui::BeginChild("##DropTarget-SceneView");	// Used to be able to catch drag-drop item on whole window
 
 		ImVec2 pos = ImGui::GetCursorScreenPos();
