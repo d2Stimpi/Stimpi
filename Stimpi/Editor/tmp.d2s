@@ -1,17 +1,19 @@
 Scene:
   Entity:
     TagComponent:
-      Tag: Camera_Main
+      Tag: Entity
     QuadComponent:
+      - 4.28760767
+      - 2.45006132
+      - 50
+      - 40
       - 0
-      - 0
-      - 0
-      - 0
-      - 0
+    ScriptComponent:
+      ScriptName: Sandbox.Actor
     CameraComponent:
       Position:
-        - 0
-        - 0
+        - 4.28760767
+        - 2.45006132
         - 0
       Rotation: 0
       Zoom: 1
@@ -23,52 +25,80 @@ Scene:
       IsMain: true
   Entity:
     TagComponent:
-      Tag: Ground
+      Tag: Texture1
     QuadComponent:
-      - 17.7713604
-      - 10.273037
-      - 79.3677139
-      - 6.69677401
+      - 100
+      - 20
+      - 50
+      - 40
       - 0
     SpriteComponent:
-      FilePath: ""
-      Enabled: false
+      FilePath: ..\/assets/textures/Capture.jpg
+      Enabled: true
       Color:
-        - 0
-        - 0
-        - 0
         - 1
-    RigidBody2DComponent:
-      Type: Static
-      FixedRotation: false
-    BoxCollider2DComponent:
-      Shape: 0
-      Offset:
-        - 0
-        - 0
-      Size:
-        - 0.5
-        - 0.5
-      Density: 1
-      Friction: 0.5
-      Restitution: 0
-      RestitutionThreshold: 0.5
+        - 1
+        - 1
+        - 1
   Entity:
     TagComponent:
-      Tag: Obj
+      Tag: Texture2
     QuadComponent:
-      - 43.2392311
-      - 35.2454224
-      - 10
-      - 10
+      - 200
+      - 20
+      - 50
+      - 40
       - 0
     SpriteComponent:
-      FilePath: ""
-      Enabled: false
+      FilePath: ../assets/textures/Capture.jpg
+      Enabled: true
       Color:
-        - 0.937254906
-        - 0.725490212
-        - 0.65882355
+        - 1
+        - 1
+        - 1
+        - 1
+  Entity:
+    TagComponent:
+      Tag: Texture3
+    QuadComponent:
+      - 300
+      - 20
+      - 50
+      - 40
+      - 0
+    SpriteComponent:
+      FilePath: ../assets/textures/Picture1.jpg
+      Enabled: true
+      Color:
+        - 1
+        - 1
+        - 1
+        - 1
+  Entity:
+    TagComponent:
+      Tag: Circle_Object
+    CircleComponent:
+      Position:
+        - 47
+        - 37
+      Size:
+        - 10
+        - 10
+      Rotation: 0
+      Color:
+        - 1
+        - 0.549019635
+        - 0.301960796
+        - 1
+      Thickness: 1
+      Fade: 0.00499999989
+    SpriteComponent:
+      FilePath: D:/GitHub/Stimpi\assets\textures\Picture1.jpg
+      Enabled: true
+      Color:
+        - 1
+        - 1
+        - 1
         - 1
     ScriptComponent:
       ScriptName: Sandbox.PhysicsActor
@@ -76,14 +106,14 @@ Scene:
       Type: Dynamic
       FixedRotation: false
     BoxCollider2DComponent:
-      Shape: 0
+      Shape: 1
       Offset:
         - 0
         - 0
       Size:
         - 0.5
         - 0.5
-      Density: 1
+      Density: 0.810000002
       Friction: 0.5
       Restitution: 0
       RestitutionThreshold: 0.5
@@ -91,21 +121,21 @@ Scene:
     TagComponent:
       Tag: Sprite_Object
     QuadComponent:
-      - 48.3922577
-      - 18.0025826
-      - 10
-      - 10
+      - 7.01936054
+      - 13.2954826
+      - 72.2658005
+      - 5.21032476
       - 0
     SpriteComponent:
       FilePath: ""
       Enabled: false
       Color:
-        - 0.877451003
-        - 0.210760266
-        - 0.210760266
+        - 0.850980401
+        - 0.678431392
+        - 0.819607854
         - 1
     RigidBody2DComponent:
-      Type: Dynamic
+      Type: Static
       FixedRotation: true
     BoxCollider2DComponent:
       Shape: 0
@@ -121,10 +151,10 @@ Scene:
       RestitutionThreshold: 0.5
   Entity:
     TagComponent:
-      Tag: Player
+      Tag: movable
     QuadComponent:
-      - 70.1935501
-      - 38.1522522
+      - 48.448288
+      - 18.6288452
       - 10
       - 10
       - 0
@@ -132,9 +162,22 @@ Scene:
       FilePath: ""
       Enabled: false
       Color:
-        - 0.921568632
-        - 0.662477076
-        - 0.243944645
+        - 0.411764711
+        - 0.588235319
         - 1
-    ScriptComponent:
-      ScriptName: Sandbox.Actor
+        - 1
+    RigidBody2DComponent:
+      Type: Dynamic
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
