@@ -7,6 +7,7 @@
 namespace Stimpi
 {
 	struct Node;
+	struct PinConnection;
 
 	struct Pin
 	{
@@ -16,7 +17,8 @@ namespace Stimpi
 		uint32_t m_ID;	    // Pin ID
 
 		bool m_Connected = false;
-		uint32_t m_ConnectedPinID;
+		bool m_SingleConnection = false;
+		std::vector<Pin*> m_ConnectedPins;
 
 		std::string m_Text;
 		Type m_Type;
@@ -70,6 +72,12 @@ namespace Stimpi
 		// Pin methods
 		void DrawNodePins(Node* node);
 		void DrawPin(Pin* pin, ImVec2 pos);
+		void DrawBezierLine(ImVec2 start, ImVec2 end, ImU32 col = IM_COL32(255, 255, 255, 255));
+		void DrawPinToPinConnection(Pin* src, Pin* dest, ImU32 col = IM_COL32(255, 255, 255, 255));
+
+		// Connection methods
+		void DrawDbgPoint(ImVec2 point);
+		void DbgDrawConnectionLinePoints(PinConnection* connection);
 
 		// Mouse control methods
 		bool IsMouseHoverNode(Node* node);

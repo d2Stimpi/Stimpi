@@ -5,6 +5,8 @@
 
 #include "ImGui/src/imgui_internal.h"
 
+#include <cmath>
+
 #define NODE_HOVER_COLOR	IM_COL32(220, 220, 30, 255)
 
 #define CANVAS_MOVE_BUTTON ImGuiMouseButton_Left
@@ -13,7 +15,7 @@ namespace Stimpi
 {
 	bool s_Show = false;	// Easier use in menu if static - to toggle window visibility
 
-	enum class ControllAction { NONE = 0, NODE_HOVER, NODE_DRAGABLE, SHOW_POPUP_ONRELEASE, CANVAS_MOVE, NODE_PIN_DRAG };
+	enum class ControllAction { NONE = 0, NODE_HOVER, NODE_DRAGABLE, SHOW_POPUP_ONRELEASE, CANVAS_MOVE, NODE_PIN_DRAG, CONNECTION_ONPRESS };
 
 	struct NodePanelStyle
 	{
@@ -36,6 +38,9 @@ namespace Stimpi
 		float m_PinTextSpacing; // For OUT pins
 		float m_PinSelectOffset; // For higher Pin select precision
 
+		// Connection
+		uint32_t m_ConnectionSegments;
+
 		// Grid
 		float m_GridStep;
 	};
@@ -49,10 +54,22 @@ namespace Stimpi
 		NodeCanvas() = default;
 	};
 
+	struct PinConnection
+	{
+		Pin* m_SourcePin;
+		Pin* m_DestinationPin;
+
+		std::vector<ImVec2> m_BezierLinePoints;
+
+		PinConnection() = default;
+		PinConnection(Pin* src, Pin* dest) : m_SourcePin(src), m_DestinationPin(dest) {}
+	};
+
 	struct NodePanelContext
 	{
 		uint32_t m_NextNodeID = 0;
 		std::vector<std::shared_ptr<Node>> m_Nodes;
+		std::vector<std::shared_ptr<PinConnection>> m_PinConnections;
 
 		ImVec2 m_Origin = { 0.0f, 0.0f };	// Global panel view translate offset
 		ImVec2 m_Scrolling = { 0.0f, 0.0f };
@@ -65,6 +82,10 @@ namespace Stimpi
 		// Convenience to avoid iterating Nodes vector
 		Node* m_SelectedNode = nullptr;
 		Pin* m_SelectedPin = nullptr;
+		PinConnection* m_SelectedConnection = nullptr;
+
+		// Pin drag mouse position (draw Pin - Floating point line)
+		ImVec2 m_PinFloatingTarget = { 0.0f, 0.0f };
 
 		ImDrawList* m_DrawList;
 
@@ -101,12 +122,39 @@ namespace Stimpi
 		s_Style.m_PinTextSpacing = 4.0f;
 		s_Style.m_PinSelectOffset = 4.0f;
 
+		s_Style.m_ConnectionSegments = 20;
+
 		s_Style.m_GridStep = 16.0f;
 	}
 
 	/**
+	 * Some forwards, just move along
+	 */
+
+	static void CalculateBezierPoints(PinConnection* connection, Pin* src, Pin* dest, uint32_t segments);
+
+	/**
+	 * Helper Utility functions
+	 */
+#pragma region Utility
+
+	static ImVec2 GetNodePanelViewClickLocation()
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		return { (io.MousePos.x - s_Context->m_Origin.x) / s_Context->m_Scale, (io.MousePos.y - s_Context->m_Origin.y) / s_Context->m_Scale };
+	}
+
+	static float PointDistance(ImVec2 p1, ImVec2 p2)
+	{
+		return sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
+	}
+
+#pragma endregion Utility
+
+	/**
 	 * Helper Node static functions
 	 */
+#pragma region Node
 
 	static bool IsNodeSelected(Node* node)
 	{
@@ -168,22 +216,24 @@ namespace Stimpi
 
 		return true;
 	}
+#pragma endregion Node
 
+#pragma region Pin
 	/**
 	 * Helper Pin static functions
 	 */
 
-	float GetPinSpaceHeight()
+	static float GetPinSpaceHeight()
 	{
 		return s_Style.m_PinRadius * 2.0f;
 	}
 
-	float GetPinSpaceWidth()
+	static float GetPinSpaceWidth()
 	{
 		return s_Style.m_PinRadius * 2.0f + s_Style.m_PinArrowSpacing + s_Style.m_PinArrowWidth;
 	}
 
-	bool IsMouseHovePin(Pin* pin)
+	static bool IsMouseHoveringPin(Pin* pin)
 	{
 		ImVec2 min(s_Context->m_Origin.x + (pin->m_Pos.x - s_Style.m_PinRadius - s_Style.m_PinSelectOffset) * s_Context->m_Scale, s_Context->m_Origin.y + (pin->m_Pos.y - s_Style.m_PinRadius - s_Style.m_PinSelectOffset) * s_Context->m_Scale);
 		ImVec2 max(s_Context->m_Origin.x + (pin->m_Pos.x + s_Style.m_PinRadius + s_Style.m_PinSelectOffset) * s_Context->m_Scale, s_Context->m_Origin.y + (pin->m_Pos.y + s_Style.m_PinRadius + s_Style.m_PinSelectOffset) * s_Context->m_Scale);
@@ -191,9 +241,230 @@ namespace Stimpi
 		return ImGui::IsMouseHoveringRect(min, max, true /*clip*/);
 	}
 
+	static Pin* GetMouseHoveredPin(Node* node)
+	{
+		if (node == nullptr)
+			return nullptr;
+
+		for (auto& pin : node->m_InPins)
+		{
+			if (IsMouseHoveringPin(pin.get()))
+				return pin.get();
+		}
+
+		for (auto& pin : node->m_OutPins)
+		{
+			if (IsMouseHoveringPin(pin.get()))
+				return pin.get();
+		}
+
+		return nullptr;
+	}
+
+	static bool IsConnected(Pin* src, Pin* dest)
+	{
+		if (!src->m_Connected || !dest->m_Connected)
+			return false;
+
+		for (auto connected : src->m_ConnectedPins)
+		{
+			if ((connected->m_ParentNode->m_ID == dest->m_ParentNode->m_ID)	// check id parent node matches
+				&& (connected->m_ID == dest->m_ID))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	static void ConnectPinToPin(Pin* src, Pin* dest)
+	{
+		if (IsConnected(src, dest) == false)
+		{
+			src->m_Connected = true;
+			dest->m_Connected = true;
+
+			src->m_ConnectedPins.emplace_back(dest);
+			dest->m_ConnectedPins.emplace_back(src);
+
+			// Global pin to pin connections
+			std::shared_ptr<PinConnection> newConnection = std::make_shared<PinConnection>(src, dest);
+			CalculateBezierPoints(newConnection.get(), src, dest, s_Style.m_ConnectionSegments);
+			s_Context->m_PinConnections.emplace_back(newConnection);
+		}
+	}
+
+	static void BreakPinToPinConnection(PinConnection* connection)
+	{
+		if (!connection)
+			return;
+
+		// Delete p1 and p2 mutual reference
+		Pin* p1 = connection->m_SourcePin;
+		Pin* p2 = connection->m_DestinationPin;
+
+		p1->m_ConnectedPins.erase(std::remove(p1->m_ConnectedPins.begin(), p1->m_ConnectedPins.end(), p2));
+		if (p1->m_ConnectedPins.empty())
+			p1->m_Connected = false;
+
+		p2->m_ConnectedPins.erase(std::remove(p2->m_ConnectedPins.begin(), p2->m_ConnectedPins.end(), p1));
+		if (p2->m_ConnectedPins.empty())
+			p2->m_Connected = false;
+
+		// Remove from vector
+		for (auto it = s_Context->m_PinConnections.begin(); it != s_Context->m_PinConnections.end();)
+		{
+			auto itConn = (*it).get();
+			if (itConn == connection)
+			{
+				s_Context->m_PinConnections.erase(it);
+				break;
+			}
+			else
+			{
+				++it;
+			}
+		}
+	}
+
+	static void UpdateConnectionPoints(PinConnection* connection)
+	{
+		if (connection)
+		{
+			connection->m_BezierLinePoints.clear();
+			CalculateBezierPoints(connection, connection->m_SourcePin, connection->m_DestinationPin, s_Style.m_ConnectionSegments);
+		}
+	}
+
+	static PinConnection* FindPinToPinConnection(Pin* src, Pin* dest)
+	{
+		if (src == nullptr || dest == nullptr)
+			return nullptr;
+
+		for (auto& connection : s_Context->m_PinConnections)
+		{
+			if (connection->m_SourcePin == src && connection->m_DestinationPin == dest)
+				return connection.get();
+
+			if (connection->m_SourcePin == dest && connection->m_DestinationPin == src)
+				return connection.get();
+		}
+
+		return nullptr;
+	}
+
+#pragma endregion Pin
+
+	/**
+	 *  Helper Connection static functions
+	 */
+#pragma region Connection
+
+	static ImVec2 CalcFirstMidBezierPoint(const ImVec2& start, const ImVec2& end)
+	{
+		return { start.x + (end.x - start.x) / 2.0f, start.y };
+	}
+
+	static ImVec2 CalcLastMidBezierPoint(const ImVec2& start, const ImVec2& end)
+	{
+		return { start.x + (end.x - start.x) / 2.0f, end.y };
+	}
+
+	/* Based on ImGui's ImBezierCubicCalc */
+	static ImVec2 BezierCubicCalc(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, float t)
+	{
+		float u = 1.0f - t;
+		float w1 = u * u * u;
+		float w2 = 3 * u * u * t;
+		float w3 = 3 * u * t * t;
+		float w4 = t * t * t;
+		return ImVec2(w1 * p1.x + w2 * p2.x + w3 * p3.x + w4 * p4.x, w1 * p1.y + w2 * p2.y + w3 * p3.y + w4 * p4.y);
+	}
+
+	static void CalculateBezierPoints(PinConnection* connection, Pin* src, Pin* dest, uint32_t segments)
+	{
+		ImVec2 startPoint = src->m_Pos;
+		ImVec2 endPoint = dest->m_Pos;
+		ImVec2 middlePoint1 = CalcFirstMidBezierPoint(startPoint, endPoint);
+		ImVec2 middlePoint2 = CalcLastMidBezierPoint(startPoint, endPoint);
+
+		connection->m_BezierLinePoints.push_back(startPoint);
+
+		float t_step = 1.0f / (float)segments;
+		for (int i_step = 1; i_step <= segments; i_step++)
+			connection->m_BezierLinePoints.push_back(BezierCubicCalc(startPoint, middlePoint1, middlePoint2, endPoint, t_step * i_step));
+	}
+
+	static void UpdateNodeConnectionsPoints(Node* node)
+	{
+		Node* selected = s_Context->m_SelectedNode;
+		for (auto inPin : selected->m_InPins)
+		{
+			if (inPin->m_Connected)
+			{
+				for (auto connPin : inPin->m_ConnectedPins)
+				{
+					PinConnection* connection = FindPinToPinConnection(inPin.get(), connPin);
+					if (connection)
+						UpdateConnectionPoints(connection);
+				}
+			}
+		}
+
+		for (auto outPin : selected->m_OutPins)
+		{
+			if (outPin->m_Connected)
+			{
+				for (auto connPin : outPin->m_ConnectedPins)
+				{
+					PinConnection* connection = FindPinToPinConnection(outPin.get(), connPin);
+					if (connection)
+						UpdateConnectionPoints(connection);
+				}
+			}
+		}
+	}
+
+	static bool IsMouseHoveringConnection(PinConnection* connection)
+	{
+		ImVec2 mousePos = GetNodePanelViewClickLocation();
+
+		for (auto it = connection->m_BezierLinePoints.begin(); std::next(it) != connection->m_BezierLinePoints.end(); it++)
+		{
+			ImVec2 p1 = *it;
+			ImVec2 p2 = *(std::next(it));
+
+			/*float d1 = PointDistance(p1, mousePos);
+			float d2 = PointDistance(mousePos, p2);
+			float d3 = PointDistance(p1, p2);*/
+
+			if (PointDistance(p1, mousePos) + PointDistance(mousePos, p2) <= PointDistance(p1, p2) + 1.0f)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	static PinConnection* GetMouseHoveredConnection()
+	{
+		for (auto& connection : s_Context->m_PinConnections)
+		{
+			if (IsMouseHoveringConnection(connection.get()))
+				return connection.get();
+		}
+
+		return nullptr;
+	}
+
+#pragma endregion Connection
+
 	/**
 	 *  NodePanel Class
 	 */
+#pragma region NodePanelClass
 
 	NodePanel::NodePanel()
 	{
@@ -269,27 +540,22 @@ namespace Stimpi
 
 			DrawCanvasGrid();
 
-			// Draw test node frame
-			/*draw_list->AddRectFilled({ origin.x + 20.0f * scale, origin.y + 20.0f * scale }, { origin.x + 300.0f * scale, origin.y + 150.0f * scale }, IM_COL32(120, 120, 120, 255), 15.0f * scale);
-			
-			ImVec2 uv_min = ImVec2(0.0f, 1.0f);
-			ImVec2 uv_max = ImVec2(1.0f, 0.0f);
-			auto texture = AssetManager::GetAsset(m_HeaderImage).As<Texture>();
-			if (texture->Loaded())
-			{
-				draw_list->AddImageRounded((void*)(intptr_t)texture->GetTextureID(),
-					{ origin.x + 20.0f * scale, origin.y + 20.0f * scale }, { origin.x + 300.0f * scale, origin.y + 50.0f * scale },
-					uv_min, uv_max, IM_COL32(225, 30, 30, 255), 15 * scale, ImDrawFlags_RoundCornersTop);
-			}
-
-			ImGui::SetWindowFontScale(scale);
-			draw_list->AddText({ origin.x + 45.0f * scale, origin.y + 20.0f * scale }, IM_COL32(255, 255, 255, 255), "Node name");
-			ImGui::SetWindowFontScale(1.0f);*/
-
 			// Draw all nodes
 			for (auto node : s_Context->m_Nodes)
 			{
 				DrawNode(node.get());
+			}
+
+			// Temp
+			if (s_Context->m_SelectedConnection)
+			{
+				DrawPinToPinConnection(s_Context->m_SelectedConnection->m_SourcePin, s_Context->m_SelectedConnection->m_DestinationPin, NODE_HOVER_COLOR);
+			}
+
+			// Draw Debug stuff in the end
+			for (auto connection : s_Context->m_PinConnections)
+			{
+				DbgDrawConnectionLinePoints(connection.get());
 			}
 
 			// Rect pushed in drawing of the Grid (start of the draw commands)
@@ -532,6 +798,24 @@ namespace Stimpi
 			pin->m_Text.c_str());
 		ImGui::SetWindowFontScale(1.0f);
 
+		// Test draw Pin <-> FloatingTarget connection
+		if (pin == s_Context->m_SelectedPin && s_Context->m_Action == ControllAction::NODE_PIN_DRAG)
+		{
+			ImVec2 startPoint = pin->m_Pos;
+			ImVec2 endPoint = s_Context->m_PinFloatingTarget;
+			
+			DrawBezierLine(startPoint, endPoint);
+		}
+
+		// Draw pin connections
+		for (auto target : pin->m_ConnectedPins)
+		{
+			if (target)
+			{
+				DrawPinToPinConnection(pin, target);
+			}
+		}
+
 		// Draw debug layer
 		if (s_Context->m_DebugOn)
 		{
@@ -539,6 +823,67 @@ namespace Stimpi
 				{ s_Context->m_Origin.x + (pin->m_Pos.x - s_Style.m_PinRadius) * s_Context->m_Scale, s_Context->m_Origin.y + (pin->m_Pos.y - s_Style.m_PinRadius) * s_Context->m_Scale },
 				{ s_Context->m_Origin.x + (pin->m_Pos.x + s_Style.m_PinRadius) * s_Context->m_Scale, s_Context->m_Origin.y + (pin->m_Pos.y + s_Style.m_PinRadius) * s_Context->m_Scale },
 				IM_COL32(225, 25, 25, 255));
+		}
+	}
+
+	void NodePanel::DrawBezierLine(ImVec2 start, ImVec2 end, ImU32 col)
+	{
+		ImVec2 startPoint = start;
+		ImVec2 endPoint = end;
+		ImVec2 middlePoint1 = CalcFirstMidBezierPoint(startPoint, endPoint);
+		ImVec2 middlePoint2 = CalcLastMidBezierPoint(startPoint, endPoint);
+		s_Context->m_DrawList->AddBezierCubic(
+			{ s_Context->m_Origin.x + startPoint.x * s_Context->m_Scale, s_Context->m_Origin.y + startPoint.y * s_Context->m_Scale },
+			{ s_Context->m_Origin.x + middlePoint1.x * s_Context->m_Scale, s_Context->m_Origin.y + middlePoint1.y * s_Context->m_Scale },
+			{ s_Context->m_Origin.x + middlePoint2.x * s_Context->m_Scale, s_Context->m_Origin.y + middlePoint2.y * s_Context->m_Scale },
+			{ s_Context->m_Origin.x + endPoint.x * s_Context->m_Scale, s_Context->m_Origin.y + endPoint.y * s_Context->m_Scale },
+			col,
+			3.0f,
+			s_Style.m_ConnectionSegments);
+
+		if (s_Context->m_DebugOn)
+		{
+			s_Context->m_DrawList->AddCircleFilled(
+				{ s_Context->m_Origin.x + startPoint.x * s_Context->m_Scale, s_Context->m_Origin.y + startPoint.y * s_Context->m_Scale },
+				3.0f, IM_COL32(225, 25, 25, 255), 6);
+			s_Context->m_DrawList->AddCircleFilled(
+				{ s_Context->m_Origin.x + middlePoint1.x * s_Context->m_Scale, s_Context->m_Origin.y + middlePoint1.y * s_Context->m_Scale },
+				3.0f, IM_COL32(225, 25, 25, 255), 6);
+			s_Context->m_DrawList->AddCircleFilled(
+				{ s_Context->m_Origin.x + middlePoint2.x * s_Context->m_Scale, s_Context->m_Origin.y + middlePoint2.y * s_Context->m_Scale },
+				3.0f, IM_COL32(225, 25, 25, 255), 6);
+			s_Context->m_DrawList->AddCircleFilled(
+				{ s_Context->m_Origin.x + endPoint.x * s_Context->m_Scale, s_Context->m_Origin.y + endPoint.y * s_Context->m_Scale },
+				3.0f, IM_COL32(225, 25, 25, 255), 6);
+		}
+	}
+
+	void NodePanel::DrawPinToPinConnection(Pin* src, Pin* dest, ImU32 col)
+	{
+		if (src == nullptr || dest == nullptr)
+			return;
+
+		ImVec2 startPoint = src->m_Pos;
+		ImVec2 endPoint = dest->m_Pos;
+		
+		DrawBezierLine(startPoint, endPoint, col);
+	}
+
+	void NodePanel::DrawDbgPoint(ImVec2 point)
+	{
+		s_Context->m_DrawList->AddCircleFilled(
+			{ s_Context->m_Origin.x + point.x * s_Context->m_Scale, s_Context->m_Origin.y + point.y * s_Context->m_Scale },
+			3.0f, IM_COL32(225, 25, 25, 255), 6);
+	}
+
+	void NodePanel::DbgDrawConnectionLinePoints(PinConnection* connection)
+	{
+		if (connection && s_Context->m_DebugOn)
+		{
+			for (auto point : connection->m_BezierLinePoints)
+			{
+				DrawDbgPoint(point);
+			}
 		}
 	}
 
@@ -576,8 +921,15 @@ namespace Stimpi
 		const bool isActive = ImGui::IsItemActive(); // refers to the invisible button / node viewport
 		bool  showPopup = false;
 
-// 		if (hoverNodeID != 0)
-// 			ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
+		// This messes up with our pop up :/
+		/*if (!s_Context->m_IsHovered)
+		{
+			ST_CORE_INFO("exit m_IsHovered");
+			return;
+		}*/
+
+ 		/*if (hoverNodeID != 0)
+ 			ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);*/
 
 		switch (s_Context->m_Action)
 		{
@@ -592,6 +944,15 @@ namespace Stimpi
 				if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 				{
 					s_Context->m_SelectedNode = nullptr;
+
+					// Check for hovered connection lines and select one if found
+					// Done on mouse click to avoid checking each frame for line hovers
+					s_Context->m_SelectedConnection = GetMouseHoveredConnection();
+					if (s_Context->m_SelectedConnection)
+					{
+						s_Context->m_Action = ControllAction::CONNECTION_ONPRESS;
+						break;
+					}
 				}
 
 				// Nothing hovered, start canvas move action on click
@@ -618,45 +979,55 @@ namespace Stimpi
 			}
 			else
 			{
-				// Check if we are hovering any Pins
-				bool clickedPin = false;
+				ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
 
+				// Check if we are hovering any Pins
 				Node* hoveredNode = GetNodeByID(hoverNodeID);
-				for (auto pin : hoveredNode->m_InPins)
+				if (hoveredNode)
 				{
-					if (IsMouseHovePin(pin.get()))
+					Pin* hoveredPin = GetMouseHoveredPin(hoveredNode);
+					if (hoveredPin)
 					{
+
+						ImGui::SetMouseCursor(ImGuiMouseCursor_Arrow);
+
 						if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 						{
-							ST_CORE_INFO("Pin {} clicked", pin->m_ID);
-							pin->m_Connected = !pin->m_Connected;
+							//ST_CORE_INFO("Pin {} clicked", hoveredPin->m_ID);
+							// Clear Connection hover selection
+							s_Context->m_SelectedConnection = nullptr;
 
 							s_Context->m_Action = ControllAction::NODE_PIN_DRAG;
-							s_Context->m_SelectedPin = pin.get();
-							clickedPin = true;	// exit case condition -> NODE_PIN_DRAG state
-							break;
+							s_Context->m_SelectedPin = hoveredPin;
+							s_Context->m_PinFloatingTarget = GetNodePanelViewClickLocation();
+							break; //exit case
 						}
 					}
 				}
-
-				if (clickedPin)
-					break;
 			}
 
 			if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 			{
 				s_Context->m_Action = ControllAction::NODE_DRAGABLE;
 				s_Context->m_SelectedNode = GetNodeByID(hoverNodeID);
+
+				// Clear Connection hover selection
+				s_Context->m_SelectedConnection = nullptr;
 			}
 			break;
 		case ControllAction::NODE_DRAGABLE:
 			if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
 			{
+				// Node Dragging finished - find all connections to the moved node and update points for mouse picking
+				UpdateNodeConnectionsPoints(s_Context->m_SelectedNode);
+
 				s_Context->m_Action = ControllAction::NONE;
 				break;
 			}
 			else if (ImGui::IsMouseDragging(ImGuiMouseButton_Left))
 			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
+
 				dragOffset.x = io.MouseDelta.x / s_Context->m_Scale;
 				dragOffset.y = io.MouseDelta.y / s_Context->m_Scale;
 
@@ -676,17 +1047,65 @@ namespace Stimpi
 		case ControllAction::NODE_PIN_DRAG:
 			if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
 			{
+				// clear drag target
 				s_Context->m_Action = ControllAction::NONE;
 
-				// TODO: handle pin drag-drop here
+				// Handle pin drag-drop
+				if (hoverNodeID != 0)
+				{
+					Node* hoveredNode = GetNodeByID(hoverNodeID);
+					if (hoveredNode != nullptr && hoveredNode != s_Context->m_SelectedPin->m_ParentNode)
+					{
+						Pin* target = GetMouseHoveredPin(hoveredNode);
+						if (target)
+						{
+							ST_CORE_INFO("Target Node::Pin {} - {} selected", hoveredNode->m_ID, target->m_ID);
+							// Handle forming Pin - Pin connection
+							ConnectPinToPin(s_Context->m_SelectedPin, target);
+						}
+					}
+				}
 
 				s_Context->m_SelectedPin = nullptr;
 				break;
 			}
+			else  // Mouse button still pressed - node pin dragging
+			{
+				// Update floating target
+				s_Context->m_PinFloatingTarget = GetNodePanelViewClickLocation();
+			}
+			break;
+		case ControllAction::CONNECTION_ONPRESS:
+			if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+			{
+				ST_CORE_INFO("Hovering stopped - back to none");
+				s_Context->m_Action = ControllAction::NONE;
+				break;
+			}
+			else
+			{
+				ImVec2 mouseDragDelta = ImGui::GetMouseDragDelta();
+				if (mouseDragDelta.x != 0 || mouseDragDelta.y != 0)
+				{
+					ST_CORE_INFO("Dragging connection - mouse delta {}, {}", mouseDragDelta.x, mouseDragDelta.y);
+					PinConnection* connection = s_Context->m_SelectedConnection;
+					if (connection)
+					{
+						s_Context->m_Action = ControllAction::NODE_PIN_DRAG;
+						s_Context->m_SelectedPin = connection->m_SourcePin;
+						s_Context->m_PinFloatingTarget = GetNodePanelViewClickLocation();
+
+						BreakPinToPinConnection(connection);
+						s_Context->m_SelectedConnection = nullptr;
+						break;
+					}
+				}
+			}
+
 			break;
 		case ControllAction::SHOW_POPUP_ONRELEASE:
-			if (ImGui::IsMouseReleased(ImGuiMouseButton_Right))
-			{
+ 			if (ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+ 			{
 				showPopup = true;
 				s_Context->m_Action = ControllAction::NONE;
 			}
@@ -725,12 +1144,13 @@ namespace Stimpi
 			{
 				ImGuiIO& io = ImGui::GetIO();
 		
-				ImVec2 newPos = { (io.MousePos.x - s_Context->m_Origin.x) / s_Context->m_Scale, (io.MousePos.y  - s_Context->m_Origin.y) / s_Context->m_Scale };
+				ImVec2 newPos = GetNodePanelViewClickLocation();
 				CreateNode(newPos, "New Node");
 			}
 
 			ImGui::EndPopup();
 		}
 	}
+#pragma endregion NodePanelClass
 
 }
