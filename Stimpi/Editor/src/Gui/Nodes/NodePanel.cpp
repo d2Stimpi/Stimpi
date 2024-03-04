@@ -2,6 +2,7 @@
 #include "Gui/Nodes/NodePanel.h"
 
 #include "Stimpi/Log.h"
+#include "Stimpi/Core/InputManager.h"
 
 #include "ImGui/src/imgui_internal.h"
 
@@ -537,6 +538,7 @@ namespace Stimpi
 
 			// Process mouse control before any drawing calls
 			UpdateMouseControls();
+			HandleKeyPresses();
 
 			DrawCanvasGrid();
 
@@ -633,6 +635,44 @@ namespace Stimpi
 		newNode->m_OutPins.emplace_back(pin3);
 
 		s_Context->m_Nodes.emplace_back(newNode);
+	}
+
+	void NodePanel::RemoveNode(Node* node)
+	{
+		if (!node)
+			return;
+
+		// Break all connections to the Node
+		for (auto inPin : node->m_InPins)
+		{
+			for (auto cPin : inPin->m_ConnectedPins)
+			{
+				BreakPinToPinConnection(FindPinToPinConnection(inPin.get(), cPin));
+			}
+		}
+
+		for (auto outPin : node->m_OutPins)
+		{
+			for (auto cPin : outPin->m_ConnectedPins)
+			{
+				BreakPinToPinConnection(FindPinToPinConnection(outPin.get(), cPin));
+			}
+		}
+
+		// Remove Node
+		for (auto it = s_Context->m_Nodes.begin(); it != s_Context->m_Nodes.end();)
+		{
+			Node* remNode = (*it).get();
+			if (remNode->m_ID == node->m_ID)
+			{
+				s_Context->m_Nodes.erase(it);
+				break;
+			}
+			else
+			{
+				++it;
+			}
+		}
 	}
 
 	void NodePanel::DrawNode(Node* node)
@@ -823,6 +863,19 @@ namespace Stimpi
 				{ s_Context->m_Origin.x + (pin->m_Pos.x - s_Style.m_PinRadius) * s_Context->m_Scale, s_Context->m_Origin.y + (pin->m_Pos.y - s_Style.m_PinRadius) * s_Context->m_Scale },
 				{ s_Context->m_Origin.x + (pin->m_Pos.x + s_Style.m_PinRadius) * s_Context->m_Scale, s_Context->m_Origin.y + (pin->m_Pos.y + s_Style.m_PinRadius) * s_Context->m_Scale },
 				IM_COL32(225, 25, 25, 255));
+
+			std::string dbgText = fmt::format("C: {}", pin->m_ConnectedPins.size());
+			ImVec2 dbgTextPos = pinStartPos;
+			dbgTextPos.x = pin->m_Type == Pin::Type::INPUT ? 
+				dbgTextPos.x - GetPinSpaceWidth() - ImGui::CalcTextSize(dbgText.c_str()).x :
+				dbgTextPos.x + GetPinSpaceWidth();
+
+			ImGui::SetWindowFontScale(s_Context->m_Scale);
+			s_Context->m_DrawList->AddText(
+				{ s_Context->m_Origin.x + dbgTextPos.x * s_Context->m_Scale, s_Context->m_Origin.y + dbgTextPos.y * s_Context->m_Scale },
+				IM_COL32(255, 25, 25, 255),
+				dbgText.c_str());
+			ImGui::SetWindowFontScale(1.0f);
 		}
 	}
 
@@ -927,9 +980,6 @@ namespace Stimpi
 			ST_CORE_INFO("exit m_IsHovered");
 			return;
 		}*/
-
- 		/*if (hoverNodeID != 0)
- 			ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);*/
 
 		switch (s_Context->m_Action)
 		{
@@ -1059,7 +1109,7 @@ namespace Stimpi
 						Pin* target = GetMouseHoveredPin(hoveredNode);
 						if (target)
 						{
-							ST_CORE_INFO("Target Node::Pin {} - {} selected", hoveredNode->m_ID, target->m_ID);
+							//ST_CORE_INFO("Target Node::Pin {} - {} selected", hoveredNode->m_ID, target->m_ID);
 							// Handle forming Pin - Pin connection
 							ConnectPinToPin(s_Context->m_SelectedPin, target);
 						}
@@ -1078,7 +1128,7 @@ namespace Stimpi
 		case ControllAction::CONNECTION_ONPRESS:
 			if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
 			{
-				ST_CORE_INFO("Hovering stopped - back to none");
+				//ST_CORE_INFO("Hovering stopped - back to none");
 				s_Context->m_Action = ControllAction::NONE;
 				break;
 			}
@@ -1087,7 +1137,7 @@ namespace Stimpi
 				ImVec2 mouseDragDelta = ImGui::GetMouseDragDelta();
 				if (mouseDragDelta.x != 0 || mouseDragDelta.y != 0)
 				{
-					ST_CORE_INFO("Dragging connection - mouse delta {}, {}", mouseDragDelta.x, mouseDragDelta.y);
+					//ST_CORE_INFO("Dragging connection - mouse delta {}, {}", mouseDragDelta.x, mouseDragDelta.y);
 					PinConnection* connection = s_Context->m_SelectedConnection;
 					if (connection)
 					{
@@ -1151,6 +1201,26 @@ namespace Stimpi
 			ImGui::EndPopup();
 		}
 	}
+
+	void NodePanel::HandleKeyPresses()
+	{
+		if (InputManager::Instance()->IsKeyPressed(ST_KEY_DELETE))
+		{
+			if (s_Context->m_SelectedNode)
+			{
+				// Remove Node
+				RemoveNode(s_Context->m_SelectedNode);
+				s_Context->m_SelectedNode = nullptr;
+			}
+
+			if (s_Context->m_SelectedConnection)
+			{
+				BreakPinToPinConnection(s_Context->m_SelectedConnection);
+				s_Context->m_SelectedConnection = nullptr;
+			}
+		}
+	}
+
 #pragma endregion NodePanelClass
 
 }

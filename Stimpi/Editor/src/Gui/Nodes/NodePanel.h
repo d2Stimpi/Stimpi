@@ -64,6 +64,7 @@ namespace Stimpi
 
 		// Node methods
 		void CreateNode(ImVec2 pos, std::string title);
+		void RemoveNode(Node* node);
 		void DrawNode(Node* node);
 
 		// Node helpers
@@ -84,6 +85,9 @@ namespace Stimpi
 		uint32_t GetMouseHoverNode();
 		void UpdateMouseControls();
 		void AddNodePopup(bool show);
+
+		// Keyboard
+		void HandleKeyPresses();
 
 	private:
 		AssetHandle m_HeaderImage;
