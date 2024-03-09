@@ -199,18 +199,18 @@ namespace Stimpi
 			ImGui::InputText("##ScriptComponentPreview", scriptName, sizeof(scriptName), ImGuiInputTextFlags_ReadOnly);
 			if (ImGui::IsItemClicked())
 			{
-				ImGui::SetNextWindowPos(ImGui::GetMousePos());
-				ImGui::OpenPopup("ScriptSelectPoput");
+				SearchPopup::OpenPopup();
 				showPopup = true;
 			}
 			
 			if (showPopup)
 			{
 				auto filterData = ScriptEngine::GetScriptClassNames();
-				if (SearchPopup::OnImGuiRender("ScriptSelectPoput", &showPopup, filterData))
+				if (SearchPopup::OnImGuiRender(filterData))
 				{
 					component.m_ScriptName = SearchPopup::GetSelection();
 					ScriptEngine::OnScriptComponentAdd(component.m_ScriptName, s_SelectedEntity);
+					showPopup = false;
 				}
 			}
 
@@ -290,6 +290,70 @@ namespace Stimpi
 			if (ImGui::Button("Remove##Texture"))
 			{
 				s_SelectedEntity.RemoveComponent<SpriteComponent>();
+			}
+		}
+	}
+
+	void SceneHierarchyWindow::AnimatedSpriteComponentLayout(AnimatedSpriteComponent& component)
+	{
+		ImGui::Separator();
+		if (ImGui::CollapsingHeader("AnimatedSprite##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			//ImGui::InvisibleButton("##asdasd", ImVec2(-1.0f, 24.0f));
+			ImGui::PushItemWidth(80.0f);
+			if (ImGui::Button("Animation##AnimatedSpriteComponent"))
+			{
+				std::string filePath = FileDialogs::OpenFile("Animation (*.anim)\0*.anim\0");
+				if (!filePath.empty())
+				{
+					component.SetAnimation(filePath);
+				}
+			}
+			ImGui::PopItemWidth();
+
+			UIPayload::BeginTarget(PAYLOAD_ANIMATION, [&component](void* data, uint32_t size) {
+				std::string strData = std::string((char*)data, size);
+				ST_CORE_INFO("Texture data dropped: {0}", strData.c_str());
+				component.SetAnimation(strData);
+				});
+
+			if (ImGui::Button("Play##AnimatedSpriteComponent"))
+			{
+				if (component.m_AnimSprite)
+					component.m_AnimSprite->Start();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Pause##AnimatedSpriteComponent"))
+			{
+				if (component.m_AnimSprite)
+					component.m_AnimSprite->Pause();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Stop##AnimatedSpriteComponent"))
+			{
+				if (component.m_AnimSprite)
+					component.m_AnimSprite->Stop();
+			}
+
+			static bool looping = false;
+			if (ImGui::Checkbox("Loop##AnimatedSpriteComponent", &looping))
+			{
+				if (component.m_AnimSprite)
+					component.m_AnimSprite->SetLooping(looping);
+			}
+
+			float playSpeed = 1.0f;
+			if (component.m_AnimSprite)
+				playSpeed = component.m_AnimSprite->GetPlaybackSpeed();
+			ImGui::DragFloat("Playback speed", &playSpeed, 0.001f, 0.01f);
+			if (component.m_AnimSprite)
+				component.m_AnimSprite->SetPlaybackSpeed(playSpeed);
+
+			//ImGui::InvisibleButton("##asdasd", ImVec2(-1.0f, 24.0f));
+			ImGui::Separator();
+			if (ImGui::Button("Remove##AnimatedSprite"))
+			{
+				s_SelectedEntity.RemoveComponent<AnimatedSpriteComponent>();
 			}
 		}
 	}
@@ -441,6 +505,14 @@ namespace Stimpi
 				}
 			}
 
+			if (!s_SelectedEntity.HasComponent<AnimatedSpriteComponent>())
+			{
+				if (ImGui::Selectable("AnimatedSprite##AddComponent"))
+				{
+					s_SelectedEntity.AddComponent<AnimatedSpriteComponent>();
+				}
+			}
+
 			if (!s_SelectedEntity.HasComponent<ScriptComponent>())
 			{
 				if (ImGui::Selectable("Script##AddComponent"))
@@ -503,6 +575,12 @@ namespace Stimpi
 			{
 				auto& component = s_SelectedEntity.GetComponent<SpriteComponent>();
 				SpriteComponentLayout(component);
+			}
+
+			if (s_SelectedEntity.HasComponent<AnimatedSpriteComponent>())
+			{
+				auto& component = s_SelectedEntity.GetComponent<AnimatedSpriteComponent>();
+				AnimatedSpriteComponentLayout(component);
 			}
 
 			if (s_SelectedEntity.HasComponent<ScriptComponent>())

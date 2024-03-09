@@ -92,19 +92,9 @@ Scene:
         - 1
       Thickness: 1
       Fade: 0.00499999989
-    SpriteComponent:
-      FilePath: D:/GitHub/Stimpi\assets\textures\Picture1.jpg
-      Enabled: true
-      Color:
-        - 1
-        - 1
-        - 1
-        - 1
-    ScriptComponent:
-      ScriptName: Sandbox.PhysicsActor
     RigidBody2DComponent:
       Type: Dynamic
-      FixedRotation: false
+      FixedRotation: true
     BoxCollider2DComponent:
       Shape: 1
       Offset:
@@ -153,8 +143,8 @@ Scene:
     TagComponent:
       Tag: movable
     QuadComponent:
-      - 48.448288
-      - 18.6288452
+      - 57.9716034
+      - 38.4825745
       - 10
       - 10
       - 0

@@ -4,6 +4,8 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Core/InputManager.h"
 
+#include "Gui/Components/SearchPopup.h"
+
 #include "ImGui/src/imgui_internal.h"
 
 #include <cmath>
@@ -92,6 +94,9 @@ namespace Stimpi
 
 		// Controls
 		ControllAction m_Action = ControllAction::NONE;
+
+		// Popup data
+		ImVec2 m_NewNodePos = { 0.0f, 0.0f };
 
 		// Debug
 		bool m_DebugOn = false;
@@ -987,6 +992,7 @@ namespace Stimpi
 			if (hoverNodeID != 0)
 			{
 				s_Context->m_Action = ControllAction::NODE_HOVER;
+				ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
 			}
 			else
 			{
@@ -1066,6 +1072,8 @@ namespace Stimpi
 			}
 			break;
 		case ControllAction::NODE_DRAGABLE:
+			ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
+
 			if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
 			{
 				// Node Dragging finished - find all connections to the moved node and update points for mouse picking
@@ -1185,20 +1193,24 @@ namespace Stimpi
 
 	void NodePanel::AddNodePopup(bool show)
 	{
+		static bool showPopup = false;
+
 		if (show)
-			ImGui::OpenPopup("AddNodePopup");
-
-		if (ImGui::BeginPopup("AddNodePopup"))
 		{
-			if (ImGui::Selectable("New Node"))
-			{
-				ImGuiIO& io = ImGui::GetIO();
-		
-				ImVec2 newPos = GetNodePanelViewClickLocation();
-				CreateNode(newPos, "New Node");
-			}
+			s_Context->m_NewNodePos = GetNodePanelViewClickLocation();
+			showPopup = true;
+			SearchPopup::OpenPopup();
+		}
 
-			ImGui::EndPopup();
+		if (showPopup)
+		{
+			static std::vector<std::string> nodeTypeList = { "New node" };
+
+ 			if (SearchPopup::OnImGuiRender(nodeTypeList))
+ 			{
+				showPopup = false;
+ 				CreateNode(s_Context->m_NewNodePos, SearchPopup::GetSelection());
+	 		}
 		}
 	}
 

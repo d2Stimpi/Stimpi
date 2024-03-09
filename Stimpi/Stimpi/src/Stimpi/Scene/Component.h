@@ -3,6 +3,7 @@
 #include "Stimpi/Core/Core.h"
 #include "Stimpi/Graphics/Texture.h"
 #include "Stimpi/Graphics/Shader.h"
+#include "Stimpi/Graphics/Animation/AnimatedSprite.h"
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Scene/ScriptableEntity.h"
 #include "Stimpi/Scene/Camera.h"
@@ -306,6 +307,71 @@ namespace Stimpi
 			{
 				m_Color = glm::vec4( 1.0f, 1.0f, 1.0f, 1.0f );
 			}
+		}
+	};
+
+	struct AnimatedSpriteComponent
+	{
+		std::shared_ptr<AnimatedSprite> m_AnimSprite;
+
+		AnimatedSpriteComponent() = default;
+		AnimatedSpriteComponent(const AnimatedSpriteComponent&) = default;
+		AnimatedSpriteComponent(const std::string filePath)
+		{
+			m_AnimSprite = std::make_shared<AnimatedSprite>(filePath);
+		}
+
+		void SetAnimation(const std::string filePath)
+		{
+			m_AnimSprite = std::make_shared<AnimatedSprite>(filePath);
+		}
+
+		void Start()
+		{
+			if (m_AnimSprite)
+				m_AnimSprite->Start();
+		}
+
+		void Pause()
+		{
+			if (m_AnimSprite)
+				m_AnimSprite->Pause();
+		}
+
+		void Stop()
+		{
+			if (m_AnimSprite)
+				m_AnimSprite->Stop();
+		}
+
+		void SetPlaybackSpeed(float speed)
+		{
+			if (m_AnimSprite)
+				m_AnimSprite->SetPlaybackSpeed(speed);
+		}
+
+		float GetPlaybackSpeed()
+		{
+			if (m_AnimSprite)
+				m_AnimSprite->GetPlaybackSpeed();
+		}
+
+		operator SubTexture* () const { return m_AnimSprite->GetSubTexture(); }
+
+		bool Loaded()
+		{
+			if (m_AnimSprite)
+				return m_AnimSprite->Loaded();
+
+			return false;
+		}
+
+		SubTexture* GetSubTexture()
+		{
+			if (m_AnimSprite)
+				return m_AnimSprite->GetSubTexture();
+
+			return nullptr;
 		}
 	};
 

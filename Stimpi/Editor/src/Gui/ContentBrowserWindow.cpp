@@ -159,6 +159,10 @@ namespace Stimpi
 			{
 				UIPayload::BeginSource(PAYLOAD_SCENE, path.string().c_str(), path.string().length(), filenameStr.c_str());
 			}
+			if (relativePath.extension().string() == ".anim")
+			{
+				UIPayload::BeginSource(PAYLOAD_ANIMATION, path.string().c_str(), path.string().length(), filenameStr.c_str());
+			}
 		}
 		ImGui::EndChild();
 	}

@@ -55,6 +55,7 @@ namespace Stimpi
 	private:
 		// Update components based on interactions
 		void UpdateComponentDependacies(Timestep ts);
+		void UpdateComponents(Timestep ts);
 
 		// Scripting
 		void InitializeScripts();

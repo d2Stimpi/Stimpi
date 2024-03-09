@@ -194,6 +194,9 @@
     <ClInclude Include="src\Stimpi\Utils\FilePath.h" />
     <ClInclude Include="src\Stimpi\Scene\Assets\AssetManager.h" />
     <ClInclude Include="src\Stimpi\Utils\ThreadPool.h" />
+    <ClInclude Include="src\Stimpi\Graphics\Animation\AnimatedSprite.h" />
+    <ClInclude Include="src\Stimpi\Graphics\Animation\Animation.h" />
+    <ClInclude Include="src\Stimpi\Graphics\Animation\AnimationSerializer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Core\Application.cpp">
@@ -327,5 +330,8 @@
     <ClCompile Include="src\Stimpi\Utils\FilePath.cpp" />
     <ClCompile Include="src\Stimpi\Scene\Assets\AssetManager.cpp" />
     <ClCompile Include="src\Stimpi\Utils\ThreadPool.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\Animation\AnimatedSprite.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\Animation\Animation.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\Animation\AnimationSerializer.cpp" />
   </ItemGroup>
 </Project>

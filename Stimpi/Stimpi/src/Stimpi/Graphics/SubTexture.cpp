@@ -43,6 +43,12 @@ namespace Stimpi
 		return m_Loaded;
 	}
 
+	void SubTexture::SetSubTextureSize(glm::vec2 min, glm::vec2 max)
+	{
+		m_min = min;
+		m_max = max;
+	}
+
 	void SubTexture::SetSubRegion(glm::vec2 min, glm::vec2 max)
 	{
 		if (!Loaded()) return;
@@ -72,5 +78,4 @@ namespace Stimpi
 		m_UVmin = glm::vec2(indexCol * m_SubWidth / textureWidth, indexRow * m_SubHeight / textureHeight);
 		m_UVmax = glm::vec2((indexCol + 1) * m_SubWidth / textureWidth, (indexRow + 1) * m_SubHeight / textureHeight);
 	}
-
 }

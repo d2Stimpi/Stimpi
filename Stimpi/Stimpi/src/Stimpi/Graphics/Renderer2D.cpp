@@ -218,6 +218,9 @@ namespace Stimpi
 
 	void Renderer2D::Submit(glm::vec3 pos, glm::vec2 scale, float rotation, SubTexture* subtexture, Shader* shader)
 	{
+		if (!subtexture)
+			return;
+
 		CheckTextureBatching(subtexture->GetTexture());
 		auto currnetCmd = *m_ActiveRenderCmdIter;
 

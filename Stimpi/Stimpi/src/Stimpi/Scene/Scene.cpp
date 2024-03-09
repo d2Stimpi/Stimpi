@@ -24,6 +24,7 @@
 #include "box2d/b2_polygon_shape.h"
 #include "box2d/b2_circle_shape.h"
 
+#include "Stimpi/Graphics/Animation/AnimationSerializer.h"
 // TODO: remove eventually
 #define USE_TEST_STUFF false
 
@@ -64,6 +65,14 @@ namespace Stimpi
 		// Collision listener for Box2D
 		m_ContactListener = std::make_unique<ContactListener>();
 		m_ContactListener->SetContext(this);
+
+		// Test save
+		/*Animation anim;
+		AnimationSerializer serializer(&anim);
+		serializer.Serialize("..\/assets\/animations\/test.anim");*/
+		// Test load
+		/*Animation* animLoad = Animation::Create("..\/assets\/animations\/test.anim");
+		ST_CORE_INFO("");*/
 
 #if USE_TEST_STUFF
 		/* Test stuff below */
@@ -127,6 +136,9 @@ namespace Stimpi
 		// Physics
 		UpdatePhysicsSimulation(ts);
 
+		// Update components that depend on timestep
+		UpdateComponents(ts);
+
 		/* When not in Running state, use Editor sourced camera */
 		if (m_RuntimeState == RuntimeState::STOPPED)
 		{
@@ -156,6 +168,16 @@ namespace Stimpi
 						else
 						{
 							Renderer2D::Instance()->Submit(quad, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
+						}
+					}
+
+					// Draw AnimatedSprite if available (can overlap with Sprite)
+					if (entity.HasComponent<AnimatedSpriteComponent>())
+					{
+						auto& anim = entity.GetComponent<AnimatedSpriteComponent>();
+						if (anim.Loaded())
+						{
+							Renderer2D::Instance()->Submit(quad, quad.m_Rotation, anim, m_DefaultShader.get());
 						}
 					}
 
@@ -372,6 +394,17 @@ namespace Stimpi
 					auto& quad = entitiy.GetComponent<QuadComponent>();
 					auto camPos = camera.m_Camera->GetPosition();
 					camera.m_Camera->SetPosition({ quad.m_Position.x , quad.m_Position.y, camPos.z });
+				}
+			});
+	}
+
+	void Scene::UpdateComponents(Timestep ts)
+	{
+		m_Registry.view<AnimatedSpriteComponent>().each([&ts](auto e, AnimatedSpriteComponent anim)
+			{
+				if (anim.m_AnimSprite)
+				{
+					anim.m_AnimSprite->Update(ts);
 				}
 			});
 	}

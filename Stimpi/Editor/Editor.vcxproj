@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Gui\Components\SearchPopup.h" />
+    <ClInclude Include="src\Gui\Components\SearchPopupWindow.h" />
     <ClInclude Include="src\Gui\Components\Thumbnail.h" />
     <ClInclude Include="src\Gui\Components\UIPayload.h" />
     <ClInclude Include="src\Gui\Nodes\NodePanel.h" />
@@ -159,6 +160,7 @@
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
     <ClCompile Include="src\Gui\Components\SearchPopup.cpp" />
+    <ClCompile Include="src\Gui\Components\SearchPopupWindow.cpp" />
     <ClCompile Include="src\Gui\Components\Thumbnail.cpp" />
     <ClCompile Include="src\Gui\Components\UIPayload.cpp" />
     <ClCompile Include="src\Gui\Nodes\NodePanel.cpp" />

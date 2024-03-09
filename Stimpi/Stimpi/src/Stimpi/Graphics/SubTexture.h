@@ -18,6 +18,8 @@ namespace Stimpi
 		void Initialize();
 		bool Loaded();
 
+		void SetSubTextureSize(glm::vec2 min, glm::vec2 max);
+
 		void SetSubRegion(glm::vec2 min, glm::vec2 max);
 		void SetSubRegion(uint32_t index);
 
@@ -29,6 +31,8 @@ namespace Stimpi
 
 		Texture* GetTexture() { return AssetManager::GetAsset(m_TextureHandle).As<Texture>(); }
 		unsigned int GetTextureID() { return GetTexture()->GetTextureID(); }
+
+		AssetHandle GetAssetHandle() { return m_TextureHandle; }
 
 	private:
 		bool m_Loaded = false;
