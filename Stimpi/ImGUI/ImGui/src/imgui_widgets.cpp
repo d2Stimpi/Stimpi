@@ -6120,7 +6120,7 @@ bool ImGui::TreeNodeUpdateNextOpen(ImGuiID id, ImGuiTreeNodeFlags flags)
     return is_open;
 }
 
-bool ImGui::TreeNodeBehavior(ImGuiID id, ImGuiTreeNodeFlags flags, const char* label, const char* label_end)
+bool ImGui::TreeNodeBehavior(ImGuiID id, ImGuiTreeNodeFlags flags, const char* label, const char* label_end, ImTextureID texture_id)
 {
     ImGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems)
@@ -6281,6 +6281,13 @@ bool ImGui::TreeNodeBehavior(ImGuiID id, ImGuiTreeNodeFlags flags, const char* l
 
         if (g.LogEnabled)
             LogSetNextTextDecoration("###", "###");
+        if (texture_id)
+        {
+            ImVec2 icon_pos_min = { text_pos.x - text_offset_x + padding.x + style.SmallIconPadding, text_pos.y };
+            ImVec2 icon_pos_max = { icon_pos_min.x + style.SmallIconSize.x, icon_pos_min.y + style.SmallIconSize.y };
+            window->DrawList->AddImage(texture_id, icon_pos_min, icon_pos_max, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ColorConvertFloat4ToU32(ImVec4(0.885f, 0.885f, 0.885f, 1.0f)));
+            text_pos.x += style.SmallIconPadding;
+        }
         RenderTextClipped(text_pos, frame_bb.Max, label, label_end, &label_size);
     }
     else
@@ -6381,6 +6388,15 @@ bool ImGui::CollapsingHeader(const char* label, ImGuiTreeNodeFlags flags)
         return false;
 
     return TreeNodeBehavior(window->GetID(label), flags | ImGuiTreeNodeFlags_CollapsingHeader, label);
+}
+
+bool ImGui::CollapsingHeaderIcon(const char* label, ImTextureID user_texture_id, ImGuiTreeNodeFlags flags)
+{
+	ImGuiWindow* window = GetCurrentWindow();
+	if (window->SkipItems)
+		return false;
+
+	return TreeNodeBehavior(window->GetID(label), flags | ImGuiTreeNodeFlags_CollapsingHeader, label, NULL, user_texture_id);
 }
 
 // p_visible == NULL                        : regular collapsing header
