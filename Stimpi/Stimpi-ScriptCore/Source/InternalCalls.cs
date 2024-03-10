@@ -45,6 +45,18 @@ namespace Stimpi
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool SpriteComponent_SetColor(uint entityID, ref Color color);
 
+        /* AnimatedSpriteComponent */
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool AnimatedSpriteComponent_IsAnimationSet(uint entityID, out bool isSet);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool AnimatedSpriteComponent_AnimStart(uint entityID);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool AnimatedSpriteComponent_AnimPause(uint entityID);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool AnimatedSpriteComponent_AnimStop(uint entityID);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool AnimatedSpriteComponent_GetAnimState(uint entityID, out int outState);
+
         /* RigidBody2DComponent */
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool RigidBody2DComponent_GetRigidBodyType(uint entityID, out int outType);

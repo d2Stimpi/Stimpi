@@ -27,6 +27,8 @@ namespace Stimpi
 		void Start() { m_State = AnimationState::RUNNING; }
 		void Pause() { m_State = AnimationState::PAUSED; }
 
+		AnimationState GetAnimationState() { return m_State; }
+
 		bool Loaded();
 		SubTexture* GetSubTexture() { return m_Animation->GetSubTexture(); }
 

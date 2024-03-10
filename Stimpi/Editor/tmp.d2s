@@ -76,11 +76,11 @@ Scene:
         - 1
   Entity:
     TagComponent:
-      Tag: Circle_Object
+      Tag: CirclePhys
     CircleComponent:
       Position:
-        - 47
-        - 37
+        - 45
+        - 44
       Size:
         - 10
         - 10
@@ -94,7 +94,7 @@ Scene:
       Fade: 0.00499999989
     RigidBody2DComponent:
       Type: Dynamic
-      FixedRotation: true
+      FixedRotation: false
     BoxCollider2DComponent:
       Shape: 1
       Offset:
@@ -109,7 +109,7 @@ Scene:
       RestitutionThreshold: 0.5
   Entity:
     TagComponent:
-      Tag: Sprite_Object
+      Tag: Ground
     QuadComponent:
       - 7.01936054
       - 13.2954826
@@ -141,10 +141,10 @@ Scene:
       RestitutionThreshold: 0.5
   Entity:
     TagComponent:
-      Tag: movable
+      Tag: Box
     QuadComponent:
-      - 57.9716034
-      - 38.4825745
+      - 45.8809204
+      - 18.6538544
       - 10
       - 10
       - 0
@@ -171,3 +171,16 @@ Scene:
       Friction: 0.5
       Restitution: 0
       RestitutionThreshold: 0.5
+  Entity:
+    TagComponent:
+      Tag: Nero
+    QuadComponent:
+      - 15.5089998
+      - 18.5389996
+      - 8
+      - 8
+      - 0
+    AnimatedSpriteComponent:
+      AnimFilePath: D:/GitHub/Stimpi\assets\animations\test.anim
+    ScriptComponent:
+      ScriptName: Sandbox.Player

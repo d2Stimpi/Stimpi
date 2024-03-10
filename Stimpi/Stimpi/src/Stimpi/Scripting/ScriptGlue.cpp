@@ -276,8 +276,113 @@ namespace Stimpi
 
 #pragma endregion SpriteComponent
 
+#pragma region AnimatedSpriteComponent
+
+	static bool AnimatedSpriteComponent_IsAnimationSet(uint32_t entityID, bool* isSet)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<AnimatedSpriteComponent>();
+		if (hasComponent)
+		{
+			auto& anim = entity.GetComponent<AnimatedSpriteComponent>();
+			*isSet = anim.IsAnimationSet();
+		}
+
+		return hasComponent;
+	}
+
+	static bool AnimatedSpriteComponent_AnimStart(uint32_t entityID)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<AnimatedSpriteComponent>();
+		if (hasComponent)
+		{
+			auto& anim = entity.GetComponent<AnimatedSpriteComponent>();
+			if (anim.IsAnimationSet())
+			{
+				anim.Start();
+			}
+		}
+
+		return hasComponent;
+	}
+
+	static bool AnimatedSpriteComponent_AnimPause(uint32_t entityID)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<AnimatedSpriteComponent>();
+		if (hasComponent)
+		{
+			auto& anim = entity.GetComponent<AnimatedSpriteComponent>();
+			if (anim.IsAnimationSet())
+			{
+				anim.Pause();
+			}
+		}
+
+		return hasComponent;
+	}
+
+	static bool AnimatedSpriteComponent_AnimStop(uint32_t entityID)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<AnimatedSpriteComponent>();
+		if (hasComponent)
+		{
+			auto& anim = entity.GetComponent<AnimatedSpriteComponent>();
+			if (anim.IsAnimationSet())
+			{
+				anim.Stop();
+			}
+		}
+
+		return hasComponent;
+	}
+
+	static bool AnimatedSpriteComponent_GetAnimState(uint32_t entityID, int* outState)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<AnimatedSpriteComponent>();
+		if (hasComponent)
+		{
+			auto& anim = entity.GetComponent<AnimatedSpriteComponent>();
+			if (anim.IsAnimationSet())
+			{
+				*outState = (int)anim.m_AnimSprite->GetAnimationState();
+			}
+		}
+
+		return hasComponent;
+	}
+
+#pragma endregion AnimatedSpriteComponent
+
 #pragma region Input
-	/* Input */
 
 	static bool Input_IsKeyPressed(uint32_t keycode)
 	{
@@ -510,6 +615,13 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(SpriteComponent_GetColor);
 		ST_ADD_INTERNAL_CALL(SpriteComponent_SetColor);
 
+		/// AnimatedSpriteComponent
+		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_IsAnimationSet);
+		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_AnimStart);
+		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_AnimPause);
+		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_AnimStop);
+		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_GetAnimState);
+
 		// RigidBody2DComponent
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_GetRigidBodyType);
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_SetRigidBodyType);
@@ -538,6 +650,7 @@ namespace Stimpi
 		RegisterComponent<CameraComponent>();
 		RegisterComponent<RigidBody2DComponent>();
 		RegisterComponent<BoxCollider2DComponent>();
+		RegisterComponent<AnimatedSpriteComponent>();
 	}
 
 }

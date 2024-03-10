@@ -205,6 +205,7 @@ namespace Stimpi
 		std::unordered_map<uint32_t, std::shared_ptr<ScriptInstance>> m_EntityInstances;
 
 		FileWatchListener m_OnScriptUpdated;
+		bool m_DeferreAsemblyReload = false;
 	};
 
 	static ScriptEngineData* s_Data;
@@ -241,9 +242,16 @@ namespace Stimpi
 		s_Data->m_OnScriptUpdated = [](SystemShellEvent* event)
 		{
 			ST_CORE_INFO("ScriptEngine - sh event {}", (int)event->GetType());
-			if (event->GetType() == SystemShellEventType::SH_UPDATED)
+			if (s_Data->m_Scene->GetRuntimeState() == RuntimeState::STOPPED)
 			{
-				ReloadAssembly();
+				if (event->GetType() == SystemShellEventType::SH_UPDATED)
+				{
+					ReloadAssembly();
+				}
+			}
+			else
+			{
+				s_Data->m_DeferreAsemblyReload = true;
 			}
 		};
 
@@ -501,6 +509,10 @@ namespace Stimpi
 	void ScriptEngine::OnSceneStop()
 	{
 		s_Data->m_EntityInstances.clear();
+		if (s_Data->m_DeferreAsemblyReload)
+		{
+			ReloadAssembly();
+		}
 	}
 
 	void ScriptEngine::OnScriptComponentAdd(const std::string& className, Entity entity)

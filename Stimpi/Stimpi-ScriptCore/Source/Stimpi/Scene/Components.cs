@@ -92,6 +92,54 @@ namespace Stimpi
         }
     }
 
+    public enum AnimationState
+    {
+        RUNNING = 0, 
+        PAUSED,
+        STOPPED,
+        COMPELETED
+    }
+
+    public class AnimatedSpriteComponent : Component
+    {
+        public bool IsAnimationSet()
+        {
+            if (!InternalCalls.AnimatedSpriteComponent_IsAnimationSet(Entity.ID, out bool isSet))
+                Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (set Start state)");
+
+            return isSet;
+        }
+
+        public void AnimStart()
+        {
+            if (!InternalCalls.AnimatedSpriteComponent_AnimStart(Entity.ID))
+                Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (set Start state)");
+        }
+
+        public void AnimPause()
+        {
+            if (!InternalCalls.AnimatedSpriteComponent_AnimPause(Entity.ID))
+                Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (set Pause state)");
+        }
+
+        public void AnimStop()
+        {
+            if (!InternalCalls.AnimatedSpriteComponent_AnimStop(Entity.ID))
+                Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (set Stop state)");
+        }
+
+        public AnimationState AnimState
+        {
+            get
+            {
+                if (!InternalCalls.AnimatedSpriteComponent_GetAnimState(Entity.ID, out int outState))
+                    Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (get Anim state)");
+
+                return (AnimationState)outState;
+            }
+        }
+    }
+
     public enum BodyType
     {
         STATIC = 0,

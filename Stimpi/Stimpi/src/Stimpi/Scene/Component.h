@@ -313,17 +313,25 @@ namespace Stimpi
 	struct AnimatedSpriteComponent
 	{
 		std::shared_ptr<AnimatedSprite> m_AnimSprite;
+		std::string m_AnimAssetPath;
 
 		AnimatedSpriteComponent() = default;
 		AnimatedSpriteComponent(const AnimatedSpriteComponent&) = default;
 		AnimatedSpriteComponent(const std::string filePath)
+			: m_AnimAssetPath(filePath)
 		{
-			m_AnimSprite = std::make_shared<AnimatedSprite>(filePath);
+			m_AnimSprite = std::make_shared<AnimatedSprite>(m_AnimAssetPath);
+		}
+
+		bool IsAnimationSet()
+		{
+			return m_AnimSprite != nullptr;
 		}
 
 		void SetAnimation(const std::string filePath)
 		{
-			m_AnimSprite = std::make_shared<AnimatedSprite>(filePath);
+			m_AnimAssetPath = filePath;
+			m_AnimSprite = std::make_shared<AnimatedSprite>(m_AnimAssetPath);
 		}
 
 		void Start()
@@ -372,6 +380,28 @@ namespace Stimpi
 				return m_AnimSprite->GetSubTexture();
 
 			return nullptr;
+		}
+
+		void Serialize(YAML::Emitter& out)
+		{
+			out << YAML::Key << "AnimatedSpriteComponent";
+			out << YAML::BeginMap;
+			{
+				if (m_AnimSprite)
+				{
+					out << YAML::Key << "AnimFilePath" << YAML::Value << m_AnimAssetPath;
+				}
+			}
+			out << YAML::EndMap;
+		}
+
+		AnimatedSpriteComponent(const YAML::Node& node)
+		{
+			if (node["AnimFilePath"])
+			{
+				m_AnimAssetPath = node["AnimFilePath"].as<std::string>();
+				m_AnimSprite = std::make_shared<AnimatedSprite>(m_AnimAssetPath);
+			}
 		}
 	};
 

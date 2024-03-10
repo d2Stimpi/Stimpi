@@ -11,6 +11,7 @@
 #include "Stimpi/Graphics/Renderer2D.h"
 #include "Gui/EditorUtils.h"
 #include "Gui/Gizmo2D.h"
+#include "Gui/Utils/EditorResources.h"
 
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/ResourceManager.h"
@@ -56,6 +57,7 @@ namespace Stimpi
 		ImGui_ImplOpenGL3_Init(glsl_version);
 
 		// Other (Non ImGui) internal data init
+		EditorResources::LoadTextues();
 
 		// Scene Init
 		m_ShaderChecker.reset(Shader::CreateShader("..\/assets\/shaders\/checkerboard.shader"));
@@ -164,9 +166,12 @@ namespace Stimpi
 		auto& colors = ImGui::GetStyle().Colors;
 		colors[ImGuiCol_WindowBg] = ImVec4{ 0.1f, 0.105f, 0.11f, 1.0f };
 
+		// Text
+		colors[ImGuiCol_Text] = ImVec4{ 0.885f, 0.885f, 0.885f, 1.0f };
+
 		// Headers
-		colors[ImGuiCol_Header] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
-		colors[ImGuiCol_HeaderHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
+		colors[ImGuiCol_Header] = ImVec4{ 0.14f, 0.145f, 0.14f, 1.0f };
+		colors[ImGuiCol_HeaderHovered] = ImVec4{ 0.24f, 0.245f, 0.24f, 1.0f };
 		colors[ImGuiCol_HeaderActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 
 		// Buttons

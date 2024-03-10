@@ -2,7 +2,7 @@ Animation:
   Texture: ../assets/sprite_sheets/nero_slap_anim-sheet.png
   Frames:
     Frame:
-      Duration: 0.250
+      Duration: 0.1250
       FrameSize:
         - 24
         - 24
@@ -10,7 +10,7 @@ Animation:
         - 0
         - 0
     Frame:
-      Duration: 0.500
+      Duration: 0.2500
       FrameSize:
         - 24
         - 24
@@ -18,7 +18,7 @@ Animation:
         - 24
         - 0
     Frame:
-      Duration: 0.250
+      Duration: 0.1250
       FrameSize:
         - 24
         - 24
@@ -26,7 +26,7 @@ Animation:
         - 48
         - 0
     Frame:
-      Duration: 0.250
+      Duration: 0.1250
       FrameSize:
         - 24
         - 24
@@ -34,7 +34,7 @@ Animation:
         - 72
         - 0
     Frame:
-      Duration: 0.250
+      Duration: 0.1250
       FrameSize:
         - 24
         - 24

@@ -48,6 +48,8 @@
     <ClInclude Include="src\Gui\Nodes\NodePanel.h" />
     <ClInclude Include="src\Gui\Utils\Utils.h" />
     <ClInclude Include="src\Gui\Components\SearchPopup.h" />
+    <ClInclude Include="src\Gui\Utils\EditorResources.h" />
+    <ClInclude Include="src\Gui\Components\ImGuiEx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
@@ -89,5 +91,7 @@
     <ClCompile Include="src\Gui\Components\Thumbnail.cpp" />
     <ClCompile Include="src\Gui\Nodes\NodePanel.cpp" />
     <ClCompile Include="src\Gui\Components\SearchPopup.cpp" />
+    <ClCompile Include="src\Gui\Utils\EditorResources.cpp" />
+    <ClCompile Include="src\Gui\Components\ImGuiEx.cpp" />
   </ItemGroup>
 </Project>

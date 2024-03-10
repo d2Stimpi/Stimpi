@@ -4,6 +4,7 @@
 #include "Gui/Components/UIPayload.h"
 #include "Gui/Components/SearchPopup.h"
 #include "Gui/EditorUtils.h"
+#include "Gui/Components/ImGuiEx.h"
 
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Entity.h"
@@ -149,17 +150,47 @@ namespace Stimpi
 		ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue;
 
 		ImGui::Separator();
-		if (ImGui::CollapsingHeader("Quad##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
+		ImVec2 cursor = ImGui::GetCursorPos();
+
+		if (ImGui::CollapsingHeaderIcon("Quad##ComponentName", EditorResources::GetIconTextureID(EDITOR_ICON_CUBE), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 		{
+			ImGui::Spacing();
 			ImGui::DragFloat2("Position##Quad", glm::value_ptr(component.m_Position));
 			ImGui::DragFloat2("Size##Quad", glm::value_ptr(component.m_Size));
 			ImGui::PushItemWidth(80.0f);
 			ImGui::DragFloat("Rotation", &component.m_Rotation, 0.01);
 			ImGui::PopItemWidth();
-			ImGui::Separator();
-			if (ImGui::Button("Remove##Quad"))
+			ImGui::Spacing();
+		}
+
+		// Save cursor position
+		ImVec2 temp = ImGui::GetCursorPos();
+		
+		// Left size Component Icon
+		/*ImGui::SetCursorPos(ImVec2(cursor.x + 22.0f, cursor.y + 3));
+		ImGuiEx::Icon(EDITOR_ICON_GEAR);*/
+
+		cursor.x += ImGui::GetWindowContentRegionWidth() - ImGuiEx::GetStyle().m_IconOffset;
+		ImGui::SetCursorPos(cursor);
+		static bool showSettings = false;
+		if (ImGuiEx::IconButton(EDITOR_ICON_GEAR))
+		{
+			showSettings = true;
+			ImGui::OpenPopup("Settings##ComponentPopup");
+		}
+		ImGui::SetCursorPos(temp);
+
+		if (showSettings)
+		{
+			if (ImGui::BeginPopup("Settings##ComponentPopup", ImGuiWindowFlags_NoMove))
 			{
-				s_SelectedEntity.RemoveComponent<QuadComponent>();
+				if (ImGui::Selectable("Remove"))
+				{
+					showSettings = false;
+					s_SelectedEntity.RemoveComponent<QuadComponent>();
+				}
+
+				ImGui::EndPopup();
 			}
 		}
 	}
