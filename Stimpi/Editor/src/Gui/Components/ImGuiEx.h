@@ -18,7 +18,7 @@ namespace Stimpi
 	class ImGuiEx
 	{
 	public:
-		static bool IconButton(std::string iconName);
+		static bool IconButton(const char* strID, std::string iconName);
 		static void Icon(std::string iconName);
 
 		static ImGuiExStyle& GetStyle();

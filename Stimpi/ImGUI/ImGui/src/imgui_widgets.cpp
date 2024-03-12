@@ -6283,9 +6283,9 @@ bool ImGui::TreeNodeBehavior(ImGuiID id, ImGuiTreeNodeFlags flags, const char* l
             LogSetNextTextDecoration("###", "###");
         if (texture_id)
         {
-            ImVec2 icon_pos_min = { text_pos.x - text_offset_x + padding.x + style.SmallIconPadding, text_pos.y };
+            ImVec2 icon_pos_min = { text_pos.x - text_offset_x + padding.x + style.SmallIconPadding, text_pos.y - 1.0f};
             ImVec2 icon_pos_max = { icon_pos_min.x + style.SmallIconSize.x, icon_pos_min.y + style.SmallIconSize.y };
-            window->DrawList->AddImage(texture_id, icon_pos_min, icon_pos_max, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ColorConvertFloat4ToU32(ImVec4(0.885f, 0.885f, 0.885f, 1.0f)));
+            window->DrawList->AddImage(texture_id, icon_pos_min, icon_pos_max, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ColorConvertFloat4ToU32(ImVec4(0.785f, 0.785f, 0.785f, 1.0f)));
             text_pos.x += style.SmallIconPadding;
         }
         RenderTextClipped(text_pos, frame_bb.Max, label, label_end, &label_size);

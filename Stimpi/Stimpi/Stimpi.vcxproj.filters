@@ -25,6 +25,9 @@
     <Filter Include="Stimpi\Scene">
       <UniqueIdentifier>{184B064A-04AE-95EE-AD33-CEA499756171}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Stimpi\Scene\Assets">
+      <UniqueIdentifier>{FA26C238-6688-9F46-EFF5-E5F85B56D605}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Stimpi\Scene\Utils">
       <UniqueIdentifier>{783EAE31-6422-6F87-CD82-69DAB9855909}</UniqueIdentifier>
     </Filter>
@@ -78,6 +81,15 @@
     </ClInclude>
     <ClInclude Include="src\Stimpi\Core\Window.h">
       <Filter>Stimpi\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Graphics\Animation\AnimatedSprite.h">
+      <Filter>Stimpi\Graphics\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Graphics\Animation\Animation.h">
+      <Filter>Stimpi\Graphics\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Graphics\Animation\AnimationSerializer.h">
+      <Filter>Stimpi\Graphics\Animation</Filter>
     </ClInclude>
     <ClInclude Include="src\Stimpi\Graphics\Animation\Sprite.h">
       <Filter>Stimpi\Graphics\Animation</Filter>
@@ -145,6 +157,9 @@
     <ClInclude Include="src\Stimpi\Platform\OpenGLVertexArrayObject.h">
       <Filter>Stimpi\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\Scene\Assets\AssetManager.h">
+      <Filter>Stimpi\Scene\Assets</Filter>
+    </ClInclude>
     <ClInclude Include="src\Stimpi\Scene\Camera.h">
       <Filter>Stimpi\Scene</Filter>
     </ClInclude>
@@ -181,6 +196,9 @@
     <ClInclude Include="src\Stimpi\Scripting\ScriptGlue.h">
       <Filter>Stimpi\Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\Utils\FilePath.h">
+      <Filter>Stimpi\Utils</Filter>
+    </ClInclude>
     <ClInclude Include="src\Stimpi\Utils\FileWatcher.h">
       <Filter>Stimpi\Utils</Filter>
     </ClInclude>
@@ -190,13 +208,10 @@
     <ClInclude Include="src\Stimpi\Utils\SystemUtils.h">
       <Filter>Stimpi\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\Utils\ThreadPool.h">
+      <Filter>Stimpi\Utils</Filter>
+    </ClInclude>
     <ClInclude Include="src\stpch.h" />
-    <ClInclude Include="src\Stimpi\Utils\FilePath.h" />
-    <ClInclude Include="src\Stimpi\Scene\Assets\AssetManager.h" />
-    <ClInclude Include="src\Stimpi\Utils\ThreadPool.h" />
-    <ClInclude Include="src\Stimpi\Graphics\Animation\AnimatedSprite.h" />
-    <ClInclude Include="src\Stimpi\Graphics\Animation\Animation.h" />
-    <ClInclude Include="src\Stimpi\Graphics\Animation\AnimationSerializer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Core\Application.cpp">
@@ -222,6 +237,15 @@
     </ClCompile>
     <ClCompile Include="src\Stimpi\Core\Window.cpp">
       <Filter>Stimpi\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\Animation\AnimatedSprite.cpp">
+      <Filter>Stimpi\Graphics\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\Animation\Animation.cpp">
+      <Filter>Stimpi\Graphics\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\Animation\AnimationSerializer.cpp">
+      <Filter>Stimpi\Graphics\Animation</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Graphics\Animation\Sprite.cpp">
       <Filter>Stimpi\Graphics\Animation</Filter>
@@ -265,6 +289,9 @@
     <ClCompile Include="src\Stimpi\Physics\ContactListener.cpp">
       <Filter>Stimpi\Physics</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Physics\Physics.cpp">
+      <Filter>Stimpi\Physics</Filter>
+    </ClCompile>
     <ClCompile Include="src\Stimpi\Platform\OpenGLBufferObject.cpp">
       <Filter>Stimpi\Platform</Filter>
     </ClCompile>
@@ -285,6 +312,9 @@
     </ClCompile>
     <ClCompile Include="src\Stimpi\Platform\Windows\WindowsPlatformUtils.cpp">
       <Filter>Stimpi\Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Scene\Assets\AssetManager.cpp">
+      <Filter>Stimpi\Scene\Assets</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Scene\Camera.cpp">
       <Filter>Stimpi\Scene</Filter>
@@ -319,19 +349,18 @@
     <ClCompile Include="src\Stimpi\Scripting\ScriptGlue.cpp">
       <Filter>Stimpi\Scripting</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Utils\FilePath.cpp">
+      <Filter>Stimpi\Utils</Filter>
+    </ClCompile>
     <ClCompile Include="src\Stimpi\Utils\FileWatcher.cpp">
       <Filter>Stimpi\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Utils\SystemUtils.cpp">
       <Filter>Stimpi\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Utils\ThreadPool.cpp">
+      <Filter>Stimpi\Utils</Filter>
+    </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
-    <ClCompile Include="src\Stimpi\Physics\Physics.cpp" />
-    <ClCompile Include="src\Stimpi\Utils\FilePath.cpp" />
-    <ClCompile Include="src\Stimpi\Scene\Assets\AssetManager.cpp" />
-    <ClCompile Include="src\Stimpi\Utils\ThreadPool.cpp" />
-    <ClCompile Include="src\Stimpi\Graphics\Animation\AnimatedSprite.cpp" />
-    <ClCompile Include="src\Stimpi\Graphics\Animation\Animation.cpp" />
-    <ClCompile Include="src\Stimpi\Graphics\Animation\AnimationSerializer.cpp" />
   </ItemGroup>
 </Project>

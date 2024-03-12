@@ -7,13 +7,37 @@
     <Filter Include="Gui\Components">
       <UniqueIdentifier>{3F7FA332-2B4D-9738-14E1-075F004E739D}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Gui\Config">
+      <UniqueIdentifier>{2F90CD3E-1B48-0F8C-844F-E8E77026AA7C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gui\Nodes">
+      <UniqueIdentifier>{B299BD40-1E04-72B7-6742-235DD3EB4F0C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gui\Stats">
+      <UniqueIdentifier>{48C71A41-B431-CFB7-FD6F-805D6919AD0C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gui\Utils">
+      <UniqueIdentifier>{4A193F41-B683-F3B7-FFC1-A45D6B6BD10C}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Gui\Components\ImGuiEx.h">
+      <Filter>Gui\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Components\SearchPopup.h">
+      <Filter>Gui\Components</Filter>
+    </ClInclude>
     <ClInclude Include="src\Gui\Components\SearchPopupWindow.h">
+      <Filter>Gui\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Components\Thumbnail.h">
       <Filter>Gui\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Gui\Components\UIPayload.h">
       <Filter>Gui\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Config\SceneConfig.h">
+      <Filter>Gui\Config</Filter>
     </ClInclude>
     <ClInclude Include="src\Gui\ContentBrowserWindow.h">
       <Filter>Gui</Filter>
@@ -30,6 +54,9 @@
     <ClInclude Include="src\Gui\MainManuBar.h">
       <Filter>Gui</Filter>
     </ClInclude>
+    <ClInclude Include="src\Gui\Nodes\NodePanel.h">
+      <Filter>Gui\Nodes</Filter>
+    </ClInclude>
     <ClInclude Include="src\Gui\PlayPanel.h">
       <Filter>Gui</Filter>
     </ClInclude>
@@ -42,22 +69,35 @@
     <ClInclude Include="src\Gui\SpriteAnimPanel.h">
       <Filter>Gui</Filter>
     </ClInclude>
-    <ClInclude Include="src\Gui\Stats\EditorConfig.h" />
-    <ClInclude Include="src\Gui\Config\SceneConfig.h" />
-    <ClInclude Include="src\Gui\Components\Thumbnail.h" />
-    <ClInclude Include="src\Gui\Nodes\NodePanel.h" />
-    <ClInclude Include="src\Gui\Utils\Utils.h" />
-    <ClInclude Include="src\Gui\Components\SearchPopup.h" />
-    <ClInclude Include="src\Gui\Utils\EditorResources.h" />
-    <ClInclude Include="src\Gui\Components\ImGuiEx.h" />
+    <ClInclude Include="src\Gui\Stats\EditorConfig.h">
+      <Filter>Gui\Stats</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Utils\EditorResources.h">
+      <Filter>Gui\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Utils\Utils.h">
+      <Filter>Gui\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
+    <ClCompile Include="src\Gui\Components\ImGuiEx.cpp">
+      <Filter>Gui\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Components\SearchPopup.cpp">
+      <Filter>Gui\Components</Filter>
+    </ClCompile>
     <ClCompile Include="src\Gui\Components\SearchPopupWindow.cpp">
+      <Filter>Gui\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Components\Thumbnail.cpp">
       <Filter>Gui\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\Gui\Components\UIPayload.cpp">
       <Filter>Gui\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Config\SceneConfig.cpp">
+      <Filter>Gui\Config</Filter>
     </ClCompile>
     <ClCompile Include="src\Gui\ContentBrowserWindow.cpp">
       <Filter>Gui</Filter>
@@ -74,6 +114,9 @@
     <ClCompile Include="src\Gui\MainMenuBar.cpp">
       <Filter>Gui</Filter>
     </ClCompile>
+    <ClCompile Include="src\Gui\Nodes\NodePanel.cpp">
+      <Filter>Gui\Nodes</Filter>
+    </ClCompile>
     <ClCompile Include="src\Gui\PlayPanel.cpp">
       <Filter>Gui</Filter>
     </ClCompile>
@@ -86,12 +129,11 @@
     <ClCompile Include="src\Gui\SpriteAnimPanel.cpp">
       <Filter>Gui</Filter>
     </ClCompile>
-    <ClCompile Include="src\Gui\Stats\EditorConfig.cpp" />
-    <ClCompile Include="src\Gui\Config\SceneConfig.cpp" />
-    <ClCompile Include="src\Gui\Components\Thumbnail.cpp" />
-    <ClCompile Include="src\Gui\Nodes\NodePanel.cpp" />
-    <ClCompile Include="src\Gui\Components\SearchPopup.cpp" />
-    <ClCompile Include="src\Gui\Utils\EditorResources.cpp" />
-    <ClCompile Include="src\Gui\Components\ImGuiEx.cpp" />
+    <ClCompile Include="src\Gui\Stats\EditorConfig.cpp">
+      <Filter>Gui\Stats</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Utils\EditorResources.cpp">
+      <Filter>Gui\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

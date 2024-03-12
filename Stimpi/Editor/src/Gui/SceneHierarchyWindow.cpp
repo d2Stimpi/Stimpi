@@ -125,6 +125,34 @@ namespace Stimpi
 		ImGui::End();
 	}
 
+	void SceneHierarchyWindow::SettingsPopupButton(ImVec2 cursorPos, std::string name, std::function<bool()> popupContent)
+	{
+		// Save cursor position
+		ImVec2 temp = ImGui::GetCursorPos();
+		cursorPos.x += ImGui::GetWindowContentRegionWidth() - ImGuiEx::GetStyle().m_IconOffset;
+		ImGui::SetCursorPos(cursorPos);
+		static bool showSettings = false;
+
+		std::string btnID = name.append("##IconButton");
+		if (ImGuiEx::IconButton(btnID.c_str(), EDITOR_ICON_GEAR))
+		{
+			showSettings = true;
+			ImGui::OpenPopup(name.c_str());
+		}
+
+		// Restore cursor position
+		ImGui::SetCursorPos(temp);
+
+		if (showSettings)
+		{
+			if (ImGui::BeginPopup(name.c_str(), ImGuiWindowFlags_NoMove))
+			{
+				showSettings = popupContent();
+				ImGui::EndPopup();
+			}
+		}
+	}
+
 	void SceneHierarchyWindow::TagComponentLayout(TagComponent& component)
 	{
 		char tagInputBuff[32] = { "EntityTag" };
@@ -150,7 +178,7 @@ namespace Stimpi
 		ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue;
 
 		ImGui::Separator();
-		ImVec2 cursor = ImGui::GetCursorPos();
+		ImVec2 cursor = ImGui::GetCursorPos();	// To render SettingsPopupButton on the same line as Collapsing header
 
 		if (ImGui::CollapsingHeaderIcon("Quad##ComponentName", EditorResources::GetIconTextureID(EDITOR_ICON_CUBE), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 		{
@@ -163,36 +191,19 @@ namespace Stimpi
 			ImGui::Spacing();
 		}
 
-		// Save cursor position
-		ImVec2 temp = ImGui::GetCursorPos();
-		
-		// Left size Component Icon
-		/*ImGui::SetCursorPos(ImVec2(cursor.x + 22.0f, cursor.y + 3));
-		ImGuiEx::Icon(EDITOR_ICON_GEAR);*/
-
-		cursor.x += ImGui::GetWindowContentRegionWidth() - ImGuiEx::GetStyle().m_IconOffset;
-		ImGui::SetCursorPos(cursor);
-		static bool showSettings = false;
-		if (ImGuiEx::IconButton(EDITOR_ICON_GEAR))
+		auto popupContent = []() -> bool
 		{
-			showSettings = true;
-			ImGui::OpenPopup("Settings##ComponentPopup");
-		}
-		ImGui::SetCursorPos(temp);
-
-		if (showSettings)
-		{
-			if (ImGui::BeginPopup("Settings##ComponentPopup", ImGuiWindowFlags_NoMove))
+			bool showPoput = true;
+			if (ImGui::Selectable("Remove"))
 			{
-				if (ImGui::Selectable("Remove"))
-				{
-					showSettings = false;
-					s_SelectedEntity.RemoveComponent<QuadComponent>();
-				}
-
-				ImGui::EndPopup();
+				showPoput = false;
+				s_SelectedEntity.RemoveComponent<QuadComponent>();
 			}
-		}
+
+			return showPoput;
+		};
+
+		SettingsPopupButton(cursor, "Quad##ComponentPopup", popupContent);
 	}
 
 	void SceneHierarchyWindow::CircleComponentLayout(CircleComponent& component)
@@ -200,8 +211,11 @@ namespace Stimpi
 		ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue;
 
 		ImGui::Separator();
-		if (ImGui::CollapsingHeader("Circle##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
+		ImVec2 cursor = ImGui::GetCursorPos();	// To render SettingsPopupButton on the same line as Collapsing header
+
+		if (ImGui::CollapsingHeaderIcon("Circle##ComponentName", EditorResources::GetIconTextureID(EDITOR_ICON_CUBE), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 		{
+			ImGui::Spacing();
 			ImGui::DragFloat2("Position##Circle", glm::value_ptr(component.m_Position));
 			ImGui::DragFloat2("Size##Circle", glm::value_ptr(component.m_Size));
 			ImGui::ColorEdit4("Color##CircleColor", glm::value_ptr(component.m_Color));
@@ -209,24 +223,37 @@ namespace Stimpi
 			ImGui::DragFloat("Thickness", &component.m_Thickness, 0.01);
 			ImGui::DragFloat("Fade", &component.m_Fade, 0.001);
 			ImGui::PopItemWidth();
-			ImGui::Separator();
-			if (ImGui::Button("Remove##Circle"))
+			ImGui::Spacing();
+		}
+
+		auto popupContent = []() -> bool
+		{
+			bool showPoput = true;
+			if (ImGui::Selectable("Remove"))
 			{
+				showPoput = false;
 				s_SelectedEntity.RemoveComponent<CircleComponent>();
 			}
-		}
+
+			return showPoput;
+		};
+
+		SettingsPopupButton(cursor, "Circle##ComponentPopup", popupContent);
 	}
 
 	void SceneHierarchyWindow::ScriptComponentLayout(ScriptComponent& component)
 	{
 		ImGui::Separator();
-		if (ImGui::CollapsingHeader("Script##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
+		ImVec2 cursor = ImGui::GetCursorPos();	// To render SettingsPopupButton on the same line as Collapsing header
+
+		if (ImGui::CollapsingHeaderIcon("Script##ComponentName", EditorResources::GetIconTextureID(EDITOR_ICON_SCRIPT), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 		{
 			static char scriptName[64];
 			strcpy(scriptName, component.m_ScriptName.c_str());
 
 			bool scriptClassExists = ScriptEngine::HasScriptClass(component.m_ScriptName);
 			static bool showPopup = false;
+			ImGui::Spacing();
 			ImGui::InputText("##ScriptComponentPreview", scriptName, sizeof(scriptName), ImGuiInputTextFlags_ReadOnly);
 			if (ImGui::IsItemClicked())
 			{
@@ -273,22 +300,35 @@ namespace Stimpi
 				}
 			}
 
-			ImGui::Separator();
-			if (ImGui::Button("Remove##Script"))
+			ImGui::Spacing();
+		}
+
+		auto popupContent = []() -> bool
+		{
+			bool showPoput = true;
+			if (ImGui::Selectable("Remove"))
 			{
+				showPoput = false;
 				ScriptEngine::OnScriptComponentRemove(s_SelectedEntity);
 				s_SelectedEntity.RemoveComponent<ScriptComponent>();
 			}
-		}
+
+			return showPoput;
+		};
+
+		SettingsPopupButton(cursor, "Script##ComponentPopup", popupContent);
 	}
 
 	void SceneHierarchyWindow::SpriteComponentLayout(SpriteComponent& component)
 	{
 		ImGui::Separator();
-		if (ImGui::CollapsingHeader("Sprite##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
+		ImVec2 cursor = ImGui::GetCursorPos();	// To render SettingsPopupButton on the same line as Collapsing header
+
+		if (ImGui::CollapsingHeaderIcon("Sprite##ComponentName", EditorResources::GetIconTextureID(EDITOR_ICON_SPRITE), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 		{
 			std::filesystem::path texturePath = component.m_FilePath.c_str();
 
+			ImGui::Spacing();
 			ImGui::ColorEdit4("Color##SpriteColor", glm::value_ptr(component.m_Color));
 
 			ImGui::PushItemWidth(80.0f);
@@ -316,21 +356,33 @@ namespace Stimpi
 
 			//ImGui::SameLine();
 			ImGui::Checkbox("Enable Texture##Texture_SpriteComponent", &component.m_Enable);
+			ImGui::Spacing();
+		}
 
-			ImGui::Separator();
-			if (ImGui::Button("Remove##Texture"))
+		auto popupContent = []() -> bool
+		{
+			bool showPoput = true;
+			if (ImGui::Selectable("Remove"))
 			{
+				showPoput = false;
 				s_SelectedEntity.RemoveComponent<SpriteComponent>();
 			}
-		}
+
+			return showPoput;
+		};
+
+		SettingsPopupButton(cursor, "Sprite##ComponentPopup", popupContent);
 	}
 
 	void SceneHierarchyWindow::AnimatedSpriteComponentLayout(AnimatedSpriteComponent& component)
 	{
 		ImGui::Separator();
-		if (ImGui::CollapsingHeader("AnimatedSprite##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
+		ImVec2 cursor = ImGui::GetCursorPos();	// To render SettingsPopupButton on the same line as Collapsing header
+
+		if (ImGui::CollapsingHeaderIcon("AnimatedSprite##ComponentName", EditorResources::GetIconTextureID(EDITOR_ICON_ANIM), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 		{
 			//ImGui::InvisibleButton("##asdasd", ImVec2(-1.0f, 24.0f));
+			ImGui::Spacing();
 			ImGui::PushItemWidth(80.0f);
 			if (ImGui::Button("Animation##AnimatedSpriteComponent"))
 			{
@@ -380,13 +432,22 @@ namespace Stimpi
 			if (component.m_AnimSprite)
 				component.m_AnimSprite->SetPlaybackSpeed(playSpeed);
 
-			//ImGui::InvisibleButton("##asdasd", ImVec2(-1.0f, 24.0f));
-			ImGui::Separator();
-			if (ImGui::Button("Remove##AnimatedSprite"))
+			ImGui::Spacing();
+		}
+
+		auto popupContent = []() -> bool
+		{
+			bool showPoput = true;
+			if (ImGui::Selectable("Remove"))
 			{
+				showPoput = false;
 				s_SelectedEntity.RemoveComponent<AnimatedSpriteComponent>();
 			}
-		}
+
+			return showPoput;
+		};
+
+		SettingsPopupButton(cursor, "AnimatedSprite##ComponentPopup", popupContent);
 	}
 
 	void SceneHierarchyWindow::CameraComponentLayout(CameraComponent& component)
@@ -395,8 +456,11 @@ namespace Stimpi
 		glm::vec4 view = component.m_Camera->GetOrthoCamera()->GetViewQuad();
 
 		ImGui::Separator();
-		if (ImGui::CollapsingHeader("Camera##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
+		ImVec2 cursor = ImGui::GetCursorPos();	// To render SettingsPopupButton on the same line as Collapsing header
+
+		if (ImGui::CollapsingHeaderIcon("Camera##ComponentName", EditorResources::GetIconTextureID(EDITOR_ICON_CAM), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 		{
+			ImGui::Spacing();
 			ImGui::Checkbox("Main##Camera", &component.m_IsMain);
 
 			ImGui::Text("Camera Viewport:");
@@ -410,15 +474,24 @@ namespace Stimpi
 
 			ImGui::SameLine();
 			ImGui::DragFloat("H##CameraComponent top input", &view.w);
+			ImGui::Spacing();
 
 			component.m_Camera->SetOrthoView(view);
+		}
 
-			ImGui::Separator();
-			if (ImGui::Button("Remove##Camera"))
+		auto popupContent = []() -> bool
+		{
+			bool showPoput = true;
+			if (ImGui::Selectable("Remove"))
 			{
+				showPoput = false;
 				s_SelectedEntity.RemoveComponent<CameraComponent>();
 			}
-		}
+
+			return showPoput;
+		};
+
+		SettingsPopupButton(cursor, "Camera##ComponentPopup", popupContent);
 	}
 
 	void SceneHierarchyWindow::RigidBody2DComponentLayout(RigidBody2DComponent& component)
@@ -426,11 +499,14 @@ namespace Stimpi
 		ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue;
 
 		ImGui::Separator();
-		if (ImGui::CollapsingHeader("Rigid Body 2D##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
+		ImVec2 cursor = ImGui::GetCursorPos();	// To render SettingsPopupButton on the same line as Collapsing header
+
+		if (ImGui::CollapsingHeaderIcon("Rigid Body 2D##ComponentName", EditorResources::GetIconTextureID(EDITOR_ICON_RB2D), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 		{
 			const char* bodyTypeStrings[] = { "Static", "Dynamic", "Kinematic" };
 			const char* currentBodyTypeString = bodyTypeStrings[(int)component.m_Type];
 
+			ImGui::Spacing();
 			if (ImGui::BeginCombo("Body Type", currentBodyTypeString))
 			{
 				for (int i = 0; i <= 2; i++)
@@ -450,13 +526,22 @@ namespace Stimpi
 			}
 
 			ImGui::Checkbox("Fixed Rotation", &component.m_FixedRotation);
+			ImGui::Spacing();
+		}
 
-			ImGui::Separator();
-			if (ImGui::Button("Remove##RigidBody2D"))
+		auto popupContent = []() -> bool
+		{
+			bool showPoput = true;
+			if (ImGui::Selectable("Remove"))
 			{
+				showPoput = false;
 				s_SelectedEntity.RemoveComponent<RigidBody2DComponent>();
 			}
-		}
+
+			return showPoput;
+		};
+
+		SettingsPopupButton(cursor, "RigidBody2D##ComponentPopup", popupContent);
 	}
 
 	void SceneHierarchyWindow::BoxCollider2DComponentLayout(BoxCollider2DComponent& component)
@@ -464,11 +549,14 @@ namespace Stimpi
 		ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue;
 
 		ImGui::Separator();
-		if (ImGui::CollapsingHeader("Box Collider##ComponentName", ImGuiTreeNodeFlags_DefaultOpen))
+		ImVec2 cursor = ImGui::GetCursorPos();	// To render SettingsPopupButton on the same line as Collapsing header
+
+		if (ImGui::CollapsingHeaderIcon("Box Collider##ComponentName", EditorResources::GetIconTextureID(EDITOR_ICON_WCUBE), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 		{
 			const char* colliderShapeStrings[] = { "Box", "Circle" };
 			const char* currentColliderShapeString = colliderShapeStrings[(int)component.m_ColliderShape];
 
+			ImGui::Spacing();
 			if (ImGui::BeginCombo("Collider Shape", currentColliderShapeString))
 			{
 				for (int i = 0; i <= 1; i++)
@@ -495,13 +583,22 @@ namespace Stimpi
 			ImGui::DragFloat("Restitution", &component.m_Restitution, 0.01f, 0.0f, 1.0f);
 			ImGui::DragFloat("Restitution Threshold", &component.m_RestitutionThreshold, 0.01f, 0.0f);
 			ImGui::PopItemWidth();
+			ImGui::Spacing();
+		}
 
-			ImGui::Separator();
-			if (ImGui::Button("Remove##BoxCollider"))
+		auto popupContent = []() -> bool
+		{
+			bool showPoput = true;
+			if (ImGui::Selectable("Remove"))
 			{
+				showPoput = false;
 				s_SelectedEntity.RemoveComponent<BoxCollider2DComponent>();
 			}
-		}
+
+			return showPoput;
+		};
+
+		SettingsPopupButton(cursor, "BoxCollider##ComponentPopup", popupContent);
 	}
 
 	void SceneHierarchyWindow::AddComponentLayout()

@@ -1217,7 +1217,7 @@ ImGuiStyle::ImGuiStyle()
     CircleTessellationMaxError = 0.30f;         // Maximum error (in pixels) allowed when using AddCircle()/AddCircleFilled() or drawing rounded corner rectangles with no explicit segment count specified. Decrease for higher quality but more geometry.
 
 	// Custom Styles
-    SmallIconSize           = ImVec2(15.0f, 15.0f);
+    SmallIconSize           = ImVec2(16.0f, 16.0f);
     SmallIconPadding        = 18.0f;
 
     // Behaviors

@@ -3,6 +3,8 @@
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/Scene.h"
 
+#include "ImGui/src/imgui.h"
+
 namespace Stimpi
 {
 	class Entity;
@@ -20,6 +22,8 @@ namespace Stimpi
 
 	private:
 		void ComponentInspectorWidget();
+
+		void SettingsPopupButton(ImVec2 cursorPos, std::string name, std::function<bool()> popupContent);
 		
 		// Inspect UI layout parts
 		void TagComponentLayout(TagComponent& component);

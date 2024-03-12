@@ -169,13 +169,12 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Core\MouseCodes.h" />
     <ClInclude Include="src\Stimpi\Core\Project.h" />
     <ClInclude Include="src\Stimpi\Core\ProjectSerializer.h" />
-    <ClInclude Include="src\Stimpi\Graphics\Animation\AnimatedSprite.h" />
-    <ClInclude Include="src\Stimpi\Graphics\Animation\Animation.h" />
-    <ClInclude Include="src\Stimpi\Graphics\Animation\AnimationSerializer.h" />
-    <ClInclude Include="src\Stimpi\Utils\ThreadPool.h" />
     <ClInclude Include="src\Stimpi\Core\Time.h" />
     <ClInclude Include="src\Stimpi\Core\Timestep.h" />
     <ClInclude Include="src\Stimpi\Core\Window.h" />
+    <ClInclude Include="src\Stimpi\Graphics\Animation\AnimatedSprite.h" />
+    <ClInclude Include="src\Stimpi\Graphics\Animation\Animation.h" />
+    <ClInclude Include="src\Stimpi\Graphics\Animation\AnimationSerializer.h" />
     <ClInclude Include="src\Stimpi\Graphics\Animation\Sprite.h" />
     <ClInclude Include="src\Stimpi\Graphics\BufferObject.h" />
     <ClInclude Include="src\Stimpi\Graphics\FrameBuffer.h" />
@@ -215,6 +214,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Utils\FileWatcher.h" />
     <ClInclude Include="src\Stimpi\Utils\PlatformUtils.h" />
     <ClInclude Include="src\Stimpi\Utils\SystemUtils.h" />
+    <ClInclude Include="src\Stimpi\Utils\ThreadPool.h" />
     <ClInclude Include="src\stpch.h" />
   </ItemGroup>
   <ItemGroup>
