@@ -210,7 +210,7 @@ namespace Stimpi
 
 	static ScriptEngineData* s_Data;
 	static std::string s_CoreScriptName = "Stimpi-ScriptCore.dll";
-	static std::string s_CoreScriptDir = "../resources/scripts";
+	static std::string s_CoreScriptDir = "../resources/scripts/net5.0";
 
 	static std::string s_ClientScriptName = "Sandbox-Script.dll";
 
