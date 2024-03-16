@@ -1,0 +1,6 @@
+D:\GitHub\Stimpi\resources\scripts\intermediates\Debug\Stimpi-ScriptCore.csproj.CoreCompileInputs.cache
+D:\GitHub\Stimpi\resources\scripts\intermediates\Debug\Stimpi-ScriptCore.dll
+D:\GitHub\Stimpi\resources\scripts\intermediates\Debug\Stimpi-ScriptCore.pdb
+D:\GitHub\Stimpi\resources\scripts\Stimpi-ScriptCore.dll
+D:\GitHub\Stimpi\resources\scripts\Stimpi-ScriptCore.pdb
+D:\GitHub\Stimpi\resources\scripts\intermediates\Debug\Stimpi-ScriptCore.csprojAssemblyReference.cache

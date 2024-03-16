@@ -3,4 +3,4 @@ Project:
   StartingScene: StartScene.d2s
   ProjectDir: "D:/GitHub/Stimpi"
   AssetsSubDir: "assets"
-  ScriptsSubDir: "resources/scripts/net5.0"
+  ScriptsSubDir: "resources/scripts"
