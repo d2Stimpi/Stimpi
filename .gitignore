@@ -10,3 +10,6 @@
 
 #script intermeds
 Stimpi/resources/scripts
+Stimpi/Sandbox-Script/obj
+Stimpi/Stimpi-ScriptCore/obj
+Stimpi/resources/scripts/intermediates

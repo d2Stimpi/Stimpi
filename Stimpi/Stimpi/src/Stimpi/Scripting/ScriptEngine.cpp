@@ -609,6 +609,11 @@ namespace Stimpi
 		MonoObject* exception;
 		mono_runtime_invoke(method, instance, params, &exception);
 
+		if (exception)
+		{
+			mono_print_unhandled_exception(exception);
+		}
+
 		return nullptr;
 	}
 
