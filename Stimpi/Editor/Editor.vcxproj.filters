@@ -78,6 +78,8 @@
     <ClInclude Include="src\Gui\Utils\Utils.h">
       <Filter>Gui\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\Gui\Components\Toolbar.h" />
+    <ClInclude Include="src\Gui\Nodes\GraphComponents.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
@@ -135,5 +137,6 @@
     <ClCompile Include="src\Gui\Utils\EditorResources.cpp">
       <Filter>Gui\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="src\Gui\Components\Toolbar.cpp" />
   </ItemGroup>
 </Project>

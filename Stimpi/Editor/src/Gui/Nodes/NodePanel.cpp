@@ -5,6 +5,7 @@
 #include "Stimpi/Core/InputManager.h"
 
 #include "Gui/Components/SearchPopup.h"
+#include "Gui/Components/Toolbar.h"
 
 #include "ImGui/src/imgui_internal.h"
 
@@ -73,6 +74,10 @@ namespace Stimpi
 		uint32_t m_NextNodeID = 0;
 		std::vector<std::shared_ptr<Node>> m_Nodes;
 		std::vector<std::shared_ptr<PinConnection>> m_PinConnections;
+
+		// Active open Graphs
+		std::vector<std::shared_ptr<Graph>> m_Graphs;
+		Graph* m_ActiveGraph = nullptr;	// actively edited graph (active tab)
 
 		ImVec2 m_Origin = { 0.0f, 0.0f };	// Global panel view translate offset
 		ImVec2 m_Scrolling = { 0.0f, 0.0f };
@@ -509,68 +514,132 @@ namespace Stimpi
 			ImGui::Checkbox("Debug", &s_Context->m_DebugOn);
 			s_Context->m_Scale = scale;
 
+			// Main Toolbar
+			Toolbar::Begin("NodePanelToolbar");
+			if (Toolbar::ToolbarButton("Compile"))
+			{
+				ST_CORE_INFO("Compile button presed");
+			}
+			Toolbar::Separator();
+			if (Toolbar::ToolbarButton("Save"))
+			{
+				ST_CORE_INFO("Save button presed");
+			}
+			Toolbar::Separator();
+			Toolbar::End();
+
 			ImDrawList* draw_list = ImGui::GetWindowDrawList();
 			s_Context->m_DrawList = draw_list;
 
-			s_Context->m_Canvas.m_PosMin = ImGui::GetCursorScreenPos();	   // ImDrawList API uses screen coordinates!
-			s_Context->m_Canvas.m_Size = ImGui::GetContentRegionAvail();   // Resize canvas to what's available
-			if (s_Context->m_Canvas.m_Size.x < 50.0f) s_Context->m_Canvas.m_Size.x = 50.0f;
-			if (s_Context->m_Canvas.m_Size.y < 50.0f) s_Context->m_Canvas.m_Size.y = 50.0f;
-			s_Context->m_Canvas.m_PosMax = ImVec2(s_Context->m_Canvas.m_PosMin.x + s_Context->m_Canvas.m_Size.x, s_Context->m_Canvas.m_PosMin.y + s_Context->m_Canvas.m_Size.y);
+			// Tabs start here
+			static ImGuiTabBarFlags tabBarFlags = ImGuiTabBarFlags_Reorderable | ImGuiTabBarFlags_AutoSelectNewTabs;
 
-			ImGuiIO& io = ImGui::GetIO();
-			ImGui::InvisibleButton("canvas", s_Context->m_Canvas.m_Size, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
-			s_Context->m_IsHovered = ImGui::IsItemHovered(); // Hovered
-			s_Context->m_IsActive = ImGui::IsItemActive();   // Held
-
-			s_Context->m_Origin = { s_Context->m_Canvas.m_PosMin.x + s_Context->m_Scrolling.x, s_Context->m_Canvas.m_PosMin.y + s_Context->m_Scrolling.y };
-
-			if (dbgTooltip)
+			if (ImGui::BeginTabBar("NodePanelTabBar", tabBarFlags))
 			{
-				if (ImGui::BeginItemTooltip())
+				// TODO: Each graph rendering goes here
+				static bool tabshow1 = true;
+				if (ImGui::BeginTabItem("Graph", &tabshow1, ImGuiTabItemFlags_None))
 				{
-					ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-					ImGui::Text("Pos: %f, %f", s_Context->m_Canvas.m_PosMin.x, s_Context->m_Canvas.m_PosMin.y);
-					ImGui::Text("Mouse: %f, %f", io.MousePos.x, io.MousePos.y);
-					ImVec2 viewPos = { io.MousePos.x - s_Context->m_Canvas.m_PosMin.x, io.MousePos.y - s_Context->m_Canvas.m_PosMin.y };
-					ImGui::Text("=>: %f, %f", viewPos.x, viewPos.y);
-					ImGui::Text("Origin: %f, %f", s_Context->m_Origin.x, s_Context->m_Origin.y);
-					ImGui::Text("=>: %f, %f", io.MousePos.x - s_Context->m_Origin.x, io.MousePos.y - s_Context->m_Origin.y);
-					ImGui::PopTextWrapPos();
-					ImGui::EndTooltip();
+					// Use canvas position and size to control where and how big Node Panel (graph) space is rendered
+
+					s_Context->m_Canvas.m_PosMin = ImGui::GetCursorScreenPos();	   // ImDrawList API uses screen coordinates!
+					s_Context->m_Canvas.m_Size = ImGui::GetContentRegionAvail();   // Resize canvas to what's available
+					if (s_Context->m_Canvas.m_Size.x < 50.0f) s_Context->m_Canvas.m_Size.x = 50.0f;
+					if (s_Context->m_Canvas.m_Size.y < 50.0f) s_Context->m_Canvas.m_Size.y = 50.0f;
+					s_Context->m_Canvas.m_PosMax = ImVec2(s_Context->m_Canvas.m_PosMin.x + s_Context->m_Canvas.m_Size.x, s_Context->m_Canvas.m_PosMin.y + s_Context->m_Canvas.m_Size.y);
+
+					ImGuiIO& io = ImGui::GetIO();
+					ImGui::InvisibleButton("canvas", s_Context->m_Canvas.m_Size, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
+					s_Context->m_IsHovered = ImGui::IsItemHovered(); // Hovered
+					s_Context->m_IsActive = ImGui::IsItemActive();   // Held
+
+					s_Context->m_Origin = { s_Context->m_Canvas.m_PosMin.x + s_Context->m_Scrolling.x, s_Context->m_Canvas.m_PosMin.y + s_Context->m_Scrolling.y };
+
+					if (dbgTooltip)
+					{
+						if (ImGui::BeginItemTooltip())
+						{
+							ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+							ImGui::Text("Pos: %f, %f", s_Context->m_Canvas.m_PosMin.x, s_Context->m_Canvas.m_PosMin.y);
+							ImGui::Text("Mouse: %f, %f", io.MousePos.x, io.MousePos.y);
+							ImVec2 viewPos = { io.MousePos.x - s_Context->m_Canvas.m_PosMin.x, io.MousePos.y - s_Context->m_Canvas.m_PosMin.y };
+							ImGui::Text("=>: %f, %f", viewPos.x, viewPos.y);
+							ImGui::Text("Origin: %f, %f", s_Context->m_Origin.x, s_Context->m_Origin.y);
+							ImGui::Text("=>: %f, %f", io.MousePos.x - s_Context->m_Origin.x, io.MousePos.y - s_Context->m_Origin.y);
+							ImGui::PopTextWrapPos();
+							ImGui::EndTooltip();
+						}
+					}
+
+					// Process mouse control before any drawing calls
+					UpdateMouseControls();
+					HandleKeyPresses();
+
+					DrawCanvasGrid();
+
+					// Draw all nodes
+					for (auto node : s_Context->m_Nodes)
+					{
+						DrawNode(node.get());
+					}
+
+					// Temp
+					if (s_Context->m_SelectedConnection)
+					{
+						DrawPinToPinConnection(s_Context->m_SelectedConnection->m_SourcePin, s_Context->m_SelectedConnection->m_DestinationPin, NODE_HOVER_COLOR);
+					}
+
+					// Draw Debug stuff in the end
+					for (auto connection : s_Context->m_PinConnections)
+					{
+						DbgDrawConnectionLinePoints(connection.get());
+					}
+
+					// Rect pushed in drawing of the Grid (start of the draw commands)
+					s_Context->m_DrawList->PopClipRect();
+
+					// Draw border
+					s_Context->m_DrawList->AddRect(s_Context->m_Canvas.m_PosMin, s_Context->m_Canvas.m_PosMax, IM_COL32(255, 255, 255, 255));
+
+					ImGui::EndTabItem();
 				}
+
+				static bool tabshow2 = true;
+				if (ImGui::BeginTabItem("Graph2", &tabshow2, ImGuiTabItemFlags_None))
+				{
+					ImGui::Text("This is the Broccoli tab!\nblah blah blah blah blah");
+					ImGui::EndTabItem();
+				}
+
+				ImGui::EndTabBar();
 			}
-
-			// Process mouse control before any drawing calls
-			UpdateMouseControls();
-			HandleKeyPresses();
-
-			DrawCanvasGrid();
-
-			// Draw all nodes
-			for (auto node : s_Context->m_Nodes)
-			{
-				DrawNode(node.get());
-			}
-
-			// Temp
-			if (s_Context->m_SelectedConnection)
-			{
-				DrawPinToPinConnection(s_Context->m_SelectedConnection->m_SourcePin, s_Context->m_SelectedConnection->m_DestinationPin, NODE_HOVER_COLOR);
-			}
-
-			// Draw Debug stuff in the end
-			for (auto connection : s_Context->m_PinConnections)
-			{
-				DbgDrawConnectionLinePoints(connection.get());
-			}
-
-			// Rect pushed in drawing of the Grid (start of the draw commands)
-			s_Context->m_DrawList->PopClipRect();
-
 
 			ImGui::End();
 		}
+	}
+
+	void NodePanel::AddGraph(Graph* graph)
+	{
+		if (graph == nullptr)
+			return;
+
+		for (auto& item : s_Context->m_Graphs)
+		{
+			if (item->m_ID == graph->m_ID)
+				return;
+		}
+
+		s_Context->m_ActiveGraph = graph;
+		s_Context->m_Graphs.emplace_back(graph);
+	}
+
+	void NodePanel::RemoveGraph(Graph* graph)
+	{
+		if (graph == nullptr)
+			return;
+
+		s_Context->m_Graphs.erase(std::remove_if(s_Context->m_Graphs.begin(), s_Context->m_Graphs.end(),
+			[&graph](std::shared_ptr<Graph> cmp) { return cmp->m_ID == graph->m_ID; }));
 	}
 
 	void NodePanel::ShowWindow(bool show)
@@ -590,9 +659,8 @@ namespace Stimpi
 		ImVec2 canvasSize = s_Context->m_Canvas.m_Size;
 		ImVec2 scrolling = s_Context->m_Scrolling;
 
-		// Draw border and background color
+		// Background color
 		s_Context->m_DrawList->AddRectFilled(canvasPosMin, canvasPosMax, IM_COL32(50, 50, 50, 255));
-		s_Context->m_DrawList->AddRect(canvasPosMin, canvasPosMax, IM_COL32(255, 255, 255, 255));
 
 		// Draw grid + all lines in the canvas
 		s_Context->m_DrawList->PushClipRect(canvasPosMin, canvasPosMax, true);

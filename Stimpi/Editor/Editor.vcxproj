@@ -143,6 +143,7 @@
     <ClInclude Include="src\Gui\Components\SearchPopup.h" />
     <ClInclude Include="src\Gui\Components\SearchPopupWindow.h" />
     <ClInclude Include="src\Gui\Components\Thumbnail.h" />
+    <ClInclude Include="src\Gui\Components\Toolbar.h" />
     <ClInclude Include="src\Gui\Components\UIPayload.h" />
     <ClInclude Include="src\Gui\Config\SceneConfig.h" />
     <ClInclude Include="src\Gui\ContentBrowserWindow.h" />
@@ -150,6 +151,7 @@
     <ClInclude Include="src\Gui\EditorUtils.h" />
     <ClInclude Include="src\Gui\Gizmo2D.h" />
     <ClInclude Include="src\Gui\MainManuBar.h" />
+    <ClInclude Include="src\Gui\Nodes\GraphComponents.h" />
     <ClInclude Include="src\Gui\Nodes\NodePanel.h" />
     <ClInclude Include="src\Gui\PlayPanel.h" />
     <ClInclude Include="src\Gui\SceneHierarchyWindow.h" />
@@ -165,6 +167,7 @@
     <ClCompile Include="src\Gui\Components\SearchPopup.cpp" />
     <ClCompile Include="src\Gui\Components\SearchPopupWindow.cpp" />
     <ClCompile Include="src\Gui\Components\Thumbnail.cpp" />
+    <ClCompile Include="src\Gui\Components\Toolbar.cpp" />
     <ClCompile Include="src\Gui\Components\UIPayload.cpp" />
     <ClCompile Include="src\Gui\Config\SceneConfig.cpp" />
     <ClCompile Include="src\Gui\ContentBrowserWindow.cpp" />
