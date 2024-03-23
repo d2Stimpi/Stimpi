@@ -215,6 +215,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Utils\PlatformUtils.h" />
     <ClInclude Include="src\Stimpi\Utils\SystemUtils.h" />
     <ClInclude Include="src\Stimpi\Utils\ThreadPool.h" />
+    <ClInclude Include="src\Stimpi\Utils\YamlCustomTypes.h" />
     <ClInclude Include="src\stpch.h" />
   </ItemGroup>
   <ItemGroup>

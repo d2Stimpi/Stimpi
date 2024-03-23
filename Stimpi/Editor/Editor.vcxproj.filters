@@ -80,6 +80,7 @@
     </ClInclude>
     <ClInclude Include="src\Gui\Components\Toolbar.h" />
     <ClInclude Include="src\Gui\Nodes\GraphComponents.h" />
+    <ClInclude Include="src\Gui\Nodes\GraphSerializer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
@@ -138,5 +139,6 @@
       <Filter>Gui\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\Gui\Components\Toolbar.cpp" />
+    <ClCompile Include="src\Gui\Nodes\GraphSerializer.cpp" />
   </ItemGroup>
 </Project>

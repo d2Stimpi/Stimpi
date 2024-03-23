@@ -152,6 +152,7 @@
     <ClInclude Include="src\Gui\Gizmo2D.h" />
     <ClInclude Include="src\Gui\MainManuBar.h" />
     <ClInclude Include="src\Gui\Nodes\GraphComponents.h" />
+    <ClInclude Include="src\Gui\Nodes\GraphSerializer.h" />
     <ClInclude Include="src\Gui\Nodes\NodePanel.h" />
     <ClInclude Include="src\Gui\PlayPanel.h" />
     <ClInclude Include="src\Gui\SceneHierarchyWindow.h" />
@@ -175,6 +176,7 @@
     <ClCompile Include="src\Gui\EditorUtils.cpp" />
     <ClCompile Include="src\Gui\Gizmo2D.cpp" />
     <ClCompile Include="src\Gui\MainMenuBar.cpp" />
+    <ClCompile Include="src\Gui\Nodes\GraphSerializer.cpp" />
     <ClCompile Include="src\Gui\Nodes\NodePanel.cpp" />
     <ClCompile Include="src\Gui\PlayPanel.cpp" />
     <ClCompile Include="src\Gui\SceneHierarchyWindow.cpp" />

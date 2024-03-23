@@ -3,9 +3,11 @@
 
 #include "Stimpi/Log.h"
 #include "Stimpi/Core/InputManager.h"
+#include "Stimpi/Core/Project.h"
 
 #include "Gui/Components/SearchPopup.h"
 #include "Gui/Components/Toolbar.h"
+#include "Gui/Nodes/GraphSerializer.h"
 
 #include "ImGui/src/imgui_internal.h"
 
@@ -58,23 +60,8 @@ namespace Stimpi
 		NodeCanvas() = default;
 	};
 
-	struct PinConnection
-	{
-		Pin* m_SourcePin;
-		Pin* m_DestinationPin;
-
-		std::vector<ImVec2> m_BezierLinePoints;
-
-		PinConnection() = default;
-		PinConnection(Pin* src, Pin* dest) : m_SourcePin(src), m_DestinationPin(dest) {}
-	};
-
 	struct NodePanelContext
 	{
-		uint32_t m_NextNodeID = 0;
-		std::vector<std::shared_ptr<Node>> m_Nodes;
-		std::vector<std::shared_ptr<PinConnection>> m_PinConnections;
-
 		// Active open Graphs
 		std::vector<std::shared_ptr<Graph>> m_Graphs;
 		Graph* m_ActiveGraph = nullptr;	// actively edited graph (active tab)
@@ -143,6 +130,7 @@ namespace Stimpi
 	 */
 
 	static void CalculateBezierPoints(PinConnection* connection, Pin* src, Pin* dest, uint32_t segments);
+	static void UpdateConnectionPoints(PinConnection* connection);
 
 	/**
 	 * Helper Utility functions
@@ -158,6 +146,14 @@ namespace Stimpi
 	static float PointDistance(ImVec2 p1, ImVec2 p2)
 	{
 		return sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
+	}
+
+	static void RegenerateGraphDataAfterLoad(Graph* graph)
+	{
+		for (auto connection : graph->m_PinConnections)
+		{
+			UpdateConnectionPoints(connection.get());
+		}
 	}
 
 #pragma endregion Utility
@@ -302,7 +298,7 @@ namespace Stimpi
 			// Global pin to pin connections
 			std::shared_ptr<PinConnection> newConnection = std::make_shared<PinConnection>(src, dest);
 			CalculateBezierPoints(newConnection.get(), src, dest, s_Style.m_ConnectionSegments);
-			s_Context->m_PinConnections.emplace_back(newConnection);
+			s_Context->m_ActiveGraph->m_PinConnections.emplace_back(newConnection);
 		}
 	}
 
@@ -324,12 +320,12 @@ namespace Stimpi
 			p2->m_Connected = false;
 
 		// Remove from vector
-		for (auto it = s_Context->m_PinConnections.begin(); it != s_Context->m_PinConnections.end();)
+		for (auto it = s_Context->m_ActiveGraph->m_PinConnections.begin(); it != s_Context->m_ActiveGraph->m_PinConnections.end();)
 		{
 			auto itConn = (*it).get();
 			if (itConn == connection)
 			{
-				s_Context->m_PinConnections.erase(it);
+				s_Context->m_ActiveGraph->m_PinConnections.erase(it);
 				break;
 			}
 			else
@@ -353,7 +349,7 @@ namespace Stimpi
 		if (src == nullptr || dest == nullptr)
 			return nullptr;
 
-		for (auto& connection : s_Context->m_PinConnections)
+		for (auto& connection : s_Context->m_ActiveGraph->m_PinConnections)
 		{
 			if (connection->m_SourcePin == src && connection->m_DestinationPin == dest)
 				return connection.get();
@@ -461,7 +457,7 @@ namespace Stimpi
 
 	static PinConnection* GetMouseHoveredConnection()
 	{
-		for (auto& connection : s_Context->m_PinConnections)
+		for (auto& connection : s_Context->m_ActiveGraph->m_PinConnections)
 		{
 			if (IsMouseHoveringConnection(connection.get()))
 				return connection.get();
@@ -483,6 +479,8 @@ namespace Stimpi
 		s_Context = new NodePanelContext();
 
 		InitNodePanelStyle();
+
+		AddGraph(new Graph());
 
 		CreateNode(ImVec2(150.0f, 150.0f), "Test Node");
 		CreateNode(ImVec2(350.0f, 350.0f), "Another Node");
@@ -516,16 +514,44 @@ namespace Stimpi
 
 			// Main Toolbar
 			Toolbar::Begin("NodePanelToolbar");
-			if (Toolbar::ToolbarButton("Compile"))
 			{
-				ST_CORE_INFO("Compile button presed");
+
+				if (Toolbar::ToolbarButton("Compile"))
+				{
+					ST_CORE_INFO("Compile button presed");
+				}
+				Toolbar::Separator();
+
+				if (Toolbar::ToolbarButton("Save"))
+				{
+					if (s_Context->m_ActiveGraph)
+					{
+						GraphSerializer serializer(s_Context->m_ActiveGraph);
+						FilePath path = Project::GetProjectDir() / "Graph.txt";
+						serializer.Serialize(path);
+					}
+
+				}
+				Toolbar::Separator();
+
+				if (Toolbar::ToolbarButton("Load"))
+				{
+					GraphSerializer serializer(s_Context->m_ActiveGraph);
+					FilePath path = Project::GetProjectDir() / "Graph.txt";
+					serializer.Deseriealize(path);
+
+					RegenerateGraphDataAfterLoad(s_Context->m_ActiveGraph);
+				}
+				Toolbar::Separator();
+
+				if (Toolbar::ToolbarButton("Add Graph"))
+				{
+					static int graphNameCnt = 0;
+					std::string name = fmt::format("Graph {}", graphNameCnt++);
+					AddGraph(new Graph(name));
+				}
+				Toolbar::Separator();
 			}
-			Toolbar::Separator();
-			if (Toolbar::ToolbarButton("Save"))
-			{
-				ST_CORE_INFO("Save button presed");
-			}
-			Toolbar::Separator();
 			Toolbar::End();
 
 			ImDrawList* draw_list = ImGui::GetWindowDrawList();
@@ -536,80 +562,81 @@ namespace Stimpi
 
 			if (ImGui::BeginTabBar("NodePanelTabBar", tabBarFlags))
 			{
-				// TODO: Each graph rendering goes here
-				static bool tabshow1 = true;
-				if (ImGui::BeginTabItem("Graph", &tabshow1, ImGuiTabItemFlags_None))
+				Graph* toRemove = nullptr;	// Deffer removing of "closed" graph from the list after iterating trough it
+				// Each graph rendering goes here
+				for (auto& graph : s_Context->m_Graphs)
 				{
-					// Use canvas position and size to control where and how big Node Panel (graph) space is rendered
-
-					s_Context->m_Canvas.m_PosMin = ImGui::GetCursorScreenPos();	   // ImDrawList API uses screen coordinates!
-					s_Context->m_Canvas.m_Size = ImGui::GetContentRegionAvail();   // Resize canvas to what's available
-					if (s_Context->m_Canvas.m_Size.x < 50.0f) s_Context->m_Canvas.m_Size.x = 50.0f;
-					if (s_Context->m_Canvas.m_Size.y < 50.0f) s_Context->m_Canvas.m_Size.y = 50.0f;
-					s_Context->m_Canvas.m_PosMax = ImVec2(s_Context->m_Canvas.m_PosMin.x + s_Context->m_Canvas.m_Size.x, s_Context->m_Canvas.m_PosMin.y + s_Context->m_Canvas.m_Size.y);
-
-					ImGuiIO& io = ImGui::GetIO();
-					ImGui::InvisibleButton("canvas", s_Context->m_Canvas.m_Size, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
-					s_Context->m_IsHovered = ImGui::IsItemHovered(); // Hovered
-					s_Context->m_IsActive = ImGui::IsItemActive();   // Held
-
-					s_Context->m_Origin = { s_Context->m_Canvas.m_PosMin.x + s_Context->m_Scrolling.x, s_Context->m_Canvas.m_PosMin.y + s_Context->m_Scrolling.y };
-
-					if (dbgTooltip)
+					if (ImGui::BeginTabItem(graph->m_Name.c_str(), &graph->m_Show, ImGuiTabItemFlags_None))
 					{
-						if (ImGui::BeginItemTooltip())
+						//Set active graph to selected tab item
+						s_Context->m_ActiveGraph = graph.get();
+
+						s_Context->m_Canvas.m_PosMin = ImGui::GetCursorScreenPos();	   // ImDrawList API uses screen coordinates!
+						s_Context->m_Canvas.m_Size = ImGui::GetContentRegionAvail();   // Resize canvas to what's available
+						if (s_Context->m_Canvas.m_Size.x < 50.0f) s_Context->m_Canvas.m_Size.x = 50.0f;
+						if (s_Context->m_Canvas.m_Size.y < 50.0f) s_Context->m_Canvas.m_Size.y = 50.0f;
+						s_Context->m_Canvas.m_PosMax = ImVec2(s_Context->m_Canvas.m_PosMin.x + s_Context->m_Canvas.m_Size.x, s_Context->m_Canvas.m_PosMin.y + s_Context->m_Canvas.m_Size.y);
+
+						ImGuiIO& io = ImGui::GetIO();
+						ImGui::InvisibleButton("canvas", s_Context->m_Canvas.m_Size, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
+						s_Context->m_IsHovered = ImGui::IsItemHovered(); // Hovered
+						s_Context->m_IsActive = ImGui::IsItemActive();   // Held
+
+						s_Context->m_Origin = { s_Context->m_Canvas.m_PosMin.x + s_Context->m_Scrolling.x, s_Context->m_Canvas.m_PosMin.y + s_Context->m_Scrolling.y };
+
+						if (dbgTooltip)
 						{
-							ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-							ImGui::Text("Pos: %f, %f", s_Context->m_Canvas.m_PosMin.x, s_Context->m_Canvas.m_PosMin.y);
-							ImGui::Text("Mouse: %f, %f", io.MousePos.x, io.MousePos.y);
-							ImVec2 viewPos = { io.MousePos.x - s_Context->m_Canvas.m_PosMin.x, io.MousePos.y - s_Context->m_Canvas.m_PosMin.y };
-							ImGui::Text("=>: %f, %f", viewPos.x, viewPos.y);
-							ImGui::Text("Origin: %f, %f", s_Context->m_Origin.x, s_Context->m_Origin.y);
-							ImGui::Text("=>: %f, %f", io.MousePos.x - s_Context->m_Origin.x, io.MousePos.y - s_Context->m_Origin.y);
-							ImGui::PopTextWrapPos();
-							ImGui::EndTooltip();
+							if (ImGui::BeginItemTooltip())
+							{
+								ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+								ImGui::Text("Pos: %f, %f", s_Context->m_Canvas.m_PosMin.x, s_Context->m_Canvas.m_PosMin.y);
+								ImGui::Text("Mouse: %f, %f", io.MousePos.x, io.MousePos.y);
+								ImVec2 viewPos = { io.MousePos.x - s_Context->m_Canvas.m_PosMin.x, io.MousePos.y - s_Context->m_Canvas.m_PosMin.y };
+								ImGui::Text("=>: %f, %f", viewPos.x, viewPos.y);
+								ImGui::Text("Origin: %f, %f", s_Context->m_Origin.x, s_Context->m_Origin.y);
+								ImGui::Text("=>: %f, %f", io.MousePos.x - s_Context->m_Origin.x, io.MousePos.y - s_Context->m_Origin.y);
+								ImGui::PopTextWrapPos();
+								ImGui::EndTooltip();
+							}
 						}
+
+						// Process mouse control before any drawing calls
+						UpdateMouseControls();
+						HandleKeyPresses();
+
+						DrawCanvasGrid();
+
+						// Draw all nodes
+						for (auto node : s_Context->m_ActiveGraph->m_Nodes)
+						{
+							DrawNode(node.get());
+						}
+
+						// Temp
+						if (s_Context->m_SelectedConnection)
+						{
+							DrawPinToPinConnection(s_Context->m_SelectedConnection->m_SourcePin, s_Context->m_SelectedConnection->m_DestinationPin, NODE_HOVER_COLOR);
+						}
+
+						// Draw Debug stuff in the end
+						for (auto connection : s_Context->m_ActiveGraph->m_PinConnections)
+						{
+							DbgDrawConnectionLinePoints(connection.get());
+						}
+
+						// Rect pushed in drawing of the Grid (start of the draw commands)
+						s_Context->m_DrawList->PopClipRect();
+
+						// Draw border
+						s_Context->m_DrawList->AddRect(s_Context->m_Canvas.m_PosMin, s_Context->m_Canvas.m_PosMax, IM_COL32(255, 255, 255, 255));
+
+						ImGui::EndTabItem();
 					}
-
-					// Process mouse control before any drawing calls
-					UpdateMouseControls();
-					HandleKeyPresses();
-
-					DrawCanvasGrid();
-
-					// Draw all nodes
-					for (auto node : s_Context->m_Nodes)
-					{
-						DrawNode(node.get());
-					}
-
-					// Temp
-					if (s_Context->m_SelectedConnection)
-					{
-						DrawPinToPinConnection(s_Context->m_SelectedConnection->m_SourcePin, s_Context->m_SelectedConnection->m_DestinationPin, NODE_HOVER_COLOR);
-					}
-
-					// Draw Debug stuff in the end
-					for (auto connection : s_Context->m_PinConnections)
-					{
-						DbgDrawConnectionLinePoints(connection.get());
-					}
-
-					// Rect pushed in drawing of the Grid (start of the draw commands)
-					s_Context->m_DrawList->PopClipRect();
-
-					// Draw border
-					s_Context->m_DrawList->AddRect(s_Context->m_Canvas.m_PosMin, s_Context->m_Canvas.m_PosMax, IM_COL32(255, 255, 255, 255));
-
-					ImGui::EndTabItem();
+					toRemove = !graph->m_Show ? graph.get() : nullptr;
 				}
 
-				static bool tabshow2 = true;
-				if (ImGui::BeginTabItem("Graph2", &tabshow2, ImGuiTabItemFlags_None))
-				{
-					ImGui::Text("This is the Broccoli tab!\nblah blah blah blah blah");
-					ImGui::EndTabItem();
-				}
+				// Remove the closed TabItem content - Graph
+				RemoveGraph(toRemove);
 
 				ImGui::EndTabBar();
 			}
@@ -625,10 +652,11 @@ namespace Stimpi
 
 		for (auto& item : s_Context->m_Graphs)
 		{
-			if (item->m_ID == graph->m_ID)
+			if (item->m_Name == graph->m_Name)
 				return;
 		}
 
+		graph->m_Show = true;
 		s_Context->m_ActiveGraph = graph;
 		s_Context->m_Graphs.emplace_back(graph);
 	}
@@ -637,10 +665,23 @@ namespace Stimpi
 	{
 		if (graph == nullptr)
 			return;
+		
+
+
+		ST_CORE_INFO("Removing graph \"{}\"", graph->m_Name);
 
 		s_Context->m_Graphs.erase(std::remove_if(s_Context->m_Graphs.begin(), s_Context->m_Graphs.end(),
-			[&graph](std::shared_ptr<Graph> cmp) { return cmp->m_ID == graph->m_ID; }));
-	}
+			[&graph](std::shared_ptr<Graph> cmp) { return cmp->m_Name == graph->m_Name; }));
+
+		ST_CORE_INFO("New total graph count {}", s_Context->m_Graphs.size());
+
+		// When removing the Tab Item - Graph, new selection is set to the last added Graph
+		// - This will most likely get overridden by the selected Tab Item
+		if (!s_Context->m_Graphs.empty())
+			s_Context->m_ActiveGraph = s_Context->m_Graphs[s_Context->m_Graphs.size() - 1].get();
+		else
+			s_Context->m_ActiveGraph = nullptr;
+	}	
 
 	void NodePanel::ShowWindow(bool show)
 	{
@@ -682,32 +723,32 @@ namespace Stimpi
 		std::shared_ptr<Node> newNode = std::make_shared<Node>();
 		newNode->m_Pos = pos;
 		newNode->m_Size = { 250.0f, 100.0f };
-		newNode->m_ID = ++s_Context->m_NextNodeID;
+		newNode->m_ID = ++s_Context->m_ActiveGraph->m_NextNodeID;
 		newNode->m_Title = title;
 
 		// Add some pins for testing
 		std::shared_ptr<Pin> pin = std::make_shared<Pin>();
-		pin->m_ID = 1;
+		pin->m_ID = ++s_Context->m_ActiveGraph->m_NextPinID;
 		pin->m_ParentNode = newNode.get();
 		pin->m_Text = "Something";
 		pin->m_Type = Pin::Type::INPUT;
 		newNode->m_InPins.emplace_back(pin);
 
 		std::shared_ptr<Pin> pin2 = std::make_shared<Pin>();
-		pin2->m_ID = 2;
+		pin2->m_ID = ++s_Context->m_ActiveGraph->m_NextPinID;
 		pin2->m_ParentNode = newNode.get();
 		pin2->m_Text = "Else";
 		pin->m_Type = Pin::Type::INPUT;
 		newNode->m_InPins.emplace_back(pin2);
 
 		std::shared_ptr<Pin> pin3 = std::make_shared<Pin>();
-		pin3->m_ID = 3;
+		pin3->m_ID = ++s_Context->m_ActiveGraph->m_NextPinID;
 		pin3->m_ParentNode = newNode.get();
 		pin3->m_Text = "Output";
 		pin3->m_Type = Pin::Type::OUTPUT;
 		newNode->m_OutPins.emplace_back(pin3);
 
-		s_Context->m_Nodes.emplace_back(newNode);
+		s_Context->m_ActiveGraph->m_Nodes.emplace_back(newNode);
 	}
 
 	void NodePanel::RemoveNode(Node* node)
@@ -733,12 +774,12 @@ namespace Stimpi
 		}
 
 		// Remove Node
-		for (auto it = s_Context->m_Nodes.begin(); it != s_Context->m_Nodes.end();)
+		for (auto it = s_Context->m_ActiveGraph->m_Nodes.begin(); it != s_Context->m_ActiveGraph->m_Nodes.end();)
 		{
 			Node* remNode = (*it).get();
 			if (remNode->m_ID == node->m_ID)
 			{
-				s_Context->m_Nodes.erase(it);
+				s_Context->m_ActiveGraph->m_Nodes.erase(it);
 				break;
 			}
 			else
@@ -804,7 +845,7 @@ namespace Stimpi
 
 	Stimpi::Node* NodePanel::GetNodeByID(uint32_t id)
 	{
-		for (auto& node : s_Context->m_Nodes)
+		for (auto& node : s_Context->m_ActiveGraph->m_Nodes)
 		{
 			if (node->m_ID == id)
 				return node.get();
@@ -1027,7 +1068,7 @@ namespace Stimpi
 
 	uint32_t NodePanel::GetMouseHoverNode()
 	{
-		for (auto node : s_Context->m_Nodes)
+		for (auto node : s_Context->m_ActiveGraph->m_Nodes)
 		{
 			if (IsMouseHoverNode(node.get()))
 			{

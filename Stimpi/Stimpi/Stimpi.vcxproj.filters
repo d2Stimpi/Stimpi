@@ -212,6 +212,7 @@
       <Filter>Stimpi\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\stpch.h" />
+    <ClInclude Include="src\Stimpi\Utils\YamlCustomTypes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Core\Application.cpp">
