@@ -105,4 +105,18 @@ namespace Stimpi
 		}
 	}
 
+	bool SceneUtils::IsPointInCircle(glm::vec2 point, glm::vec2 center, float radius)
+	{
+		float distancePointCenter = glm::distance(point, center);
+
+		if (distancePointCenter <= radius)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 }

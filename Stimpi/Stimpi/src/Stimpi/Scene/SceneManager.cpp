@@ -32,6 +32,7 @@ namespace Stimpi
 	void SceneManager::LoadScene(const std::string& filePath)
 	{
 		m_ActiveScene.reset(new Scene());
+		m_ActiveScene->SetName(FilePath(filePath).GetFileNameStem());
 		SceneSerializer serializer(m_ActiveScene.get());
 		serializer.Deseriealize(filePath);
 		NotifyOnSceneChange();

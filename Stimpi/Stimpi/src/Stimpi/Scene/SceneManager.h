@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Stimpi/Core/Core.h"
+#include "Stimpi/Utils/FilePath.h"
 
 #include "Stimpi/Scene/Scene.h"
 

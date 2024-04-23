@@ -60,8 +60,6 @@ namespace Stimpi
 		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, Shader* shader, glm::vec2 minUV = { 0.0f, 0.0f }, glm::vec2 maxUV = { 1.0f, 1.0f });
 		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color, Shader* shader, glm::vec2 minUV = { 0.0f, 0.0f }, glm::vec2 maxUV = { 1.0f, 1.0f });
 
-		// TODO: maybe add stuff like DrawQuad
-
 		// Circle shape rendering
 		void DrawCircle(glm::vec3 pos, glm::vec2 scale, glm::vec3 color, float thickness, float fade);
 

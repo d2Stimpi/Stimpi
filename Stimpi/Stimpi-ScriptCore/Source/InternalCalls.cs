@@ -84,5 +84,9 @@ namespace Stimpi
         public extern static bool Physics_ApplyLinearImpulse(uint entityID, ref Vector2 impulse, ref Vector2 point, bool wake);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool Physics_ApplyLinearImpulseCenter(uint entityID, ref Vector2 impulse, bool wake);
+
+        /* Collision */
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool Collision_GetContacts(out ContactPoint contact);
     }
 }

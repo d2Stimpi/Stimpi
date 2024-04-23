@@ -110,6 +110,8 @@ namespace Stimpi
 		operator glm::vec4() const { return glm::vec4(m_Position.x, m_Position.y, m_Size.x, m_Size.y); }
 		glm::vec2 Center() { return glm::vec2(m_Position.x, m_Position.y); }
 
+		float MaxRadius() { return m_Size.x > m_Size.y ? m_Size.x : m_Size.y; }
+
 		void Serialize(YAML::Emitter& out)
 		{
 			out << YAML::Key << "CircleComponent";
@@ -247,9 +249,8 @@ namespace Stimpi
 			// Load new asset
 			m_TextureHandle = AssetManager::GetAsset<Texture>(filePath);
 
-			auto newTexture = ResourceManager::Instance()->LoadTexture(filePath);
-			if (newTexture != nullptr)
-			{
+ 			if (m_TextureHandle.IsValid())
+ 			{
 				m_FilePath = filePath;
 				m_Enable = true;
 			}

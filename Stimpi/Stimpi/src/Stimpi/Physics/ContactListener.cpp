@@ -14,7 +14,6 @@
 
 namespace Stimpi
 {
-
 	void ContactListener::SetContext(Scene* scene)
 	{
 		m_Scene = scene;
@@ -28,6 +27,10 @@ namespace Stimpi
 		Collision collisionA = Collision();
 		collisionA.m_Owner = userDataA.pointer;
 		collisionA.m_ColliderEntityID = userDataB.pointer;
+		
+		// Contact point
+		b2Vec2 point = contact->GetManifold()->points[0].localPoint;
+		collisionA.m_Point.m_Position = { point.x, point.y };
 
 		auto eventA = std::make_shared<PhysicsEvent>();
 		eventA.reset(PhysicsEvent::CreatePhysicsEvent(PhysicsEventType::COLLISION_BEGIN, collisionA));
@@ -42,6 +45,7 @@ namespace Stimpi
 		EventQueue<PhysicsEvent>::PushEvent(eventB);
 
 		ST_CORE_INFO("ContactListener: contact Begin between {}, {}", userDataA.pointer, userDataB.pointer);
+		ST_CORE_INFO("ContactListener: contact point {}", collisionA.m_Point.m_Position);
 	}
 
 	void ContactListener::EndContact(b2Contact* contact)

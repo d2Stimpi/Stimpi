@@ -381,6 +381,14 @@ namespace Stimpi
 				}
 			});
 
+		m_Registry.view<CircleComponent>().each([this, &picked, x, y](auto entity, auto& circle)
+			{
+				if (SceneUtils::IsPointInCircle({ x, y }, circle.Center(), circle.MaxRadius() / 2.0f))
+				{
+					picked = Entity(entity, this);
+				}
+			});
+
 		return picked;
 	}
 

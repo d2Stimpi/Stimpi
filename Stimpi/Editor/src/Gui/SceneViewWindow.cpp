@@ -55,8 +55,10 @@ namespace Stimpi
 		auto scene = SceneManager::Instance()->GetActiveScene();
 		auto camera = scene->GetRenderCamera();
 
+		ST_CORE_ASSERT(!scene);
+
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin("OpenGL Main Scene View", &m_Show, m_Flags);
+		ImGui::Begin("Scene View", &m_Show, m_Flags);
 		ImGui::PopStyleVar();
 		ImGui::BeginChild("##DropTarget-SceneView");	// Used to be able to catch drag-drop item on whole window
 
@@ -129,7 +131,7 @@ namespace Stimpi
 				}
 			}
 
-			if (selectedEntity.HasComponent<QuadComponent>())
+			if (selectedEntity.HasComponent<QuadComponent>() || selectedEntity.HasComponent<CircleComponent>())
 			{
 				Gizmo2D::SetDrawlist(ImGui::GetWindowDrawList());
 				Gizmo2D::Manipulate(camera, selectedEntity, action);

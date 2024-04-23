@@ -68,30 +68,66 @@ namespace Stimpi
 				if (axis == ManipulateAxis::X_AXIS)
 				{
 					float translate_x = io.MousePos.x - gContext.m_ClickHoldPos.x;
-					auto& quad = gContext.m_Entity.GetComponent<QuadComponent>();
-					if (gContext.m_Action == GizmoAction::TRANSLATE)
+
+					// Quad
+					if (gContext.m_Entity.HasComponent<QuadComponent>())
 					{
-						quad.m_Position.x += translate_x * gContext.m_CameraZoom * gContext.m_TranslateScale;
+						auto& quad = gContext.m_Entity.GetComponent<QuadComponent>();
+						if (gContext.m_Action == GizmoAction::TRANSLATE)
+						{
+							quad.m_Position.x += translate_x * gContext.m_CameraZoom * gContext.m_TranslateScale;
+						}
+						if (gContext.m_Action == GizmoAction::SCALE)
+						{
+							quad.m_Size.x += translate_x * gContext.m_CameraZoom * gContext.m_ScalingScale;
+							quad.m_Position.x -= translate_x * gContext.m_CameraZoom / 2 * gContext.m_ScalingScale;
+						}
 					}
-					if (gContext.m_Action == GizmoAction::SCALE)
+					// Circle
+					else if (gContext.m_Entity.HasComponent<CircleComponent>())
 					{
-						quad.m_Size.x += translate_x * gContext.m_CameraZoom * gContext.m_ScalingScale;
-						quad.m_Position.x -= translate_x * gContext.m_CameraZoom / 2 * gContext.m_ScalingScale;
+						auto& circle = gContext.m_Entity.GetComponent<CircleComponent>();
+						if (gContext.m_Action == GizmoAction::TRANSLATE)
+						{
+							circle.m_Position.x += translate_x * gContext.m_CameraZoom * gContext.m_TranslateScale;
+						}
+						if (gContext.m_Action == GizmoAction::SCALE)
+						{
+							circle.m_Size.x += translate_x * gContext.m_CameraZoom * gContext.m_ScalingScale;
+						}
 					}
 				}
 				
 				if (axis == ManipulateAxis::Y_AXIS)
 				{
 					float translate_y = io.MousePos.y - gContext.m_ClickHoldPos.y;
-					auto& quad = gContext.m_Entity.GetComponent<QuadComponent>();
-					if (gContext.m_Action == GizmoAction::TRANSLATE)
+
+					// Quad
+					if (gContext.m_Entity.HasComponent<QuadComponent>())
 					{
-						quad.m_Position.y -= translate_y * gContext.m_CameraZoom * gContext.m_TranslateScale;
+						auto& quad = gContext.m_Entity.GetComponent<QuadComponent>();
+						if (gContext.m_Action == GizmoAction::TRANSLATE)
+						{
+							quad.m_Position.y -= translate_y * gContext.m_CameraZoom * gContext.m_TranslateScale;
+						}
+						if (gContext.m_Action == GizmoAction::SCALE)
+						{
+							quad.m_Size.y -= translate_y * gContext.m_CameraZoom * gContext.m_ScalingScale;
+							quad.m_Position.y += translate_y * gContext.m_CameraZoom / 2 * gContext.m_ScalingScale;
+						}
 					}
-					if (gContext.m_Action == GizmoAction::SCALE)
+					// Circle
+					else if (gContext.m_Entity.HasComponent<CircleComponent>())
 					{
-						quad.m_Size.y -= translate_y * gContext.m_CameraZoom * gContext.m_ScalingScale;
-						quad.m_Position.y += translate_y * gContext.m_CameraZoom / 2 * gContext.m_ScalingScale;
+						auto& circle = gContext.m_Entity.GetComponent<CircleComponent>();
+						if (gContext.m_Action == GizmoAction::TRANSLATE)
+						{
+							circle.m_Position.y -= translate_y * gContext.m_CameraZoom * gContext.m_TranslateScale;
+						}
+						if (gContext.m_Action == GizmoAction::SCALE)
+						{
+							circle.m_Size.y -= translate_y * gContext.m_CameraZoom * gContext.m_ScalingScale;
+						}
 					}
 				}
 
@@ -99,18 +135,38 @@ namespace Stimpi
 				{
 					float translate_x = io.MousePos.x - gContext.m_ClickHoldPos.x;
 					float translate_y = io.MousePos.y - gContext.m_ClickHoldPos.y;
-					auto& quad = gContext.m_Entity.GetComponent<QuadComponent>();
-					if (gContext.m_Action == GizmoAction::TRANSLATE)
+
+					// Quad
+					if (gContext.m_Entity.HasComponent<QuadComponent>())
 					{
-						quad.m_Position.x += translate_x * gContext.m_CameraZoom * gContext.m_TranslateScale;
-						quad.m_Position.y -= translate_y * gContext.m_CameraZoom * gContext.m_TranslateScale;
+						auto& quad = gContext.m_Entity.GetComponent<QuadComponent>();
+						if (gContext.m_Action == GizmoAction::TRANSLATE)
+						{
+							quad.m_Position.x += translate_x * gContext.m_CameraZoom * gContext.m_TranslateScale;
+							quad.m_Position.y -= translate_y * gContext.m_CameraZoom * gContext.m_TranslateScale;
+						}
+						if (gContext.m_Action == GizmoAction::SCALE)
+						{
+							quad.m_Size.x += translate_x * gContext.m_CameraZoom * gContext.m_ScalingScale;
+							quad.m_Size.y -= translate_y * gContext.m_CameraZoom * gContext.m_ScalingScale;
+							quad.m_Position.x -= translate_x * gContext.m_CameraZoom / 2 * gContext.m_ScalingScale;
+							quad.m_Position.y += translate_y * gContext.m_CameraZoom / 2 * gContext.m_ScalingScale;
+						}
 					}
-					if (gContext.m_Action == GizmoAction::SCALE)
-					{ 
-						quad.m_Size.x += translate_x * gContext.m_CameraZoom * gContext.m_ScalingScale;
-						quad.m_Size.y -= translate_y * gContext.m_CameraZoom * gContext.m_ScalingScale;
-						quad.m_Position.x -= translate_x * gContext.m_CameraZoom / 2 * gContext.m_ScalingScale;
-						quad.m_Position.y += translate_y * gContext.m_CameraZoom / 2 * gContext.m_ScalingScale;
+					// Circle
+					else if (gContext.m_Entity.HasComponent<CircleComponent>())
+					{
+						auto& circle = gContext.m_Entity.GetComponent<CircleComponent>();
+						if (gContext.m_Action == GizmoAction::TRANSLATE)
+						{
+							circle.m_Position.x += translate_x * gContext.m_CameraZoom * gContext.m_TranslateScale;
+							circle.m_Position.y -= translate_y * gContext.m_CameraZoom * gContext.m_TranslateScale;
+						}
+						if (gContext.m_Action == GizmoAction::SCALE)
+						{
+							circle.m_Size.x += translate_x * gContext.m_CameraZoom * gContext.m_ScalingScale;
+							circle.m_Size.y -= translate_y * gContext.m_CameraZoom * gContext.m_ScalingScale;
+						}
 					}
 				}
 
@@ -309,11 +365,19 @@ namespace Stimpi
 		if (action == GizmoAction::NONE)
 			return;
 
-		auto quad = object.GetComponent<QuadComponent>();
-		glm::vec2 objPos = { quad.Center().x, quad.Center().y };
+		glm::vec2 center = {};
+		if (object.HasComponent<QuadComponent>())
+		{
+			center = object.GetComponent<QuadComponent>().Center();
+		}
+		else if (object.HasComponent<CircleComponent>())
+		{
+			center = object.GetComponent<CircleComponent>().Center();
+		}
+
+		glm::vec2 objPos = center;
 		glm::vec3 camPos = camera->GetPosition();
 		float camZoom = camera->GetZoomFactor();
-
 
 		ImVec2 winPos = ImGui::GetCursorScreenPos();
 		ImVec2 winSize = ImGui::GetContentRegionAvail();

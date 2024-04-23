@@ -81,6 +81,8 @@
     <ClInclude Include="src\Gui\Components\Toolbar.h" />
     <ClInclude Include="src\Gui\Nodes\GraphComponents.h" />
     <ClInclude Include="src\Gui\Nodes\GraphSerializer.h" />
+    <ClInclude Include="src\Gui\Nodes\NodeGraph.h" />
+    <ClInclude Include="src\Gui\Nodes\BaseNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
@@ -140,5 +142,7 @@
     </ClCompile>
     <ClCompile Include="src\Gui\Components\Toolbar.cpp" />
     <ClCompile Include="src\Gui\Nodes\GraphSerializer.cpp" />
+    <ClCompile Include="src\Gui\Nodes\NodeGraph.cpp" />
+    <ClCompile Include="src\Gui\Nodes\BaseNode.cpp" />
   </ItemGroup>
 </Project>

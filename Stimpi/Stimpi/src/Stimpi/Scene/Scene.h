@@ -45,6 +45,9 @@ namespace Stimpi
 
 		RuntimeState GetRuntimeState() { return m_RuntimeState; }
 
+		std::string GetName() { return m_Name; }
+		void SetName(std::string name) { m_Name = name; }
+
 		void OnScenePlay();
 		void OnScenePause();
 		void OnSceneResume();
@@ -72,6 +75,8 @@ namespace Stimpi
 		entt::registry m_Registry;
 		std::vector<Entity> m_Entities;
 		RuntimeState m_RuntimeState;
+
+		std::string m_Name = "Scene";
 
 		Camera* m_SceneCamera = nullptr; // Created outside of scene (Editor)
 		Camera* m_RenderCamera = nullptr; // Scene will use Camera Component in Runtime state
