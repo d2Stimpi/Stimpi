@@ -14,6 +14,53 @@
 
 namespace Stimpi
 {
+	static void PopulateCollisionEventData(b2Contact* contact, Collision& collision)
+	{
+		b2Body* bodyA = contact->GetFixtureA()->GetBody();
+		for (b2ContactEdge* edge = bodyA->GetContactList(); edge; edge = edge->next)
+		{
+			Contact ct;
+			b2WorldManifold worldManifold;
+			edge->contact->GetWorldManifold(&worldManifold);
+
+			uint32_t numPoints = edge->contact->GetManifold()->pointCount;
+			ct.m_PointCount = numPoints;
+			for (uint32_t i = 0; i < numPoints; i++)
+			{
+				ct.m_Points[i] = { worldManifold.points[i].x, worldManifold.points[i].y };
+				ST_CORE_INFO("ContactListener: contact point {}", ct.m_Points[i]);
+			}
+
+			collision.m_Contacts.push_back(ct);
+		}
+	}
+
+	static void EmitCollisionEvents(PhysicsEventType type, b2Contact* contact)
+	{
+		b2BodyUserData userDataA = contact->GetFixtureA()->GetBody()->GetUserData();
+		b2BodyUserData userDataB = contact->GetFixtureB()->GetBody()->GetUserData();
+
+		Collision collisionA = Collision();
+		collisionA.m_Owner = userDataA.pointer;
+		collisionA.m_ColliderEntityID = userDataB.pointer;
+		PopulateCollisionEventData(contact, collisionA);
+
+		auto eventA = std::make_shared<PhysicsEvent>();
+		eventA.reset(PhysicsEvent::CreatePhysicsEvent(type, collisionA));
+		EventQueue<PhysicsEvent>::PushEvent(eventA);
+
+		Collision collisionB = Collision();
+		collisionB.m_Owner = userDataB.pointer;
+		collisionB.m_ColliderEntityID = userDataA.pointer;
+		PopulateCollisionEventData(contact, collisionB);
+
+		auto eventB = std::make_shared<PhysicsEvent>();
+		eventB.reset(PhysicsEvent::CreatePhysicsEvent(type, collisionB));
+		EventQueue<PhysicsEvent>::PushEvent(eventB);
+
+		ST_CORE_INFO("ContactListener: Event {} - A: {}, B: {}", GetStringPhysicsEvent(type), userDataA.pointer, userDataB.pointer);
+	}
+
 	void ContactListener::SetContext(Scene* scene)
 	{
 		m_Scene = scene;
@@ -21,55 +68,22 @@ namespace Stimpi
 
 	void ContactListener::BeginContact(b2Contact* contact)
 	{
-		b2BodyUserData userDataA = contact->GetFixtureA()->GetBody()->GetUserData();
-		b2BodyUserData userDataB = contact->GetFixtureB()->GetBody()->GetUserData();
-		
-		Collision collisionA = Collision();
-		collisionA.m_Owner = userDataA.pointer;
-		collisionA.m_ColliderEntityID = userDataB.pointer;
-		
-		// Contact point
-		b2Vec2 point = contact->GetManifold()->points[0].localPoint;
-		collisionA.m_Point.m_Position = { point.x, point.y };
-
-		auto eventA = std::make_shared<PhysicsEvent>();
-		eventA.reset(PhysicsEvent::CreatePhysicsEvent(PhysicsEventType::COLLISION_BEGIN, collisionA));
-		EventQueue<PhysicsEvent>::PushEvent(eventA);
-
-		Collision collisionB = Collision();
-		collisionB.m_Owner = userDataB.pointer;
-		collisionB.m_ColliderEntityID = userDataA.pointer;
-
-		auto eventB = std::make_shared<PhysicsEvent>();
-		eventB.reset(PhysicsEvent::CreatePhysicsEvent(PhysicsEventType::COLLISION_BEGIN, collisionB));
-		EventQueue<PhysicsEvent>::PushEvent(eventB);
-
-		ST_CORE_INFO("ContactListener: contact Begin between {}, {}", userDataA.pointer, userDataB.pointer);
-		ST_CORE_INFO("ContactListener: contact point {}", collisionA.m_Point.m_Position);
+		EmitCollisionEvents(PhysicsEventType::COLLISION_BEGIN, contact);
 	}
 
 	void ContactListener::EndContact(b2Contact* contact)
 	{
-		b2BodyUserData userDataA = contact->GetFixtureA()->GetBody()->GetUserData();
-		b2BodyUserData userDataB = contact->GetFixtureB()->GetBody()->GetUserData();
+		EmitCollisionEvents(PhysicsEventType::COLLISION_END, contact);
+	}
 
-		Collision collisionA = Collision();
-		collisionA.m_Owner = userDataA.pointer;
-		collisionA.m_ColliderEntityID = userDataB.pointer;
+	void ContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifold)
+	{
+		EmitCollisionEvents(PhysicsEventType::COLLISION_PRESOLVE, contact);
+	}
 
-		auto eventA = std::make_shared<PhysicsEvent>();
-		eventA.reset(PhysicsEvent::CreatePhysicsEvent(PhysicsEventType::COLLISION_END, collisionA));
-		EventQueue<PhysicsEvent>::PushEvent(eventA);
-
-		Collision collisionB = Collision();
-		collisionB.m_Owner = userDataB.pointer;
-		collisionB.m_ColliderEntityID = userDataA.pointer;
-
-		auto eventB = std::make_shared<PhysicsEvent>();
-		eventB.reset(PhysicsEvent::CreatePhysicsEvent(PhysicsEventType::COLLISION_END, collisionB));
-		EventQueue<PhysicsEvent>::PushEvent(eventB);
-
-		ST_CORE_INFO("ContactListener: contact End between {}, {}", userDataA.pointer, userDataB.pointer);
+	void ContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
+	{
+		EmitCollisionEvents(PhysicsEventType::COLLISION_POSTSOLVE, contact);
 	}
 
 }

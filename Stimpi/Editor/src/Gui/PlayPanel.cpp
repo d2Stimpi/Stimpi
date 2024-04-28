@@ -54,15 +54,25 @@ namespace Stimpi
 		}
 		else
 		{
-			if (ImGui::Button("=##PlayButton"))
+			if (ImGui::Button("=##PauseButton"))
 			{
 				ST_CORE_INFO("Pause the scene.");
 				m_ActiveScene->OnScenePause();
 			}
 		}
 
+		// step button visible only in Running state
+		if (m_ActiveScene->GetRuntimeState() == RuntimeState::PAUSED)
+		{
+			ImGui::SameLine();
+			if (ImGui::Button(">>##StepButton"))
+			{
+				m_ActiveScene->OnSceneStep();
+			}
+		}
+
 		ImGui::SameLine();
-		if (ImGui::Button("x##PlayButton"))
+		if (ImGui::Button("x##StopButton"))
 		{
 			if (m_ActiveScene->GetRuntimeState() != RuntimeState::STOPPED)
 			{

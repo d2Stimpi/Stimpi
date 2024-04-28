@@ -15,71 +15,15 @@ namespace Stimpi
 	enum class KeyboardEventType {NONE = 0, KEY_EVENT_DOWN, KEY_EVENT_UP, KEY_EVENT_REPEAT };
 	enum class MouseEventType { NONE = 0, MOUSE_EVENT_BUTTONDOWN, MOUSE_EVENT_BUTTONUP, MOUSE_EVENT_BUTTONHOLD, MOUSE_EVENT_WHEELUP, MOUSE_EVENT_WHEELDOWN, MOUSE_EVENT_MOTION };
 	enum class WindowEventType { NONE = 0, WINDOW_EVENT_QUIT, WINDOW_EVENT_RESIZE};
-	enum class PhysicsEventType { NONE = 0, COLLISION_BEGIN, COLLISION_END };
+	enum class PhysicsEventType { NONE = 0, COLLISION_BEGIN, COLLISION_END, COLLISION_PRESOLVE, COLLISION_POSTSOLVE };
 	enum class SystemShellEventType { NONE = 0, SH_CREATED, SH_UPDATED, SH_DELETED, SH_RENAMED };
 
 	/* Helper dbg stringify functions */
-	static std::string GetStringKeyboardEvent(KeyboardEventType e)
-	{
-		switch (e)
-		{
-			case KeyboardEventType::NONE:				return std::string("NONE");
-			case KeyboardEventType::KEY_EVENT_DOWN:		return std::string("KEY_EVENT_DOWN");
-			case KeyboardEventType::KEY_EVENT_UP:		return std::string("KEY_EVENT_UP");
-			case KeyboardEventType::KEY_EVENT_REPEAT:	return std::string("KEY_EVENT_REPEAT");
-			default: return std::string("NONE");
-		}
-	}
-
-	static std::string GetStringMouseEvent(MouseEventType e)
-	{
-		switch (e)
-		{
-		case MouseEventType::NONE:						return std::string("NONE");
-		case MouseEventType::MOUSE_EVENT_BUTTONDOWN:	return std::string("MOUSE_EVENT_BUTTONDOWN");
-		case MouseEventType::MOUSE_EVENT_BUTTONUP:		return std::string("MOUSE_EVENT_BUTTONUP");
-		case MouseEventType::MOUSE_EVENT_BUTTONHOLD:	return std::string("MOUSE_EVENT_BUTTONHOLD");
-		case MouseEventType::MOUSE_EVENT_WHEELUP:		return std::string("MOUSE_EVENT_WHEELUP");
-		case MouseEventType::MOUSE_EVENT_WHEELDOWN:		return std::string("MOUSE_EVENT_WHEELDOWN");
-		case MouseEventType::MOUSE_EVENT_MOTION:		return std::string("MOUSE_EVENT_MOTION");
-		default: return std::string("NONE");
-		}
-	}
-
-	static std::string GetStringWindowEvent(WindowEventType e)
-	{
-		switch (e)
-		{
-		case WindowEventType::NONE:					return std::string("NONE");
-		case WindowEventType::WINDOW_EVENT_QUIT:	return std::string("WINDOW_EVENT_QUIT");
-		case WindowEventType::WINDOW_EVENT_RESIZE:	return std::string("WINDOW_EVENT_RESIZE");
-		default: return std::string("NONE");
-		}
-	}
-
-	static std::string GetStringPhysicsEvent(PhysicsEventType e)
-	{
-		switch (e)
-		{
-		case PhysicsEventType::NONE:			return std::string("NONE");
-		case PhysicsEventType::COLLISION_BEGIN:	return std::string("COLLISION_BEGIN");
-		case PhysicsEventType::COLLISION_END:	return std::string("COLLISION_END");
-		default: return std::string("NONE");
-		}
-	}
-
-	static std::string GetStringSystemShellEvent(SystemShellEventType e)
-	{
-		switch (e)
-		{
-		case SystemShellEventType::NONE:		return std::string("NONE");
-		case SystemShellEventType::SH_CREATED:	return std::string("SH_CREATED");
-		case SystemShellEventType::SH_UPDATED:	return std::string("SH_MODIFIED");
-		case SystemShellEventType::SH_DELETED:	return std::string("SH_DELETED");
-		case SystemShellEventType::SH_RENAMED:	return std::string("SH_RENAMED");
-		default: return std::string("NONE");
-		}
-	}
+	std::string GetStringKeyboardEvent(KeyboardEventType e);
+	std::string GetStringMouseEvent(MouseEventType e);
+	std::string GetStringWindowEvent(WindowEventType e);
+	std::string GetStringPhysicsEvent(PhysicsEventType e);
+	std::string GetStringSystemShellEvent(SystemShellEventType e);
 
 	class ST_API Event
 	{
@@ -199,7 +143,7 @@ namespace Stimpi
 		static PhysicsEvent* CreatePhysicsEvent(PhysicsEventType type, Collision collision);
 
 		PhysicsEventType GetType() { return m_Type; }
-		Collision GetCollisionData() { return m_Collision; }
+		Collision& GetCollisionData() { return m_Collision; }
 
 		static EventType GetStaticType() { return EventType::PhysicsEvent; }
 	private:

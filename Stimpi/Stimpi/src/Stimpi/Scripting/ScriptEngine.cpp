@@ -662,6 +662,8 @@ namespace Stimpi
 		/* Physics methods */
 		m_OnCollisionBegin = m_ScriptClass->GetMethod("OnCollisionBegin", 1);
 		m_OnCollisionEnd = m_ScriptClass->GetMethod("OnCollisionEnd", 1);
+		m_OnCollisionPreSolve = m_ScriptClass->GetMethod("OnCollisionPreSolve", 1);
+		m_OnCollisionPostSolve = m_ScriptClass->GetMethod("OnCollisionPostSolve", 1);
 
 		/* Populate Fields found in ScriptClass */
 		auto fields = m_ScriptClass->GetAllFields();
@@ -705,6 +707,20 @@ namespace Stimpi
 		void* param = &collision;
 		if (m_OnCollisionEnd)
 			m_ScriptClass->InvokeMethod(m_Instance, m_OnCollisionEnd, &param);
+	}
+
+	void ScriptInstance::InvokeOnCollisionPreSolve(Collision collision)
+	{
+		void* param = &collision;
+		if (m_OnCollisionPreSolve)
+			m_ScriptClass->InvokeMethod(m_Instance, m_OnCollisionPreSolve, &param);
+	}
+
+	void ScriptInstance::InvokeOnCollisionPostSolve(Collision collision)
+	{
+		void* param = &collision;
+		if (m_OnCollisionPostSolve)
+			m_ScriptClass->InvokeMethod(m_Instance, m_OnCollisionPostSolve, &param);
 	}
 
 	std::shared_ptr<Stimpi::ScriptField> ScriptInstance::GetScriptFieldFromMonoField(MonoClassField* field)

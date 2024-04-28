@@ -4,6 +4,7 @@
 #include "Stimpi/Core/Time.h"
 #include "Stimpi/Graphics/Renderer2D.h"
 #include "Stimpi/Physics/Physics.h"
+#include "Stimpi/Scene/Scene.h"
 
 #include "ImGui/src/imgui.h"
 
@@ -60,9 +61,23 @@ namespace Stimpi
 			ImGui::Separator();
 			if (ImGui::CollapsingHeader("Physics##Scene Config", ImGuiTreeNodeFlags_DefaultOpen))
 			{
-				if (ImGui::Checkbox("Show Collider outlines", &m_ShowColliderOutline))
+				if (ImGui::Checkbox("Show Collider Box outlines", &m_ShowColliderOutline))
 				{
 					Physics::ShowColliderOutline(m_ShowColliderOutline);
+				}
+
+				if (ImGui::Checkbox("Show Collision Contact points", &m_EnableCollisionContactPoints))
+				{
+					Physics::ShowCollisionsContactPoints(m_EnableCollisionContactPoints);
+				}
+			}
+
+			ImGui::Separator();
+			if (ImGui::CollapsingHeader("Scene debug##Scene Config", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				if (ImGui::Checkbox("Enable Scene debug mode", &m_EnableSceneDebugMode))
+				{
+					Scene::EnableDebugMode(m_EnableSceneDebugMode);
 				}
 			}
 

@@ -16,6 +16,9 @@ namespace Stimpi
 		float GetSeconds() { return m_Timestep * 0.001f; }
 		float GetMilliseconds() { return m_Timestep ; }
 
+		// Used to implement stepping frame per frame
+		void SetTime(float timestep) { m_Timestep = timestep; };
+
 		operator float() const { return m_Timestep * 0.001f; }
 
 	private:

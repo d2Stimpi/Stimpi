@@ -14,12 +14,13 @@ namespace Stimpi
 
 		static Time* Instance();
 
-		//Return time that past since last frame and the one preceeding it
+		//Return time that past since last frame and the one preceding it
 		float DeltaTime() { return m_DeltaTime; }
 		float TimeScale() { return m_TimeScale; }
 		void SetTimeScale(float scale) { m_TimeScale = scale; }
 		void SetFPS(int fps) { m_Fps = fps; m_FpsTime = 1000.0f / m_Fps; }
 		float GetFPS() { return m_Fps; }
+		float GetFrameTime() { return 1000.0f / m_Fps; }
 
 		//Return actual average fps over 10 frames
 		float GetActiveFPS() { return 1000.0f / m_DeltaTime; }

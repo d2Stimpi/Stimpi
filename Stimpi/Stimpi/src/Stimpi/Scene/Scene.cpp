@@ -15,6 +15,7 @@
 #include "Stimpi/Graphics/Renderer2D.h"
 
 #include "Stimpi/Core/InputManager.h"
+#include "Stimpi/Core/Time.h"
 
 #include "Stimpi/Scripting/ScriptEngine.h"
 
@@ -30,6 +31,19 @@
 
 namespace Stimpi
 {
+	struct SceneConfig
+	{
+		// Debugging
+		bool m_EnableDebug = false;
+	};
+
+	static SceneConfig s_Config;
+
+	void Scene::EnableDebugMode(bool enable)
+	{
+		s_Config.m_EnableDebug = enable;
+	}
+
 	static b2BodyType Rigidbody2DTypeToBox2DType(RigidBody2DComponent::BodyType type)
 	{
 		switch (type)
@@ -42,7 +56,6 @@ namespace Stimpi
 		ST_CORE_ASSERT(false, "Unknown physics body type");
 		return b2_staticBody;
 	}
-
 
 #if USE_TEST_STUFF
 	// Test entity
@@ -122,22 +135,28 @@ namespace Stimpi
 	Scene::~Scene()
 	{
 		ComponentObserver::DeinitOnConstructObservers(m_Registry);
-
-		//ResourceManager::Instance()->UnloadTextures();
 	}
 
 	void Scene::OnUpdate(Timestep ts)
 	{
 		UpdateComponentDependacies(ts);
 
-		// Update Scripts
-		UpdateScripts(ts);
+		if (m_RuntimeState == RuntimeState::RUNNING)
+		{
+			// Update Scripts
+			UpdateScripts(ts);
 
-		// Physics
-		UpdatePhysicsSimulation(ts);
+			// Physics
+			UpdatePhysicsSimulation(ts);
 
-		// Update components that depend on timestep
-		UpdateComponents(ts);
+			// Update components that depend on timestep
+			UpdateComponents(ts);
+		}
+		else
+		{
+			// Ensure rendering of AnimSprite frame 0
+			UpdateComponents(0);
+		}
 
 		/* When not in Running state, use Editor sourced camera */
 		if (m_RuntimeState == RuntimeState::STOPPED)
@@ -250,22 +269,27 @@ namespace Stimpi
 				}
 			}
 
-#if USE_TEST_STUFF
-			Stimpi::Renderer2D::Instance()->SetLineWidth(3.0f);
-			Stimpi::Renderer2D::Instance()->DrawQuad(glm::vec3(50.0f, 40.0f, 0.0f), glm::vec2(40.0f, 30.0f), 0.0f, glm::vec3(1.0f, 0.0f, 1.0f));
-			Stimpi::Renderer2D::Instance()->DrawLine(glm::vec3(50.0f, 40.0f, 0.0f), glm::vec3(80.0f, 40.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f));
-			Stimpi::Renderer2D::Instance()->DrawLine(glm::vec3(80.0f, 40.0f, 0.0f), glm::vec3(80.0f, 60.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f));
-			Stimpi::Renderer2D::Instance()->DrawLine(glm::vec3(80.0f, 60.0f, 0.0f), glm::vec3(50.0f, 60.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f));
-			Stimpi::Renderer2D::Instance()->DrawLine(glm::vec3(50.0f, 60.0f, 0.0f), glm::vec3(50.0f, 40.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f));
-			//Stimpi::Renderer2D::Instace()->Submit(glm::vec4{ 150.0f, 250.0f, 150.0f, 150.0f }, m_SubTexture.get(), m_DefaultShader.get());
-			Stimpi::Renderer2D::Instance()->Submit(glm::vec3{ 225.0f, 220.0f, 0.0f }, glm::vec2{ 50.0f, 40.0f }, 15.0f, m_TestTexture, m_DefaultShader.get());
-			Stimpi::Renderer2D::Instance()->Submit(glm::vec4{ 350.0f, 250.0f, 150.0f, 150.0f }, 45.0f, m_TestTexture, m_DefaultShader.get());
-			Stimpi::Renderer2D::Instance()->DrawCircle(glm::vec3{ 50.0f, 40.0f, 0.0f }, glm::vec2{ 50.0f, 50.0f }, glm::vec3{ 0.35f, 0.85f, 0.2f }, 0.02f, 0.005f);
-			Stimpi::Renderer2D::Instance()->DrawCircle(glm::vec3{ 80.0f, 60.0f, 0.0f }, glm::vec2{ 50.0f, 50.0f }, glm::vec3{ 0.35f, 0.85f, 0.2f }, 0.5f, 0.005f);
-			Stimpi::Renderer2D::Instance()->DrawCircle(glm::vec3{ 120.0f, 80.0f, 0.0f }, glm::vec2{ 50.0f, 50.0f }, glm::vec3{ 0.35f, 0.85f, 0.2f }, 1.0f, 0.5f);
-#endif
 			Stimpi::Renderer2D::Instance()->EndScene();
 		}
+		
+		if (s_Config.m_EnableDebug)
+			OnDebugUpdate(ts);
+	}
+
+	void Scene::OnSceneStep()
+	{
+		Timestep ts = Time::Instance()->GetFrameTime();
+
+		UpdateComponentDependacies(ts);
+
+		// Update Scripts
+		UpdateScripts(ts);
+
+		// Physics
+		UpdatePhysicsSimulation(ts);
+
+		// Update components that depend on timestep
+		UpdateComponents(ts);
 	}
 
 	void Scene::OnEvent(Event* event)
@@ -364,6 +388,8 @@ namespace Stimpi
 
 		// Update Scene state last
 		m_RuntimeState = RuntimeState::STOPPED;
+
+		Physics::ClearActiveCollisions();
 	}
 
 	Stimpi::Entity Scene::MousePickEntity(float x, float y)
@@ -438,18 +464,15 @@ namespace Stimpi
 
 	void Scene::UpdateScripts(Timestep ts)
 	{
-		if (m_RuntimeState == RuntimeState::RUNNING)
-		{
-			m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& ncs)
+		m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& ncs)
+			{
+				if (ncs.m_Instance)
 				{
-					if (ncs.m_Instance)
-					{
-						ncs.m_Instance->OnUpdate(ts);
-					}
-				});
+					ncs.m_Instance->OnUpdate(ts);
+				}
+			});
 
-			ScriptEngine::OnSceneUpdate(ts);
-		}
+		ScriptEngine::OnSceneUpdate(ts);
 	}
 
 	void Scene::DeinitializeScritps()
@@ -544,54 +567,51 @@ namespace Stimpi
 
 	void Scene::UpdatePhysicsSimulation(Timestep ts)
 	{
-		if (m_RuntimeState == RuntimeState::RUNNING)
-		{
-			const int32_t velocityIterations = 6;
-			const int32_t positionIterations = 2;
-			m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
+		const int32_t velocityIterations = 6;
+		const int32_t positionIterations = 2;
+		m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
 
-			m_Registry.view<RigidBody2DComponent>().each([=](auto e, RigidBody2DComponent& rb2d)
+		m_Registry.view<RigidBody2DComponent>().each([=](auto e, RigidBody2DComponent& rb2d)
+			{
+				Entity entity = { e, this };
+				if (entity.HasComponent<QuadComponent>())
 				{
-					Entity entity = { e, this };
-					if (entity.HasComponent<QuadComponent>())
+					auto& quad = entity.GetComponent<QuadComponent>();
+
+					b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+					const auto& position = body->GetPosition();
+					quad.m_Position.x = position.x - quad.HalfWidth();
+					quad.m_Position.y = position.y - quad.HalfHeight();
+					quad.m_Rotation = body->GetAngle();
+
+					// Updated quad position by Collider offset
+					if (entity.HasComponent<BoxCollider2DComponent>())
 					{
-						auto& quad = entity.GetComponent<QuadComponent>();
-
-						b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
-						const auto& position = body->GetPosition();
-						quad.m_Position.x = position.x - quad.HalfWidth();
-						quad.m_Position.y = position.y - quad.HalfHeight();
-						quad.m_Rotation = body->GetAngle();
-
-						// Updated quad position by Collider offset
-						if (entity.HasComponent<BoxCollider2DComponent>())
-						{
-							auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
-							quad.m_Position.x -= bc2d.m_Offset.x;
-							quad.m_Position.y -= bc2d.m_Offset.y;
-						}
+						auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+						quad.m_Position.x -= bc2d.m_Offset.x;
+						quad.m_Position.y -= bc2d.m_Offset.y;
 					}
+				}
 
-					if (entity.HasComponent<CircleComponent>())
+				if (entity.HasComponent<CircleComponent>())
+				{
+					auto& circle = entity.GetComponent<CircleComponent>();
+
+					b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+					const auto& position = body->GetPosition();
+					circle.m_Position.x = position.x;
+					circle.m_Position.y = position.y;
+					circle.m_Rotation = body->GetAngle();
+
+					// Updated quad position by Collider offset
+					if (entity.HasComponent<BoxCollider2DComponent>())
 					{
-						auto& circle = entity.GetComponent<CircleComponent>();
-
-						b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
-						const auto& position = body->GetPosition();
-						circle.m_Position.x = position.x;
-						circle.m_Position.y = position.y;
-						circle.m_Rotation = body->GetAngle();
-
-						// Updated quad position by Collider offset
-						if (entity.HasComponent<BoxCollider2DComponent>())
-						{
-							auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
-							circle.m_Position.x -= bc2d.m_Offset.x;
-							circle.m_Position.y -= bc2d.m_Offset.y;
-						}
+						auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+						circle.m_Position.x -= bc2d.m_Offset.x;
+						circle.m_Position.y -= bc2d.m_Offset.y;
 					}
-				});
-		}
+				}
+			});
 	}
 
 	void Scene::DeinitializePhysics()
@@ -603,7 +623,7 @@ namespace Stimpi
 	bool Scene::ProcessPhysicsEvent(PhysicsEvent* event)
 	{
 		// Check for correct Scene runtime state first
-		if (m_RuntimeState != RuntimeState::RUNNING)
+		if (m_RuntimeState == RuntimeState::STOPPED)
 		{
 			return false;
 		}
@@ -611,6 +631,26 @@ namespace Stimpi
 		Collision collisionData = event->GetCollisionData();
 		Entity owner = { (entt::entity)collisionData.m_Owner, this };
 		
+		if (event->GetType() == PhysicsEventType::COLLISION_BEGIN)
+		{
+			// Register current active Collisions
+			Physics::AddActiveCollision(new Collision(collisionData));
+		}
+		else if (event->GetType() == PhysicsEventType::COLLISION_END)
+		{
+			// Remove from active Collisions list
+			Physics::RemoveActiveCollision(&collisionData);
+		}
+		else if (event->GetType() == PhysicsEventType::COLLISION_PRESOLVE)
+		{
+			
+		}
+		else if (event->GetType() == PhysicsEventType::COLLISION_POSTSOLVE)
+		{
+			// Remove from active Collisions list
+			Physics::UpdateActiveCollision(&collisionData);
+		}
+
 		if (owner.HasComponent<ScriptComponent>())
 		{
 			auto instance = ScriptEngine::GetScriptInstance(owner);
@@ -627,9 +667,46 @@ namespace Stimpi
 				instance->InvokeOnCollisionEnd(event->GetCollisionData());
 				return true;
 			}
+
+			if (event->GetType() == PhysicsEventType::COLLISION_PRESOLVE)
+			{
+				instance->InvokeOnCollisionPreSolve(event->GetCollisionData());
+				return true;
+			}
+
+			if (event->GetType() == PhysicsEventType::COLLISION_POSTSOLVE)
+			{
+				instance->InvokeOnCollisionPostSolve(event->GetCollisionData());
+				return true;
+			}
 		}
 
 		return false;
+	}
+
+	void Scene::OnDebugUpdate(Timestep ts)
+	{
+		auto activeCollisions = Physics::GetActiveCollisions();
+
+		// Debug render - Collision contact points
+		if (m_RenderCamera)
+		{
+			Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
+		
+			if (Physics::ShowCollisionsContactPointsEnabled())
+			{
+				for (auto collision : activeCollisions)
+				{
+					for (Contact& contact : collision->m_Contacts)
+					{
+						for (int i = 0; i < contact.m_PointCount; i++)
+							Renderer2D::Instance()->DrawCircle({ contact.m_Points[i].x, contact.m_Points[i].y, 0.0f }, { 1.0f, 1.0f }, {}, 1.0f, 0.005f);
+					}
+				}
+			}
+
+			Renderer2D::Instance()->EndScene();
+		}
 	}
 
 }

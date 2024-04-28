@@ -18,5 +18,7 @@ namespace Stimpi
 		// Configurable data
 		bool m_ShowCheckerboardBg = true;
 		bool m_ShowColliderOutline = false;
+		bool m_EnableSceneDebugMode = false;
+		bool m_EnableCollisionContactPoints = false;
 	};
 }

@@ -114,6 +114,8 @@ namespace Stimpi
 		/* Physics methods */
 		void InvokeOnCollisionBegin(Collision collision);
 		void InvokeOnCollisionEnd(Collision collision);
+		void InvokeOnCollisionPreSolve(Collision collision);
+		void InvokeOnCollisionPostSolve(Collision collision);
 
 		MonoObject* GetInstance() { return m_Instance; }
 		std::vector<std::shared_ptr<ScriptField>>& GetFields() { return m_ScriptFields; }
@@ -131,6 +133,8 @@ namespace Stimpi
 		/* Physics methods */
 		MonoMethod* m_OnCollisionBegin = nullptr;
 		MonoMethod* m_OnCollisionEnd = nullptr;
+		MonoMethod* m_OnCollisionPreSolve = nullptr;
+		MonoMethod* m_OnCollisionPostSolve = nullptr;
 
 		/* Manage a collection of ScriptField objects that are wrappers around C# Field */
 		std::vector<std::shared_ptr<ScriptField>> m_ScriptFields;

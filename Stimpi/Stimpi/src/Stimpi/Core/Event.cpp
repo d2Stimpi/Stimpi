@@ -10,6 +10,73 @@
 namespace Stimpi
 {
 	/******************************************************************************************/
+	/******************************** Event stringify *******************************************/
+
+	std::string GetStringKeyboardEvent(KeyboardEventType e)
+	{
+		switch (e)
+		{
+		case KeyboardEventType::NONE:				return std::string("NONE");
+		case KeyboardEventType::KEY_EVENT_DOWN:		return std::string("KEY_EVENT_DOWN");
+		case KeyboardEventType::KEY_EVENT_UP:		return std::string("KEY_EVENT_UP");
+		case KeyboardEventType::KEY_EVENT_REPEAT:	return std::string("KEY_EVENT_REPEAT");
+		default: return std::string("NONE");
+		}
+	}
+
+	std::string GetStringMouseEvent(MouseEventType e)
+	{
+		switch (e)
+		{
+		case MouseEventType::NONE:						return std::string("NONE");
+		case MouseEventType::MOUSE_EVENT_BUTTONDOWN:	return std::string("MOUSE_EVENT_BUTTONDOWN");
+		case MouseEventType::MOUSE_EVENT_BUTTONUP:		return std::string("MOUSE_EVENT_BUTTONUP");
+		case MouseEventType::MOUSE_EVENT_BUTTONHOLD:	return std::string("MOUSE_EVENT_BUTTONHOLD");
+		case MouseEventType::MOUSE_EVENT_WHEELUP:		return std::string("MOUSE_EVENT_WHEELUP");
+		case MouseEventType::MOUSE_EVENT_WHEELDOWN:		return std::string("MOUSE_EVENT_WHEELDOWN");
+		case MouseEventType::MOUSE_EVENT_MOTION:		return std::string("MOUSE_EVENT_MOTION");
+		default: return std::string("NONE");
+		}
+	}
+
+	std::string GetStringWindowEvent(WindowEventType e)
+	{
+		switch (e)
+		{
+		case WindowEventType::NONE:					return std::string("NONE");
+		case WindowEventType::WINDOW_EVENT_QUIT:	return std::string("WINDOW_EVENT_QUIT");
+		case WindowEventType::WINDOW_EVENT_RESIZE:	return std::string("WINDOW_EVENT_RESIZE");
+		default: return std::string("NONE");
+		}
+	}
+
+	std::string GetStringPhysicsEvent(PhysicsEventType e)
+	{
+		switch (e)
+		{
+		case PhysicsEventType::NONE:				return std::string("NONE");
+		case PhysicsEventType::COLLISION_BEGIN:		return std::string("COLLISION_BEGIN");
+		case PhysicsEventType::COLLISION_END:		return std::string("COLLISION_END");
+		case PhysicsEventType::COLLISION_PRESOLVE:	return std::string("COLLISION_PRESOLVE");
+		case PhysicsEventType::COLLISION_POSTSOLVE:	return std::string("COLLISION_POSTSOLVE");
+		default: return std::string("NONE");
+		}
+	}
+
+	std::string GetStringSystemShellEvent(SystemShellEventType e)
+	{
+		switch (e)
+		{
+		case SystemShellEventType::NONE:		return std::string("NONE");
+		case SystemShellEventType::SH_CREATED:	return std::string("SH_CREATED");
+		case SystemShellEventType::SH_UPDATED:	return std::string("SH_MODIFIED");
+		case SystemShellEventType::SH_DELETED:	return std::string("SH_DELETED");
+		case SystemShellEventType::SH_RENAMED:	return std::string("SH_RENAMED");
+		default: return std::string("NONE");
+		}
+	}
+
+	/******************************************************************************************/
 	/******************************** KeyboardEvent *******************************************/
 
 	KeyboardEvent* KeyboardEvent::CreateKeyboardEvent(SDL_Event e)

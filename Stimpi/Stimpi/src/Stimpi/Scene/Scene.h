@@ -30,6 +30,7 @@ namespace Stimpi
 		~Scene();
 
 		void OnUpdate(Timestep ts);
+		void OnSceneStep();
 		void OnEvent(Event* event);
 
 		Entity CreateEntity(const std::string& name = "");
@@ -53,6 +54,9 @@ namespace Stimpi
 		void OnSceneResume();
 		void OnSceneStop();
 
+		// Debugging
+		static void EnableDebugMode(bool enable);
+
 		// Mouse Picking
 		Entity MousePickEntity(float x, float y);
 	private:
@@ -70,6 +74,9 @@ namespace Stimpi
 		void UpdatePhysicsSimulation(Timestep ts);
 		void DeinitializePhysics();
 		bool ProcessPhysicsEvent(PhysicsEvent* event);
+
+		// Debug
+		void OnDebugUpdate(Timestep ts);
 
 	private:
 		entt::registry m_Registry;

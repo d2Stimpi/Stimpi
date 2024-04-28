@@ -55,7 +55,7 @@ namespace Stimpi
 				// Add Entity pop-up
 				CreateEntityPopup();
 
-				if (ImGui::TreeNodeEx((void*)&m_ActiveScene, node_flags | ImGuiTreeNodeFlags_DefaultOpen, m_ActiveScene->GetName().c_str()))
+				if (ImGui::TreeNodeEx((void*)&m_ActiveScene, node_flags | ImGuiTreeNodeFlags_DefaultOpen, "Scene"))
 				{
 					// Add Entity Button
 					ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 60);
