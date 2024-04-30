@@ -14,6 +14,12 @@ namespace Stimpi
 	{
 		// Load the default "Sandbox" project
 		Project::Load("../Sandbox.d2sproj");
+
+		// Verify selected/default project
+		if (!Project::IsProjectPathValid())
+		{
+			ST_CORE_ASSERT(true, "Invalid project configuration!");
+		}
 	}
 
 	ResourceManager::~ResourceManager()

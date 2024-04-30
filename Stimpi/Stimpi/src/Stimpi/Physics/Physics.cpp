@@ -88,4 +88,16 @@ namespace Stimpi
 	{
 		return m_ActiveCollisions;
 	}
+
+	Collision* Physics::FindCollision(uint32_t ownerID, uint32_t otherID)
+	{
+		for (auto collision : m_ActiveCollisions)
+		{
+			if ((collision->m_Owner == ownerID) && (collision->m_ColliderEntityID == otherID))
+			{
+				return collision.get();
+			}
+		}
+	}
+
 }

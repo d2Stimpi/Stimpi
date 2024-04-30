@@ -82,7 +82,31 @@ namespace Sandbox
         public override void OnCollisionBegin(Collision collision)
         {
             base.OnCollisionBegin(collision);
-            Vector2 f = new Vector2(0.0f, jumpForce);
+
+            Contact[] contacts = collision.Contacts;
+            if (contacts != null)
+            {
+                Console.WriteLine($"Contacts count: {contacts.Length}");
+                foreach (Contact contact in contacts)
+                {
+                    if (contact != null)
+                    {
+                        Console.WriteLine($"Contact point1 {contact.PointCount}: {contact.Point1.X}, {contact.Point1.Y}");
+                        if (contact.PointCount == 2)
+                            Console.WriteLine($"Contact point2 {contact.PointCount}: {contact.Point2.X}, {contact.Point2.Y}");
+
+                        Console.WriteLine($"Contact impact velocity {contact.ImpactVelocty.X}, {contact.ImpactVelocty.Y}");
+                    }
+                    else
+                        Console.WriteLine("Invalid contact !?");
+                }
+            }
+            else
+            { 
+                Console.WriteLine("Contacts is null");
+            }
+
+                Vector2 f = new Vector2(0.0f, jumpForce);
             Physics.ApplyImpulseCenter(ID, f, false);
         }
 

@@ -56,6 +56,11 @@ namespace Stimpi
 			{
 				entry.m_Listener(event.get());
 			}
+
+			if (path == entry.m_WatchPath.string())
+			{
+				entry.m_Listener(event.get());
+			}
 		}
 	}
 

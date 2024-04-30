@@ -260,6 +260,8 @@ namespace Stimpi
 		auto clientScirptPath = std::filesystem::absolute(ResourceManager::GetScriptsPath()) / s_ClientScriptName;
 		FileWatcher::AddWatcher(coreScirptPath, s_Data->m_OnScriptUpdated);
 		FileWatcher::AddWatcher(clientScirptPath, s_Data->m_OnScriptUpdated);
+
+
 	}
 
 	void ScriptEngine::Shutdown()

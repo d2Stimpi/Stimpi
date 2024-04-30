@@ -589,6 +589,43 @@ namespace Stimpi
 		return hasComponent;
 	}
 
+	static MonoArray* Collision_GetContacts(uint32_t entityID, uint32_t otherID/*, MonoArray* contacts*/)
+	{
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+
+		Collision* collision = Physics::FindCollision(entityID, otherID);
+		if (collision)
+		{
+			MonoType* monoType = mono_reflection_type_from_name("Stimpi.Contact", ScriptEngine::GetCoreAssemblyImage());
+			if (monoType)
+			{
+				uint32_t size = collision->m_Contacts.size();
+				MonoClass* klass = mono_class_from_mono_type(monoType); // C# - ContactPoint struct
+				MonoArray* monoArray = mono_array_new(ScriptEngine::GetAppDomain(), klass, size);
+				MonoReflectionType* monoReflectionType = mono_type_get_object(ScriptEngine::GetAppDomain(), monoType);
+				uint32_t i = 0;
+				for (auto& contact : collision->m_Contacts)
+				{
+					MonoObject* object = mono_object_new(ScriptEngine::GetAppDomain(), mono_class_from_mono_type(monoType));
+					mono_runtime_object_init(object);
+					MonoClassField* point1Field = mono_class_get_field_from_name(klass, "Point1");
+					mono_field_set_value(object, point1Field, &contact.m_Points[0]);
+					MonoClassField* point2Field = mono_class_get_field_from_name(klass, "Point2");
+					mono_field_set_value(object, point2Field, &contact.m_Points[1]);
+					MonoClassField* pointCountField = mono_class_get_field_from_name(klass, "PointCount");
+					mono_field_set_value(object, pointCountField, &contact.m_PointCount);
+					MonoClassField* pointImpactVelocty = mono_class_get_field_from_name(klass, "ImpactVelocty");
+					mono_field_set_value(object, pointImpactVelocty, &contact.m_ImpactVelocity);
+					mono_array_set(monoArray, MonoObject*, i++, object);
+				}
+				return monoArray;
+			}
+		}
+
+		return nullptr;
+	}
+
 #pragma endregion Pysics
 
 	void ScriptGlue::RegisterFucntions()
@@ -640,6 +677,9 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(Physics_ApplyForceCenter);
 		ST_ADD_INTERNAL_CALL(Physics_ApplyLinearImpulse);
 		ST_ADD_INTERNAL_CALL(Physics_ApplyLinearImpulseCenter);
+
+		// Collisions
+		ST_ADD_INTERNAL_CALL(Collision_GetContacts);
 	}
 
 	void ScriptGlue::RegosterComponents()

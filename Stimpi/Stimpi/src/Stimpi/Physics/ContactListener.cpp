@@ -12,11 +12,14 @@
 #include "box2d/b2_fixture.h"
 #include "box2d/b2_settings.h"
 
+#define CONTACTLISTENER_DBG	(false)
+
 namespace Stimpi
 {
 	static void PopulateCollisionEventData(b2Contact* contact, Collision& collision)
 	{
 		b2Body* bodyA = contact->GetFixtureA()->GetBody();
+		b2Body* bodyB = contact->GetFixtureB()->GetBody();
 		for (b2ContactEdge* edge = bodyA->GetContactList(); edge; edge = edge->next)
 		{
 			Contact ct;
@@ -28,17 +31,26 @@ namespace Stimpi
 			for (uint32_t i = 0; i < numPoints; i++)
 			{
 				ct.m_Points[i] = { worldManifold.points[i].x, worldManifold.points[i].y };
-				ST_CORE_INFO("ContactListener: contact point {}", ct.m_Points[i]);
+				if(CONTACTLISTENER_DBG) ST_CORE_INFO("ContactListener: contact point {}", ct.m_Points[i]);
 			}
 
+			b2Vec2 vel1 = bodyA->GetLinearVelocityFromLocalPoint(worldManifold.points[0]);
+			b2Vec2 vel2 = bodyB->GetLinearVelocityFromLocalPoint(worldManifold.points[0]);
+			b2Vec2 impactVelocity = vel1 - vel2;
+			ct.m_ImpactVelocity = { impactVelocity.x, impactVelocity.y };
+
 			collision.m_Contacts.push_back(ct);
+			collision.m_ConctactCount++;
 		}
+
 	}
 
 	static void EmitCollisionEvents(PhysicsEventType type, b2Contact* contact)
 	{
-		b2BodyUserData userDataA = contact->GetFixtureA()->GetBody()->GetUserData();
-		b2BodyUserData userDataB = contact->GetFixtureB()->GetBody()->GetUserData();
+		b2Body* bodyA = contact->GetFixtureA()->GetBody();
+		b2Body* bodyB = contact->GetFixtureB()->GetBody();
+		b2BodyUserData userDataA = bodyA->GetUserData();
+		b2BodyUserData userDataB = bodyB->GetUserData();
 
 		Collision collisionA = Collision();
 		collisionA.m_Owner = userDataA.pointer;
@@ -58,7 +70,7 @@ namespace Stimpi
 		eventB.reset(PhysicsEvent::CreatePhysicsEvent(type, collisionB));
 		EventQueue<PhysicsEvent>::PushEvent(eventB);
 
-		ST_CORE_INFO("ContactListener: Event {} - A: {}, B: {}", GetStringPhysicsEvent(type), userDataA.pointer, userDataB.pointer);
+		if (CONTACTLISTENER_DBG) ST_CORE_INFO("ContactListener: Event {} - A: {}, B: {}", GetStringPhysicsEvent(type), userDataA.pointer, userDataB.pointer);
 	}
 
 	void ContactListener::SetContext(Scene* scene)

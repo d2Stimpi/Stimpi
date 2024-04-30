@@ -13,6 +13,8 @@ namespace Stimpi
 		glm::vec2 m_Points[PHYS_MAXCONTACTPOINTS] = { {0.0f, 0.0f}, {0.0f, 0.0f} };
 		uint32_t m_PointCount = 0;
 
+		glm::vec2 m_ImpactVelocity = { 0.0f, 0.0f };
+
 		Contact() = default;
 		Contact(const Contact& contact) = default;
 	};
@@ -49,5 +51,7 @@ namespace Stimpi
 		static void UpdateActiveCollision(Collision* collision);
 		static void ClearActiveCollisions();
 		static std::vector<std::shared_ptr<Collision>>& GetActiveCollisions();
+
+		static Collision* FindCollision(uint32_t ownerID, uint32_t otherID);
 	};
 }

@@ -88,12 +88,12 @@ namespace Stimpi
 
         public virtual void OnCollisionBegin(Collision collision)
         {
-            Console.WriteLine($"OnCollision Begin - entities: {ID}, {collision.EntityID}");
+            Console.WriteLine($"OnCollision Begin - entities: {ID}, {collision.OtherID}");
         }
 
         public virtual void OnCollisionEnd(Collision collision)
         {
-            Console.WriteLine($"OnCollision End - entities: {ID}, {collision.EntityID}");
+            Console.WriteLine($"OnCollision End - entities: {ID}, {collision.OtherID}");
         }
     }
 }

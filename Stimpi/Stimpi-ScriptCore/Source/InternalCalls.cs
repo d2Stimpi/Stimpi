@@ -87,6 +87,6 @@ namespace Stimpi
 
         /* Collision */
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public extern static bool Collision_GetContacts(out ContactPoint contact);
+        public extern static Contact[] Collision_GetContacts(uint OwnerID, uint TargetID);
     }
 }

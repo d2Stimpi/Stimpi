@@ -31,6 +31,7 @@ namespace Stimpi
 		static void Save(std::filesystem::path projectFilePath);
 		static void Load(std::filesystem::path projectFilePath);
 		
+		static bool IsProjectPathValid() { return std::filesystem::exists(GetAssestsDir()); }
 	private:
 		static ProjectConfig m_ActiveProject;
 	};

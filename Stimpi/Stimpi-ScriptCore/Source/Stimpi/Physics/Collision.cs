@@ -6,25 +6,32 @@ using System.Threading.Tasks;
 
 namespace Stimpi
 {
-    public struct ContactPoint
+    public class Contact
     {
-        public readonly Vector2 point;
+        public Vector2 Point1;
+        public Vector2 Point2;
+        public uint PointCount;
+        public Vector2 ImpactVelocty;
 
-        public ContactPoint(Vector2 p)
+        public Contact()
         {
-            point = p;
+            Point1 = new Vector2(0.0f, 0.0f);
+            Point2 = new Vector2(0.0f, 0.0f);
+            PointCount = 0;
         }
     }
 
     public struct Collision
     {
         public uint OwnerID;    // To mirror C++ struct layout
-        public uint EntityID;   // ID of colliding Entity
+        public uint OtherID;   // ID of colliding Entity
 
-        public ContactPoint GetContacts()
+        public Contact[] Contacts
         {
-            InternalCalls.Collision_GetContacts(out ContactPoint contact);
-            return contact;
+            get
+            {
+                return InternalCalls.Collision_GetContacts(OwnerID, OtherID);
+            }
         }
     }
 }

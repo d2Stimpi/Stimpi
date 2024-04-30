@@ -1,0 +1,154 @@
+Scene:
+  Entity:
+    TagComponent:
+      Tag: Ground
+    QuadComponent:
+      - 0
+      - 0
+      - 120
+      - 10
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 1
+        - 1
+        - 1
+        - 1
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    TagComponent:
+      Tag: Camera_Main
+    QuadComponent:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    CameraComponent:
+      Position:
+        - 0
+        - 0
+        - 0
+      Rotation: 0
+      Zoom: 1
+      ViewQuad:
+        - 0
+        - 120
+        - 0
+        - 72
+      IsMain: true
+  Entity:
+    TagComponent:
+      Tag: Obstacle_1
+    QuadComponent:
+      - 68.1890869
+      - 28.858181
+      - 19.3090858
+      - 3
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 1
+        - 1
+        - 1
+        - 1
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    TagComponent:
+      Tag: Obstacle_2
+    QuadComponent:
+      - 32.1163559
+      - 46.5454407
+      - 19.3090858
+      - 3
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 1
+        - 1
+        - 1
+        - 1
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    TagComponent:
+      Tag: Circle_Object
+    CircleComponent:
+      Position:
+        - 13.9636421
+        - 17.9200001
+      Size:
+        - 6
+        - 6
+      Rotation: 0
+      Color:
+        - 0.941176474
+        - 0.479544014
+        - 0.0692041591
+        - 1
+      Thickness: 1
+      Fade: 0.00499999989
+    ScriptComponent:
+      ScriptName: Stimpi.Ball
+    RigidBody2DComponent:
+      Type: Dynamic
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 1
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5

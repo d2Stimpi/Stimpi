@@ -12,7 +12,7 @@ namespace Sandbox
     {
         private AnimatedSpriteComponent m_AnimComponent;
         private QuadComponent m_Quad;
-        public float speed = 15.0f;
+        public float speed = 16.0f;
 
         public override void OnCreate()
         {

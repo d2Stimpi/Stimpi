@@ -92,6 +92,8 @@ Scene:
         - 1
       Thickness: 1
       Fade: 0.00499999989
+    ScriptComponent:
+      ScriptName: Sandbox.PhysicsActor
     RigidBody2DComponent:
       Type: Dynamic
       FixedRotation: false
