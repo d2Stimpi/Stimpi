@@ -699,8 +699,7 @@ namespace Stimpi
 				{
 					for (Contact& contact : collision->m_Contacts)
 					{
-						for (int i = 0; i < contact.m_PointCount; i++)
-							Renderer2D::Instance()->DrawCircle({ contact.m_Points[i].x, contact.m_Points[i].y, 0.0f }, { 1.0f, 1.0f }, {}, 1.0f, 0.005f);
+						Renderer2D::Instance()->DrawCircle({ contact.m_Point.x, contact.m_Point.y, 0.0f }, { 1.0f, 1.0f }, {}, 1.0f, 0.005f);
 					}
 				}
 			}

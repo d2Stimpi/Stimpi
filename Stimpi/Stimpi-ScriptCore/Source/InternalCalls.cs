@@ -87,6 +87,8 @@ namespace Stimpi
 
         /* Collision */
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool Collision_GetImpactVelocity(uint OwnerID, uint TargetID, out Vector2 velocity);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static Contact[] Collision_GetContacts(uint OwnerID, uint TargetID);
     }
 }

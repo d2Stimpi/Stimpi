@@ -589,7 +589,22 @@ namespace Stimpi
 		return hasComponent;
 	}
 
-	static MonoArray* Collision_GetContacts(uint32_t entityID, uint32_t otherID/*, MonoArray* contacts*/)
+	static bool Collision_GetImpactVelocity(uint32_t entityID, uint32_t otherID, glm::vec2* velocity)
+	{
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+
+		Collision* collision = Physics::FindCollision(entityID, otherID);
+		if (collision)
+		{
+			*velocity = collision->m_ImpactVelocity;
+			return true;
+		}
+
+		return false;
+	}
+
+	static MonoArray* Collision_GetContacts(uint32_t entityID, uint32_t otherID)
 	{
 		auto scene = SceneManager::Instance()->GetActiveScene();
 		ST_CORE_ASSERT(!scene);
@@ -609,12 +624,8 @@ namespace Stimpi
 				{
 					MonoObject* object = mono_object_new(ScriptEngine::GetAppDomain(), mono_class_from_mono_type(monoType));
 					mono_runtime_object_init(object);
-					MonoClassField* point1Field = mono_class_get_field_from_name(klass, "Point1");
-					mono_field_set_value(object, point1Field, &contact.m_Points[0]);
-					MonoClassField* point2Field = mono_class_get_field_from_name(klass, "Point2");
-					mono_field_set_value(object, point2Field, &contact.m_Points[1]);
-					MonoClassField* pointCountField = mono_class_get_field_from_name(klass, "PointCount");
-					mono_field_set_value(object, pointCountField, &contact.m_PointCount);
+					MonoClassField* point1Field = mono_class_get_field_from_name(klass, "Point");
+					mono_field_set_value(object, point1Field, &contact.m_Point);
 					MonoClassField* pointImpactVelocty = mono_class_get_field_from_name(klass, "ImpactVelocty");
 					mono_field_set_value(object, pointImpactVelocty, &contact.m_ImpactVelocity);
 					mono_array_set(monoArray, MonoObject*, i++, object);
@@ -679,6 +690,7 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(Physics_ApplyLinearImpulseCenter);
 
 		// Collisions
+		ST_ADD_INTERNAL_CALL(Collision_GetImpactVelocity);
 		ST_ADD_INTERNAL_CALL(Collision_GetContacts);
 	}
 

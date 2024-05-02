@@ -73,7 +73,6 @@ namespace Stimpi
 			{
 				auto foundCollision = *it;
 				foundCollision->m_Contacts = collision->m_Contacts;
-				foundCollision->m_ConctactCount = collision->m_ConctactCount;
 			}
 		}
 	}

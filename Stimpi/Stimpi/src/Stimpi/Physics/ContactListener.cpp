@@ -20,29 +20,29 @@ namespace Stimpi
 	{
 		b2Body* bodyA = contact->GetFixtureA()->GetBody();
 		b2Body* bodyB = contact->GetFixtureB()->GetBody();
-		for (b2ContactEdge* edge = bodyA->GetContactList(); edge; edge = edge->next)
+
+		b2WorldManifold worldManifold;
+		contact->GetWorldManifold(&worldManifold);
+
+		uint32_t numPoints = contact->GetManifold()->pointCount;
+		for (uint32_t i = 0; i < numPoints; i++)
 		{
 			Contact ct;
-			b2WorldManifold worldManifold;
-			edge->contact->GetWorldManifold(&worldManifold);
-
-			uint32_t numPoints = edge->contact->GetManifold()->pointCount;
-			ct.m_PointCount = numPoints;
-			for (uint32_t i = 0; i < numPoints; i++)
-			{
-				ct.m_Points[i] = { worldManifold.points[i].x, worldManifold.points[i].y };
-				if(CONTACTLISTENER_DBG) ST_CORE_INFO("ContactListener: contact point {}", ct.m_Points[i]);
-			}
-
-			b2Vec2 vel1 = bodyA->GetLinearVelocityFromLocalPoint(worldManifold.points[0]);
-			b2Vec2 vel2 = bodyB->GetLinearVelocityFromLocalPoint(worldManifold.points[0]);
+			ct.m_Point = { worldManifold.points[i].x, worldManifold.points[i].y };
+			
+			b2Vec2 vel1 = bodyA->GetLinearVelocityFromLocalPoint(worldManifold.points[i]);
+			b2Vec2 vel2 = bodyB->GetLinearVelocityFromLocalPoint(worldManifold.points[i]);
 			b2Vec2 impactVelocity = vel1 - vel2;
 			ct.m_ImpactVelocity = { impactVelocity.x, impactVelocity.y };
 
 			collision.m_Contacts.push_back(ct);
-			collision.m_ConctactCount++;
+			if (CONTACTLISTENER_DBG) ST_CORE_INFO("ContactListener: contact point {}", ct.m_Point);
 		}
 
+		b2Vec2 vel1 = bodyA->GetLinearVelocityFromLocalPoint(worldManifold.points[0]);	// TODO: what about [1] point?
+		b2Vec2 vel2 = bodyB->GetLinearVelocityFromLocalPoint(worldManifold.points[0]);
+		b2Vec2 impactVelocity = vel1 - vel2;
+		collision.m_ImpactVelocity = { impactVelocity.x, impactVelocity.y };
 	}
 
 	static void EmitCollisionEvents(PhysicsEventType type, b2Contact* contact)

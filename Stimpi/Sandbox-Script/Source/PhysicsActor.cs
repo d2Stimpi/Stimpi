@@ -86,16 +86,14 @@ namespace Sandbox
             Contact[] contacts = collision.Contacts;
             if (contacts != null)
             {
-                Console.WriteLine($"Contacts count: {contacts.Length}");
+                Console.WriteLine($"Contact impact velocity: {collision.ImpactVelocty.X}, {collision.ImpactVelocty.Y}");
+                Console.WriteLine($"Contact points count: {contacts.Length}");
                 foreach (Contact contact in contacts)
                 {
                     if (contact != null)
                     {
-                        Console.WriteLine($"Contact point1 {contact.PointCount}: {contact.Point1.X}, {contact.Point1.Y}");
-                        if (contact.PointCount == 2)
-                            Console.WriteLine($"Contact point2 {contact.PointCount}: {contact.Point2.X}, {contact.Point2.Y}");
-
-                        Console.WriteLine($"Contact impact velocity {contact.ImpactVelocty.X}, {contact.ImpactVelocty.Y}");
+                        Console.WriteLine($"Contact point: {contact.Point.X}, {contact.Point.Y}");
+                        Console.WriteLine($"Contact point impact velocity: {contact.ImpactVelocty.X}, {contact.ImpactVelocty.Y}");
                     }
                     else
                         Console.WriteLine("Invalid contact !?");
@@ -106,7 +104,7 @@ namespace Sandbox
                 Console.WriteLine("Contacts is null");
             }
 
-                Vector2 f = new Vector2(0.0f, jumpForce);
+            Vector2 f = new Vector2(0.0f, jumpForce);
             Physics.ApplyImpulseCenter(ID, f, false);
         }
 

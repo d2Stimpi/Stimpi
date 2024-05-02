@@ -8,23 +8,28 @@ namespace Stimpi
 {
     public class Contact
     {
-        public Vector2 Point1;
-        public Vector2 Point2;
-        public uint PointCount;
+        public Vector2 Point;
         public Vector2 ImpactVelocty;
 
         public Contact()
         {
-            Point1 = new Vector2(0.0f, 0.0f);
-            Point2 = new Vector2(0.0f, 0.0f);
-            PointCount = 0;
+            Point = new Vector2(0.0f, 0.0f);
         }
     }
 
     public struct Collision
     {
-        public uint OwnerID;    // To mirror C++ struct layout
-        public uint OtherID;   // ID of colliding Entity
+        public uint OwnerID;            // To mirror C++ struct layout
+        public uint OtherID;            // ID of colliding Entity
+
+        public Vector2 ImpactVelocty
+        {
+            get
+            {
+                InternalCalls.Collision_GetImpactVelocity(OwnerID, OtherID, out Vector2 velocity);
+                return velocity;
+            }
+        }
 
         public Contact[] Contacts
         {

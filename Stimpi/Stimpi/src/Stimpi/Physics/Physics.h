@@ -10,9 +10,7 @@ namespace Stimpi
 {
 	struct Contact
 	{
-		glm::vec2 m_Points[PHYS_MAXCONTACTPOINTS] = { {0.0f, 0.0f}, {0.0f, 0.0f} };
-		uint32_t m_PointCount = 0;
-
+		glm::vec2 m_Point = { 0.0f, 0.0f };
 		glm::vec2 m_ImpactVelocity = { 0.0f, 0.0f };
 
 		Contact() = default;
@@ -21,11 +19,10 @@ namespace Stimpi
 
 	struct Collision
 	{
-		uint32_t m_Owner = 0;				// Collision data owner Entity ID
-		uint32_t m_ColliderEntityID = 0;	// Event ID that owner collided with
-
+		uint32_t m_Owner = 0;							// Collision data owner Entity ID
+		uint32_t m_ColliderEntityID = 0;				// Event ID that owner collided with
+		glm::vec2 m_ImpactVelocity = { 0.0f, 0.0f };
 		std::list<Contact> m_Contacts;
-		uint32_t m_ConctactCount = 0;
 
 		Collision() = default;
 		Collision(const Collision& collision) = default;
