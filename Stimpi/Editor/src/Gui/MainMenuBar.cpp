@@ -18,6 +18,7 @@
 
 // Window show toggle includes
 #include "Gui/Nodes/NodePanel.h"
+#include "Gui/Nodes/GraphPanel.h"
 
 #include <SDL.h>
 
@@ -108,6 +109,33 @@ namespace Stimpi
 				if (ImGui::MenuItem("Node Panel", nullptr, NodePanel::IsVisible()))
 				{
 					NodePanel::ShowWindow(!NodePanel::IsVisible());
+				}
+
+				if (ImGui::MenuItem("Node Panel - v2", nullptr, GraphPanel::IsVisible()))
+				{
+					GraphPanel::ShowWindow(!GraphPanel::IsVisible());
+				}
+
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu("Testing"))
+			{
+				if (ImGui::MenuItem("Test Custom Script"))
+				{
+					ScriptEngine::LoadCustomClassesFromCoreAssembly({ 
+						{ "Stimpi", "Compiler" } 
+					});
+					auto scriptClass = ScriptEngine::GetClassByName("Stimpi.Compiler");
+					if (scriptClass)
+					{
+						auto scriptInstance = ScriptInstance(scriptClass);
+						scriptInstance.InvokeMethod("DoSomeStuff");
+					}
+					else
+					{
+						ST_INFO("Class Stimpi.CompileCodeTest not found!");
+					}
 				}
 
 				ImGui::EndMenu();

@@ -23,6 +23,32 @@ namespace Stimpi
 	class ScriptInstance; 
 	class ScriptField;
 
+	struct ClassIdentifier
+	{
+		std::string m_NamespaceName;
+		std::string m_ClassName;
+
+		ClassIdentifier(const std::string& namespaceName, const std::string& className)
+			: m_NamespaceName(namespaceName), m_ClassName(className)
+		{}
+	};
+
+	struct ClassLoadingDetails
+	{
+		std::vector<ClassIdentifier> m_ClassIdentifiers;
+
+		ClassLoadingDetails(std::initializer_list<ClassIdentifier> list)
+		{
+			for (auto item : list)
+			{
+				m_ClassIdentifiers.push_back(item);
+			}
+		}
+
+		std::vector<ClassIdentifier>::iterator begin() { return m_ClassIdentifiers.begin(); }
+		std::vector<ClassIdentifier>::iterator end() { return m_ClassIdentifiers.end(); }
+	};
+
 	class ST_API ScriptEngine
 	{
 	public:
@@ -33,10 +59,14 @@ namespace Stimpi
 		static void UnloadAssembly();
 		static void LoadClassesFromAssembly(MonoAssembly* assembly);
 
+		static void LoadCustomClassesFromCoreAssembly(const ClassLoadingDetails& classDetails);
+		static void LoadCustomClassesFromClientAssembly(const ClassLoadingDetails& classDetails);
+
 		static void ReloadAssembly();
 
 		static bool HasScriptClass(const std::string& className);
 		static std::shared_ptr<ScriptClass> GetScriptClassByName(const std::string& className);
+		static std::shared_ptr<ScriptClass> GetClassByName(const std::string& className);
 		static std::unordered_map<std::string, std::shared_ptr<ScriptClass>> GetEntityClasses();
 
 		static MonoImage* GetCoreAssemblyImage();
@@ -55,6 +85,7 @@ namespace Stimpi
 
 		// Instance functions
 		static std::shared_ptr<ScriptInstance> CreateScriptInstance(const std::string& className, Entity entity);
+		static std::shared_ptr<ScriptInstance> CreateScriptInstance(const std::string& className);
 		static std::shared_ptr<ScriptInstance> GetScriptInstance(Entity entity);
 		static MonoObject* GetManagedInstance(uint32_t entityID);
 
@@ -66,6 +97,8 @@ namespace Stimpi
 	private:
 		static void InitMono();
 		static void ShutdownMono();
+
+		static void LoadCustomClassesFromAssembly(MonoAssembly* assembly, const ClassLoadingDetails& classDetails);
 
 		static MonoAssembly* LoadMonoAssembly(const std::string& assemblyPath);
 		static MonoClass* GetClassInAssembly(MonoAssembly* assembly, const char* namespaceName, const char* className);
@@ -105,6 +138,7 @@ namespace Stimpi
 	{
 	public:
 		ScriptInstance() = default;
+		ScriptInstance(std::shared_ptr<ScriptClass> scriptClass);	// Create "empty" Instance
 		ScriptInstance(std::shared_ptr<ScriptClass> scriptClass, Entity entity);
 		~ScriptInstance();
 
@@ -121,6 +155,10 @@ namespace Stimpi
 		std::vector<std::shared_ptr<ScriptField>>& GetFields() { return m_ScriptFields; }
 
 		std::shared_ptr<ScriptField> GetScriptFieldFromMonoField(MonoClassField* field);
+
+		// Custom method invocation - for non-Entity scripts
+		void InvokeMethod(std::string methodName, int parameterCount = 0, void** params = nullptr);
+
 	private:
 		std::shared_ptr<ScriptClass> m_ScriptClass;
 		Entity m_Entity;
@@ -145,7 +183,6 @@ namespace Stimpi
 	public:
 		ScriptField(ScriptInstance* instance, MonoClassField* field);
 
-		//void SetValue(void* value) { m_Field.m_Value = value; }
 		MonoClassField* GetMonoField() { return m_MonoField; }
 		void ReadFieldValue(void* value);
 		void SetFieldValue(void* value);

@@ -204,6 +204,10 @@ namespace Stimpi
 		std::shared_ptr<Scene> m_Scene;
 		std::unordered_map<uint32_t, std::shared_ptr<ScriptInstance>> m_EntityInstances;
 
+		// Custom Non-Entity classes
+		std::vector<std::string> m_ClassNames;
+		std::unordered_map<std::string, std::shared_ptr<ScriptClass>> m_Classes;
+
 		FileWatchListener m_OnScriptUpdated;
 		bool m_DeferreAsemblyReload = false;
 	};
@@ -232,6 +236,7 @@ namespace Stimpi
 		Utils::PrintAssemblyTypes(s_Data->m_CoreAssembly);
 		Utils::PrintAssemblyTypes(s_Data->m_ClientAssembly);
 		LoadClassesFromAssembly(s_Data->m_CoreAssembly);
+		LoadClassesFromAssembly(s_Data->m_ClientAssembly);
 
 		s_Data->m_EntityClass = ScriptClass("Stimpi", "Entity", s_Data->m_CoreAssembly);
 
@@ -299,6 +304,8 @@ namespace Stimpi
 			// Clear internal data. TODO: handle multiple DLLs
 			s_Data->m_ScriptClassNames.clear();
 			s_Data->m_EntityClasses.clear();
+			s_Data->m_ClassNames.clear();
+			s_Data->m_Classes.clear();
 		}
 	}
 
@@ -312,6 +319,7 @@ namespace Stimpi
 		Utils::PrintAssemblyTypes(s_Data->m_CoreAssembly);
 		Utils::PrintAssemblyTypes(s_Data->m_ClientAssembly);
 		LoadClassesFromAssembly(s_Data->m_CoreAssembly);
+		LoadClassesFromAssembly(s_Data->m_ClientAssembly);
 
 		// Recreate base Entity ScpritClass because CoreAssembly changed
 		s_Data->m_EntityClass = ScriptClass("Stimpi", "Entity", s_Data->m_CoreAssembly);
@@ -324,10 +332,10 @@ namespace Stimpi
 
 	void ScriptEngine::LoadClassesFromAssembly(MonoAssembly* assembly)
 	{
-		MonoImage* image = mono_assembly_get_image(s_Data->m_ClientAssembly);
+		MonoImage* image = mono_assembly_get_image(assembly);
 		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
 		int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
-		MonoClass* entityClass = GetClassInAssembly(s_Data->m_CoreAssembly, "Stimpi", "Entity");
+		MonoClass* entityClass = GetClassInAssembly(s_Data->m_CoreAssembly, "Stimpi", "Entity"); //TODO: move this
 
 		for (int32_t i = 0; i < numTypes; i++)
 		{
@@ -342,17 +350,66 @@ namespace Stimpi
 			else
 				fullName = fmt::format("{}.{}", nameSpace, name);
 
-			MonoClass* monoClass = GetClassInAssembly(s_Data->m_ClientAssembly, nameSpace, name);
+			MonoClass* monoClass = GetClassInAssembly(assembly, nameSpace, name);
 			if (entityClass == monoClass)
 				continue;
 
-			bool isEntity = mono_class_is_subclass_of(monoClass, entityClass, false);
-			if (isEntity)
+			if (monoClass)
 			{
-				s_Data->m_ScriptClassNames.push_back(fullName);
-				s_Data->m_EntityClasses[fullName] = std::make_shared<ScriptClass>(nameSpace, name, s_Data->m_ClientAssembly);
+				bool isEntity = mono_class_is_subclass_of(monoClass, entityClass, false);
+				if (isEntity)
+				{
+					s_Data->m_ScriptClassNames.push_back(fullName);
+					s_Data->m_EntityClasses[fullName] = std::make_shared<ScriptClass>(nameSpace, name, assembly);
+				}
 			}
 		}
+	}
+
+	void ScriptEngine::LoadCustomClassesFromAssembly(MonoAssembly* assembly, const ClassLoadingDetails& classDetails)
+	{
+		MonoImage* image = mono_assembly_get_image(assembly);
+		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
+		int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
+
+		for (int32_t i = 0; i < numTypes; i++)
+		{
+			uint32_t cols[MONO_TYPEDEF_SIZE];
+			mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE);
+
+			const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
+			const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
+			std::string fullName;
+			if (strlen(nameSpace) == 0)
+				fullName = name;
+			else
+				fullName = fmt::format("{}.{}", nameSpace, name);
+
+			MonoClass* monoClass = GetClassInAssembly(assembly, nameSpace, name);
+			if (monoClass)
+			{
+				auto loadDetails = classDetails;
+				for (auto loadClass : loadDetails)
+				{
+					if ((loadClass.m_NamespaceName == nameSpace) && (loadClass.m_ClassName == name))
+					{
+						s_Data->m_ClassNames.push_back(fullName);
+						s_Data->m_Classes[fullName] = std::make_shared<ScriptClass>(nameSpace, name, assembly);
+					}
+				}
+			}
+		}
+	}
+
+	void ScriptEngine::LoadCustomClassesFromCoreAssembly(const ClassLoadingDetails& classDetails)
+	{
+		LoadCustomClassesFromAssembly(s_Data->m_CoreAssembly, classDetails);
+	}
+
+
+	void ScriptEngine::LoadCustomClassesFromClientAssembly(const ClassLoadingDetails& classDetails)
+	{
+		LoadCustomClassesFromAssembly(s_Data->m_ClientAssembly, classDetails);
 	}
 
 	bool ScriptEngine::HasScriptClass(const std::string& className)
@@ -365,6 +422,19 @@ namespace Stimpi
 		if (s_Data->m_EntityClasses.find(className) != s_Data->m_EntityClasses.end())
 		{
 			return s_Data->m_EntityClasses.find(className)->second;
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+
+	std::shared_ptr<Stimpi::ScriptClass> ScriptEngine::GetClassByName(const std::string& className)
+	{
+		if (s_Data->m_Classes.find(className) != s_Data->m_Classes.end())
+		{
+			return s_Data->m_Classes.find(className)->second;
 		}
 		else
 		{
@@ -544,6 +614,16 @@ namespace Stimpi
 		return std::make_shared<ScriptInstance>(scriptClass, entity);
 	}
 
+
+	std::shared_ptr<ScriptInstance> ScriptEngine::CreateScriptInstance(const std::string& className)
+	{
+		auto scriptClass = GetScriptClassByName(className);
+		if (scriptClass == nullptr)
+			return nullptr;
+
+		return std::make_shared<ScriptInstance>(scriptClass);
+	}
+
 	std::shared_ptr<Stimpi::ScriptInstance> ScriptEngine::GetScriptInstance(Entity entity)
 	{
 		if (s_Data->m_EntityInstances.find(entity) != s_Data->m_EntityInstances.end())
@@ -679,6 +759,15 @@ namespace Stimpi
 		m_ScriptClass->InvokeMethod(m_Instance, m_Constructor, &param);
 	}
 
+	ScriptInstance::ScriptInstance(std::shared_ptr<ScriptClass> scriptClass)
+		: m_ScriptClass(scriptClass), m_Entity({})
+	{
+		m_Instance = m_ScriptClass->Instantiate();
+		m_Constructor = s_Data->m_EntityClass.GetMethod(".ctor", 0);
+
+		m_ScriptClass->InvokeMethod(m_Instance, m_Constructor, nullptr);
+	}
+
 	ScriptInstance::~ScriptInstance()
 	{
 		if (SCRIPTENGINE_DBG) ST_CORE_TRACE("Destroy ScriptInstance");
@@ -735,10 +824,20 @@ namespace Stimpi
 		return nullptr;
 	}
 
+
+	void ScriptInstance::InvokeMethod(std::string methodName, int parameterCount, void** params)
+	{
+		MonoMethod* method = m_ScriptClass->GetMethod(methodName, parameterCount);
+		if (method)
+		{
+			m_ScriptClass->InvokeMethod(m_Instance, method, params);
+		}
+	}
+
 	/* ======== ScriptField ======== */
 
 	ScriptField::ScriptField(ScriptInstance* instance, MonoClassField* field)
-		: m_Instance(instance), m_MonoField(field)
+		: m_Instance(instance), m_MonoField(field), m_Data(nullptr)
 	{
 		MonoType* monoType = mono_field_get_type(field);
 		uint32_t dataType = mono_type_get_type(monoType);
