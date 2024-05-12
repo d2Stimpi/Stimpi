@@ -23,7 +23,7 @@ namespace Stimpi
 
 	enum class ControllAction { NONE = 0, NODE_HOVER, NODE_DRAGABLE, SHOW_POPUP_ONRELEASE, CANVAS_MOVE, NODE_PIN_DRAG, CONNECTION_ONPRESS };
 
-	struct NodePanelStyle
+	/*struct NodePanelStyle
 	{
 		// Node header
 		float m_HeaderHeight;
@@ -49,7 +49,7 @@ namespace Stimpi
 
 		// Grid
 		float m_GridStep;
-	};
+	};*/
 
 	struct NodeCanvas
 	{
@@ -95,7 +95,7 @@ namespace Stimpi
 	};
 
 	static NodePanelContext* s_Context;
-	static NodePanelStyle s_Style;
+	//static NodePanelStyle s_Style;
 
 	/**
 	 *  NodePanelStyle

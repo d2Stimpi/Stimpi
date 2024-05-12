@@ -83,6 +83,9 @@
     <ClInclude Include="src\Gui\Nodes\GraphSerializer.h" />
     <ClInclude Include="src\Gui\Nodes\NodeGraph.h" />
     <ClInclude Include="src\Gui\Nodes\BaseNode.h" />
+    <ClInclude Include="src\Gui\Nodes\GraphPanel.h" />
+    <ClInclude Include="src\Gui\Nodes\GraphRenderer.h" />
+    <ClInclude Include="src\Gui\Nodes\GraphController.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
@@ -144,5 +147,9 @@
     <ClCompile Include="src\Gui\Nodes\GraphSerializer.cpp" />
     <ClCompile Include="src\Gui\Nodes\NodeGraph.cpp" />
     <ClCompile Include="src\Gui\Nodes\BaseNode.cpp" />
+    <ClCompile Include="src\Gui\Nodes\GraphPanel.cpp" />
+    <ClCompile Include="src\Gui\Nodes\GraphRenderer.cpp" />
+    <ClCompile Include="src\Gui\Nodes\GraphController.cpp" />
+    <ClCompile Include="src\Gui\Nodes\GraphComponents.cpp" />
   </ItemGroup>
 </Project>

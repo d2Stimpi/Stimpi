@@ -124,17 +124,17 @@ namespace Stimpi
 				if (ImGui::MenuItem("Test Custom Script"))
 				{
 					ScriptEngine::LoadCustomClassesFromCoreAssembly({ 
-						{ "Stimpi", "Compiler" } 
+						{ "Stimpi", "ClassCompiler" }
 					});
-					auto scriptClass = ScriptEngine::GetClassByName("Stimpi.Compiler");
+					auto scriptClass = ScriptEngine::GetClassByClassIdentifier({ "Stimpi", "ClassCompiler" });
 					if (scriptClass)
 					{
 						auto scriptInstance = ScriptInstance(scriptClass);
-						scriptInstance.InvokeMethod("DoSomeStuff");
+						scriptInstance.InvokeMethod("TestBuild");
 					}
 					else
 					{
-						ST_INFO("Class Stimpi.CompileCodeTest not found!");
+						ST_INFO("Class not found!");
 					}
 				}
 

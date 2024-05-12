@@ -67,6 +67,7 @@ namespace Stimpi
 		static bool HasScriptClass(const std::string& className);
 		static std::shared_ptr<ScriptClass> GetScriptClassByName(const std::string& className);
 		static std::shared_ptr<ScriptClass> GetClassByName(const std::string& className);
+		static std::shared_ptr<ScriptClass> GetClassByClassIdentifier(const ClassIdentifier& identifier);
 		static std::unordered_map<std::string, std::shared_ptr<ScriptClass>> GetEntityClasses();
 
 		static MonoImage* GetCoreAssemblyImage();
@@ -94,6 +95,12 @@ namespace Stimpi
 
 		// UI Stuff
 		static std::vector<std::string>& GetScriptClassNames();
+
+		// Debugging
+		static uint64_t GetGCUsedSize();
+		static uint64_t GetGCHeapSize();
+		static void ForceGCCollect();
+
 	private:
 		static void InitMono();
 		static void ShutdownMono();

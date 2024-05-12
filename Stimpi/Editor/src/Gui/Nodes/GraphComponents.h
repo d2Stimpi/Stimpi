@@ -74,4 +74,63 @@ namespace Stimpi
 		Graph(const Graph&) = default;
 		Graph(const std::string& name) : m_Name(name) {}
 	};
+
+	// TODO: consider more suitable place
+	// Initialized in GraphPanel.cpp
+	struct NodePanelStyle
+	{
+		// Node header
+		float m_HeaderHeight;
+		ImVec2 m_HeaderTextOffset;
+		ImU32 m_NodeHoverColor;
+
+		// Node frame
+		float m_NodeRounding;
+		float m_SelectionThinckness;
+
+		// Pin
+		float m_PinOffset;
+		float m_PinRadius;
+		float m_PinThickness;
+		float m_PinArrowSpacing;
+		float m_PinArrowHalfHeight;
+		float m_PinArrowWidth;
+		float m_PinSpacing;
+		float m_PinTextSpacing; // For OUT pins
+		float m_PinSelectOffset; // For higher Pin select precision
+
+		// Connection
+		uint32_t m_ConnectionSegments;
+
+		// Grid
+		float m_GridStep;
+	};
+
+	extern NodePanelStyle s_Style;
+
+	// Utility methods
+	float PointDistance(ImVec2 p1, ImVec2 p2);
+	void RegenerateGraphDataAfterLoad(Graph* graph);
+
+	// Node methods
+	ImVec2 GetAvailableNodeSpaceSize(Node* node);
+	ImVec2 GetNodeExtraSize(Node* node);
+	bool IsNodeSpaceSizeAvailable(Node* node, ImVec2 size);
+	bool ResizeNodeSpace(Node* node, ImVec2 size);
+
+	// Pin methods
+	float GetPinSpaceHeight();
+	float GetPinSpaceWidth();
+	bool IsConnected(Pin* src, Pin* dest);
+	void ConnectPinToPin(Pin* src, Pin* dest, Graph* graph);
+	void BreakPinToPinConnection(PinConnection* connection, Graph* graph);
+	void UpdateConnectionPoints(PinConnection* connection);
+	PinConnection* FindPinToPinConnection(Pin* src, Pin* dest, Graph* graph);
+	
+	// Connection methods
+	ImVec2 CalcFirstMidBezierPoint(const ImVec2& start, const ImVec2& end);
+	ImVec2 CalcLastMidBezierPoint(const ImVec2& start, const ImVec2& end);
+	ImVec2 BezierCubicCalc(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, float t);
+	void CalculateBezierPoints(PinConnection* connection, Pin* src, Pin* dest, uint32_t segments);
+
 }

@@ -153,9 +153,12 @@
     <ClInclude Include="src\Gui\MainManuBar.h" />
     <ClInclude Include="src\Gui\Nodes\BaseNode.h" />
     <ClInclude Include="src\Gui\Nodes\GraphComponents.h" />
+    <ClInclude Include="src\Gui\Nodes\GraphController.h" />
+    <ClInclude Include="src\Gui\Nodes\GraphRenderer.h" />
     <ClInclude Include="src\Gui\Nodes\GraphSerializer.h" />
     <ClInclude Include="src\Gui\Nodes\NodeGraph.h" />
     <ClInclude Include="src\Gui\Nodes\NodePanel.h" />
+    <ClInclude Include="src\Gui\Nodes\GraphPanel.h" />
     <ClInclude Include="src\Gui\PlayPanel.h" />
     <ClInclude Include="src\Gui\SceneHierarchyWindow.h" />
     <ClInclude Include="src\Gui\SceneViewWindow.h" />
@@ -179,9 +182,13 @@
     <ClCompile Include="src\Gui\Gizmo2D.cpp" />
     <ClCompile Include="src\Gui\MainMenuBar.cpp" />
     <ClCompile Include="src\Gui\Nodes\BaseNode.cpp" />
+    <ClCompile Include="src\Gui\Nodes\GraphComponents.cpp" />
+    <ClCompile Include="src\Gui\Nodes\GraphController.cpp" />
+    <ClCompile Include="src\Gui\Nodes\GraphRenderer.cpp" />
     <ClCompile Include="src\Gui\Nodes\GraphSerializer.cpp" />
     <ClCompile Include="src\Gui\Nodes\NodeGraph.cpp" />
     <ClCompile Include="src\Gui\Nodes\NodePanel.cpp" />
+    <ClCompile Include="src\Gui\Nodes\GraphPanel.cpp" />
     <ClCompile Include="src\Gui\PlayPanel.cpp" />
     <ClCompile Include="src\Gui\SceneHierarchyWindow.cpp" />
     <ClCompile Include="src\Gui\SceneViewWindow.cpp" />

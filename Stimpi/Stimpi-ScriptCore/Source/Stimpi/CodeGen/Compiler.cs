@@ -5,71 +5,66 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 
 namespace Stimpi
 {
-    public class CompileCodeTest
+    public class ClassCompiler
     {
-        public static CodeCompileUnit BuildCodeGraph()
+        private static string assemblyName = "Test.dll";
+
+        private static readonly IEnumerable<string> DefaultNamespaces =
+                new[]
+                {
+                "System",
+                "System.IO",
+                "System.Net",
+                "System.Linq",
+                "System.Text",
+                "System.Text.RegularExpressions",
+                "System.Collections.Generic",
+                };
+
+        private static string runtimePath = @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.1\{0}.dll";
+
+
+        private static readonly IEnumerable<MetadataReference> DefaultReferences =
+            new[]
+            {
+                MetadataReference.CreateFromFile(string.Format(runtimePath, "mscorlib")),
+                MetadataReference.CreateFromFile(string.Format(runtimePath, "System")),
+                MetadataReference.CreateFromFile(string.Format(runtimePath, "System.Core")),
+                MetadataReference.CreateFromFile(Directory.GetCurrentDirectory() + "\\..\\resources\\scripts\\Stimpi-ScriptCore.dll"),
+                MetadataReference.CreateFromFile(Directory.GetCurrentDirectory() + "\\..\\resources\\scripts\\Sandbox-Script.dll")
+            };
+
+        private static readonly CSharpCompilationOptions DefaultCompilationOptions =
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
+                    .WithOverflowChecks(true).WithOptimizationLevel(OptimizationLevel.Release)
+                    .WithUsings(DefaultNamespaces);
+
+        public static SyntaxTree Parse(string text, string filename = "", CSharpParseOptions options = null)
         {
-            Console.WriteLine("BuildCodeGraph 1 ...");
-            CodeCompileUnit compileUnit = new CodeCompileUnit();
-
-            Console.WriteLine("BuildCodeGraph 2 ...");
-            CodeNamespace stimpiNSpace = new CodeNamespace("Stimpi");
-            // add it to CUnit
-            Console.WriteLine("BuildCodeGraph 3 ...");
-            compileUnit.Namespaces.Add(stimpiNSpace);
-
-            // Declare a class and add to NSpace
-            Console.WriteLine("BuildCodeGraph 4 ...");
-            CodeTypeDeclaration class1 = new CodeTypeDeclaration("Class1");
-            stimpiNSpace.Types.Add(class1);
-
-            // Code entry point
-            Console.WriteLine("BuildCodeGraph 5 ...");
-            CodeEntryPointMethod start = new CodeEntryPointMethod();
-
-            Console.WriteLine("BuildCodeGraph 6 ...");
-            CodeTypeReferenceExpression csSystemConsoleType = new CodeTypeReferenceExpression("System.Console");
-            // Build a Console.WriteLine statement.
-            Console.WriteLine("BuildCodeGraph 7 ...");
-            CodeMethodInvokeExpression cs1 = new CodeMethodInvokeExpression(
-                csSystemConsoleType, "WriteLine",
-                new CodePrimitiveExpression("Hello World!"));
-            // Add the WriteLine call to the statement collection.
-            start.Statements.Add(cs1);
-
-            Console.WriteLine("BuildCodeGraph 8 ...");
-            // Build another Console.WriteLine statement.
-            CodeMethodInvokeExpression cs2 = new CodeMethodInvokeExpression(
-                csSystemConsoleType, "WriteLine",
-                new CodePrimitiveExpression("Press the Enter key to continue."));
-            // Add the WriteLine call to the statement collection.
-            start.Statements.Add(cs2);
-
-            // Build a call to System.Console.ReadLine.
-            CodeMethodInvokeExpression csReadLine = new CodeMethodInvokeExpression(
-                csSystemConsoleType, "ReadLine");
-            // Add the ReadLine statement.
-            start.Statements.Add(csReadLine);
-
-            // Add the code entry point method to
-            // the Members collection of the type.
-            class1.Members.Add(start);
-
-            Console.WriteLine("BuildCodeGraph 10 ...");
-            return compileUnit;
+            var stringText = SourceText.From(text, Encoding.UTF8);
+            return SyntaxFactory.ParseSyntaxTree(stringText, options, filename);
         }
 
-        public static void GenerateCode(CodeDomProvider provider,
-            CodeCompileUnit compileunit)
+        public static string BuilSourceString(CodeCompileUnit compileUnit)
         {
-            // Build the source file name with the appropriate
-            // language extension.
+            CodeDomProvider provider = CodeDomProvider.CreateProvider("CSharp");
+
+            var writer = new StringWriter();
+            provider.GenerateCodeFromCompileUnit(compileUnit, writer, new CodeGeneratorOptions());
+            return writer.ToString();
+        }
+
+        public static void GenerateCodeFile(CodeCompileUnit compileUnit)
+        {
+            CodeDomProvider provider = CodeDomProvider.CreateProvider("CSharp");
+
             String sourceFile;
             if (provider.FileExtension[0] == '.')
             {
@@ -80,75 +75,19 @@ namespace Stimpi
                 sourceFile = "TestGraph." + provider.FileExtension;
             }
 
-            Console.WriteLine("Create an IndentedTextWriter...");
-            // Create an IndentedTextWriter, constructed with
-            // a StreamWriter to the source file.
-            //IndentedTextWriter tw = new IndentedTextWriter(new StreamWriter(sourceFile, false), "    ");
-            TextWriter tw = new StreamWriter(sourceFile, false);
-            // Generate source code using the code generator.
-            Console.WriteLine("GenerateCodeFromCompileUnit...");
-            provider.GenerateCodeFromCompileUnit(compileunit, tw, new CodeGeneratorOptions());
-            // Close the output file.
+            IndentedTextWriter tw = new IndentedTextWriter(new StreamWriter(sourceFile, false), "    ");
+            provider.GenerateCodeFromCompileUnit(compileUnit, tw, new CodeGeneratorOptions());
             tw.Close();
-            Console.WriteLine("ret");
         }
 
-        public static void BuildSourceFile()
+        public static void CompileCode(string source)
         {
-            Console.WriteLine("BuildSourceFile 1 ...");
-            CodeDomProvider provider = CodeDomProvider.CreateProvider("CSharp");
-            Console.WriteLine("BuildSourceFile 2 ...");
-            CodeCompileUnit compileUnit = CompileCodeTest.BuildCodeGraph();
-            CompileCodeTest.GenerateCode(provider, compileUnit);  
-        }
-
-        private static readonly IEnumerable<string> DefaultNamespaces =
-            new[]
-            {
-                "System",
-                "System.IO",
-                "System.Net",
-                "System.Linq",
-                "System.Text",
-                "System.Text.RegularExpressions",
-                "System.Collections.Generic"
-            };
-
-        private static string runtimePath = @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.1\{0}.dll";
-
-
-        private static readonly IEnumerable<MetadataReference> DefaultReferences =
-            new[]
-            {
-                MetadataReference.CreateFromFile(string.Format(runtimePath, "mscorlib")),
-                MetadataReference.CreateFromFile(string.Format(runtimePath, "System")),
-                MetadataReference.CreateFromFile(string.Format(runtimePath, "System.Core"))
-            };
-
-        public static SyntaxTree Parse(string text, string filename = "", CSharpParseOptions options = null)
-        {
-            var stringText = SourceText.From(text, Encoding.UTF8);
-            return SyntaxFactory.ParseSyntaxTree(stringText, options, filename);
-        }
-
-        private static readonly CSharpCompilationOptions DefaultCompilationOptions =
-            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
-                    .WithOverflowChecks(true).WithOptimizationLevel(OptimizationLevel.Release)
-                    .WithUsings(DefaultNamespaces);
-
-        public static void CompileCode()
-        {
-            var fileToCompile = "TestGraph.cs";
-            var source = File.ReadAllText(fileToCompile);
             var parsedSyntaxTree = Parse(source, "", CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp5));
-
-
             var compilation
-                = CSharpCompilation.Create("Test.dll", new SyntaxTree[] { parsedSyntaxTree }, DefaultReferences, DefaultCompilationOptions);
+                = CSharpCompilation.Create(assemblyName, new SyntaxTree[] { parsedSyntaxTree }, DefaultReferences, DefaultCompilationOptions);
             try
             {
-                var result = compilation.Emit("Test.dll");
-
+                var result = compilation.Emit(assemblyName);
                 Console.WriteLine(result.Success ? "Success!!" : "Failed");
             }
             catch (Exception ex)
@@ -156,21 +95,66 @@ namespace Stimpi
                 Console.WriteLine(ex);
             }
         }
-    }
 
-    public class Compiler
-    {
-        public static void DoSomeStuff()
+        public static CSharpCompilation CreateCodeCompilation(string source)
         {
-            Console.WriteLine("Running Code Gen...");
+            var parsedSyntaxTree = Parse(source, "", CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp5));
+            return CSharpCompilation.Create(assemblyName, new SyntaxTree[] { parsedSyntaxTree }, DefaultReferences, DefaultCompilationOptions);
+        }
 
-            Console.WriteLine("Building source file...");
-            CompileCodeTest.BuildSourceFile();
+        public static void EmmitCode(CSharpCompilation compilation, string assemblyFile)
+        {
+            try
+            {
+                var result = compilation.Emit(assemblyFile);
+                Console.WriteLine(result.Success ? "Success!!" : "Failed");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+
+        public static void BuildScriptClassTask()
+        {
+            Console.WriteLine("Running code gen...");
+            var compileUnit = ClassBuilder.BuildSampleCodeGraph();
+            string source = BuilSourceString(compileUnit);
+
+            Console.WriteLine("Saving code to a file.");
+            GenerateCodeFile(compileUnit);
+
             Console.WriteLine("Compiling code...");
-            CompileCodeTest.CompileCode();
+            var compilation = CreateCodeCompilation(source);
+            EmmitCode(compilation, assemblyName);
 
-            Console.WriteLine("Finished Code Gen");
+            Console.WriteLine("Finished code gen.");
+
+            TestAssembyl();
+        }
+
+        public static void TestBuild()
+        {
+            Thread scriptBuilderThread = new Thread(new ThreadStart(BuildScriptClassTask));
+            scriptBuilderThread.Start();
+
+            //BuildScriptClassTask();
+            //Console.WriteLine("Doing nothing here!");
+        }
+
+        public static void TestAssembyl()
+        {
+            FileStream fs = new FileStream(assemblyName, FileMode.Open);
+            byte[] buffer = new byte[(int)fs.Length];
+            fs.Read(buffer, 0, buffer.Length);
+            fs.Close();
+
+            Assembly assembly = Assembly.Load(buffer);
+
+            //Assembly assembly = Assembly.LoadFrom(Path.GetFullPath(assemblyName));
+            var type = assembly.GetType("Stimpi.Class1");
+            var method = type.GetMethod("Main");
+            object mresult = method.Invoke(null, null);
         }
     }
-
 }

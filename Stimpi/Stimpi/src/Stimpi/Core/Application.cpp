@@ -32,7 +32,7 @@ namespace Stimpi
 		// Init ScriptEngine runtime
 		ScriptEngine::Init();
 		// Create resource loader thread pool
-		ThreadPool::InitResourceLoadingThreadPool();
+		ThreadPool::InitThreadPools();
 	}
 
 	void Application::Run()

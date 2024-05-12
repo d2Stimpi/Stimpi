@@ -20,6 +20,7 @@ namespace Stimpi
 	// TODO: move to other class (ThreadPools or something)
 	// Global resource loading threadPool
 	extern ST_API std::unique_ptr<ThreadPool> s_LoaderThreadPool;
+	extern ST_API std::unique_ptr<ThreadPool> s_ScriptCompilerThreadPool;
 
 	class ST_API ThreadPool
 	{
@@ -99,11 +100,16 @@ namespace Stimpi
 			ThreadPool* m_ThreadPool;
 		};
 
-		static void InitResourceLoadingThreadPool()
+		static void InitThreadPools()
 		{
 			if (s_LoaderThreadPool == nullptr)
 			{
 				s_LoaderThreadPool = std::make_unique<ThreadPool>(10);
+			}
+
+			if (s_ScriptCompilerThreadPool == nullptr)
+			{
+				s_ScriptCompilerThreadPool = std::make_unique<ThreadPool>(10);
 			}
 		}
 

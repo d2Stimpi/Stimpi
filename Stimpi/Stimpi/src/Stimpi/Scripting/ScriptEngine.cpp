@@ -16,6 +16,7 @@
 #include "mono/metadata/appdomain.h"
 #include "mono/metadata/assembly.h"
 #include "mono/metadata/attrdefs.h"
+#include "mono/metadata/mono-gc.h"
 
 /** TODO: fix issues:
  *  - Component adds a Script -> Script needs to be instantiated and so. Atm it won't be "active" before scene is reloaded
@@ -299,7 +300,18 @@ namespace Stimpi
 		if (s_Data->m_AppDomain != nullptr)
 		{
 			mono_domain_set(s_Data->m_RootDomain, true);
-			mono_domain_unload(s_Data->m_AppDomain);
+			//mono_domain_unload(s_Data->m_AppDomain);
+
+			mono_gc_collect(mono_gc_max_generation());
+			mono_domain_finalize(s_Data->m_AppDomain, 2000);
+			mono_gc_collect(mono_gc_max_generation());
+
+			MonoException* exc = NULL;
+			mono_domain_try_unload(s_Data->m_AppDomain, (MonoObject**)&exc);
+
+			if (exc) {
+				ST_CORE_ERROR("Exception thrown when unloading domain");
+			}
 
 			// Clear internal data. TODO: handle multiple DLLs
 			s_Data->m_ScriptClassNames.clear();
@@ -393,8 +405,11 @@ namespace Stimpi
 				{
 					if ((loadClass.m_NamespaceName == nameSpace) && (loadClass.m_ClassName == name))
 					{
-						s_Data->m_ClassNames.push_back(fullName);
-						s_Data->m_Classes[fullName] = std::make_shared<ScriptClass>(nameSpace, name, assembly);
+						if (s_Data->m_Classes.find(fullName) == s_Data->m_Classes.end())
+						{
+							s_Data->m_ClassNames.push_back(fullName);
+							s_Data->m_Classes[fullName] = std::make_shared<ScriptClass>(nameSpace, name, assembly);
+						}
 					}
 				}
 			}
@@ -440,6 +455,12 @@ namespace Stimpi
 		{
 			return nullptr;
 		}
+	}
+
+	std::shared_ptr<ScriptClass> ScriptEngine::GetClassByClassIdentifier(const ClassIdentifier& identifier)
+	{
+		std::string fullName = fmt::format("{}.{}", identifier.m_NamespaceName, identifier.m_ClassName);
+		return GetClassByName(fullName);
 	}
 
 	std::unordered_map<std::string, std::shared_ptr<Stimpi::ScriptClass>> ScriptEngine::GetEntityClasses()
@@ -584,6 +605,7 @@ namespace Stimpi
 		if (s_Data->m_DeferreAsemblyReload)
 		{
 			ReloadAssembly();
+			s_Data->m_DeferreAsemblyReload = false;
 		}
 	}
 
@@ -657,6 +679,23 @@ namespace Stimpi
 	std::vector<std::string>& ScriptEngine::GetScriptClassNames()
 	{
 		return s_Data->m_ScriptClassNames;
+	}
+
+
+	uint64_t ScriptEngine::GetGCUsedSize()
+	{
+		return mono_gc_get_used_size();
+	}
+
+
+	uint64_t ScriptEngine::GetGCHeapSize()
+	{
+		return mono_gc_get_heap_size();
+	}
+
+	void ScriptEngine::ForceGCCollect()
+	{
+		mono_gc_collect(mono_gc_max_generation());
 	}
 
 	/* ======== ScriptClass ======== */
@@ -763,7 +802,7 @@ namespace Stimpi
 		: m_ScriptClass(scriptClass), m_Entity({})
 	{
 		m_Instance = m_ScriptClass->Instantiate();
-		m_Constructor = s_Data->m_EntityClass.GetMethod(".ctor", 0);
+		m_Constructor = m_ScriptClass->GetMethod(".ctor", 0);
 
 		m_ScriptClass->InvokeMethod(m_Instance, m_Constructor, nullptr);
 	}
@@ -824,7 +863,7 @@ namespace Stimpi
 		return nullptr;
 	}
 
-
+	// This causes a small leak, looking up method all the time. Use only for testing stuff
 	void ScriptInstance::InvokeMethod(std::string methodName, int parameterCount, void** params)
 	{
 		MonoMethod* method = m_ScriptClass->GetMethod(methodName, parameterCount);
