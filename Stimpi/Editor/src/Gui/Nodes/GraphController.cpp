@@ -260,6 +260,31 @@ namespace Stimpi
 		}
 	}
 
+	Stimpi::Node* GraphContorller::GetSelectedNode()
+	{
+		return m_SelectedNode;
+	}
+
+	Stimpi::Pin* GraphContorller::GetSelectedPin()
+	{
+		return m_SelectedPin;
+	}
+
+	Stimpi::ControllAction GraphContorller::GetAction()
+	{
+		return m_Action;
+	}
+
+	Stimpi::PinConnection* GraphContorller::GetSeletedPinConnection()
+	{
+		return m_SelectedConnection;
+	}
+
+	ImVec2& GraphContorller::GetPinFloatingTarget()
+	{
+		return m_PinFloatingTarget;
+	}
+
 	void GraphContorller::UpdateInternals()
 	{
 

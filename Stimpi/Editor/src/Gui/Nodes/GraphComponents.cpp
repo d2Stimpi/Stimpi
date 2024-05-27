@@ -21,7 +21,7 @@ namespace Stimpi
 	{
 		for (auto connection : graph->m_PinConnections)
 		{
-			//UpdateConnectionPoints(connection.get());
+			UpdateConnectionPoints(connection.get());
 		}
 	}
 

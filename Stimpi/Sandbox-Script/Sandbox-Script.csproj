@@ -21,7 +21,8 @@
     <OutputPath>..\resources\scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\resources\scripts\intermediates\Debug\Sandbox-Script\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -33,7 +34,8 @@
     <OutputPath>..\resources\scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\resources\scripts\intermediates\Release\Sandbox-Script\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -45,7 +47,8 @@
     <OutputPath>..\resources\scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\resources\scripts\intermediates\Dist\Sandbox-Script\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -57,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\Actor.cs" />
+    <Compile Include="Source\Ball.cs" />
     <Compile Include="Source\PhysicsActor.cs" />
     <Compile Include="Source\Player.cs" />
   </ItemGroup>

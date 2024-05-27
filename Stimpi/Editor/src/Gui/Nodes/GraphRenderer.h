@@ -18,6 +18,8 @@ namespace Stimpi
 		void SetDrawList(ImDrawList* drawList);
 		void SetDrawCanvas(GraphPanelCanvas* canvas);
 
+		void OnImGuiRender();
+
 		// Node methods
 		void DrawNode(Node* node);
 
@@ -28,6 +30,8 @@ namespace Stimpi
 		void DrawPinToPinConnection(Pin* src, Pin* dest, ImU32 col = IM_COL32(255, 255, 255, 255));
 
 		// Debug methods
+		void SetDebugMode(bool debug) { m_DebugOn = debug; }
+		bool IsDebugModeOn() { return m_DebugOn; }
 		void DrawDbgPoint(ImVec2 point);
 		void DbgDrawConnectionLinePoints(PinConnection* connection);
 
@@ -37,5 +41,7 @@ namespace Stimpi
 		GraphPanelCanvas* m_Canvas = nullptr;
 
 		AssetHandle m_HeaderImage;
+
+		bool m_DebugOn = false;
 	};
 }

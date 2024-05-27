@@ -23,6 +23,13 @@ namespace Stimpi
 
 		void SetActive(bool active) { m_IsActive = active; }
 
+		Node* GetSelectedNode();
+		Pin* GetSelectedPin();
+
+		ControllAction GetAction();
+		PinConnection* GetSeletedPinConnection();
+		ImVec2& GetPinFloatingTarget();
+
 	private:
 		void UpdateInternals();
 

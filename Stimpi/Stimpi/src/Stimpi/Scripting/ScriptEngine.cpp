@@ -28,6 +28,8 @@
 
 #define SCRIPTENGINE_DBG	(false)
 
+#define MONO_LIB_PATH	"mono/lib/mono/4.5"
+
 namespace Stimpi
 {
 	enum class Accessibility : uint8_t
@@ -470,7 +472,7 @@ namespace Stimpi
 
 	void ScriptEngine::InitMono()
 	{
-		mono_set_assemblies_path("mono/lib/4.5");
+		mono_set_assemblies_path(MONO_LIB_PATH);
 
 		MonoDomain* rootDomain = mono_jit_init("StimpiJitRuntime");
 		ST_CORE_ASSERT_MSG(rootDomain == nullptr, "Invalid Mono JIT Domain");

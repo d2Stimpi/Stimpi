@@ -2,8 +2,10 @@
 #include "Gui/Nodes/GraphPanel.h"
 
 #include "Stimpi/Log.h"
+#include "Stimpi/Core/Project.h"
 #include "Gui/Components/SearchPopup.h"
 #include "Gui/Components/Toolbar.h"
+#include "Gui/Nodes/GraphSerializer.h"
 
 namespace Stimpi
 {
@@ -22,7 +24,9 @@ namespace Stimpi
 		bool m_IsHovered = false;
 		bool m_IsActive = false;
 
-		Node* m_SelectedNode = nullptr;
+		Node* m_SelectedNode = nullptr; // TODO: remove from here
+		// Popup data
+		ImVec2 m_NewNodePos = { 0.0f, 0.0f };
 	};
 
 	static GraphPanelContext* s_Context;
@@ -65,6 +69,9 @@ namespace Stimpi
 		InitNodePanelStyle();
 
 		AddGraph(new Graph());
+
+		CreateNode(ImVec2(150.0f, 150.0f), "Test Node");
+		CreateNode(ImVec2(350.0f, 350.0f), "Another Node");
 	}
 
 	GraphPanel::~GraphPanel()
@@ -82,15 +89,30 @@ namespace Stimpi
 	{
 		if (m_Show)
 		{
-			ImGui::Begin("Node Panel", &m_Show);
+			ImGui::Begin("Node Panel", &m_Show, ImGuiWindowFlags_MenuBar);
 
 			ImDrawList* draw_list = ImGui::GetWindowDrawList();
 			s_Context->m_DrawList = draw_list;
+			m_GraphRenderer->SetDrawList(s_Context->m_DrawList);
+
+			// Menu bar
+			if (ImGui::BeginMenuBar())
+			{
+				if (ImGui::BeginMenu("Menu##GraphPanel"))
+				{
+					if (ImGui::MenuItem("Debug", nullptr, m_GraphRenderer->IsDebugModeOn()))
+					{
+						m_GraphRenderer->SetDebugMode(!m_GraphRenderer->IsDebugModeOn());
+					}
+					ImGui::EndMenu();
+				}
+
+				ImGui::EndMenuBar();
+			}
 
 			// Main Toolbar
 			Toolbar::Begin("NodePanelToolbar");
 			{
-
 				if (Toolbar::ToolbarButton("Compile"))
 				{
 					ST_CORE_INFO("Compile button presed");
@@ -99,16 +121,30 @@ namespace Stimpi
 
 				if (Toolbar::ToolbarButton("Save"))
 				{
+					if (s_Context->m_ActiveGraph)
+					{
+						GraphSerializer serializer(s_Context->m_ActiveGraph);
+						FilePath path = Project::GetProjectDir() / "Graph.txt";
+						serializer.Serialize(path);
+					}
 				}
 				Toolbar::Separator();
 
 				if (Toolbar::ToolbarButton("Load"))
 				{
+					GraphSerializer serializer(s_Context->m_ActiveGraph);
+					FilePath path = Project::GetProjectDir() / "Graph.txt";
+					serializer.Deseriealize(path);
+
+					RegenerateGraphDataAfterLoad(s_Context->m_ActiveGraph);
 				}
 				Toolbar::Separator();
 
 				if (Toolbar::ToolbarButton("Add Graph"))
 				{
+					static int graphNameCnt = 0;
+					std::string name = fmt::format("Graph {}", graphNameCnt++);
+					AddGraph(new Graph(name));
 				}
 				Toolbar::Separator();
 			}
@@ -119,23 +155,32 @@ namespace Stimpi
 
 			if (ImGui::BeginTabBar("NodePanelNewTabBar", tabBarFlags))
 			{
-				// Empty graph tab space sample
-				if (ImGui::BeginTabItem("DummyGraphSpace", nullptr, ImGuiTabItemFlags_None))
+				Graph* toRemove = nullptr; // Deffer removing of "closed" graph from the list after iterating trough it
+				// Each graph rendering goes here
+				for (auto& graph : s_Context->m_Graphs)
 				{
-					SetCanvasData();
+					if (ImGui::BeginTabItem(graph->m_Name.c_str(), &graph->m_Show, ImGuiTabItemFlags_None))
+					{
+						//Set active graph to selected tab item
+						s_Context->m_ActiveGraph = graph.get();
 
-					// Process mouse control before any drawing calls
-					m_GraphController->UpdateMouseControls();
-					m_GraphController->HandleKeyPresses();
+						SetCanvasData();
 
-					DrawCanvasGrid();
+						// Process mouse control before any drawing calls
+						m_GraphController->UpdateMouseControls();
+						m_GraphController->HandleKeyPresses();
 
-					// Rect pushed in drawing of the Grid (start of the draw commands)
-					s_Context->m_DrawList->PopClipRect();
-					// Draw border
-					s_Context->m_DrawList->AddRect(s_Context->m_Canvas.m_PosMin, s_Context->m_Canvas.m_PosMax, IM_COL32(255, 255, 255, 255));
+						DrawCanvasGrid();
+						m_GraphRenderer->OnImGuiRender();
 
-					ImGui::EndTabItem();
+						// Rect pushed in drawing of the Grid (start of the draw commands)
+						s_Context->m_DrawList->PopClipRect();
+						// Draw border
+						s_Context->m_DrawList->AddRect(s_Context->m_Canvas.m_PosMin, s_Context->m_Canvas.m_PosMax, IM_COL32(255, 255, 255, 255));
+
+						ImGui::EndTabItem();
+					}
+					toRemove = !graph->m_Show ? graph.get() : nullptr;
 				}
 
 				ImGui::EndTabBar();
@@ -183,6 +228,11 @@ namespace Stimpi
 			s_Context->m_ActiveGraph = nullptr;
 
 		m_GraphController->SetActiveGraph(s_Context->m_ActiveGraph);
+	}
+
+	Stimpi::Graph* GraphPanel::GetActiveGraph()
+	{
+		return s_Context->m_ActiveGraph;
 	}
 
 	void GraphPanel::ShowWindow(bool show)
@@ -268,8 +318,8 @@ namespace Stimpi
 
 	bool GraphPanel::IsNodeSelected(Node* node)
 	{
-		if (node != nullptr && s_Context->m_SelectedNode != nullptr)
-			return node->m_ID == s_Context->m_SelectedNode->m_ID;
+		if (node != nullptr && m_GraphController->GetSelectedNode() != nullptr)
+			return node->m_ID == m_GraphController->GetSelectedNode()->m_ID;
 
 		return false;
 	}
@@ -281,7 +331,7 @@ namespace Stimpi
 
 	void GraphPanel::UpdateNodeConnectionsPoints(Node* node)
 	{
-		Node* selected = s_Context->m_SelectedNode;
+		Node* selected = m_GraphController->GetSelectedNode();
 		for (auto inPin : selected->m_InPins)
 		{
 			if (inPin->m_Connected)
@@ -311,7 +361,25 @@ namespace Stimpi
 
 	void GraphPanel::AddNodePopup(bool show)
 	{
+		static bool showPopup = false;
 
+		if (show)
+		{
+			s_Context->m_NewNodePos = GetNodePanelViewClickLocation();
+			showPopup = true;
+			SearchPopup::OpenPopup();
+		}
+
+		if (showPopup)
+		{
+			static std::vector<std::string> nodeTypeList = { "New node" };
+
+			if (SearchPopup::OnImGuiRender(nodeTypeList))
+			{
+				showPopup = false;
+				CreateNode(s_Context->m_NewNodePos, SearchPopup::GetSelection());
+			}
+		}
 	}
 
 	ImVec2 GraphPanel::GetNodePanelViewClickLocation()
@@ -421,8 +489,6 @@ namespace Stimpi
 		ImGui::InvisibleButton("canvas", s_Context->m_Canvas.m_Size, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
 		s_Context->m_IsHovered = ImGui::IsItemHovered(); // Hovered
 		s_Context->m_IsActive = ImGui::IsItemActive();   // Held
-		if (s_Context->m_IsActive)
-			ST_INFO("Panel active");
 
 		m_GraphController->SetActive(s_Context->m_IsActive);
 

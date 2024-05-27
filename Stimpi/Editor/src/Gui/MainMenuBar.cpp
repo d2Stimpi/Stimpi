@@ -12,6 +12,7 @@
 
 #include "Stimpi/Utils/PlatformUtils.h"
 #include "Stimpi/Utils/FileWatcher.h"
+#include "Stimpi/Utils/SystemUtils.h"
 
 #include "ImGui/src/imgui.h"
 #include "ImGui/src/imgui_internal.h"
@@ -121,6 +122,11 @@ namespace Stimpi
 
 			if (ImGui::BeginMenu("Testing"))
 			{
+				if (ImGui::MenuItem("Run system cmd"))
+				{
+					System::ExecuteCmd("mono\\bin\\mcs TestGraph.cs -r:D:\\GitHub\\Stimpi\\resources\\scripts\\Stimpi-ScriptCore.dll  -target:library  -out:pera2.dll");
+				}
+
 				if (ImGui::MenuItem("Test Custom Script"))
 				{
 					ScriptEngine::LoadCustomClassesFromCoreAssembly({ 

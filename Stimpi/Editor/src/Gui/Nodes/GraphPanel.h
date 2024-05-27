@@ -32,6 +32,7 @@ namespace Stimpi
 		// Graph methods
 		void AddGraph(Graph* graph);
 		void RemoveGraph(Graph* graph);
+		Graph* GetActiveGraph();
 
 		static void ShowWindow(bool show);
 		static bool IsVisible();
@@ -57,6 +58,8 @@ namespace Stimpi
 		bool IsMouseHoverNode(Node* node);
 		uint32_t GetMouseHoverNode();
 		Node* GetNodeByID(uint32_t id);
+
+		GraphContorller* GetController() { return m_GraphController; }
 
 	private:
 		void SetCanvasData();

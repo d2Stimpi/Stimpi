@@ -3,6 +3,8 @@
 
 #include "Stimpi/Log.h"
 
+#include <cstdlib>
+
 namespace Stimpi
 {
 	char* FileSystem::ReadBytes(const std::string& filepath, uint32_t* outSize)
@@ -31,5 +33,11 @@ namespace Stimpi
 
 		*outSize = size;
 		return buffer;
+	}
+
+	std::string System::ExecuteCmd(const std::string& cmd)
+	{
+		std::system(cmd.c_str());
+		return "";
 	}
 }
