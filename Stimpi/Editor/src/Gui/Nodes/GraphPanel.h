@@ -28,6 +28,7 @@ namespace Stimpi
 
 		void SetDrawList(ImDrawList* drawList);
 		void OnImGuiRender();
+		void DrawGraphOverlay();
 
 		// Graph methods
 		void AddGraph(Graph* graph);
@@ -39,6 +40,8 @@ namespace Stimpi
 
 		// Node methods
 		void CreateNode(ImVec2 pos, std::string title);
+		void CreateNodeByName(ImVec2 pos, std::string title);
+		void CreateNode(ImVec2 pos, std::string title, NodeLayout layout);
 		void RemoveNode(Node* node);
 
 		bool IsNodeSelected(Node* node);
@@ -58,6 +61,9 @@ namespace Stimpi
 		bool IsMouseHoverNode(Node* node);
 		uint32_t GetMouseHoverNode();
 		Node* GetNodeByID(uint32_t id);
+
+		float GetPanelZoom();
+		void SetPanelZoom(float zoom);
 
 		GraphContorller* GetController() { return m_GraphController; }
 

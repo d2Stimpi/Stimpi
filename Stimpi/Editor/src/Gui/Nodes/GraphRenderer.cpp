@@ -244,29 +244,30 @@ namespace Stimpi
 		ImVec2 endPoint = end;
 		ImVec2 middlePoint1 = CalcFirstMidBezierPoint(startPoint, endPoint);
 		ImVec2 middlePoint2 = CalcLastMidBezierPoint(startPoint, endPoint);
+		float lineThickness = s_Style.m_LineThickness * m_Canvas->m_Scale;
 		m_DrawList->AddBezierCubic(
 			{ m_Canvas->m_Origin.x + startPoint.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + startPoint.y * m_Canvas->m_Scale },
 			{ m_Canvas->m_Origin.x + middlePoint1.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + middlePoint1.y * m_Canvas->m_Scale },
 			{ m_Canvas->m_Origin.x + middlePoint2.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + middlePoint2.y * m_Canvas->m_Scale },
 			{ m_Canvas->m_Origin.x + endPoint.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + endPoint.y * m_Canvas->m_Scale },
 			col,
-			3.0f,
+			lineThickness,
 			s_Style.m_ConnectionSegments);
 
 		if (m_DebugOn)
 		{
 			m_DrawList->AddCircleFilled(
 				{ m_Canvas->m_Origin.x + startPoint.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + startPoint.y * m_Canvas->m_Scale },
-				3.0f, IM_COL32(225, 25, 25, 255), 6);
+				lineThickness, IM_COL32(225, 25, 25, 255), 6);
 			m_DrawList->AddCircleFilled(
 				{ m_Canvas->m_Origin.x + middlePoint1.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + middlePoint1.y * m_Canvas->m_Scale },
-				3.0f, IM_COL32(225, 25, 25, 255), 6);
+				lineThickness, IM_COL32(225, 25, 25, 255), 6);
 			m_DrawList->AddCircleFilled(
 				{ m_Canvas->m_Origin.x + middlePoint2.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + middlePoint2.y * m_Canvas->m_Scale },
-				3.0f, IM_COL32(225, 25, 25, 255), 6);
+				lineThickness, IM_COL32(225, 25, 25, 255), 6);
 			m_DrawList->AddCircleFilled(
 				{ m_Canvas->m_Origin.x + endPoint.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + endPoint.y * m_Canvas->m_Scale },
-				3.0f, IM_COL32(225, 25, 25, 255), 6);
+				lineThickness, IM_COL32(225, 25, 25, 255), 6);
 		}
 	}
 
@@ -285,7 +286,7 @@ namespace Stimpi
 	{
 		m_DrawList->AddCircleFilled(
 			{ m_Canvas->m_Origin.x + point.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + point.y * m_Canvas->m_Scale },
-			3.0f, IM_COL32(225, 25, 25, 255), 6);
+			s_Style.m_LineThickness* m_Canvas->m_Scale, IM_COL32(225, 25, 25, 255), 6);
 	}
 
 	void GraphRenderer::DbgDrawConnectionLinePoints(PinConnection* connection)

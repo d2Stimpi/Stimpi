@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Stimpi/Scripting/CodeGen/Expressions/Expression.h"
+
 #include "ImGui/src/imgui.h"
 
 namespace Stimpi
@@ -25,6 +27,28 @@ namespace Stimpi
 		ImVec2 m_Pos = { 0.0f, 0.0f };
 	};
 
+	struct NodePinData
+	{
+		Pin::Type m_Type;
+		std::string m_Text;
+	};
+
+	struct NodeLayout
+	{
+		std::vector<NodePinData> m_ParamList;
+
+		NodeLayout(std::initializer_list<NodePinData> params)
+		{
+			for (auto item : params)
+			{
+				m_ParamList.emplace_back(item);
+			}
+		}
+
+		std::vector<NodePinData>::iterator begin() { return m_ParamList.begin(); }
+		std::vector<NodePinData>::iterator end() { return m_ParamList.end(); }
+	};
+
 	struct Node
 	{
 		ImVec2 m_Pos;
@@ -42,6 +66,8 @@ namespace Stimpi
 		Node(const ImVec2& pos) : m_Pos(pos) {}
 
 		static bool IsValid(Node& node) { return node.m_ID != 0; }
+
+		Expression* m_Expression;
 	};
 
 	struct PinConnection
@@ -73,6 +99,9 @@ namespace Stimpi
 		Graph() = default;
 		Graph(const Graph&) = default;
 		Graph(const std::string& name) : m_Name(name) {}
+
+		uint32_t GenerateNodeID() { return ++m_NextNodeID; }
+		uint32_t GeneratePinID() { return ++m_NextPinID; }
 	};
 
 	// TODO: consider more suitable place
@@ -101,6 +130,9 @@ namespace Stimpi
 
 		// Connection
 		uint32_t m_ConnectionSegments;
+
+		// Lines
+		float m_LineThickness;
 
 		// Grid
 		float m_GridStep;

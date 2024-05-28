@@ -36,6 +36,18 @@ namespace Stimpi
 		static ImVec2 dragOffset(0.0f, 0.0f);
 		bool  showPopup = false;
 
+		if (io.MouseWheel != 0)
+		{
+			if (io.MouseWheel > 0)
+			{
+				m_PanelContext->SetPanelZoom(m_PanelContext->GetPanelZoom() + 0.1f);
+			}
+			else
+			{
+				m_PanelContext->SetPanelZoom(m_PanelContext->GetPanelZoom() - 0.1f);
+			}
+		}
+
 		switch (m_Action)
 		{
 		case ControllAction::NONE:

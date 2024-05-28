@@ -7,6 +7,8 @@
 #include "Gui/Components/Toolbar.h"
 #include "Gui/Nodes/GraphSerializer.h"
 
+#include "Gui/Nodes/NodeBuilder.h"
+
 namespace Stimpi
 {
 	bool GraphPanel::m_Show = false;
@@ -27,6 +29,8 @@ namespace Stimpi
 		Node* m_SelectedNode = nullptr; // TODO: remove from here
 		// Popup data
 		ImVec2 m_NewNodePos = { 0.0f, 0.0f };
+
+		bool m_DebugTooltip = false;
 	};
 
 	static GraphPanelContext* s_Context;
@@ -53,6 +57,8 @@ namespace Stimpi
 
 		s_Style.m_ConnectionSegments = 20;
 
+		s_Style.m_LineThickness = 3.0f;
+
 		s_Style.m_GridStep = 16.0f;
 	}
 
@@ -67,6 +73,9 @@ namespace Stimpi
 		m_GraphController->SetDrawCanvas(&s_Context->m_Canvas);
 
 		InitNodePanelStyle();
+
+		// Populate node Atlas with data
+		NodeBuilder::InitializeNodeList();
 
 		AddGraph(new Graph());
 
@@ -100,6 +109,10 @@ namespace Stimpi
 			{
 				if (ImGui::BeginMenu("Menu##GraphPanel"))
 				{
+					if (ImGui::MenuItem("Show Tooltip", nullptr, s_Context->m_DebugTooltip))
+					{
+						s_Context->m_DebugTooltip = !s_Context->m_DebugTooltip;
+					}
 					if (ImGui::MenuItem("Debug", nullptr, m_GraphRenderer->IsDebugModeOn()))
 					{
 						m_GraphRenderer->SetDebugMode(!m_GraphRenderer->IsDebugModeOn());
@@ -178,6 +191,8 @@ namespace Stimpi
 						// Draw border
 						s_Context->m_DrawList->AddRect(s_Context->m_Canvas.m_PosMin, s_Context->m_Canvas.m_PosMax, IM_COL32(255, 255, 255, 255));
 
+						DrawGraphOverlay();
+
 						ImGui::EndTabItem();
 					}
 					toRemove = !graph->m_Show ? graph.get() : nullptr;
@@ -188,6 +203,14 @@ namespace Stimpi
 
 			ImGui::End();
 		}
+	}
+
+	void GraphPanel::DrawGraphOverlay()
+	{
+		// Draw zoom level
+		s_Context->m_DrawList->AddText(
+			{ s_Context->m_Canvas.m_PosMax.x - 90, s_Context->m_Canvas.m_PosMin.y + 10 },
+			IM_COL32(220, 220, 220, 255), fmt::format("Zoom 1:{:.2f}", 1.0f / s_Context->m_Canvas.m_Scale).c_str());
 	}
 
 	void GraphPanel::AddGraph(Graph* graph)
@@ -276,6 +299,38 @@ namespace Stimpi
 		newNode->m_OutPins.emplace_back(pin3);
 
 		s_Context->m_ActiveGraph->m_Nodes.emplace_back(newNode);
+	}
+
+	void GraphPanel::CreateNode(ImVec2 pos, std::string title, NodeLayout layout)
+	{
+		std::shared_ptr<Node> newNode = std::make_shared<Node>();
+		newNode->m_Pos = pos;
+		newNode->m_Size = { 250.0f, 100.0f };
+		newNode->m_ID = s_Context->m_ActiveGraph->GenerateNodeID();
+		newNode->m_Title = title;
+
+		for (auto& item : layout)
+		{
+			std::shared_ptr<Pin> pin = std::make_shared<Pin>();
+			pin->m_ID = s_Context->m_ActiveGraph->GeneratePinID();
+			pin->m_ParentNode = newNode.get();
+			pin->m_Text = item.m_Text;
+			pin->m_Type = item.m_Type;
+			newNode->m_InPins.emplace_back(pin);
+		}
+
+		s_Context->m_ActiveGraph->m_Nodes.emplace_back(newNode);
+	}
+
+	void GraphPanel::CreateNodeByName(ImVec2 pos, std::string title)
+	{
+		Node* newNode = NodeBuilder::CreateNodeByName(title, s_Context->m_ActiveGraph);
+		if (newNode)
+		{
+			newNode->m_Pos = pos;
+
+			s_Context->m_ActiveGraph->m_Nodes.emplace_back(newNode);
+		}
 	}
 
 	void GraphPanel::RemoveNode(Node* node)
@@ -372,12 +427,14 @@ namespace Stimpi
 
 		if (showPopup)
 		{
-			static std::vector<std::string> nodeTypeList = { "New node" };
+			//static std::vector<std::string> nodeTypeList = { "New node" };
+			std::vector<std::string>& nodeTypeList = NodeBuilder::GetNodeNamesList();
 
 			if (SearchPopup::OnImGuiRender(nodeTypeList))
 			{
 				showPopup = false;
-				CreateNode(s_Context->m_NewNodePos, SearchPopup::GetSelection());
+				//CreateNode(s_Context->m_NewNodePos, SearchPopup::GetSelection());
+				CreateNodeByName(s_Context->m_NewNodePos, SearchPopup::GetSelection());
 			}
 		}
 	}
@@ -449,6 +506,17 @@ namespace Stimpi
 		return nullptr;
 	}
 
+	float GraphPanel::GetPanelZoom()
+	{
+		return s_Context->m_Canvas.m_Scale;
+	}
+
+	void GraphPanel::SetPanelZoom(float zoom)
+	{
+		if (zoom <= 1.0f && zoom >= 0.09f)
+			s_Context->m_Canvas.m_Scale = zoom;
+	}
+
 	bool GraphPanel::IsMouseHoveringPin(Pin* pin)
 	{
 		ImVec2 min(s_Context->m_Canvas.m_Origin.x + (pin->m_Pos.x - s_Style.m_PinRadius - s_Style.m_PinSelectOffset) * s_Context->m_Canvas.m_Scale, s_Context->m_Canvas.m_Origin.y + (pin->m_Pos.y - s_Style.m_PinRadius - s_Style.m_PinSelectOffset) * s_Context->m_Canvas.m_Scale);
@@ -493,6 +561,26 @@ namespace Stimpi
 		m_GraphController->SetActive(s_Context->m_IsActive);
 
 		s_Context->m_Canvas.m_Origin = { s_Context->m_Canvas.m_PosMin.x + s_Context->m_Canvas.m_Scrolling.x, s_Context->m_Canvas.m_PosMin.y + s_Context->m_Canvas.m_Scrolling.y };
+
+
+		// Debug Tooltip
+		if (s_Context->m_DebugTooltip)
+		{
+			if (ImGui::BeginItemTooltip())
+			{
+				ImGuiIO& io = ImGui::GetIO();
+				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+				ImGui::Text("Canvas posMin: %f, %f", s_Context->m_Canvas.m_PosMin.x, s_Context->m_Canvas.m_PosMin.y);
+				ImGui::Text("Canvas posMax: %f, %f", s_Context->m_Canvas.m_PosMax.x, s_Context->m_Canvas.m_PosMax.y);
+				ImGui::Text("Mouse: %f, %f", io.MousePos.x, io.MousePos.y);
+				ImVec2 viewPos = { io.MousePos.x - s_Context->m_Canvas.m_PosMin.x, io.MousePos.y - s_Context->m_Canvas.m_PosMin.y };
+				ImGui::Text("=>: %f, %f", viewPos.x, viewPos.y);
+				ImGui::Text("Origin: %f, %f", s_Context->m_Canvas.m_Origin.x, s_Context->m_Canvas.m_Origin.y);
+				ImGui::Text("=>: %f, %f", io.MousePos.x - s_Context->m_Canvas.m_Origin.x, io.MousePos.y - s_Context->m_Canvas.m_Origin.y);
+				ImGui::PopTextWrapPos();
+				ImGui::EndTooltip();
+			}
+		}
 	}
 
 	void GraphPanel::DrawCanvasGrid()

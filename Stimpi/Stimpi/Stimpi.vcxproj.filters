@@ -213,6 +213,16 @@
     </ClInclude>
     <ClInclude Include="src\stpch.h" />
     <ClInclude Include="src\Stimpi\Utils\YamlCustomTypes.h" />
+    <ClInclude Include="src\Stimpi\Scripting\CodeGen\CodeWriter.h" />
+    <ClInclude Include="src\Stimpi\Scripting\CodeGen\ClassGraph.h" />
+    <ClInclude Include="src\Stimpi\Scripting\CodeGen\ClassBuilder.h" />
+    <ClInclude Include="src\Stimpi\Scripting\CodeGen\Expressions\EventExpression.h" />
+    <ClInclude Include="src\Stimpi\Scripting\CodeGen\Expressions\Expression.h" />
+    <ClInclude Include="src\Stimpi\Scripting\CodeGen\Expressions\MethodExpression.h" />
+    <ClInclude Include="src\Stimpi\Scripting\CodeGen\Expressions\OnCreateExpression.h" />
+    <ClInclude Include="src\Stimpi\Scripting\CodeGen\Expressions\VariableExpression.h" />
+    <ClInclude Include="src\Stimpi\Scripting\CodeGen\Methods\ApplyForceMethod.h" />
+    <ClInclude Include="src\Stimpi\Scripting\CodeGen\Methods\Methods.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Core\Application.cpp">
@@ -363,5 +373,14 @@
       <Filter>Stimpi\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
+    <ClCompile Include="src\Stimpi\Scripting\CodeGen\CodeWriter.cpp" />
+    <ClCompile Include="src\Stimpi\Scripting\CodeGen\ClassGraph.cpp" />
+    <ClCompile Include="src\Stimpi\Scripting\CodeGen\ClassBuilder.cpp" />
+    <ClCompile Include="src\Stimpi\Scripting\CodeGen\Expressions\EventExpression.cpp" />
+    <ClCompile Include="src\Stimpi\Scripting\CodeGen\Expressions\Expression.cpp" />
+    <ClCompile Include="src\Stimpi\Scripting\CodeGen\Expressions\MethodExpression.cpp" />
+    <ClCompile Include="src\Stimpi\Scripting\CodeGen\Expressions\OnCreateExpression.cpp" />
+    <ClCompile Include="src\Stimpi\Scripting\CodeGen\Expressions\VariableExpression.cpp" />
+    <ClCompile Include="src\Stimpi\Scripting\CodeGen\Methods\ApplyForceMethod.cpp" />
   </ItemGroup>
 </Project>
