@@ -120,21 +120,36 @@ namespace Stimpi
 		return false;
 	}
 
-	// TODO: consider moving to graph class
 	void ConnectPinToPin(Pin* src, Pin* dest, Graph* graph)
 	{
-		if (IsConnected(src, dest) == false)
+		// Check if src is out pin and if dest is input
+		if (src->m_Type == Pin::Type::OUTPUT && dest->m_Type == Pin::Type::INPUT)
 		{
-			src->m_Connected = true;
-			dest->m_Connected = true;
+			// If input pin has active connection do nothing - make the user break it first
+			if (dest->m_ConnectedPins.empty())
+			{
+				// Check type compatibility
+				if (dest->m_ValueType == src->m_ValueType)
+				{
+					if (IsConnected(src, dest) == false)
+					{
+						src->m_Connected = true;
+						dest->m_Connected = true;
 
-			src->m_ConnectedPins.emplace_back(dest);
-			dest->m_ConnectedPins.emplace_back(src);
+						src->m_ConnectedPins.emplace_back(dest);
+						dest->m_ConnectedPins.emplace_back(src);
 
-			// Global pin to pin connections
-			std::shared_ptr<PinConnection> newConnection = std::make_shared<PinConnection>(src, dest);
-			CalculateBezierPoints(newConnection.get(), src, dest, s_Style.m_ConnectionSegments);
-			graph->m_PinConnections.emplace_back(newConnection);
+						// Global pin to pin connections
+						std::shared_ptr<PinConnection> newConnection = std::make_shared<PinConnection>(src, dest);
+						CalculateBezierPoints(newConnection.get(), src, dest, s_Style.m_ConnectionSegments);
+						graph->m_PinConnections.emplace_back(newConnection);
+					}
+				}
+				else
+				{
+					// TODO: maybe auto add type converter
+				}
+			}
 		}
 	}
 

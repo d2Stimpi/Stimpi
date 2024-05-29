@@ -8,6 +8,7 @@
 #include "Gui/Nodes/GraphSerializer.h"
 
 #include "Gui/Nodes/NodeBuilder.h"
+#include "Gui/CodeGen/ClassBuilder.h"
 
 namespace Stimpi
 {
@@ -79,8 +80,9 @@ namespace Stimpi
 
 		AddGraph(new Graph());
 
-		CreateNode(ImVec2(150.0f, 150.0f), "Test Node");
-		CreateNode(ImVec2(350.0f, 350.0f), "Another Node");
+		CreateNodeByName(ImVec2(150.0f, 150.0f), "OnCreate");
+		//CreateNode(ImVec2(150.0f, 150.0f), "Test Node");
+		//CreateNode(ImVec2(350.0f, 350.0f), "Another Node");
 	}
 
 	GraphPanel::~GraphPanel()
@@ -129,6 +131,7 @@ namespace Stimpi
 				if (Toolbar::ToolbarButton("Compile"))
 				{
 					ST_CORE_INFO("Compile button presed");
+					ClassBuilder::GenerateCode(s_Context->m_ActiveGraph, "TempGenClass.cs");
 				}
 				Toolbar::Separator();
 

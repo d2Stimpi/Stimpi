@@ -1,14 +1,13 @@
 #pragma once
 
-#include "Stimpi/Core/Core.h"
-#include "ClassGraph.h"
+#include "Gui/Nodes/GraphComponents.h"
 
 namespace Stimpi
 {
-	class ST_API ClassBuilder
+	class ClassBuilder
 	{
 	public:
-		static void GenerateCode(ClassGraph* graph, std::string outputFile);
+		static void GenerateCode(Graph* graph, std::string outputFile);
 
 	private:
 		static void GenerateHeader();
@@ -19,9 +18,5 @@ namespace Stimpi
 		static void GenerateOnUpdate();
 
 		static std::string BuildClassName(std::string name);
-
-		static void NextState();
-
-	private:
 	};
 }

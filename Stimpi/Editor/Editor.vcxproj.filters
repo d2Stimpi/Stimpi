@@ -86,6 +86,10 @@
     <ClInclude Include="src\Gui\Nodes\GraphRenderer.h" />
     <ClInclude Include="src\Gui\Nodes\GraphController.h" />
     <ClInclude Include="src\Gui\Nodes\NodeBuilder.h" />
+    <ClInclude Include="src\Gui\CodeGen\CodeWriter.h" />
+    <ClInclude Include="src\Gui\CodeGen\ClassBuilder.h" />
+    <ClInclude Include="src\Gui\CodeGen\CodeGenerators.h" />
+    <ClInclude Include="src\Gui\Nodes\NodeNames.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
@@ -151,5 +155,8 @@
     <ClCompile Include="src\Gui\Nodes\GraphController.cpp" />
     <ClCompile Include="src\Gui\Nodes\GraphComponents.cpp" />
     <ClCompile Include="src\Gui\Nodes\NodeBuilder.cpp" />
+    <ClCompile Include="src\Gui\CodeGen\CodeWriter.cpp" />
+    <ClCompile Include="src\Gui\CodeGen\ClassBuilder.cpp" />
+    <ClCompile Include="src\Gui\CodeGen\CodeGenerators.cpp" />
   </ItemGroup>
 </Project>

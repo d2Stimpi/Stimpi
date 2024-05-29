@@ -139,6 +139,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Gui\CodeGen\ClassBuilder.h" />
+    <ClInclude Include="src\Gui\CodeGen\CodeGenerators.h" />
+    <ClInclude Include="src\Gui\CodeGen\CodeWriter.h" />
     <ClInclude Include="src\Gui\Components\ImGuiEx.h" />
     <ClInclude Include="src\Gui\Components\SearchPopup.h" />
     <ClInclude Include="src\Gui\Components\SearchPopupWindow.h" />
@@ -157,6 +160,7 @@
     <ClInclude Include="src\Gui\Nodes\GraphSerializer.h" />
     <ClInclude Include="src\Gui\Nodes\NodeBuilder.h" />
     <ClInclude Include="src\Gui\Nodes\NodeGraph.h" />
+    <ClInclude Include="src\Gui\Nodes\NodeNames.h" />
     <ClInclude Include="src\Gui\Nodes\NodePanel.h" />
     <ClInclude Include="src\Gui\Nodes\GraphPanel.h" />
     <ClInclude Include="src\Gui\PlayPanel.h" />
@@ -169,6 +173,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
+    <ClCompile Include="src\Gui\CodeGen\ClassBuilder.cpp" />
+    <ClCompile Include="src\Gui\CodeGen\CodeGenerators.cpp" />
+    <ClCompile Include="src\Gui\CodeGen\CodeWriter.cpp" />
     <ClCompile Include="src\Gui\Components\ImGuiEx.cpp" />
     <ClCompile Include="src\Gui\Components\SearchPopup.cpp" />
     <ClCompile Include="src\Gui\Components\SearchPopupWindow.cpp" />

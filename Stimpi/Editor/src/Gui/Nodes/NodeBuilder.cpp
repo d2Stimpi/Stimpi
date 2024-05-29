@@ -2,21 +2,55 @@
 
 #include "Stimpi/Log.h"
 #include "Gui/Nodes/NodeBuilder.h"
+#include "Gui/Nodes/NodeNames.h"
 
 namespace Stimpi
 {
 	static std::unordered_map<std::string, std::function<Node* (Graph*)>> s_NodeBuilderFunctions;
 	static std::vector<std::string> s_NodeTypeList;
 
-	// Test builder function
+	static Node* CreateOnCreateNode(Graph* graph)
+	{
+		Node* newNode = NodeBuilder::CreateNode({
+			{Pin::Type::OUTPUT, Pin::ValueType::Flow, "Out"}
+			}, "OnCreate", graph);
+
+		newNode->m_Type = Node::NodeType::Create;
+
+		return newNode;
+	}
+
+	static Node* CreateEvnetNode(Graph* graph)
+	{
+		Node* newNode = NodeBuilder::CreateNode({
+			{Pin::Type::OUTPUT, Pin::ValueType::Flow, "Trigger"}
+			}, "Event", graph);
+
+		newNode->m_Type = Node::NodeType::Event;
+
+		return newNode;
+	}
+
 	static Node* CreateMethodNode(Graph* graph)
 	{
 		Node* newNode = NodeBuilder::CreateNode({
-			{Pin::Type::INPUT, "input"},
-			{Pin::Type::OUTPUT, "output"}
-			}, "Default Method", graph);
+			{Pin::Type::INPUT, Pin::ValueType::Flow,"In"},
+			{Pin::Type::INPUT, Pin::ValueType::Int,"Value"},
+			{Pin::Type::OUTPUT, Pin::ValueType::Flow, "Out"}
+			}, "Method", graph);
 
-		// TODO: init Expression data here
+		newNode->m_Type = Node::NodeType::Method;
+
+		return newNode;
+	}
+
+	static Node* CreateVariableNode(Graph* graph)
+	{
+		Node* newNode = NodeBuilder::CreateNode({
+			{Pin::Type::OUTPUT, Pin::ValueType::Int, "Integer"}
+			}, "Event", graph);
+
+		newNode->m_Type = Node::NodeType::Variable;
 
 		return newNode;
 	}
@@ -24,10 +58,10 @@ namespace Stimpi
 	void NodeBuilder::InitializeNodeList()
 	{
 		s_NodeBuilderFunctions = { 
-			{"New node",	nullptr },
-			{"Event",		nullptr },
-			{"Method",		CreateMethodNode },
-			{"Variable",	nullptr }
+			{ ONCREATE_NODE,	CreateOnCreateNode },
+			{ EVENT_NODE,		CreateEvnetNode },
+			{ METHOD_NODE,		CreateMethodNode },
+			{ VARIABLE_NODE,	CreateVariableNode }
 		};
 
 		// Build node type list
@@ -56,6 +90,7 @@ namespace Stimpi
 			pin->m_ParentNode = newNode;
 			pin->m_Text = item.m_Text;
 			pin->m_Type = item.m_Type;
+			pin->m_ValueType = item.m_ValueType;
 			if (pin->m_Type == Pin::Type::INPUT)
 				newNode->m_InPins.emplace_back(pin);
 			else
