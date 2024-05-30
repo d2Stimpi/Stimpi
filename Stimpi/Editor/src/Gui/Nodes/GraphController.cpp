@@ -1,6 +1,7 @@
 #include "stpch.h"
 #include "Gui/Nodes/GraphController.h"
 
+#include "Gui/EditorUtils.h"
 #include "Gui/Nodes/GraphPanel.h"
 #include "Stimpi/Core/InputManager.h"
 
@@ -31,6 +32,9 @@ namespace Stimpi
 	void GraphContorller::UpdateMouseControls()
 	{
 		ImGuiIO& io = ImGui::GetIO();
+
+		if (!EditorUtils::IsMouseContainedInRegion(m_Canvas->m_PosMin, m_Canvas->m_PosMax))
+			return;
 
 		uint32_t hoverNodeID = m_PanelContext->GetMouseHoverNode();	// Reset selection later, if mouse action is finished and nothing is hovered over
 		static ImVec2 dragOffset(0.0f, 0.0f);
@@ -270,6 +274,11 @@ namespace Stimpi
 				m_SelectedConnection = nullptr;
 			}
 		}
+	}
+
+	void GraphContorller::SetSelectedNode(Node* node)
+	{
+		m_SelectedNode = node;
 	}
 
 	Stimpi::Node* GraphContorller::GetSelectedNode()

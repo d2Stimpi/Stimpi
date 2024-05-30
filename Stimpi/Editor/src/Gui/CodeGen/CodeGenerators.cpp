@@ -5,6 +5,20 @@
 
 namespace Stimpi
 {
+	std::string PinValueTypeToString(Pin::ValueType type)
+	{
+		switch (type)
+		{
+		case Pin::ValueType::None: return "";
+		case Pin::ValueType::Flow: return "";
+		case Pin::ValueType::Bool: return "Bool";
+		case Pin::ValueType::Int: return "Int";
+		case Pin::ValueType::Vector2: return "Vector2";
+		}
+
+		return "";
+	}
+
 	std::unordered_map<std::string, std::function<void(Node*, CodeWriter*)>> s_DeclarationGenerators;
 	std::unordered_map<std::string, std::function<void(Node*, CodeWriter*)>> s_ExpressionGenerators;
 	
@@ -94,6 +108,12 @@ namespace Stimpi
 
 	std::string CodeGenerators::GetValueName(Node* node)
 	{
+		if (!node->m_OutPins.empty())
+		{
+			auto outPin = node->m_OutPins[0];
+			return PinValueTypeToString(outPin->m_ValueType);
+		}
+
 		return "";
 	}
 

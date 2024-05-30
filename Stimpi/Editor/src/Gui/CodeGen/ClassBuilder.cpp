@@ -1,7 +1,10 @@
 #include "stpch.h"
 #include "ClassBuilder.h"
 
+#include "Stimpi/Core/Core.h"
+
 #include "Gui/CodeGen/CodeWriter.h"
+#include "Gui/CodeGen/CodeGenerators.h"
 #include "Gui/Nodes/GraphComponents.h"
 
 namespace Stimpi
@@ -61,7 +64,14 @@ namespace Stimpi
 
 	void ClassBuilder::GenerateMemebers()
 	{
-
+		for (auto& node : s_Context.m_Graph->m_Nodes)
+		{
+			if (node->m_Type == Node::NodeType::Variable)
+			{
+				auto outPin = node->m_OutPins[0];
+				s_CodeWriter << CodeGenerators::GetValueName(node.get()) << " " << outPin->m_Text << " = $val;" << std::endl;
+			}
+		}
 	}
 
 	void ClassBuilder::GenerateOnCreate()

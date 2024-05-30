@@ -29,6 +29,7 @@ namespace Stimpi
 
 	static uint32_t sFileNodeID = 0;
 	static uint32_t sFolderNodeID = 0;
+
 	void ContentBrowserWindow::OnImGuiRender()
 	{
 		if (m_Show)
@@ -263,7 +264,7 @@ namespace Stimpi
 		if (m_RootFolderNode)
 		{
 			std::function<void(FileNode*)> resetNodeData = [&resetNodeData](FileNode* rootNode) {
-				for (auto node : rootNode->m_Children)
+				for (auto& node : rootNode->m_Children)
 				{
 					if (!node->m_Children.empty())
 					{

@@ -23,6 +23,7 @@ namespace Stimpi
 
 		void SetActive(bool active) { m_IsActive = active; }
 
+		void SetSelectedNode(Node* node);
 		Node* GetSelectedNode();
 		Pin* GetSelectedPin();
 

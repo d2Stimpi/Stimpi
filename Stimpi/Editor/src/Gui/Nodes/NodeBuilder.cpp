@@ -47,8 +47,8 @@ namespace Stimpi
 	static Node* CreateVariableNode(Graph* graph)
 	{
 		Node* newNode = NodeBuilder::CreateNode({
-			{Pin::Type::OUTPUT, Pin::ValueType::Int, "Integer"}
-			}, "Event", graph);
+			{Pin::Type::OUTPUT, Pin::ValueType::Int, "Variable"}
+			}, "Variable", graph);
 
 		newNode->m_Type = Node::NodeType::Variable;
 

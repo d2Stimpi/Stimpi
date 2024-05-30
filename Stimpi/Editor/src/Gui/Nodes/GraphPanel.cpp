@@ -13,6 +13,8 @@
 namespace Stimpi
 {
 	bool GraphPanel::m_Show = false;
+	bool GraphPanel::m_ShowNodesPanel = true;
+	bool GraphPanel::m_ShowDetailsPanel = true;
 
 	struct GraphPanelContext
 	{
@@ -27,7 +29,6 @@ namespace Stimpi
 		bool m_IsHovered = false;
 		bool m_IsActive = false;
 
-		Node* m_SelectedNode = nullptr; // TODO: remove from here
 		// Popup data
 		ImVec2 m_NewNodePos = { 0.0f, 0.0f };
 
@@ -100,7 +101,9 @@ namespace Stimpi
 	{
 		if (m_Show)
 		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4.0f, 4.0f));
 			ImGui::Begin("Node Panel", &m_Show, ImGuiWindowFlags_MenuBar);
+			ImGui::PopStyleVar();
 
 			ImDrawList* draw_list = ImGui::GetWindowDrawList();
 			s_Context->m_DrawList = draw_list;
@@ -109,6 +112,19 @@ namespace Stimpi
 			// Menu bar
 			if (ImGui::BeginMenuBar())
 			{
+				if (ImGui::BeginMenu("View##GraphPanel"))
+				{
+					if (ImGui::MenuItem("Nodes", nullptr, m_ShowNodesPanel))
+					{
+						m_ShowNodesPanel = !m_ShowNodesPanel;
+					}
+					if (ImGui::MenuItem("Details", nullptr, m_ShowDetailsPanel))
+					{
+						m_ShowDetailsPanel = !m_ShowDetailsPanel;
+					}
+					ImGui::EndMenu();
+				}
+
 				if (ImGui::BeginMenu("Menu##GraphPanel"))
 				{
 					if (ImGui::MenuItem("Show Tooltip", nullptr, s_Context->m_DebugTooltip))
@@ -125,86 +141,181 @@ namespace Stimpi
 				ImGui::EndMenuBar();
 			}
 
-			// Main Toolbar
-			Toolbar::Begin("NodePanelToolbar");
+
+			if (ImGui::BeginTable("##GraphPanelTable", 3, ImGuiTableFlags_Resizable))
 			{
-				if (Toolbar::ToolbarButton("Compile"))
+				ImGui::TableSetupColumn("ColNodePanel", !m_ShowNodesPanel ? ImGuiTableColumnFlags_Disabled : 0);
+				ImGui::TableSetupColumn("ColGraph");
+				ImGui::TableSetupColumn("ColDetailsPanel", !m_ShowDetailsPanel ? ImGuiTableColumnFlags_Disabled : 0);
+
+				ImGui::TableNextColumn();
+				if (m_ShowNodesPanel)
 				{
-					ST_CORE_INFO("Compile button presed");
-					ClassBuilder::GenerateCode(s_Context->m_ActiveGraph, "TempGenClass.cs");
-				}
-				Toolbar::Separator();
-
-				if (Toolbar::ToolbarButton("Save"))
-				{
-					if (s_Context->m_ActiveGraph)
-					{
-						GraphSerializer serializer(s_Context->m_ActiveGraph);
-						FilePath path = Project::GetProjectDir() / "Graph.txt";
-						serializer.Serialize(path);
-					}
-				}
-				Toolbar::Separator();
-
-				if (Toolbar::ToolbarButton("Load"))
-				{
-					GraphSerializer serializer(s_Context->m_ActiveGraph);
-					FilePath path = Project::GetProjectDir() / "Graph.txt";
-					serializer.Deseriealize(path);
-
-					RegenerateGraphDataAfterLoad(s_Context->m_ActiveGraph);
-				}
-				Toolbar::Separator();
-
-				if (Toolbar::ToolbarButton("Add Graph"))
-				{
-					static int graphNameCnt = 0;
-					std::string name = fmt::format("Graph {}", graphNameCnt++);
-					AddGraph(new Graph(name));
-				}
-				Toolbar::Separator();
-			}
-			Toolbar::End();
-
-			// Tabs start here
-			static ImGuiTabBarFlags tabBarFlags = ImGuiTabBarFlags_Reorderable | ImGuiTabBarFlags_AutoSelectNewTabs;
-
-			if (ImGui::BeginTabBar("NodePanelNewTabBar", tabBarFlags))
-			{
-				Graph* toRemove = nullptr; // Deffer removing of "closed" graph from the list after iterating trough it
-				// Each graph rendering goes here
-				for (auto& graph : s_Context->m_Graphs)
-				{
-					if (ImGui::BeginTabItem(graph->m_Name.c_str(), &graph->m_Show, ImGuiTabItemFlags_None))
-					{
-						//Set active graph to selected tab item
-						s_Context->m_ActiveGraph = graph.get();
-
-						SetCanvasData();
-
-						// Process mouse control before any drawing calls
-						m_GraphController->UpdateMouseControls();
-						m_GraphController->HandleKeyPresses();
-
-						DrawCanvasGrid();
-						m_GraphRenderer->OnImGuiRender();
-
-						// Rect pushed in drawing of the Grid (start of the draw commands)
-						s_Context->m_DrawList->PopClipRect();
-						// Draw border
-						s_Context->m_DrawList->AddRect(s_Context->m_Canvas.m_PosMin, s_Context->m_Canvas.m_PosMax, IM_COL32(255, 255, 255, 255));
-
-						DrawGraphOverlay();
-
-						ImGui::EndTabItem();
-					}
-					toRemove = !graph->m_Show ? graph.get() : nullptr;
+					DrawNodesPanel();
 				}
 
-				ImGui::EndTabBar();
+				ImGui::TableSetColumnIndex(1);
+				DrawGraph();
+
+				if (m_ShowDetailsPanel)
+				{
+					ImGui::TableSetColumnIndex(2);
+					DrawDetailsPanel();
+				}
+
+				ImGui::EndTable();
 			}
 
 			ImGui::End();
+		}
+	}
+
+	void GraphPanel::DrawNodesPanel()
+	{
+		ImGui::BeginChild("NodesInspector##Child", ImVec2(0.0f, 0.0f), false);
+
+		if (ImGui::BeginTabBar("NodesInspectorTabBar", ImGuiTabBarFlags_AutoSelectNewTabs))
+		{
+			if (ImGui::BeginTabItem("Graph_Name_here", &m_ShowNodesPanel, ImGuiTabItemFlags_None))
+			{
+				if (ImGui::CollapsingHeader("Variables##NodesInspector", ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					for (auto& node : s_Context->m_ActiveGraph->m_Nodes)
+					{
+						if (node->m_Type == Node::NodeType::Variable)
+						{
+							ImGui::PushID(node->m_ID);
+							if (ImGui::TreeNodeEx((void*)&node, ImGuiTreeNodeFlags_Leaf, node->m_Title.c_str()))
+							{
+								if (ImGui::IsItemClicked())
+								{
+									m_GraphController->SetSelectedNode(node.get());
+								}
+							}
+							ImGui::PopID();
+							ImGui::TreePop();
+
+							//if (ImGui::Selectable(node->m_Title.c_str())) {}
+						}
+					}
+				}
+				ImGui::Separator();
+
+
+				ImGui::EndTabItem();
+			}
+			ImGui::EndTabBar();
+		}
+		ImGui::EndChild();
+	}
+
+	void GraphPanel::DrawDetailsPanel()
+	{
+		ImGui::BeginChild("Details##Child", ImVec2(0.0f, 100.0f), false);
+
+		if (ImGui::BeginTabBar("DetailsTabBar", ImGuiTabBarFlags_AutoSelectNewTabs))
+		{
+			if (ImGui::BeginTabItem("Details", &m_ShowDetailsPanel, ImGuiTabItemFlags_None))
+			{
+				auto selected = m_GraphController->GetSelectedNode();
+				if (selected)
+				{
+					if (ImGui::CollapsingHeader(selected->m_Title.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+					{
+						ImGui::Text("Data placeholder");
+					}
+				}
+				ImGui::Separator();
+
+
+				ImGui::EndTabItem();
+			}
+			ImGui::EndTabBar();
+		}
+
+		
+		ImGui::EndChild();
+	}
+
+	void GraphPanel::DrawGraph()
+	{
+		// Main Toolbar
+		Toolbar::Begin("NodePanelToolbar");
+		{
+			if (Toolbar::ToolbarButton("Compile"))
+			{
+				ST_CORE_INFO("Compile button presed");
+				ClassBuilder::GenerateCode(s_Context->m_ActiveGraph, "TempGenClass.cs");
+			}
+			Toolbar::Separator();
+
+			if (Toolbar::ToolbarButton("Save"))
+			{
+				if (s_Context->m_ActiveGraph)
+				{
+					GraphSerializer serializer(s_Context->m_ActiveGraph);
+					FilePath path = Project::GetProjectDir() / "Graph.txt";
+					serializer.Serialize(path);
+				}
+			}
+			Toolbar::Separator();
+
+			if (Toolbar::ToolbarButton("Load"))
+			{
+				GraphSerializer serializer(s_Context->m_ActiveGraph);
+				FilePath path = Project::GetProjectDir() / "Graph.txt";
+				serializer.Deseriealize(path);
+
+				RegenerateGraphDataAfterLoad(s_Context->m_ActiveGraph);
+			}
+			Toolbar::Separator();
+
+			if (Toolbar::ToolbarButton("Add Graph"))
+			{
+				static int graphNameCnt = 0;
+				std::string name = fmt::format("Graph {}", graphNameCnt++);
+				AddGraph(new Graph(name));
+			}
+			Toolbar::Separator();
+		}
+		Toolbar::End();
+
+		// Tabs start here
+		static ImGuiTabBarFlags tabBarFlags = ImGuiTabBarFlags_Reorderable | ImGuiTabBarFlags_AutoSelectNewTabs;
+
+		if (ImGui::BeginTabBar("NodePanelNewTabBar", tabBarFlags))
+		{
+			Graph* toRemove = nullptr; // Deffer removing of "closed" graph from the list after iterating trough it
+			// Each graph rendering goes here
+			for (auto& graph : s_Context->m_Graphs)
+			{
+				if (ImGui::BeginTabItem(graph->m_Name.c_str(), &graph->m_Show, ImGuiTabItemFlags_None))
+				{
+					//Set active graph to selected tab item
+					s_Context->m_ActiveGraph = graph.get();
+
+					SetCanvasData();
+
+					// Process mouse control before any drawing calls
+					m_GraphController->UpdateMouseControls();
+					m_GraphController->HandleKeyPresses();
+
+					DrawCanvasGrid();
+					m_GraphRenderer->OnImGuiRender();
+
+					// Rect pushed in drawing of the Grid (start of the draw commands)
+					s_Context->m_DrawList->PopClipRect();
+					// Draw border
+					s_Context->m_DrawList->AddRect(s_Context->m_Canvas.m_PosMin, s_Context->m_Canvas.m_PosMax, IM_COL32(255, 255, 255, 255));
+
+					DrawGraphOverlay();
+
+					ImGui::EndTabItem();
+				}
+				toRemove = !graph->m_Show ? graph.get() : nullptr;
+			}
+
+			ImGui::EndTabBar();
 		}
 	}
 
@@ -380,11 +491,6 @@ namespace Stimpi
 			return node->m_ID == m_GraphController->GetSelectedNode()->m_ID;
 
 		return false;
-	}
-
-	void GraphPanel::SetSelectedNode(Node* node)
-	{
-		s_Context->m_SelectedNode = node;
 	}
 
 	void GraphPanel::UpdateNodeConnectionsPoints(Node* node)

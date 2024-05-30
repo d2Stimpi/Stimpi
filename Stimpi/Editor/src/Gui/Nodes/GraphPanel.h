@@ -28,6 +28,10 @@ namespace Stimpi
 
 		void SetDrawList(ImDrawList* drawList);
 		void OnImGuiRender();
+
+		void DrawNodesPanel();
+		void DrawDetailsPanel();
+		void DrawGraph();
 		void DrawGraphOverlay();
 
 		// Graph methods
@@ -45,7 +49,6 @@ namespace Stimpi
 		void RemoveNode(Node* node);
 
 		bool IsNodeSelected(Node* node);
-		void SetSelectedNode(Node* node); // Set from controller
 		void UpdateNodeConnectionsPoints(Node* node);
 
 		void AddNodePopup(bool show);
@@ -74,6 +77,8 @@ namespace Stimpi
 
 	private:
 		static bool m_Show;		// Easier use in menu if static - to toggle window visibility
+		static bool m_ShowNodesPanel;
+		static bool m_ShowDetailsPanel;
 
 		GraphRenderer* m_GraphRenderer = nullptr;
 		GraphContorller* m_GraphController = nullptr;

@@ -58,4 +58,18 @@ namespace Stimpi
 		return false;
 	}
 
+	bool EditorUtils::IsMouseContainedInRegion(ImVec2 min, ImVec2 max)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		ImVec2 pos = { io.MousePos.x, io.MousePos.y };
+
+		if ((pos.x >= min.x) && (pos.x <= max.x) &&
+			(pos.y >= min.y) && (pos.y <= max.y))
+		{
+			return true;
+		}
+
+		return false;
+	}
+
 }
