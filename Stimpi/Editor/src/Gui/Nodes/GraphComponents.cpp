@@ -85,6 +85,68 @@ namespace Stimpi
 		return true;
 	}
 
+	ImVec2 CalcNodeSize(Node* node)
+	{
+		ImVec2 size = { 0.0f, 0.0f};
+
+		// Pin space
+		int pinCount = std::max(node->m_InPins.size(), node->m_OutPins.size());
+		size.y += pinCount * (s_Style.m_PinRadius + s_Style.m_PinSpacing) + s_Style.m_PinOffset;
+
+		// Width
+		if (!node->m_InPins.empty())
+		{
+			// Find longest text pin
+			float maxWidth = 0.0f;
+			for (auto& pin : node->m_InPins)
+			{
+				ImVec2 textSize = ImGui::CalcTextSize(pin->m_Text.c_str());
+				maxWidth = std::max(textSize.x, maxWidth);
+			}
+
+			size.x += s_Style.m_PinRadius + s_Style.m_PinArrowSpacing + s_Style.m_PinArrowWidth + s_Style.m_PinOffset + s_Style.m_PinTextSpacing;
+			size.x += maxWidth;
+		}
+
+		if (!node->m_OutPins.empty())
+		{
+			// Find longest text pin
+			float maxWidth = 0.0f;
+			for (auto& pin : node->m_OutPins)
+			{
+				ImVec2 textSize = ImGui::CalcTextSize(pin->m_Text.c_str());
+				maxWidth = std::max(textSize.x, maxWidth);
+			}
+
+			size.x += s_Style.m_PinRadius + s_Style.m_PinArrowSpacing + s_Style.m_PinArrowWidth + s_Style.m_PinOffset + s_Style.m_PinTextSpacing;
+			size.x += maxWidth;
+		}
+
+		if (!node->m_OutPins.empty() && !node->m_InPins.empty())
+		{
+			size.x += s_Style.m_PinSpacing;
+		}
+
+		if (node->m_HasHeader)
+		{
+			size.y += s_Style.m_HeaderHeight + 10;
+
+			float width = 2 * s_Style.m_HeaderTextOffset.x;
+			width += ImGui::CalcTextSize(node->m_Title.c_str()).x;
+
+			if (width > size.x)
+			{
+				size.x = width;
+			}
+		}
+		else
+		{
+			size.x += s_Style.m_HeaderTextOffset.x;
+		}
+
+		return size;
+	}
+
 #pragma endregion Node
 
 
@@ -92,6 +154,37 @@ namespace Stimpi
 	/**
 	 * Helper Pin static functions
 	 */
+
+	std::string PinValueTypeToString(Pin::ValueType type)
+	{
+		switch (type)
+		{
+		case Pin::ValueType::None: return "";
+		case Pin::ValueType::Flow: return "";
+		case Pin::ValueType::Bool: return "Bool";
+		case Pin::ValueType::Int: return "Int";
+		case Pin::ValueType::Vector2: return "Vector2";
+		case Pin::ValueType::String: return "String";
+		}
+
+		return "";
+	}
+
+	void UpdatePinValueType(Pin* pin, Pin::ValueType type)
+	{
+		pin->m_ValueType = type;
+
+		switch (type)
+		{
+		case Pin::ValueType::None: pin->m_Value = (int)0; break;  	 // should never get here
+		case Pin::ValueType::Flow: pin->m_Value = (int)0; break;	 // should never get here
+		case Pin::ValueType::Bool: pin->m_Value = true; break;
+		case Pin::ValueType::Int: pin->m_Value = (int)0; break;
+		case Pin::ValueType::Float: pin->m_Value = 0.0f; break;
+		case Pin::ValueType::Vector2: pin->m_Value = glm::vec2(0.0f, 0.0f); break;
+		case Pin::ValueType::String: pin->m_Value = std::string(); break;
+		}
+	}
 
 	float GetPinSpaceHeight()
 	{

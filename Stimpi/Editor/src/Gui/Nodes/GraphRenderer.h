@@ -41,6 +41,7 @@ namespace Stimpi
 		GraphPanelCanvas* m_Canvas = nullptr;
 
 		AssetHandle m_HeaderImage;
+		AssetHandle m_HighlightImage;
 
 		bool m_DebugOn = false;
 	};

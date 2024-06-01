@@ -1,5 +1,9 @@
 #pragma once
 
+#include "Gui/Nodes/GraphComponents.h"
+
+#include <glm/glm.hpp>
+
 namespace Stimpi
 {
 	enum class CodeManip
@@ -46,4 +50,7 @@ namespace Stimpi
 
 	template <>
 	CodeWriter& operator<<<CodeManip>(CodeWriter& cw, CodeManip manip);
+
+	template <>
+	CodeWriter& operator<<<pin_type_variant>(CodeWriter& cw, pin_type_variant val);
 }

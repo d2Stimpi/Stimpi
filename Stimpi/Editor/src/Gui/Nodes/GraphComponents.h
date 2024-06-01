@@ -1,16 +1,29 @@
 #pragma once
 
+#include "Gui/Nodes/CodeComponent.h"
+
 #include "ImGui/src/imgui.h"
+#include <glm/glm.hpp>
+
+#define PIN_VALUE_TYPES_LIST	{ "Bool", "Int", "Float", "Vector2", "String" }
+#define PIN_VALUE_TYPE_TO_INT(x)	((int)(x) - 2)
+#define INT_TO_PIN_VALUE_TYPE(x)	((Pin::ValueType)(x + 2))
 
 namespace Stimpi
 {
 	struct Node;
 	struct PinConnection;
 
+	// Adding new type 
+	//	-> GraphPanel function for value input
+	//  -> CodeWriter for vriting variant type
+	//  -> GraphRender specific type color
+	using pin_type_variant = std::variant<bool, int, float, glm::vec2, std::string>;
+
 	struct Pin
 	{
 		enum class Type { INPUT = 0, OUTPUT };
-		enum class ValueType { None = 0, Flow, Bool, Int, Vector2 };
+		enum class ValueType { None = 0, Flow, Bool, Int, Float, Vector2, String };
 
 		Node* m_ParentNode;	// Owner of the pin
 		uint32_t m_ID;	    // Pin ID
@@ -22,6 +35,7 @@ namespace Stimpi
 		std::string m_Text;
 		Type m_Type;
 		ValueType m_ValueType;
+		pin_type_variant m_Value;
 
 		// For handling selection - global position
 		ImVec2 m_Pos = { 0.0f, 0.0f };
@@ -32,6 +46,7 @@ namespace Stimpi
 		Pin::Type m_Type;
 		Pin::ValueType m_ValueType;
 		std::string m_Text;
+		pin_type_variant m_DefaultValue;
 	};
 
 	struct NodeLayout
@@ -59,12 +74,15 @@ namespace Stimpi
 		uint32_t m_ID = 0;
 
 		std::string m_Title;
+		bool m_HasHeader = true;
 
 		// List of Pins
 		std::vector<std::shared_ptr<Pin>> m_InPins;
 		std::vector<std::shared_ptr<Pin>> m_OutPins;
 
 		NodeType m_Type = NodeType::None;
+		// Used for calling code gen functions
+		std::shared_ptr<CodeComponent> m_CodeComponent;
 
 		Node() = default;
 		Node(const Node&) = default;
@@ -152,8 +170,11 @@ namespace Stimpi
 	ImVec2 GetNodeExtraSize(Node* node);
 	bool IsNodeSpaceSizeAvailable(Node* node, ImVec2 size);
 	bool ResizeNodeSpace(Node* node, ImVec2 size);
+	ImVec2 CalcNodeSize(Node* node);
 
 	// Pin methods
+	std::string PinValueTypeToString(Pin::ValueType type);
+	void UpdatePinValueType(Pin* pin, Pin::ValueType type);
 	float GetPinSpaceHeight();
 	float GetPinSpaceWidth();
 	bool IsConnected(Pin* src, Pin* dest);

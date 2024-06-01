@@ -7,11 +7,44 @@
 
 namespace Stimpi
 {
+	static ImU32 GetPinVariantColor(Pin* pin)
+	{
+		ImU32 picked = IM_COL32(35, 195, 35, 255);
+		pin_type_variant val = pin->m_Value;
+
+		if (std::holds_alternative<bool>(val))
+		{
+			picked = IM_COL32(35, 195, 35, 255);
+		}
+
+		if (std::holds_alternative<int>(val))
+		{
+			picked = IM_COL32(35, 35, 195, 255);
+		}
+
+		if (std::holds_alternative<float>(val))
+		{
+			picked = IM_COL32(195, 35, 35, 255);
+		}
+
+		if (std::holds_alternative<glm::vec2>(val))
+		{
+			picked = IM_COL32(195, 195, 35, 255);
+		}
+
+		if (std::holds_alternative<std::string>(val))
+		{
+			picked = IM_COL32(35, 195, 195, 255);
+		}
+
+		return picked;
+	}
 
 	GraphRenderer::GraphRenderer(GraphPanel* panelContext)
 	{
 		m_PanelContext = panelContext;
 		m_HeaderImage = AssetManager::GetAsset<Texture>("..\/assets\/textures\/Gradient2.png");
+		m_HighlightImage = AssetManager::GetAsset<Texture>("..\/assets\/textures\/Highlight.png");
 	}
 
 	GraphRenderer::~GraphRenderer()
@@ -49,41 +82,66 @@ namespace Stimpi
 		ST_ASSERT(!m_PanelContext->GetController(), "Graph Controller not set!");
 		ImVec2 nodePos = node->m_Pos;
 
-		// TODO: move it elsewhere, so its not calculated each frame
-		// Calculate size of all Node's pins for drawing Node Rect
-		ImVec2 pinSpaceSize = { 0.0f /*TODO: widht*/, 40.0f };
-		// Check if Node can hold Pin space
-		if (!IsNodeSpaceSizeAvailable(node, pinSpaceSize))
-		{
-			// Can't fit, resize node
-			ResizeNodeSpace(node, pinSpaceSize);
-		}
 
-		m_DrawList->AddRectFilled(
-			{ m_Canvas->m_Origin.x + nodePos.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + nodePos.y * m_Canvas->m_Scale },
-			{ m_Canvas->m_Origin.x + (nodePos.x + node->m_Size.x) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (nodePos.y + node->m_Size.y) * m_Canvas->m_Scale },
-			IM_COL32(20, 23, 20, 255),
-			15.0f * m_Canvas->m_Scale);
-
-		ImVec2 uv_min = ImVec2(0.0f, 1.0f);
-		ImVec2 uv_max = ImVec2(1.0f, 0.0f);
-		auto texture = AssetManager::GetAsset(m_HeaderImage).As<Texture>();
-		if (texture->Loaded())
+		if (node->m_HasHeader)
 		{
-			m_DrawList->AddImageRounded((void*)(intptr_t)texture->GetTextureID(),
+			m_DrawList->AddRectFilled(
 				{ m_Canvas->m_Origin.x + nodePos.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + nodePos.y * m_Canvas->m_Scale },
-				{ m_Canvas->m_Origin.x + (nodePos.x + node->m_Size.x) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (nodePos.y + s_Style.m_HeaderHeight) * m_Canvas->m_Scale },
-				uv_min, uv_max,
-				IM_COL32(225, 30, 30, 255),
-				s_Style.m_NodeRounding * m_Canvas->m_Scale, ImDrawFlags_RoundCornersTop);
-		}
+				{ m_Canvas->m_Origin.x + (nodePos.x + node->m_Size.x) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (nodePos.y + node->m_Size.y) * m_Canvas->m_Scale },
+				IM_COL32(20, 23, 20, 255),
+				s_Style.m_NodeRounding* m_Canvas->m_Scale);
 
-		ImGui::SetWindowFontScale(m_Canvas->m_Scale);
-		m_DrawList->AddText(
-			{ m_Canvas->m_Origin.x + (s_Style.m_HeaderTextOffset.x + nodePos.x) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (s_Style.m_HeaderTextOffset.y + nodePos.y) * m_Canvas->m_Scale },
-			IM_COL32(255, 255, 255, 255),
-			node->m_Title.c_str());
-		ImGui::SetWindowFontScale(1.0f);
+			ImVec2 uv_min = ImVec2(0.0f, 1.0f);
+			ImVec2 uv_max = ImVec2(1.0f, 0.0f);
+			auto texture = AssetManager::GetAsset(m_HeaderImage).As<Texture>();
+			if (texture->Loaded())
+			{
+				m_DrawList->AddImageRounded((void*)(intptr_t)texture->GetTextureID(),
+					{ m_Canvas->m_Origin.x + nodePos.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + nodePos.y * m_Canvas->m_Scale },
+					{ m_Canvas->m_Origin.x + (nodePos.x + node->m_Size.x) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (nodePos.y + s_Style.m_HeaderHeight) * m_Canvas->m_Scale },
+					uv_min, uv_max,
+					IM_COL32(225, 30, 30, 255),
+					s_Style.m_NodeRounding * m_Canvas->m_Scale, ImDrawFlags_RoundCornersTop);
+			}
+
+			ImGui::SetWindowFontScale(m_Canvas->m_Scale);
+			m_DrawList->AddText(
+				{ m_Canvas->m_Origin.x + (s_Style.m_HeaderTextOffset.x + nodePos.x) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (s_Style.m_HeaderTextOffset.y + nodePos.y) * m_Canvas->m_Scale },
+				IM_COL32(255, 255, 255, 255),
+				node->m_Title.c_str());
+			ImGui::SetWindowFontScale(1.0f);
+		}
+		else
+		{
+			m_DrawList->AddRectFilled(
+				{ m_Canvas->m_Origin.x + nodePos.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + nodePos.y * m_Canvas->m_Scale },
+				{ m_Canvas->m_Origin.x + (nodePos.x + node->m_Size.x) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (nodePos.y + node->m_Size.y) * m_Canvas->m_Scale },
+				IM_COL32(20, 23, 20, 255),
+				s_Style.m_NodeRounding * m_Canvas->m_Scale);
+
+			ImVec2 uv_min = ImVec2(0.0f, 1.0f);
+			ImVec2 uv_max = ImVec2(1.0f, 0.0f);
+			auto texture = AssetManager::GetAsset(m_HighlightImage).As<Texture>();
+			if (texture->Loaded())
+			{
+				ImU32 bgColor = IM_COL32(30, 225, 30, 255);
+				if (!node->m_InPins.empty() || !node->m_OutPins.empty())
+				{
+					// Out pin has priority for color decision
+					if (!node->m_OutPins.empty())
+						bgColor = GetPinVariantColor(node->m_OutPins.front().get());
+					else
+						bgColor = GetPinVariantColor(node->m_InPins.front().get());
+				}
+
+				m_DrawList->AddImageRounded((void*)(intptr_t)texture->GetTextureID(),
+					{ m_Canvas->m_Origin.x + nodePos.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + nodePos.y * m_Canvas->m_Scale },
+					{ m_Canvas->m_Origin.x + (nodePos.x + node->m_Size.x) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (nodePos.y + node->m_Size.y) * m_Canvas->m_Scale },
+					uv_min, uv_max, 
+					bgColor,
+					s_Style.m_NodeRounding* m_Canvas->m_Scale);
+			}
+		}
 
 		// Draw Node's pins here
 		DrawNodePins(node);
@@ -103,7 +161,9 @@ namespace Stimpi
 	{
 		ImVec2 pinStartPos = node->m_Pos;
 		pinStartPos.x += s_Style.m_PinOffset + s_Style.m_PinRadius;
-		pinStartPos.y += s_Style.m_HeaderHeight + s_Style.m_PinOffset + s_Style.m_PinRadius;
+		pinStartPos.y += s_Style.m_PinOffset + s_Style.m_PinRadius;
+		if (node->m_HasHeader)
+			pinStartPos.y += s_Style.m_HeaderHeight;
 
 		for (auto pin : node->m_InPins)
 		{
@@ -112,7 +172,9 @@ namespace Stimpi
 		}
 
 		pinStartPos = node->m_Pos;
-		pinStartPos.y += s_Style.m_HeaderHeight + s_Style.m_PinOffset + s_Style.m_PinRadius;
+		pinStartPos.y += s_Style.m_PinOffset + s_Style.m_PinRadius;
+		if (node->m_HasHeader)
+			pinStartPos.y += s_Style.m_HeaderHeight;
 
 		for (auto pin : node->m_OutPins)
 		{
@@ -145,7 +207,7 @@ namespace Stimpi
 			m_DrawList->AddCircleFilled(
 				{ m_Canvas->m_Origin.x + pinStartPos.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + pinStartPos.y * m_Canvas->m_Scale },
 				s_Style.m_PinRadius * m_Canvas->m_Scale,
-				IM_COL32(35, 195, 35, 255),
+				GetPinVariantColor(pin),
 				circleSegments);
 		}
 		else
@@ -153,7 +215,7 @@ namespace Stimpi
 			m_DrawList->AddCircle(
 				{ m_Canvas->m_Origin.x + pinStartPos.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + pinStartPos.y * m_Canvas->m_Scale },
 				s_Style.m_PinRadius * m_Canvas->m_Scale,
-				IM_COL32(35, 195, 35, 255),
+				GetPinVariantColor(pin),
 				circleSegments,
 				s_Style.m_PinThickness * m_Canvas->m_Scale);
 		}
@@ -172,7 +234,7 @@ namespace Stimpi
 			{ m_Canvas->m_Origin.x + pinArrowP1.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + pinArrowP1.y * m_Canvas->m_Scale },
 			{ m_Canvas->m_Origin.x + pinArrowP2.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + pinArrowP2.y * m_Canvas->m_Scale },
 			{ m_Canvas->m_Origin.x + pinArrowP3.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + pinArrowP3.y * m_Canvas->m_Scale },
-			IM_COL32(35, 195, 35, 255));
+			GetPinVariantColor(pin));
 
 		// Pin text part
 		ImVec2 textPos = pinStartPos;

@@ -34,6 +34,8 @@ namespace Stimpi
 		void DrawGraph();
 		void DrawGraphOverlay();
 
+		void DrawPinValueInput(Pin* pin);
+
 		// Graph methods
 		void AddGraph(Graph* graph);
 		void RemoveGraph(Graph* graph);
@@ -41,6 +43,7 @@ namespace Stimpi
 
 		static void ShowWindow(bool show);
 		static bool IsVisible();
+		static Graph* GetGlobalActiveGraph();
 
 		// Node methods
 		void CreateNode(ImVec2 pos, std::string title);
@@ -73,7 +76,6 @@ namespace Stimpi
 	private:
 		void SetCanvasData();
 		void DrawCanvasGrid();
-
 
 	private:
 		static bool m_Show;		// Easier use in menu if static - to toggle window visibility

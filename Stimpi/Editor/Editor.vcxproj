@@ -140,7 +140,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Gui\CodeGen\ClassBuilder.h" />
-    <ClInclude Include="src\Gui\CodeGen\CodeGenerators.h" />
     <ClInclude Include="src\Gui\CodeGen\CodeWriter.h" />
     <ClInclude Include="src\Gui\Components\ImGuiEx.h" />
     <ClInclude Include="src\Gui\Components\SearchPopup.h" />
@@ -154,15 +153,22 @@
     <ClInclude Include="src\Gui\EditorUtils.h" />
     <ClInclude Include="src\Gui\Gizmo2D.h" />
     <ClInclude Include="src\Gui\MainManuBar.h" />
+    <ClInclude Include="src\Gui\Nodes\CodeComponent.h" />
+    <ClInclude Include="src\Gui\Nodes\Events\OnCreateNode.h" />
+    <ClInclude Include="src\Gui\Nodes\Events\SampleEventNode.h" />
     <ClInclude Include="src\Gui\Nodes\GraphComponents.h" />
     <ClInclude Include="src\Gui\Nodes\GraphController.h" />
     <ClInclude Include="src\Gui\Nodes\GraphRenderer.h" />
     <ClInclude Include="src\Gui\Nodes\GraphSerializer.h" />
+    <ClInclude Include="src\Gui\Nodes\Methods\SampleMethodNode.h" />
     <ClInclude Include="src\Gui\Nodes\NodeBuilder.h" />
     <ClInclude Include="src\Gui\Nodes\NodeGraph.h" />
-    <ClInclude Include="src\Gui\Nodes\NodeNames.h" />
+    <ClInclude Include="src\Gui\Nodes\Nodes.h" />
     <ClInclude Include="src\Gui\Nodes\NodePanel.h" />
     <ClInclude Include="src\Gui\Nodes\GraphPanel.h" />
+    <ClInclude Include="src\Gui\Nodes\Variables\IntegerNode.h" />
+    <ClInclude Include="src\Gui\Nodes\Variables\VariableGetNode.h" />
+    <ClInclude Include="src\Gui\Nodes\Variables\VariableSetNode.h" />
     <ClInclude Include="src\Gui\PlayPanel.h" />
     <ClInclude Include="src\Gui\SceneHierarchyWindow.h" />
     <ClInclude Include="src\Gui\SceneViewWindow.h" />
@@ -174,7 +180,6 @@
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
     <ClCompile Include="src\Gui\CodeGen\ClassBuilder.cpp" />
-    <ClCompile Include="src\Gui\CodeGen\CodeGenerators.cpp" />
     <ClCompile Include="src\Gui\CodeGen\CodeWriter.cpp" />
     <ClCompile Include="src\Gui\Components\ImGuiEx.cpp" />
     <ClCompile Include="src\Gui\Components\SearchPopup.cpp" />
@@ -188,14 +193,21 @@
     <ClCompile Include="src\Gui\EditorUtils.cpp" />
     <ClCompile Include="src\Gui\Gizmo2D.cpp" />
     <ClCompile Include="src\Gui\MainMenuBar.cpp" />
+    <ClCompile Include="src\Gui\Nodes\CodeComponent.cpp" />
+    <ClCompile Include="src\Gui\Nodes\Events\OnCreateNode.cpp" />
+    <ClCompile Include="src\Gui\Nodes\Events\SampleEventNode.cpp" />
     <ClCompile Include="src\Gui\Nodes\GraphComponents.cpp" />
     <ClCompile Include="src\Gui\Nodes\GraphController.cpp" />
     <ClCompile Include="src\Gui\Nodes\GraphRenderer.cpp" />
     <ClCompile Include="src\Gui\Nodes\GraphSerializer.cpp" />
+    <ClCompile Include="src\Gui\Nodes\Methods\SampleMethodNode.cpp" />
     <ClCompile Include="src\Gui\Nodes\NodeBuilder.cpp" />
     <ClCompile Include="src\Gui\Nodes\NodeGraph.cpp" />
     <ClCompile Include="src\Gui\Nodes\NodePanel.cpp" />
     <ClCompile Include="src\Gui\Nodes\GraphPanel.cpp" />
+    <ClCompile Include="src\Gui\Nodes\Variables\IntegerNode.cpp" />
+    <ClCompile Include="src\Gui\Nodes\Variables\VariableGetNode.cpp" />
+    <ClCompile Include="src\Gui\Nodes\Variables\VariableSetNode.cpp" />
     <ClCompile Include="src\Gui\PlayPanel.cpp" />
     <ClCompile Include="src\Gui\SceneHierarchyWindow.cpp" />
     <ClCompile Include="src\Gui\SceneViewWindow.cpp" />

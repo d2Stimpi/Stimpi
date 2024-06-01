@@ -74,4 +74,36 @@ namespace Stimpi
 		return cw;
 	}
 
+	template <>
+	CodeWriter& operator<<<pin_type_variant>(CodeWriter& cw, pin_type_variant val)
+	{
+		if (std::holds_alternative<bool>(val))
+		{
+			cw << std::get<bool>(val);
+		}
+
+		if (std::holds_alternative<int>(val))
+		{
+			cw << std::get<int>(val);
+		}
+
+		if (std::holds_alternative<float>(val))
+		{
+			cw << std::get<float>(val);
+		}
+
+		if (std::holds_alternative<glm::vec2>(val))
+		{
+			glm::vec2 vec = std::get<glm::vec2>(val);
+			cw << vec.x << ", " << vec.y;
+		}
+
+		if (std::holds_alternative<std::string>(val))
+		{
+			cw << std::get<std::string>(val);
+		}
+
+		return cw;
+	}
+
 }

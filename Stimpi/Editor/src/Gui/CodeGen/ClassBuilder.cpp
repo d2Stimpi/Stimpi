@@ -4,7 +4,6 @@
 #include "Stimpi/Core/Core.h"
 
 #include "Gui/CodeGen/CodeWriter.h"
-#include "Gui/CodeGen/CodeGenerators.h"
 #include "Gui/Nodes/GraphComponents.h"
 
 namespace Stimpi
@@ -69,7 +68,10 @@ namespace Stimpi
 			if (node->m_Type == Node::NodeType::Variable)
 			{
 				auto outPin = node->m_OutPins[0];
-				s_CodeWriter << CodeGenerators::GetValueName(node.get()) << " " << outPin->m_Text << " = $val;" << std::endl;
+				if (node->m_CodeComponent)
+				{
+					s_CodeWriter << node->m_CodeComponent->GetValueName(node.get()) << " " << outPin->m_Text << " = " << outPin->m_Value << ";" << std::endl;
+				}
 			}
 		}
 	}

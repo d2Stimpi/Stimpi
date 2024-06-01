@@ -10,6 +10,8 @@
 #include "Gui/Nodes/NodeBuilder.h"
 #include "Gui/CodeGen/ClassBuilder.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 namespace Stimpi
 {
 	bool GraphPanel::m_Show = false;
@@ -64,6 +66,88 @@ namespace Stimpi
 		s_Style.m_GridStep = 16.0f;
 	}
 
+	// Pin data type specific ImGui input helpers
+	static void PinValueInput(Pin* pin, int val)
+	{
+		std::string label = fmt::format("Int##{}", pin->m_ID);
+		ImGui::DragInt(label.c_str(), &val);
+		pin->m_Value = val;
+	}
+	
+	static void PinValueInput(Pin* pin, bool val)
+	{
+		std::string label = fmt::format("Bool##{}", pin->m_ID);
+		ImGui::Checkbox(label.c_str(), &val);
+		pin->m_Value = val;
+	}
+
+	static void PinValueInput(Pin* pin, float val)
+	{
+		std::string label = fmt::format("Float##{}", pin->m_ID);
+		ImGui::DragFloat(label.c_str(), &val);
+		pin->m_Value = val;
+	}
+	
+	static void PinValueInput(Pin* pin, glm::vec2 val)
+	{
+		std::string label = fmt::format("Vector2##{}", pin->m_ID);
+		ImGui::DragFloat2("label", glm::value_ptr(val));
+		pin->m_Value = val;
+	}
+
+	static void PinValueInput(Pin* pin, std::string val)
+	{
+		ImGui::Text("String support TBD");
+	}
+
+	static void DrawVariableNameInput(Node* selected)
+	{
+		char nameInputBuff[32] = { "" };
+		if (selected->m_Title.length() < 32)
+		{
+			strcpy_s(nameInputBuff, selected->m_Title.c_str());
+		}
+
+		if (ImGui::InputText("Variable Name##DetailsPanel", nameInputBuff, sizeof(nameInputBuff), ImGuiInputTextFlags_EnterReturnsTrue))
+		{
+			selected->m_Title = std::string(nameInputBuff);
+			// Should have only one "variable" out pin
+			auto& pin = selected->m_OutPins.front();
+			pin->m_Text = selected->m_Title;
+			// Since the text label changes we need to update node size
+			selected->m_Size = CalcNodeSize(selected);
+		}
+	}
+
+	static void DrawVariableNodeTypeSelect(Pin* selected)
+	{
+		const char* variableTypeStrings[] = PIN_VALUE_TYPES_LIST;
+		const char* currentVariableTypeStrings = variableTypeStrings[PIN_VALUE_TYPE_TO_INT(selected->m_ValueType)];
+
+		if (ImGui::BeginCombo("Variable Type", currentVariableTypeStrings))
+		{
+			int s = IM_ARRAYSIZE(variableTypeStrings);
+			for (int i = 0; i < IM_ARRAYSIZE(variableTypeStrings); i++)
+			{
+				bool isSelected = currentVariableTypeStrings == variableTypeStrings[i];
+				if (ImGui::Selectable(variableTypeStrings[i], isSelected))
+				{
+					currentVariableTypeStrings = variableTypeStrings[i];
+					UpdatePinValueType(selected, INT_TO_PIN_VALUE_TYPE(i));
+				}
+
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+			}
+
+			ImGui::EndCombo();
+		}
+	}
+
+	/**
+	 *  GraphPanel class code starts here
+	 */
+
 	GraphPanel::GraphPanel()
 	{
 		s_Context = new GraphPanelContext();
@@ -81,7 +165,7 @@ namespace Stimpi
 
 		AddGraph(new Graph());
 
-		CreateNodeByName(ImVec2(150.0f, 150.0f), "OnCreate");
+		//CreateNodeByName(ImVec2(150.0f, 150.0f), "OnCreate");
 		//CreateNode(ImVec2(150.0f, 150.0f), "Test Node");
 		//CreateNode(ImVec2(350.0f, 350.0f), "Another Node");
 	}
@@ -211,18 +295,28 @@ namespace Stimpi
 
 	void GraphPanel::DrawDetailsPanel()
 	{
-		ImGui::BeginChild("Details##Child", ImVec2(0.0f, 100.0f), false);
+		ImGui::BeginChild("Details##Child", ImVec2(0.0f, 0.0f), false);
 
 		if (ImGui::BeginTabBar("DetailsTabBar", ImGuiTabBarFlags_AutoSelectNewTabs))
 		{
 			if (ImGui::BeginTabItem("Details", &m_ShowDetailsPanel, ImGuiTabItemFlags_None))
 			{
 				auto selected = m_GraphController->GetSelectedNode();
-				if (selected)
+				if (selected && selected->m_Type == Node::NodeType::Variable)
 				{
-					if (ImGui::CollapsingHeader(selected->m_Title.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+					if (ImGui::CollapsingHeader("Variable##DetailsPanel", ImGuiTreeNodeFlags_DefaultOpen))
 					{
-						ImGui::Text("Data placeholder");
+						
+						DrawVariableNameInput(selected);
+
+						// We can assume that there is at most 1 outPin in VariableNodes
+						DrawVariableNodeTypeSelect(selected->m_OutPins.front().get());
+					}
+
+					if (ImGui::CollapsingHeader("Default Value##DetailsPanel", ImGuiTreeNodeFlags_DefaultOpen))
+					{
+						// We can assume that there is at most 1 outPin in VariableNodes
+						DrawPinValueInput(selected->m_OutPins.front().get());
 					}
 				}
 				ImGui::Separator();
@@ -327,6 +421,11 @@ namespace Stimpi
 			IM_COL32(220, 220, 220, 255), fmt::format("Zoom 1:{:.2f}", 1.0f / s_Context->m_Canvas.m_Scale).c_str());
 	}
 
+	void GraphPanel::DrawPinValueInput(Pin* pin)
+	{
+		std::visit([&pin](auto&& arg) { PinValueInput(pin, arg); }, pin->m_Value);
+	}
+
 	void GraphPanel::AddGraph(Graph* graph)
 	{
 		if (graph == nullptr)
@@ -380,6 +479,11 @@ namespace Stimpi
 	bool GraphPanel::IsVisible()
 	{
 		return m_Show;
+	}
+
+	Graph* GraphPanel::GetGlobalActiveGraph()
+	{
+		return s_Context->m_ActiveGraph;
 	}
 
 	void GraphPanel::CreateNode(ImVec2 pos, std::string title)
@@ -442,6 +546,7 @@ namespace Stimpi
 		if (newNode)
 		{
 			newNode->m_Pos = pos;
+			newNode->m_Size = CalcNodeSize(newNode);
 
 			s_Context->m_ActiveGraph->m_Nodes.emplace_back(newNode);
 		}

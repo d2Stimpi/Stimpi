@@ -88,8 +88,14 @@
     <ClInclude Include="src\Gui\Nodes\NodeBuilder.h" />
     <ClInclude Include="src\Gui\CodeGen\CodeWriter.h" />
     <ClInclude Include="src\Gui\CodeGen\ClassBuilder.h" />
-    <ClInclude Include="src\Gui\CodeGen\CodeGenerators.h" />
-    <ClInclude Include="src\Gui\Nodes\NodeNames.h" />
+    <ClInclude Include="src\Gui\Nodes\Nodes.h" />
+    <ClInclude Include="src\Gui\Nodes\CodeComponent.h" />
+    <ClInclude Include="src\Gui\Nodes\Variables\IntegerNode.h" />
+    <ClInclude Include="src\Gui\Nodes\Events\OnCreateNode.h" />
+    <ClInclude Include="src\Gui\Nodes\Methods\SampleMethodNode.h" />
+    <ClInclude Include="src\Gui\Nodes\Events\SampleEventNode.h" />
+    <ClInclude Include="src\Gui\Nodes\Variables\VariableSetNode.h" />
+    <ClInclude Include="src\Gui\Nodes\Variables\VariableGetNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
@@ -157,6 +163,12 @@
     <ClCompile Include="src\Gui\Nodes\NodeBuilder.cpp" />
     <ClCompile Include="src\Gui\CodeGen\CodeWriter.cpp" />
     <ClCompile Include="src\Gui\CodeGen\ClassBuilder.cpp" />
-    <ClCompile Include="src\Gui\CodeGen\CodeGenerators.cpp" />
+    <ClCompile Include="src\Gui\Nodes\CodeComponent.cpp" />
+    <ClCompile Include="src\Gui\Nodes\Variables\IntegerNode.cpp" />
+    <ClCompile Include="src\Gui\Nodes\Events\OnCreateNode.cpp" />
+    <ClCompile Include="src\Gui\Nodes\Methods\SampleMethodNode.cpp" />
+    <ClCompile Include="src\Gui\Nodes\Events\SampleEventNode.cpp" />
+    <ClCompile Include="src\Gui\Nodes\Variables\VariableSetNode.cpp" />
+    <ClCompile Include="src\Gui\Nodes\Variables\VariableGetNode.cpp" />
   </ItemGroup>
 </Project>
