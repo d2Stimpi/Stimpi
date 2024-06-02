@@ -34,7 +34,7 @@ namespace Stimpi
 		void DrawGraph();
 		void DrawGraphOverlay();
 
-		void DrawPinValueInput(Pin* pin);
+		void DrawVariableValueInput(Variable* pin);
 
 		// Graph methods
 		void AddGraph(Graph* graph);
@@ -50,6 +50,7 @@ namespace Stimpi
 		void CreateNodeByName(ImVec2 pos, std::string title);
 		void CreateNode(ImVec2 pos, std::string title, NodeLayout layout);
 		void RemoveNode(Node* node);
+		void PrepareRemoveNode(Node* node);
 
 		bool IsNodeSelected(Node* node);
 		void UpdateNodeConnectionsPoints(Node* node);
@@ -70,17 +71,26 @@ namespace Stimpi
 
 		float GetPanelZoom();
 		void SetPanelZoom(float zoom);
+		void SetZoomEnable(bool enable);
 
 		GraphContorller* GetController() { return m_GraphController; }
+
+		// Specific handling in Panel when node is deleted
+		void OnNodeDeleted(Node* deleted);
+		void OnNodeDeselect();
 
 	private:
 		void SetCanvasData();
 		void DrawCanvasGrid();
 
+		void AddItemPopupButton(ImVec2 cursorPos, std::string name, std::function<void()> popupContent);
+		void ItemRightClickPopup();
+
 	private:
 		static bool m_Show;		// Easier use in menu if static - to toggle window visibility
 		static bool m_ShowNodesPanel;
 		static bool m_ShowDetailsPanel;
+		static bool m_ShowPopup;
 
 		GraphRenderer* m_GraphRenderer = nullptr;
 		GraphContorller* m_GraphController = nullptr;

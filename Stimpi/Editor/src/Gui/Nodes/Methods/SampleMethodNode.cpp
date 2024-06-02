@@ -14,9 +14,9 @@ namespace Stimpi
 		ST_ASSERT(!graph, "No Active Graph found!");
 
 		Node* newNode = NodeBuilder::CreateNode({
-			{Pin::Type::INPUT, Pin::ValueType::Flow,"In", false},
-			{Pin::Type::INPUT, Pin::ValueType::Int,"Value", 0},
-			{Pin::Type::OUTPUT, Pin::ValueType::Flow, "Out", false}
+			{Pin::Type::INPUT, {Variable::ValueType::Flow,"In", false}},
+			{Pin::Type::INPUT, {Variable::ValueType::Int,"Value", 0}},
+			{Pin::Type::OUTPUT, {Variable::ValueType::Flow, "Out", false}}
 			}, "SampleMethod", graph);
 
 		newNode->m_Type = Node::NodeType::Method;

@@ -10,7 +10,8 @@ namespace Stimpi
 	{
 	public:
 		static void InitializeNodeList();
-		static std::vector<std::string>& GetNodeNamesList();
+
+		static std::vector<std::string> GetNodeNamesList();
 
 		static Node* CreateNode(NodeLayout layout, std::string title, Graph* graph);
 		static Node* CreateNodeByName(std::string name, Graph* graph);

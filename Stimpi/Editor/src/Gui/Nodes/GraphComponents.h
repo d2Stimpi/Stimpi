@@ -5,12 +5,15 @@
 #include "ImGui/src/imgui.h"
 #include <glm/glm.hpp>
 
+#include "Stimpi/Log.h"
+
 #define PIN_VALUE_TYPES_LIST	{ "Bool", "Int", "Float", "Vector2", "String" }
 #define PIN_VALUE_TYPE_TO_INT(x)	((int)(x) - 2)
-#define INT_TO_PIN_VALUE_TYPE(x)	((Pin::ValueType)(x + 2))
+#define INT_TO_PIN_VALUE_TYPE(x)	((Variable::ValueType)(x + 2))
 
 namespace Stimpi
 {
+	struct Pin;
 	struct Node;
 	struct PinConnection;
 
@@ -20,10 +23,46 @@ namespace Stimpi
 	//  -> GraphRender specific type color
 	using pin_type_variant = std::variant<bool, int, float, glm::vec2, std::string>;
 
+	// Helper for generating NewVar_x name
+	static uint32_t s_VarCount = 0;
+	static std::string GenNewVarName()
+	{
+		std::string name = fmt::format("NewVar_{}", s_VarCount);
+		return name;
+	}
+
+	/**
+	 * Variable is used for representing a Pin with a Text, Data type and value
+	 * Used to represent a data variable that ends up in C# script when generating code.
+	 * NewVariables are added to a Graph and then VariableNodes can be created based on those graph variables
+	 * to manipulate data flow and CodeGeneration.
+	 */
+	struct Variable
+	{
+		enum class ValueType { None = 0, Flow, Bool, Int, Float, Vector2, String };
+
+		ValueType m_ValueType;
+		std::string m_Text;
+		pin_type_variant m_Value;
+
+		// For "internal use"
+		uint32_t m_ID;
+		// Used for tracking which nodes we need to Resize if Variable text changes
+		std::vector<std::shared_ptr<Pin>> m_AttachedToPins;
+
+		Variable()
+			: m_ValueType(ValueType::Int), m_Text(GenNewVarName()), m_Value(0), m_ID(s_VarCount++), m_AttachedToPins({})
+		{}
+
+		Variable(ValueType valueType, std::string text, pin_type_variant value)
+			: m_ValueType(valueType), m_Text(text), m_Value(value), m_ID(s_VarCount++), m_AttachedToPins({})
+		{}
+	};
+
 	struct Pin
 	{
 		enum class Type { INPUT = 0, OUTPUT };
-		enum class ValueType { None = 0, Flow, Bool, Int, Float, Vector2, String };
+		//enum class ValueType { None = 0, Flow, Bool, Int, Float, Vector2, String };
 
 		Node* m_ParentNode;	// Owner of the pin
 		uint32_t m_ID;	    // Pin ID
@@ -32,10 +71,9 @@ namespace Stimpi
 		bool m_SingleConnection = false;
 		std::vector<Pin*> m_ConnectedPins;
 
-		std::string m_Text;
 		Type m_Type;
-		ValueType m_ValueType;
-		pin_type_variant m_Value;
+
+		std::shared_ptr<Variable> m_Variable = std::make_shared<Variable>();
 
 		// For handling selection - global position
 		ImVec2 m_Pos = { 0.0f, 0.0f };
@@ -44,9 +82,7 @@ namespace Stimpi
 	struct NodePinData
 	{
 		Pin::Type m_Type;
-		Pin::ValueType m_ValueType;
-		std::string m_Text;
-		pin_type_variant m_DefaultValue;
+		Variable m_Variable;
 	};
 
 	struct NodeLayout
@@ -114,6 +150,9 @@ namespace Stimpi
 		// For easier Pin search
 		std::vector<std::shared_ptr<Pin>> m_Pins;
 
+		// Variables that are represented with Pins, VariableNodes will be created based on variables in this list
+		std::vector<std::shared_ptr<Variable>> m_Variables;
+
 		// ImGui show tab item flag
 		bool m_Show = true;
 
@@ -123,6 +162,8 @@ namespace Stimpi
 
 		uint32_t GenerateNodeID() { return ++m_NextNodeID; }
 		uint32_t GeneratePinID() { return ++m_NextPinID; }
+
+		void RemoveVariable(Variable* var);
 	};
 
 	// TODO: consider more suitable place
@@ -173,8 +214,8 @@ namespace Stimpi
 	ImVec2 CalcNodeSize(Node* node);
 
 	// Pin methods
-	std::string PinValueTypeToString(Pin::ValueType type);
-	void UpdatePinValueType(Pin* pin, Pin::ValueType type);
+	std::string VariableValueTypeToString(Variable::ValueType type);
+	void UpdateVariableValueType(Variable* variable, Variable::ValueType type);
 	float GetPinSpaceHeight();
 	float GetPinSpaceWidth();
 	bool IsConnected(Pin* src, Pin* dest);

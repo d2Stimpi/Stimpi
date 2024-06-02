@@ -100,7 +100,7 @@ namespace Stimpi
 			float maxWidth = 0.0f;
 			for (auto& pin : node->m_InPins)
 			{
-				ImVec2 textSize = ImGui::CalcTextSize(pin->m_Text.c_str());
+				ImVec2 textSize = ImGui::CalcTextSize(pin->m_Variable->m_Text.c_str());
 				maxWidth = std::max(textSize.x, maxWidth);
 			}
 
@@ -114,7 +114,7 @@ namespace Stimpi
 			float maxWidth = 0.0f;
 			for (auto& pin : node->m_OutPins)
 			{
-				ImVec2 textSize = ImGui::CalcTextSize(pin->m_Text.c_str());
+				ImVec2 textSize = ImGui::CalcTextSize(pin->m_Variable->m_Text.c_str());
 				maxWidth = std::max(textSize.x, maxWidth);
 			}
 
@@ -155,34 +155,34 @@ namespace Stimpi
 	 * Helper Pin static functions
 	 */
 
-	std::string PinValueTypeToString(Pin::ValueType type)
+	std::string VariableValueTypeToString(Variable::ValueType type)
 	{
 		switch (type)
 		{
-		case Pin::ValueType::None: return "";
-		case Pin::ValueType::Flow: return "";
-		case Pin::ValueType::Bool: return "Bool";
-		case Pin::ValueType::Int: return "Int";
-		case Pin::ValueType::Vector2: return "Vector2";
-		case Pin::ValueType::String: return "String";
+		case Variable::ValueType::None: return "";
+		case Variable::ValueType::Flow: return "";
+		case Variable::ValueType::Bool: return "Bool";
+		case Variable::ValueType::Int: return "Int";
+		case Variable::ValueType::Vector2: return "Vector2";
+		case Variable::ValueType::String: return "String";
 		}
 
 		return "";
 	}
 
-	void UpdatePinValueType(Pin* pin, Pin::ValueType type)
+	void UpdateVariableValueType(Variable* variable, Variable::ValueType type)
 	{
-		pin->m_ValueType = type;
+		variable->m_ValueType = type;
 
 		switch (type)
 		{
-		case Pin::ValueType::None: pin->m_Value = (int)0; break;  	 // should never get here
-		case Pin::ValueType::Flow: pin->m_Value = (int)0; break;	 // should never get here
-		case Pin::ValueType::Bool: pin->m_Value = true; break;
-		case Pin::ValueType::Int: pin->m_Value = (int)0; break;
-		case Pin::ValueType::Float: pin->m_Value = 0.0f; break;
-		case Pin::ValueType::Vector2: pin->m_Value = glm::vec2(0.0f, 0.0f); break;
-		case Pin::ValueType::String: pin->m_Value = std::string(); break;
+		case Variable::ValueType::None: variable->m_Value = (int)0; break;  	 // should never get here
+		case Variable::ValueType::Flow: variable->m_Value = (int)0; break;	 // should never get here
+		case Variable::ValueType::Bool: variable->m_Value = true; break;
+		case Variable::ValueType::Int: variable->m_Value = (int)0; break;
+		case Variable::ValueType::Float: variable->m_Value = 0.0f; break;
+		case Variable::ValueType::Vector2: variable->m_Value = glm::vec2(0.0f, 0.0f); break;
+		case Variable::ValueType::String: variable->m_Value = std::string(); break;
 		}
 	}
 
@@ -222,7 +222,7 @@ namespace Stimpi
 			if (dest->m_ConnectedPins.empty())
 			{
 				// Check type compatibility
-				if (dest->m_ValueType == src->m_ValueType)
+				if (dest->m_Variable->m_ValueType == src->m_Variable->m_ValueType)
 				{
 					if (IsConnected(src, dest) == false)
 					{
@@ -348,4 +348,13 @@ namespace Stimpi
 	}
 
 #pragma endregion Connection
+
+	void Graph::RemoveVariable(Variable* var)
+	{
+		m_Variables.erase(std::find_if(m_Variables.begin(), m_Variables.end(), [&var](auto rem)
+			{
+				return var->m_ID == rem->m_ID;
+			}));
+	}
+
 }

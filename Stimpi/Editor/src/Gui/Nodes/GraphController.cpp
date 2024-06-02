@@ -66,6 +66,7 @@ namespace Stimpi
 				if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 				{
 					m_SelectedNode = nullptr;
+					m_PanelContext->OnNodeDeselect();
 
 					// Check for hovered connection lines and select one if found
 					// Done on mouse click to avoid checking each frame for line hovers
@@ -230,8 +231,16 @@ namespace Stimpi
 		case ControllAction::SHOW_POPUP_ONRELEASE:
 			if (ImGui::IsMouseReleased(ImGuiMouseButton_Right))
 			{
+				m_PanelContext->SetZoomEnable(false);
 				showPopup = true;
+				m_Action = ControllAction::POPUP_ACTIVE;
+			}
+			break;
+		case ControllAction::POPUP_ACTIVE:
+			if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) || ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+			{
 				m_Action = ControllAction::NONE;
+				m_PanelContext->SetZoomEnable(true);
 			}
 			break;
 		case ControllAction::CANVAS_MOVE:
@@ -264,7 +273,7 @@ namespace Stimpi
 			if (m_SelectedNode)
 			{
 				// Remove Node
-				m_PanelContext->RemoveNode(m_SelectedNode);
+				m_PanelContext->OnNodeDeleted(m_SelectedNode);
 				m_SelectedNode = nullptr;
 			}
 

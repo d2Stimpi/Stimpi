@@ -217,7 +217,7 @@ namespace Stimpi
 			out << YAML::Key << "ID" << YAML::Value << pin->m_ID;
 			out << YAML::Key << "Connected" << YAML::Value << pin->m_Connected;
 			out << YAML::Key << "SingleConnecton" << YAML::Value << pin->m_SingleConnection;
-			out << YAML::Key << "Text" << YAML::Value << pin->m_Text;
+			out << YAML::Key << "Text" << YAML::Value << pin->m_Variable->m_Text;
 			out << YAML::Key << "Position" << YAML::Value;
 			out << YAML::BeginSeq;
 			{
@@ -253,7 +253,7 @@ namespace Stimpi
 		}
 		if (node["Text"])
 		{
-			pin->m_Text = node["Text"].as<std::string>();
+			pin->m_Variable->m_Text = node["Text"].as<std::string>();
 		}
 		if (node["Position"])
 		{

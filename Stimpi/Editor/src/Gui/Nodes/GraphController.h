@@ -7,7 +7,7 @@ namespace Stimpi
 	struct GraphPanelCanvas;
 	class GraphPanel;
 
-	enum class ControllAction { NONE = 0, NODE_HOVER, NODE_DRAGABLE, SHOW_POPUP_ONRELEASE, CANVAS_MOVE, NODE_PIN_DRAG, CONNECTION_ONPRESS };
+	enum class ControllAction { NONE = 0, NODE_HOVER, NODE_DRAGABLE, SHOW_POPUP_ONRELEASE, POPUP_ACTIVE, CANVAS_MOVE, NODE_PIN_DRAG, CONNECTION_ONPRESS };
 
 	class GraphContorller
 	{

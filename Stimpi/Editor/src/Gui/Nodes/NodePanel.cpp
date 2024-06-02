@@ -730,21 +730,21 @@ namespace Stimpi
 		std::shared_ptr<Pin> pin = std::make_shared<Pin>();
 		pin->m_ID = ++s_Context->m_ActiveGraph->m_NextPinID;
 		pin->m_ParentNode = newNode.get();
-		pin->m_Text = "Something";
+		pin->m_Variable->m_Text = "Something";
 		pin->m_Type = Pin::Type::INPUT;
 		newNode->m_InPins.emplace_back(pin);
 
 		std::shared_ptr<Pin> pin2 = std::make_shared<Pin>();
 		pin2->m_ID = ++s_Context->m_ActiveGraph->m_NextPinID;
 		pin2->m_ParentNode = newNode.get();
-		pin2->m_Text = "Else";
+		pin2->m_Variable->m_Text = "Else";
 		pin->m_Type = Pin::Type::INPUT;
 		newNode->m_InPins.emplace_back(pin2);
 
 		std::shared_ptr<Pin> pin3 = std::make_shared<Pin>();
 		pin3->m_ID = ++s_Context->m_ActiveGraph->m_NextPinID;
 		pin3->m_ParentNode = newNode.get();
-		pin3->m_Text = "Output";
+		pin3->m_Variable->m_Text = "Output";
 		pin3->m_Type = Pin::Type::OUTPUT;
 		newNode->m_OutPins.emplace_back(pin3);
 
@@ -931,7 +931,7 @@ namespace Stimpi
 
 		// Pin text part
 		ImVec2 textPos = pinStartPos;
-		ImVec2 textSize = ImGui::CalcTextSize(pin->m_Text.c_str());
+		ImVec2 textSize = ImGui::CalcTextSize(pin->m_Variable->m_Text.c_str());
 		textSize.x += s_Style.m_PinTextSpacing;
 
 		if (pin->m_Type == Pin::Type::OUTPUT)
@@ -949,7 +949,7 @@ namespace Stimpi
 		s_Context->m_DrawList->AddText(
 			{ s_Context->m_Origin.x + textPos.x * s_Context->m_Scale, s_Context->m_Origin.y + textPos.y * s_Context->m_Scale },
 			IM_COL32(255, 255, 255, 255),
-			pin->m_Text.c_str());
+			pin->m_Variable->m_Text.c_str());
 		ImGui::SetWindowFontScale(1.0f);
 
 		// Test draw Pin <-> FloatingTarget connection

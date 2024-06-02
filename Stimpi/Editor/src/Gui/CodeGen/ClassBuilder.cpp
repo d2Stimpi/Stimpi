@@ -70,7 +70,7 @@ namespace Stimpi
 				auto outPin = node->m_OutPins[0];
 				if (node->m_CodeComponent)
 				{
-					s_CodeWriter << node->m_CodeComponent->GetValueName(node.get()) << " " << outPin->m_Text << " = " << outPin->m_Value << ";" << std::endl;
+					s_CodeWriter << node->m_CodeComponent->GetValueName(node.get()) << " " << outPin->m_Variable->m_Text << " = " << outPin->m_Variable->m_Value << ";" << std::endl;
 				}
 			}
 		}

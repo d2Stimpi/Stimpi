@@ -90,7 +90,6 @@
     <ClInclude Include="src\Gui\CodeGen\ClassBuilder.h" />
     <ClInclude Include="src\Gui\Nodes\Nodes.h" />
     <ClInclude Include="src\Gui\Nodes\CodeComponent.h" />
-    <ClInclude Include="src\Gui\Nodes\Variables\IntegerNode.h" />
     <ClInclude Include="src\Gui\Nodes\Events\OnCreateNode.h" />
     <ClInclude Include="src\Gui\Nodes\Methods\SampleMethodNode.h" />
     <ClInclude Include="src\Gui\Nodes\Events\SampleEventNode.h" />
@@ -164,7 +163,6 @@
     <ClCompile Include="src\Gui\CodeGen\CodeWriter.cpp" />
     <ClCompile Include="src\Gui\CodeGen\ClassBuilder.cpp" />
     <ClCompile Include="src\Gui\Nodes\CodeComponent.cpp" />
-    <ClCompile Include="src\Gui\Nodes\Variables\IntegerNode.cpp" />
     <ClCompile Include="src\Gui\Nodes\Events\OnCreateNode.cpp" />
     <ClCompile Include="src\Gui\Nodes\Methods\SampleMethodNode.cpp" />
     <ClCompile Include="src\Gui\Nodes\Events\SampleEventNode.cpp" />

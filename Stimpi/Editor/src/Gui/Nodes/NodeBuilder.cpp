@@ -1,6 +1,7 @@
 #include "stpch.h"
 
 #include "Stimpi/Log.h"
+#include "Gui/Nodes/GraphPanel.h"
 #include "Gui/Nodes/NodeBuilder.h"
 #include "Gui/Nodes/Nodes.h"
 
@@ -13,7 +14,6 @@ namespace Stimpi
 	{
 
 		s_NodeBuilderFunctions = {
-			{"Integer", []() { return IntegerNode::CreateNode(); }},
 			{"OnCreate", []() { return OnCreateNode::CreateNode(); }},
 			{"SampleEvent", []() { return SampleEventNode::CreateNode(); }},
 			{"SampleMethod", []() { return SampleMethodNode::CreateNode(); }}
@@ -25,9 +25,20 @@ namespace Stimpi
 		}
 	}
 
-	std::vector<std::string>& NodeBuilder::GetNodeNamesList()
+	std::vector<std::string> NodeBuilder::GetNodeNamesList()
 	{
-		return s_NodeTypeList;
+		std::vector<std::string> compinedLinst = s_NodeTypeList;
+		auto graph = GraphPanel::GetGlobalActiveGraph();
+
+		if (graph)
+		{
+			for (auto& var : graph->m_Variables)
+			{
+				compinedLinst.push_back(var->m_Text);
+			}
+		}
+
+		return compinedLinst;
 	}
 
 	Node* NodeBuilder::CreateNode(NodeLayout layout, std::string title, Graph* graph)
@@ -41,10 +52,16 @@ namespace Stimpi
 			std::shared_ptr<Pin> pin = std::make_shared<Pin>();
 			pin->m_ID = graph->GeneratePinID();
 			pin->m_ParentNode = newNode;
-			pin->m_Text = item.m_Text;
 			pin->m_Type = item.m_Type;
-			pin->m_ValueType = item.m_ValueType;
-			pin->m_Value = item.m_DefaultValue;
+
+			pin->m_Variable->m_Text = item.m_Variable.m_Text;
+			pin->m_Variable->m_ValueType = item.m_Variable.m_ValueType;
+			pin->m_Variable->m_Value = item.m_Variable.m_Value;
+			if (newNode->m_Type == Node::NodeType::Variable)
+			{
+				pin->m_Variable->m_AttachedToPins.push_back(pin);
+			}
+
 			if (pin->m_Type == Pin::Type::INPUT)
 				newNode->m_InPins.emplace_back(pin);
 			else
@@ -57,6 +74,15 @@ namespace Stimpi
 	Node* NodeBuilder::CreateNodeByName(std::string name, Graph* graph)
 	{
 		auto builderFunction = s_NodeBuilderFunctions[name];
+
+		// First check for VariableNodes to avoid name collision
+		for (auto& var : graph->m_Variables)
+		{
+			if (name == var->m_Text)
+			{
+				return VariableGetNode::CreateNode(var);
+			}
+		}
 
 		if (builderFunction)
 		{

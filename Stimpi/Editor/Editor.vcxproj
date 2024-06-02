@@ -166,7 +166,6 @@
     <ClInclude Include="src\Gui\Nodes\Nodes.h" />
     <ClInclude Include="src\Gui\Nodes\NodePanel.h" />
     <ClInclude Include="src\Gui\Nodes\GraphPanel.h" />
-    <ClInclude Include="src\Gui\Nodes\Variables\IntegerNode.h" />
     <ClInclude Include="src\Gui\Nodes\Variables\VariableGetNode.h" />
     <ClInclude Include="src\Gui\Nodes\Variables\VariableSetNode.h" />
     <ClInclude Include="src\Gui\PlayPanel.h" />
@@ -205,7 +204,6 @@
     <ClCompile Include="src\Gui\Nodes\NodeGraph.cpp" />
     <ClCompile Include="src\Gui\Nodes\NodePanel.cpp" />
     <ClCompile Include="src\Gui\Nodes\GraphPanel.cpp" />
-    <ClCompile Include="src\Gui\Nodes\Variables\IntegerNode.cpp" />
     <ClCompile Include="src\Gui\Nodes\Variables\VariableGetNode.cpp" />
     <ClCompile Include="src\Gui\Nodes\Variables\VariableSetNode.cpp" />
     <ClCompile Include="src\Gui\PlayPanel.cpp" />

@@ -3,8 +3,10 @@
 
 #include "Stimpi/Log.h"
 #include "Stimpi/Core/Project.h"
+#include "Gui/EditorUtils.h"
 #include "Gui/Components/SearchPopup.h"
 #include "Gui/Components/Toolbar.h"
+#include "Gui/Components/ImGuiEx.h"
 #include "Gui/Nodes/GraphSerializer.h"
 
 #include "Gui/Nodes/NodeBuilder.h"
@@ -17,6 +19,7 @@ namespace Stimpi
 	bool GraphPanel::m_Show = false;
 	bool GraphPanel::m_ShowNodesPanel = true;
 	bool GraphPanel::m_ShowDetailsPanel = true;
+	bool GraphPanel::m_ShowPopup = false;
 
 	struct GraphPanelContext
 	{
@@ -25,11 +28,13 @@ namespace Stimpi
 		// Active open Graphs
 		std::vector<std::shared_ptr<Graph>> m_Graphs;
 		Graph* m_ActiveGraph = nullptr;	// actively edited graph (active tab)
+		Variable* m_SelectedVariable = nullptr;
 
 		ImDrawList* m_DrawList;
 
 		bool m_IsHovered = false;
 		bool m_IsActive = false;
+		bool m_ZoomEnabled = true;
 
 		// Popup data
 		ImVec2 m_NewNodePos = { 0.0f, 0.0f };
@@ -67,59 +72,61 @@ namespace Stimpi
 	}
 
 	// Pin data type specific ImGui input helpers
-	static void PinValueInput(Pin* pin, int val)
+	static void VariableValueInput(Variable* var, int val)
 	{
-		std::string label = fmt::format("Int##{}", pin->m_ID);
+		std::string label = fmt::format("Int##{}", var->m_ID);
 		ImGui::DragInt(label.c_str(), &val);
-		pin->m_Value = val;
+		var->m_Value = val;
 	}
 	
-	static void PinValueInput(Pin* pin, bool val)
+	static void VariableValueInput(Variable* var, bool val)
 	{
-		std::string label = fmt::format("Bool##{}", pin->m_ID);
+		std::string label = fmt::format("Bool##{}", var->m_ID);
 		ImGui::Checkbox(label.c_str(), &val);
-		pin->m_Value = val;
+		var->m_Value = val;
 	}
 
-	static void PinValueInput(Pin* pin, float val)
+	static void VariableValueInput(Variable* var, float val)
 	{
-		std::string label = fmt::format("Float##{}", pin->m_ID);
+		std::string label = fmt::format("Float##{}", var->m_ID);
 		ImGui::DragFloat(label.c_str(), &val);
-		pin->m_Value = val;
+		var->m_Value = val;
 	}
 	
-	static void PinValueInput(Pin* pin, glm::vec2 val)
+	static void VariableValueInput(Variable* var, glm::vec2 val)
 	{
-		std::string label = fmt::format("Vector2##{}", pin->m_ID);
+		std::string label = fmt::format("Vector2##{}", var->m_ID);
 		ImGui::DragFloat2("label", glm::value_ptr(val));
-		pin->m_Value = val;
+		var->m_Value = val;
 	}
 
-	static void PinValueInput(Pin* pin, std::string val)
+	static void VariableValueInput(Variable* var, std::string val)
 	{
 		ImGui::Text("String support TBD");
 	}
 
-	static void DrawVariableNameInput(Node* selected)
+	static void DrawVariableNameInput(Variable* selected)
 	{
 		char nameInputBuff[32] = { "" };
-		if (selected->m_Title.length() < 32)
+		if (selected->m_Text.length() < 32)
 		{
-			strcpy_s(nameInputBuff, selected->m_Title.c_str());
+			strcpy_s(nameInputBuff, selected->m_Text.c_str());
 		}
 
 		if (ImGui::InputText("Variable Name##DetailsPanel", nameInputBuff, sizeof(nameInputBuff), ImGuiInputTextFlags_EnterReturnsTrue))
 		{
-			selected->m_Title = std::string(nameInputBuff);
-			// Should have only one "variable" out pin
-			auto& pin = selected->m_OutPins.front();
-			pin->m_Text = selected->m_Title;
+			selected->m_Text = std::string(nameInputBuff);
+
 			// Since the text label changes we need to update node size
-			selected->m_Size = CalcNodeSize(selected);
+			for (auto& pin : selected->m_AttachedToPins)
+			{
+				pin->m_ParentNode->m_Size = CalcNodeSize(pin->m_ParentNode);
+			}
 		}
+		EditorUtils::SetActiveItemCaptureKeyboard(false);
 	}
 
-	static void DrawVariableNodeTypeSelect(Pin* selected)
+	static void DrawVariableNodeTypeSelect(Variable* selected)
 	{
 		const char* variableTypeStrings[] = PIN_VALUE_TYPES_LIST;
 		const char* currentVariableTypeStrings = variableTypeStrings[PIN_VALUE_TYPE_TO_INT(selected->m_ValueType)];
@@ -133,7 +140,7 @@ namespace Stimpi
 				if (ImGui::Selectable(variableTypeStrings[i], isSelected))
 				{
 					currentVariableTypeStrings = variableTypeStrings[i];
-					UpdatePinValueType(selected, INT_TO_PIN_VALUE_TYPE(i));
+					UpdateVariableValueType(selected, INT_TO_PIN_VALUE_TYPE(i));
 				}
 
 				if (isSelected)
@@ -262,30 +269,40 @@ namespace Stimpi
 		{
 			if (ImGui::BeginTabItem("Graph_Name_here", &m_ShowNodesPanel, ImGuiTabItemFlags_None))
 			{
-				if (ImGui::CollapsingHeader("Variables##NodesInspector", ImGuiTreeNodeFlags_DefaultOpen))
+				ImVec2 cursor = ImGui::GetCursorPos(); // For positioning AddButton icon
+				if (ImGui::CollapsingHeader("Variables##NodesInspector", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 				{
-					for (auto& node : s_Context->m_ActiveGraph->m_Nodes)
+					for (auto& variable : s_Context->m_ActiveGraph->m_Variables)
 					{
-						if (node->m_Type == Node::NodeType::Variable)
+						if (variable) // because removing of an item can happen while iterating collection
 						{
-							ImGui::PushID(node->m_ID);
-							if (ImGui::TreeNodeEx((void*)&node, ImGuiTreeNodeFlags_Leaf, node->m_Title.c_str()))
+							ImGui::PushID(variable->m_ID);
+							if (ImGui::TreeNodeEx((void*)&variable, ImGuiTreeNodeFlags_Leaf, variable->m_Text.c_str()))
 							{
-								if (ImGui::IsItemClicked())
+								if (ImGui::IsItemClicked(ImGuiMouseButton_Left) || ImGui::IsItemClicked(ImGuiMouseButton_Right))
 								{
-									m_GraphController->SetSelectedNode(node.get());
+									s_Context->m_SelectedVariable = variable.get();
 								}
+
+								ItemRightClickPopup();
+
 							}
 							ImGui::PopID();
 							ImGui::TreePop();
-
-							//if (ImGui::Selectable(node->m_Title.c_str())) {}
 						}
 					}
 				}
 				ImGui::Separator();
 
-
+				AddItemPopupButton(cursor, "AddNewVariable", []()
+					{
+						auto graph = s_Context->m_ActiveGraph;
+						if (graph)
+						{
+							auto newVar = std::make_shared<Variable>();
+							graph->m_Variables.emplace_back(newVar);
+						}
+					});
 				ImGui::EndTabItem();
 			}
 			ImGui::EndTabBar();
@@ -301,22 +318,38 @@ namespace Stimpi
 		{
 			if (ImGui::BeginTabItem("Details", &m_ShowDetailsPanel, ImGuiTabItemFlags_None))
 			{
-				auto selected = m_GraphController->GetSelectedNode();
-				if (selected && selected->m_Type == Node::NodeType::Variable)
+				Variable* selected = nullptr;
+				// Selected Node has priority for var details
+				auto node = m_GraphController->GetSelectedNode();
+				if (node)
+				{
+					if (node->m_Type == Node::NodeType::Variable)
+					{
+						selected = node->m_OutPins.front().get()->m_Variable.get();
+					}
+				}
+				if (selected == nullptr)
+					selected = s_Context->m_SelectedVariable;
+
+				if (selected)
 				{
 					if (ImGui::CollapsingHeader("Variable##DetailsPanel", ImGuiTreeNodeFlags_DefaultOpen))
 					{
-						
-						DrawVariableNameInput(selected);
-
-						// We can assume that there is at most 1 outPin in VariableNodes
-						DrawVariableNodeTypeSelect(selected->m_OutPins.front().get());
+						if (selected)
+						{
+							DrawVariableNameInput(selected);
+							// We can assume that there is at most 1 outPin in VariableNodes
+							DrawVariableNodeTypeSelect(selected);
+						}
 					}
 
 					if (ImGui::CollapsingHeader("Default Value##DetailsPanel", ImGuiTreeNodeFlags_DefaultOpen))
 					{
-						// We can assume that there is at most 1 outPin in VariableNodes
-						DrawPinValueInput(selected->m_OutPins.front().get());
+						if (selected)
+						{
+							// We can assume that there is at most 1 outPin in VariableNodes
+							DrawVariableValueInput(selected);
+						}
 					}
 				}
 				ImGui::Separator();
@@ -421,9 +454,9 @@ namespace Stimpi
 			IM_COL32(220, 220, 220, 255), fmt::format("Zoom 1:{:.2f}", 1.0f / s_Context->m_Canvas.m_Scale).c_str());
 	}
 
-	void GraphPanel::DrawPinValueInput(Pin* pin)
+	void GraphPanel::DrawVariableValueInput(Variable* variable)
 	{
-		std::visit([&pin](auto&& arg) { PinValueInput(pin, arg); }, pin->m_Value);
+		std::visit([&variable](auto&& arg) { VariableValueInput(variable, arg); }, variable->m_Value);
 	}
 
 	void GraphPanel::AddGraph(Graph* graph)
@@ -498,21 +531,21 @@ namespace Stimpi
 		std::shared_ptr<Pin> pin = std::make_shared<Pin>();
 		pin->m_ID = ++s_Context->m_ActiveGraph->m_NextPinID;
 		pin->m_ParentNode = newNode.get();
-		pin->m_Text = "Something";
+		pin->m_Variable->m_Text = "Something";
 		pin->m_Type = Pin::Type::INPUT;
 		newNode->m_InPins.emplace_back(pin);
 
 		std::shared_ptr<Pin> pin2 = std::make_shared<Pin>();
 		pin2->m_ID = ++s_Context->m_ActiveGraph->m_NextPinID;
 		pin2->m_ParentNode = newNode.get();
-		pin2->m_Text = "Else";
+		pin2->m_Variable->m_Text = "Else";
 		pin->m_Type = Pin::Type::INPUT;
 		newNode->m_InPins.emplace_back(pin2);
 
 		std::shared_ptr<Pin> pin3 = std::make_shared<Pin>();
 		pin3->m_ID = ++s_Context->m_ActiveGraph->m_NextPinID;
 		pin3->m_ParentNode = newNode.get();
-		pin3->m_Text = "Output";
+		pin3->m_Variable->m_Text = "Output";
 		pin3->m_Type = Pin::Type::OUTPUT;
 		newNode->m_OutPins.emplace_back(pin3);
 
@@ -532,7 +565,7 @@ namespace Stimpi
 			std::shared_ptr<Pin> pin = std::make_shared<Pin>();
 			pin->m_ID = s_Context->m_ActiveGraph->GeneratePinID();
 			pin->m_ParentNode = newNode.get();
-			pin->m_Text = item.m_Text;
+			pin->m_Variable->m_Text = item.m_Variable.m_Text;
 			pin->m_Type = item.m_Type;
 			newNode->m_InPins.emplace_back(pin);
 		}
@@ -590,6 +623,29 @@ namespace Stimpi
 		}
 	}
 
+	void GraphPanel::PrepareRemoveNode(Node* node)
+	{
+		if (!node)
+			return;
+
+		// Break all connections to the Node
+		for (auto inPin : node->m_InPins)
+		{
+			for (auto cPin : inPin->m_ConnectedPins)
+			{
+				BreakPinToPinConnection(FindPinToPinConnection(inPin.get(), cPin, s_Context->m_ActiveGraph), s_Context->m_ActiveGraph);
+			}
+		}
+
+		for (auto outPin : node->m_OutPins)
+		{
+			for (auto cPin : outPin->m_ConnectedPins)
+			{
+				BreakPinToPinConnection(FindPinToPinConnection(outPin.get(), cPin, s_Context->m_ActiveGraph), s_Context->m_ActiveGraph);
+			}
+		}
+	}
+
 	bool GraphPanel::IsNodeSelected(Node* node)
 	{
 		if (node != nullptr && m_GraphController->GetSelectedNode() != nullptr)
@@ -630,24 +686,21 @@ namespace Stimpi
 
 	void GraphPanel::AddNodePopup(bool show)
 	{
-		static bool showPopup = false;
 
 		if (show)
 		{
 			s_Context->m_NewNodePos = GetNodePanelViewClickLocation();
-			showPopup = true;
+			m_ShowPopup = true;
 			SearchPopup::OpenPopup();
 		}
 
-		if (showPopup)
+		if (m_ShowPopup)
 		{
-			//static std::vector<std::string> nodeTypeList = { "New node" };
 			std::vector<std::string>& nodeTypeList = NodeBuilder::GetNodeNamesList();
 
 			if (SearchPopup::OnImGuiRender(nodeTypeList))
 			{
-				showPopup = false;
-				//CreateNode(s_Context->m_NewNodePos, SearchPopup::GetSelection());
+				m_ShowPopup = false;
 				CreateNodeByName(s_Context->m_NewNodePos, SearchPopup::GetSelection());
 			}
 		}
@@ -727,8 +780,26 @@ namespace Stimpi
 
 	void GraphPanel::SetPanelZoom(float zoom)
 	{
-		if (zoom <= 1.0f && zoom >= 0.09f)
+		if (zoom <= 1.0f && zoom >= 0.09f && s_Context->m_ZoomEnabled)
 			s_Context->m_Canvas.m_Scale = zoom;
+	}
+
+	void GraphPanel::SetZoomEnable(bool enable)
+	{
+		s_Context->m_ZoomEnabled = enable;
+	}
+
+	void GraphPanel::OnNodeDeleted(Node* deleted)
+	{
+		RemoveNode(deleted);
+
+		// When a node gets deleted we clear lingering selections
+		s_Context->m_SelectedVariable = nullptr;
+	}
+
+	void GraphPanel::OnNodeDeselect()
+	{
+		s_Context->m_SelectedVariable = nullptr;
 	}
 
 	bool GraphPanel::IsMouseHoveringPin(Pin* pin)
@@ -817,4 +888,69 @@ namespace Stimpi
 				s_Context->m_DrawList->AddLine(ImVec2(canvasPosMin.x, canvasPosMin.y + y), ImVec2(canvasPosMax.x, canvasPosMin.y + y), IM_COL32(200, 200, 200, 40));
 		}
 	}
+
+	void GraphPanel::AddItemPopupButton(ImVec2 cursorPos, std::string name, std::function<void()> onClickAction)
+	{
+		// Save cursor position
+		ImVec2 temp = ImGui::GetCursorPos();
+		cursorPos.x += ImGui::GetWindowContentRegionWidth() - ImGuiEx::GetStyle().m_IconOffset;
+		ImGui::SetCursorPos(cursorPos);
+		static bool showSettings = false;
+
+		std::string btnID = name.append("##IconButton");
+		if (ImGuiEx::IconButton(btnID.c_str(), EDITOR_ICON_CROSS))
+		{
+			onClickAction();
+		}
+
+		// Restore cursor position
+		ImGui::SetCursorPos(temp);
+	}
+
+	void GraphPanel::ItemRightClickPopup()
+	{
+		if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+		{
+			ImGui::OpenPopup("ItemClickPopup##GraphPanel");
+		}
+
+		if (ImGui::BeginPopup("ItemClickPopup##GraphPanel"))
+		{
+			if (ImGui::Selectable("Delete"))
+			{
+				// Remove selected variable
+				if (s_Context->m_SelectedVariable)
+				{
+					// Find Nodes using variable to delete
+					auto iter = s_Context->m_ActiveGraph->m_Nodes.begin();
+					while (iter != s_Context->m_ActiveGraph->m_Nodes.end())
+					{
+						auto node = *iter;
+						// Only handle Variable type nodes
+						if (node->m_Type == Node::NodeType::Variable)
+						{
+							if (s_Context->m_SelectedVariable->m_ID == node->m_OutPins.front()->m_Variable->m_ID)
+							{
+								PrepareRemoveNode(node.get());
+								iter = s_Context->m_ActiveGraph->m_Nodes.erase(iter);
+							}
+							else
+							{
+								iter++;
+							}
+						}
+						else
+						{
+							iter++;
+						}
+					}
+
+					s_Context->m_ActiveGraph->RemoveVariable(s_Context->m_SelectedVariable);
+					s_Context->m_SelectedVariable = nullptr;
+				}
+			}
+			ImGui::EndPopup();
+		}
+	}
+
 }

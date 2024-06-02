@@ -10,7 +10,7 @@ namespace Stimpi
 	static ImU32 GetPinVariantColor(Pin* pin)
 	{
 		ImU32 picked = IM_COL32(35, 195, 35, 255);
-		pin_type_variant val = pin->m_Value;
+		pin_type_variant val = pin->m_Variable->m_Value;
 
 		if (std::holds_alternative<bool>(val))
 		{
@@ -238,7 +238,7 @@ namespace Stimpi
 
 		// Pin text part
 		ImVec2 textPos = pinStartPos;
-		ImVec2 textSize = ImGui::CalcTextSize(pin->m_Text.c_str());
+		ImVec2 textSize = ImGui::CalcTextSize(pin->m_Variable->m_Text.c_str());
 		textSize.x += s_Style.m_PinTextSpacing;
 
 		if (pin->m_Type == Pin::Type::OUTPUT)
@@ -256,7 +256,7 @@ namespace Stimpi
 		m_DrawList->AddText(
 			{ m_Canvas->m_Origin.x + textPos.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + textPos.y * m_Canvas->m_Scale },
 			IM_COL32(255, 255, 255, 255),
-			pin->m_Text.c_str());
+			pin->m_Variable->m_Text.c_str());
 		ImGui::SetWindowFontScale(1.0f);
 
 		// Test draw Pin <-> FloatingTarget connection
