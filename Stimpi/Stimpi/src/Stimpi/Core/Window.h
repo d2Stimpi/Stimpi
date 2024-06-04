@@ -4,9 +4,6 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Core/Event.h"
 
-#define ST_WINDOW_WIDTH 1280
-#define ST_WINDOW_HEIGHT 720
-
 /* TODO: 
 * - Finish configuring of non-ui (editor) rendering.
 */
@@ -18,7 +15,7 @@ namespace Stimpi
 	class Window
 	{
 	public:
-		Window(uint32_t w, uint32_t h) : m_Width(w), m_Height(h) {};
+		Window(uint32_t width, uint32_t height) : m_Width(width), m_Height(height) {};
 		virtual ~Window() {};
 
 		virtual void Init() = 0;
@@ -36,10 +33,11 @@ namespace Stimpi
 		uint32_t GetWidth() { return m_Width; }
 		uint32_t GetHeight() { return m_Height; }
 		uint32_t GetID() { return m_ID; }
+
 	protected:
-		uint32_t m_Width{ 0 };
-		uint32_t m_Height{ 0 };
-		uint32_t m_ID{ 0 };
+		uint32_t m_Width = 0;
+		uint32_t m_Height = 0;
+		uint32_t m_ID = 0;
 	};
 
 

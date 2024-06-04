@@ -326,7 +326,7 @@ namespace Stimpi
 		}
 
 		// Debug data
-		static uint32_t GetLoadedAssetsCount()
+		static size_t GetLoadedAssetsCount()
 		{
 			return m_Assets.size();
 		}

@@ -62,7 +62,7 @@ namespace Stimpi
 				pin->m_Variable->m_AttachedToPins.push_back(pin);
 			}
 
-			if (pin->m_Type == Pin::Type::INPUT)
+			if (pin->m_Type == Pin::Type::INPUT || pin->m_Type == Pin::Type::FLOW_IN)
 				newNode->m_InPins.emplace_back(pin);
 			else
 				newNode->m_OutPins.emplace_back(pin);

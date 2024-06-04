@@ -188,7 +188,7 @@ namespace Stimpi
 		ImVec2 pinStartPos = pos;
 
 		// Adjust position for OUT pin
-		if (pin->m_Type == Pin::Type::OUTPUT)
+		if (pin->m_Type == Pin::Type::OUTPUT || pin->m_Type == Pin::Type::FLOW_OUT)
 		{
 			ImVec2 nodeSize = pin->m_ParentNode->m_Size;
 			// move draw cursor to the end of node space
@@ -199,67 +199,93 @@ namespace Stimpi
 		// Pin hit box pos
 		pin->m_Pos = pinStartPos;
 
-		// Circle part
-		float circleSegments = 10.0f * m_Canvas->m_Scale;
-		circleSegments = (circleSegments > 5) ? ((circleSegments < 20) ? circleSegments : 20) : 5;
-		if (pin->m_Connected)
+		if (pin->m_Type == Pin::Type::OUTPUT || pin->m_Type == Pin::Type::INPUT)
 		{
-			m_DrawList->AddCircleFilled(
-				{ m_Canvas->m_Origin.x + pinStartPos.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + pinStartPos.y * m_Canvas->m_Scale },
-				s_Style.m_PinRadius * m_Canvas->m_Scale,
-				GetPinVariantColor(pin),
-				circleSegments);
+			// Circle part
+			float circleSegments = 10.0f * m_Canvas->m_Scale;
+			circleSegments = (circleSegments > 5) ? ((circleSegments < 20) ? circleSegments : 20) : 5;
+			if (pin->m_Connected)
+			{
+				m_DrawList->AddCircleFilled(
+					{ m_Canvas->m_Origin.x + pinStartPos.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + pinStartPos.y * m_Canvas->m_Scale },
+					s_Style.m_PinRadius * m_Canvas->m_Scale,
+					GetPinVariantColor(pin),
+					circleSegments);
+			}
+			else
+			{
+				m_DrawList->AddCircle(
+					{ m_Canvas->m_Origin.x + pinStartPos.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + pinStartPos.y * m_Canvas->m_Scale },
+					s_Style.m_PinRadius * m_Canvas->m_Scale,
+					GetPinVariantColor(pin),
+					circleSegments,
+					s_Style.m_PinThickness * m_Canvas->m_Scale);
+			}
+
+			// Arrow part
+			ImVec2 pinArrowP1 = pinStartPos; // first point of arrow triangle - top
+			pinArrowP1.x += s_Style.m_PinRadius + s_Style.m_PinArrowSpacing;
+			pinArrowP1.y -= s_Style.m_PinArrowHalfHeight;
+			ImVec2 pinArrowP2 = pinStartPos; // middle
+			pinArrowP2.x += s_Style.m_PinRadius + s_Style.m_PinArrowSpacing + s_Style.m_PinArrowWidth;
+			ImVec2 pinArrowP3 = pinStartPos; // bottom
+			pinArrowP3.x += s_Style.m_PinRadius + s_Style.m_PinArrowSpacing;
+			pinArrowP3.y += s_Style.m_PinArrowHalfHeight;
+
+			m_DrawList->AddTriangleFilled(
+				{ m_Canvas->m_Origin.x + pinArrowP1.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + pinArrowP1.y * m_Canvas->m_Scale },
+				{ m_Canvas->m_Origin.x + pinArrowP2.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + pinArrowP2.y * m_Canvas->m_Scale },
+				{ m_Canvas->m_Origin.x + pinArrowP3.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + pinArrowP3.y * m_Canvas->m_Scale },
+				GetPinVariantColor(pin));
 		}
 		else
 		{
-			m_DrawList->AddCircle(
-				{ m_Canvas->m_Origin.x + pinStartPos.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + pinStartPos.y * m_Canvas->m_Scale },
-				s_Style.m_PinRadius * m_Canvas->m_Scale,
-				GetPinVariantColor(pin),
-				circleSegments,
-				s_Style.m_PinThickness * m_Canvas->m_Scale);
+			ImVec2 points[6];
+			// Top
+			points[0] = { m_Canvas->m_Origin.x + (pinStartPos.x - 4.0f) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (pinStartPos.y - 6.0f) * m_Canvas->m_Scale };
+			points[1] = { m_Canvas->m_Origin.x + (pinStartPos.x + 4.0f) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (pinStartPos.y - 6.0f) * m_Canvas->m_Scale };
+			points[2] = { m_Canvas->m_Origin.x + (pinStartPos.x + 8.0f) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (pinStartPos.y) * m_Canvas->m_Scale };
+			points[3] = { m_Canvas->m_Origin.x + (pinStartPos.x + 4.0f) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (pinStartPos.y + 6.0f) * m_Canvas->m_Scale };
+			points[4] = { m_Canvas->m_Origin.x + (pinStartPos.x - 4.0f) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (pinStartPos.y + 6.0f) * m_Canvas->m_Scale };
+			points[5] = { m_Canvas->m_Origin.x + (pinStartPos.x - 4.0f) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (pinStartPos.y - 6.0f) * m_Canvas->m_Scale };
+
+			if (pin->m_Connected)
+			{
+				m_DrawList->AddConvexPolyFilled(points, 6, IM_COL32(255, 255, 255, 255));
+			}
+			else
+			{
+				m_DrawList->AddPolyline(points, 6, IM_COL32(255, 255, 255, 255), ImDrawListFlags_None, s_Style.m_PinThickness * m_Canvas->m_Scale);
+			}
 		}
-
-		// Arrow part
-		ImVec2 pinArrowP1 = pinStartPos; // first point of arrow triangle - top
-		pinArrowP1.x += s_Style.m_PinRadius + s_Style.m_PinArrowSpacing;
-		pinArrowP1.y -= s_Style.m_PinArrowHalfHeight;
-		ImVec2 pinArrowP2 = pinStartPos; // middle
-		pinArrowP2.x += s_Style.m_PinRadius + s_Style.m_PinArrowSpacing + s_Style.m_PinArrowWidth;
-		ImVec2 pinArrowP3 = pinStartPos; // bottom
-		pinArrowP3.x += s_Style.m_PinRadius + s_Style.m_PinArrowSpacing;
-		pinArrowP3.y += s_Style.m_PinArrowHalfHeight;
-
-		m_DrawList->AddTriangleFilled(
-			{ m_Canvas->m_Origin.x + pinArrowP1.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + pinArrowP1.y * m_Canvas->m_Scale },
-			{ m_Canvas->m_Origin.x + pinArrowP2.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + pinArrowP2.y * m_Canvas->m_Scale },
-			{ m_Canvas->m_Origin.x + pinArrowP3.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + pinArrowP3.y * m_Canvas->m_Scale },
-			GetPinVariantColor(pin));
 
 		// Pin text part
-		ImVec2 textPos = pinStartPos;
-		ImVec2 textSize = ImGui::CalcTextSize(pin->m_Variable->m_Text.c_str());
-		textSize.x += s_Style.m_PinTextSpacing;
-
-		if (pin->m_Type == Pin::Type::OUTPUT)
+		if (pin->m_Type == Pin::Type::OUTPUT || pin->m_Type == Pin::Type::INPUT)
 		{
-			textPos.x -= s_Style.m_PinRadius + textSize.x;
-			textPos.y -= s_Style.m_PinRadius + 1.0f;
-		}
-		else
-		{
-			textPos.x += GetPinSpaceWidth();
-			textPos.y -= s_Style.m_PinRadius + 1.0f; // TODO: consider changing
+			ImVec2 textPos = pinStartPos;
+			ImVec2 textSize = ImGui::CalcTextSize(pin->m_Variable->m_Text.c_str());
+			textSize.x += s_Style.m_PinTextSpacing;
+
+			if (pin->m_Type == Pin::Type::OUTPUT || pin->m_Type == Pin::Type::FLOW_OUT)
+			{
+				textPos.x -= s_Style.m_PinRadius + textSize.x;
+				textPos.y -= s_Style.m_PinRadius + 1.0f;
+			}
+			else
+			{
+				textPos.x += GetPinSpaceWidth();
+				textPos.y -= s_Style.m_PinRadius + 1.0f; // TODO: consider changing
+			}
+
+			ImGui::SetWindowFontScale(m_Canvas->m_Scale);
+			m_DrawList->AddText(
+				{ m_Canvas->m_Origin.x + textPos.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + textPos.y * m_Canvas->m_Scale },
+				IM_COL32(255, 255, 255, 255),
+				pin->m_Variable->m_Text.c_str());
+			ImGui::SetWindowFontScale(1.0f);
 		}
 
-		ImGui::SetWindowFontScale(m_Canvas->m_Scale);
-		m_DrawList->AddText(
-			{ m_Canvas->m_Origin.x + textPos.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + textPos.y * m_Canvas->m_Scale },
-			IM_COL32(255, 255, 255, 255),
-			pin->m_Variable->m_Text.c_str());
-		ImGui::SetWindowFontScale(1.0f);
-
-		// Test draw Pin <-> FloatingTarget connection
+		// Draw Pin <-> FloatingTarget connection
 		if (pin == m_PanelContext->GetController()->GetSelectedPin() && m_PanelContext->GetController()->GetAction() == ControllAction::NODE_PIN_DRAG)
 		{
 			ImVec2 startPoint = pin->m_Pos;

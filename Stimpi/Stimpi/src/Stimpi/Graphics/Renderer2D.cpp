@@ -275,11 +275,6 @@ namespace Stimpi
 
 	void Renderer2D::DrawCircle(glm::vec3 pos, glm::vec2 scale, glm::vec3 color, float thickness, float fade)
 	{
-		/*m_CircleShader->SetUniform("u_thickness", thickness);
-		m_CircleShader->SetUniform("u_fade", fade);
-
-		Submit(pos, scale, 0.0f, color, m_CircleShader.get(), { -1.0f, -1.0f }, { 1.0f, 1.0f });*/
-
 		auto currnetCmd = *m_CircleActiveRenderCmdIter;
 		auto cmd = currnetCmd.get();
 		glm::vec2 minUV = { -1.0f, -1.0f };
@@ -419,7 +414,7 @@ namespace Stimpi
 
 	void Renderer2D::DrawFrame()
 	{
-		for (auto renderCmd : m_RenderCmds)
+		for (auto& renderCmd : m_RenderCmds)
 		{
 			// Skip last as it won't be filled with data
 			if (renderCmd != *m_ActiveRenderCmdIter)
@@ -427,7 +422,7 @@ namespace Stimpi
 		}
 		m_RenderedCmdCnt = m_RenderCmds.size() - 1; // last won't be filled with data
 
-		for (auto renderCmd : m_CircleRenderCmds)
+		for (auto& renderCmd : m_CircleRenderCmds)
 		{
 			// Skip last as it won't be filled with data
 			if (renderCmd != *m_CircleActiveRenderCmdIter)
@@ -435,7 +430,7 @@ namespace Stimpi
 		}
 		m_RenderedCmdCnt += m_CircleRenderCmds.size() - 1;
 
-		for (auto renderCmd : m_LineRenderCmds)
+		for (auto& renderCmd : m_LineRenderCmds)
 		{
 			// Skip last as it won't be filled with data
 			if (renderCmd != *m_LineActiveRenderCmdIter)

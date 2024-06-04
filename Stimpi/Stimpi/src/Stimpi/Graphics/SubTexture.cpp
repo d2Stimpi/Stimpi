@@ -5,7 +5,7 @@ namespace Stimpi
 {
 	
 	SubTexture::SubTexture(FilePath filePath, glm::vec2 min, glm::vec2 max)
-		:  m_min(min), m_max(max)
+		:  m_Min(min), m_Max(max)
 	{
 		m_TextureHandle = AssetManager::GetAsset<Texture>(filePath);
 	}
@@ -21,11 +21,11 @@ namespace Stimpi
 		float textureWidth = texture->GetWidth();
 		float textureHeight = texture->GetHeight();
 
-		m_UVmin = glm::vec2(m_min.x / textureWidth, m_min.y / textureHeight);
-		m_UVmax = glm::vec2(m_max.x / textureWidth, m_max.y / textureHeight);
+		m_UVmin = glm::vec2(m_Min.x / textureWidth, m_Min.y / textureHeight);
+		m_UVmax = glm::vec2(m_Max.x / textureWidth, m_Max.y / textureHeight);
 
-		m_SubWidth = m_max.x;
-		m_SubHeight = m_max.y;
+		m_SubWidth = m_Max.x;
+		m_SubHeight = m_Max.y;
 	}
 
 	bool SubTexture::Loaded()
@@ -45,8 +45,8 @@ namespace Stimpi
 
 	void SubTexture::SetSubTextureSize(glm::vec2 min, glm::vec2 max)
 	{
-		m_min = min;
-		m_max = max;
+		m_Min = min;
+		m_Max = max;
 	}
 
 	void SubTexture::SetSubRegion(glm::vec2 min, glm::vec2 max)

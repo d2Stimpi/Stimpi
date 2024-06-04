@@ -37,8 +37,8 @@ namespace Stimpi
 	private:
 		bool m_Loaded = false;
 		AssetHandle m_TextureHandle = {};
-		glm::vec2 m_min = { 0.0f, 0.0f };
-		glm::vec2 m_max = { 0.0f, 0.0f };
+		glm::vec2 m_Min = { 0.0f, 0.0f };
+		glm::vec2 m_Max = { 0.0f, 0.0f };
 		glm::vec2 m_UVmin = { 0.0f, 0.0f };
 		glm::vec2 m_UVmax = { 0.0f, 0.0f };
 		uint32_t m_SubWidth = 0;

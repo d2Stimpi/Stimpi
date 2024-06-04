@@ -61,7 +61,7 @@ namespace Stimpi
 
 	struct Pin
 	{
-		enum class Type { INPUT = 0, OUTPUT };
+		enum class Type { INPUT = 0, OUTPUT, FLOW_IN, FLOW_OUT };
 		//enum class ValueType { None = 0, Flow, Bool, Int, Float, Vector2, String };
 
 		Node* m_ParentNode;	// Owner of the pin
@@ -218,6 +218,7 @@ namespace Stimpi
 	void UpdateVariableValueType(Variable* variable, Variable::ValueType type);
 	float GetPinSpaceHeight();
 	float GetPinSpaceWidth();
+	bool IsFlowPin(Pin* pin);
 	bool IsConnected(Pin* src, Pin* dest);
 	void ConnectPinToPin(Pin* src, Pin* dest, Graph* graph);
 	void BreakPinToPinConnection(PinConnection* connection, Graph* graph);

@@ -35,12 +35,16 @@ namespace Stimpi
 	// Window type is selected
 	auto s_WindowImplType = WindowType::SDL;
 
+	// TODO: move to some sort of config file
+	uint32_t s_WindowWidth = 1280;
+	uint32_t s_WindowHeight = 720;
+
 	Window* Window::CreateAppWindow()
 	{
 		switch (s_WindowImplType)
 		{
 			case Stimpi::WindowType::None: { ST_CORE_WARN("WindowImpl: not supported"); return nullptr; }
-			case Stimpi::WindowType::SDL: { return new WindowSDL(ST_WINDOW_WIDTH, ST_WINDOW_HEIGHT); }
+			case Stimpi::WindowType::SDL: { return new WindowSDL(s_WindowWidth, s_WindowHeight); }
 		}
 		ST_CORE_ASSERT_MSG(true, "WindowImpl unknown!");
 		return nullptr;
@@ -67,7 +71,7 @@ namespace Stimpi
 			ST_CORE_ASSERT_MSG(true, "Failed to init SDL Error: {0}", SDL_GetError());
 		}
 
-		const char* glsl_version = "#version 330";
+		const char* glslVersion = "#version 330";
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -81,8 +85,8 @@ namespace Stimpi
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 		SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-		SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-		m_Window = SDL_CreateWindow("Stimpi Editor v1.0", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_Width, m_Height, window_flags);
+		SDL_WindowFlags windowFlags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+		m_Window = SDL_CreateWindow("Stimpi Editor v1.0", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_Width, m_Height, windowFlags);
 
 		m_ID = SDL_GetWindowID(m_Window);
 

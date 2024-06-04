@@ -29,8 +29,10 @@ namespace Stimpi
 		Stimpi::Log::Init();
 		m_Window.reset(Window::CreateAppWindow());
 		m_Context.CreateContext(m_Window.get());
+
 		// Init ScriptEngine runtime
 		ScriptEngine::Init();
+
 		// Create resource loader thread pool
 		ThreadPool::InitThreadPools();
 	}
@@ -50,7 +52,7 @@ namespace Stimpi
 
 			m_LayerStack.Update(ts);
 
-			//Clear all KeyboardEvents this game loop
+			// Clear all KeyboardEvents this game loop
 			InputManager::Instance()->ClearEvents();
 			
 			// Time measure - End of frame
@@ -125,9 +127,8 @@ namespace Stimpi
 		}
 
 		// Process Event Queues
-		// TODO: pass events to LayerStack
 		auto keyEvents = EventQueue<PhysicsEvent>::GetEvents();
-		for (auto event : keyEvents)
+		for (auto& event : keyEvents)
 		{
 			//event->LogEvent();
 			m_LayerStack.OnEvent(event.get());

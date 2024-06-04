@@ -78,7 +78,7 @@ namespace Stimpi
 	struct ST_API VertexBufferLayout
 	{
 		std::vector<LayoutData> m_Layout;
-		uint32_t m_Stride;
+		uint32_t m_Stride = 0;
 
 		VertexBufferLayout() {} // Temp default ctor
 		VertexBufferLayout(std::initializer_list<LayoutData> list)

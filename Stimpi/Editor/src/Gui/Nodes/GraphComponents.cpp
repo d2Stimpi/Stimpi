@@ -196,6 +196,14 @@ namespace Stimpi
 		return s_Style.m_PinRadius * 2.0f + s_Style.m_PinArrowSpacing + s_Style.m_PinArrowWidth;
 	}
 
+	bool IsFlowPin(Pin* pin)
+	{
+		if (pin->m_Type == Pin::Type::FLOW_IN || pin->m_Type == Pin::Type::FLOW_OUT)
+			return true;
+
+		return false;
+	}
+
 	bool IsConnected(Pin* src, Pin* dest)
 	{
 		if (!src->m_Connected || !dest->m_Connected)
@@ -216,10 +224,15 @@ namespace Stimpi
 	void ConnectPinToPin(Pin* src, Pin* dest, Graph* graph)
 	{
 		// Check if src is out pin and if dest is input
-		if (src->m_Type == Pin::Type::OUTPUT && dest->m_Type == Pin::Type::INPUT)
+		if ((src->m_Type == Pin::Type::OUTPUT && dest->m_Type == Pin::Type::INPUT) ||
+			(src->m_Type == Pin::Type::FLOW_OUT && dest->m_Type == Pin::Type::FLOW_IN) ||
+			(src->m_Type == Pin::Type::FLOW_IN && dest->m_Type == Pin::Type::FLOW_OUT) ||
+			(src->m_Type == Pin::Type::INPUT && dest->m_Type == Pin::Type::OUTPUT))
 		{
 			// If input pin has active connection do nothing - make the user break it first
-			if (dest->m_ConnectedPins.empty())
+			if ((dest->m_ConnectedPins.empty() && !IsFlowPin(dest)) ||
+				(IsFlowPin(src) && !src->m_Connected && !dest->m_Connected) ||
+				(IsFlowPin(dest) && !src->m_Connected && !dest->m_Connected))
 			{
 				// Check type compatibility
 				if (dest->m_Variable->m_ValueType == src->m_Variable->m_ValueType)

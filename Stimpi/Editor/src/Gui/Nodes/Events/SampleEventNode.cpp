@@ -14,7 +14,7 @@ namespace Stimpi
 		ST_ASSERT(!graph, "No Active Graph found!");
 
 		Node* newNode = NodeBuilder::CreateNode({
-			{Pin::Type::OUTPUT, {Variable::ValueType::Flow, "Trigger", false}}
+			{Pin::Type::FLOW_OUT, {Variable::ValueType::None, "Trigger", 0}}
 			}, "SampleEvent", graph);
 
 		newNode->m_Type = Node::NodeType::Event;
