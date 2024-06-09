@@ -16,7 +16,8 @@ namespace Stimpi
 		s_NodeBuilderFunctions = {
 			{"OnCreate", []() { return OnCreateNode::CreateNode(); }},
 			{"SampleEvent", []() { return SampleEventNode::CreateNode(); }},
-			{"SampleMethod", []() { return SampleMethodNode::CreateNode(); }}
+			{"SampleMethod", []() { return SampleMethodNode::CreateNode(); }},
+			{"SetPosition", []() { return SetPositionNode::CreateNode(); }}
 		};
 
 		for (auto key : s_NodeBuilderFunctions)
@@ -25,20 +26,24 @@ namespace Stimpi
 		}
 	}
 
+	// Called to prepare the list of possible new Nodes to add for the pop-up
 	std::vector<std::string> NodeBuilder::GetNodeNamesList()
 	{
-		std::vector<std::string> compinedLinst = s_NodeTypeList;
+		std::vector<std::string> combinedList = s_NodeTypeList;
 		auto graph = GraphPanel::GetGlobalActiveGraph();
 
 		if (graph)
 		{
 			for (auto& var : graph->m_Variables)
 			{
-				compinedLinst.push_back(var->m_Text);
+				std::string setNodeName = std::string("Set_").append(var->m_Text);
+				std::string getNodeName = std::string("Get_").append(var->m_Text);
+				combinedList.push_back(setNodeName);
+				combinedList.push_back(getNodeName);
 			}
 		}
 
-		return compinedLinst;
+		return combinedList;
 	}
 
 	Node* NodeBuilder::CreateNode(NodeLayout layout, std::string title, Graph* graph)
@@ -56,11 +61,7 @@ namespace Stimpi
 
 			pin->m_Variable->m_Text = item.m_Variable.m_Text;
 			pin->m_Variable->m_ValueType = item.m_Variable.m_ValueType;
-			pin->m_Variable->m_Value = item.m_Variable.m_Value;
-			if (newNode->m_Type == Node::NodeType::Variable)
-			{
-				pin->m_Variable->m_AttachedToPins.push_back(pin);
-			}
+			pin->m_Variable->m_Value = item.m_Variable.m_Value; // TODO: consider removing from here as generic non-var nodes might not want this data
 
 			if (pin->m_Type == Pin::Type::INPUT || pin->m_Type == Pin::Type::FLOW_IN)
 				newNode->m_InPins.emplace_back(pin);
@@ -78,9 +79,22 @@ namespace Stimpi
 		// First check for VariableNodes to avoid name collision
 		for (auto& var : graph->m_Variables)
 		{
-			if (name == var->m_Text)
+			if (name.find(var->m_Text) != std::string::npos)
 			{
-				return VariableGetNode::CreateNode(var);
+				if (name.find("Get_") == 0)
+				{
+					return VariableGetNode::CreateNode(var);
+				}
+				else if (name.find("Set_") == 0)
+				{
+					return VariableSetNode::CreateNode(var);
+				}
+				else
+				{
+					// TODO: Create both set and get, drag-drop gets in here
+					return VariableGetNode::CreateNode(var);
+					return nullptr;
+				}
 			}
 		}
 

@@ -6,11 +6,12 @@
 #include "Gui/CodeGen/CodeWriter.h"
 #include "Gui/Nodes/GraphComponents.h"
 
+#include "Gui/Nodes/Nodes.h"
+
 namespace Stimpi
 {
 	struct CodeGenContext
 	{
-		//CodeGenStates m_GenState = CodeGenStates::GEN_VARS;
 		Graph* m_Graph;
 		std::string m_OutputFile;
 	};
@@ -63,16 +64,9 @@ namespace Stimpi
 
 	void ClassBuilder::GenerateMemebers()
 	{
-		for (auto& node : s_Context.m_Graph->m_Nodes)
+		for (auto& var : s_Context.m_Graph->m_Variables)
 		{
-			if (node->m_Type == Node::NodeType::Variable)
-			{
-				auto outPin = node->m_OutPins[0];
-				if (node->m_CodeComponent)
-				{
-					s_CodeWriter << node->m_CodeComponent->GetValueName(node.get()) << " " << outPin->m_Variable->m_Text << " = " << outPin->m_Variable->m_Value << ";" << std::endl;
-				}
-			}
+			s_CodeWriter << VariableValueTypeToString(var->m_ValueType) << " " << var->m_Text << " = " << var->m_Value << ";" << std::endl;
 		}
 	}
 
@@ -82,7 +76,15 @@ namespace Stimpi
 		s_CodeWriter << "public override void OnCreate()" << std::endl;
 		s_CodeWriter << CodeManip::BlockBegin;
 
-		// TODO: gen code here
+		// Follow execution flow starting from "root" node
+		auto onCreateNode = s_Context.m_Graph->FindNodeByName(OnCreateNode::GetName());
+		if (onCreateNode)
+		{
+			// TODO: split Pin to FlowPin DataPin: onCreateNode->m_DataPin[0]...
+			// m_OutPins[0] - data out pin from VariableSetNode
+			auto next = onCreateNode->m_OutPins[0]->m_ConnectedPins[0]->m_ParentNode;
+			next->m_CodeComponent->GenerateExpression(next, &s_CodeWriter);
+		}
 
 		s_CodeWriter << CodeManip::BlockEnd;
 	}

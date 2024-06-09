@@ -11,6 +11,9 @@
 #define PIN_VALUE_TYPE_TO_INT(x)	((int)(x) - 2)
 #define INT_TO_PIN_VALUE_TYPE(x)	((Variable::ValueType)(x + 2))
 
+// TODO: rework class layout
+// Graph class holds all structures - Nodes, Pins, Vars, etc...
+
 namespace Stimpi
 {
 	struct Pin;
@@ -62,21 +65,22 @@ namespace Stimpi
 	struct Pin
 	{
 		enum class Type { INPUT = 0, OUTPUT, FLOW_IN, FLOW_OUT };
-		//enum class ValueType { None = 0, Flow, Bool, Int, Float, Vector2, String };
 
-		Node* m_ParentNode;	// Owner of the pin
-		uint32_t m_ID;	    // Pin ID
+		Node* m_ParentNode;
+		Type m_Type;
+		std::shared_ptr<Variable> m_Variable = std::make_shared<Variable>();
 
+		uint32_t m_ID;
 		bool m_Connected = false;
 		bool m_SingleConnection = false;
 		std::vector<Pin*> m_ConnectedPins;
 
-		Type m_Type;
-
-		std::shared_ptr<Variable> m_Variable = std::make_shared<Variable>();
-
 		// For handling selection - global position
 		ImVec2 m_Pos = { 0.0f, 0.0f };
+
+		Pin() = default;
+		Pin(const Pin&) = default;
+		Pin(Node* parent, Type type, std::shared_ptr<Variable> var);	
 	};
 
 	struct NodePinData
@@ -164,6 +168,7 @@ namespace Stimpi
 		uint32_t GeneratePinID() { return ++m_NextPinID; }
 
 		void RemoveVariable(Variable* var);
+		Node* FindNodeByName(std::string name);
 	};
 
 	// TODO: consider more suitable place

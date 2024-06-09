@@ -95,7 +95,9 @@ namespace Stimpi
 		if (std::holds_alternative<glm::vec2>(val))
 		{
 			glm::vec2 vec = std::get<glm::vec2>(val);
-			cw << vec.x << ", " << vec.y;
+			cw << "new Vector2(";
+			cw << vec.x << "f, " << vec.y <<"f";
+			cw << ")";
 		}
 
 		if (std::holds_alternative<std::string>(val))

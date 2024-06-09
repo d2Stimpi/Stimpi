@@ -188,6 +188,19 @@ namespace Stimpi
 		}
 	};
 
+	/**
+	 * Data represents one "VisualScript" asset
+	 * - only one Entity class is expected
+	 */
+	struct AssetAssembly
+	{
+		MonoAssembly* m_Assembly = nullptr;
+		MonoImage* m_AssemblyImage = nullptr;
+
+		std::string m_ScriptClassName;
+		std::shared_ptr<ScriptClass> m_EntityClass;
+	};
+
 	struct ScriptEngineData
 	{
 		MonoDomain* m_RootDomain = nullptr;
@@ -199,7 +212,7 @@ namespace Stimpi
 		MonoAssembly* m_ClientAssembly = nullptr;
 		MonoImage* m_ClientAssemblyImage = nullptr;
 
-		ScriptClass m_EntityClass; // Used for Examples - to be removed
+		ScriptClass m_EntityClass; // Used for the Entity class;
 		std::vector<std::string> m_ScriptClassNames;
 		std::unordered_map<std::string, std::shared_ptr<ScriptClass>> m_EntityClasses;
 
@@ -211,8 +224,17 @@ namespace Stimpi
 		std::vector<std::string> m_ClassNames;
 		std::unordered_map<std::string, std::shared_ptr<ScriptClass>> m_Classes;
 
+		// "VisualScripting" asset scripts
+		std::unordered_map<std::string, std::shared_ptr<AssetAssembly>> m_AssetAssemblies;
+
+		// Script paths
+		std::filesystem::path m_CoreScirptPath;
+		std::filesystem::path m_ClientScirptPath;
+		std::filesystem::path m_AssetsScriptPath;
+
 		FileWatchListener m_OnScriptUpdated;
-		bool m_DeferreAsemblyReload = false;
+		FileWatchListener m_OnAssetScriptsUpdated;	// Track script assets (generated from VisualScripting)
+		bool m_DeferreAsemblyReload = false;	// Reload assembly if script change was detected and scene was running
 	};
 
 	static ScriptEngineData* s_Data;
@@ -233,8 +255,15 @@ namespace Stimpi
 		};
 		SceneManager::Instance()->RegisterOnSceneChangeListener(onScneeChanged);
 
+		// Note: full absolute path required for file watcher
+		s_Data->m_CoreScirptPath = std::filesystem::absolute(ResourceManager::GetScriptsPath()) / s_CoreScriptName;
+		s_Data->m_ClientScirptPath = std::filesystem::absolute(ResourceManager::GetScriptsPath()) / s_ClientScriptName;
+		s_Data->m_AssetsScriptPath = std::filesystem::absolute(ResourceManager::GetAssetsPath()) / "scripts";
+
 		InitMono();
 		LoadAssembly();
+
+		LoadAssetAsseblies();
 
 		Utils::PrintAssemblyTypes(s_Data->m_CoreAssembly);
 		Utils::PrintAssemblyTypes(s_Data->m_ClientAssembly);
@@ -244,7 +273,7 @@ namespace Stimpi
 		s_Data->m_EntityClass = ScriptClass("Stimpi", "Entity", s_Data->m_CoreAssembly);
 
 		ScriptGlue::RegisterFucntions();
-		ScriptGlue::RegosterComponents();
+		ScriptGlue::RegisterComponents();
 
 		// Register Hot reload watcher
 		s_Data->m_OnScriptUpdated = [](SystemShellEvent* event)
@@ -263,25 +292,44 @@ namespace Stimpi
 			}
 		};
 
-		// Note: full absolute path required for file watcher
-		auto coreScirptPath = std::filesystem::absolute(ResourceManager::GetScriptsPath()) / s_CoreScriptName;
-		auto clientScirptPath = std::filesystem::absolute(ResourceManager::GetScriptsPath()) / s_ClientScriptName;
-		FileWatcher::AddWatcher(coreScirptPath, s_Data->m_OnScriptUpdated);
-		FileWatcher::AddWatcher(clientScirptPath, s_Data->m_OnScriptUpdated);
+		s_Data->m_OnAssetScriptsUpdated = [](SystemShellEvent * event)
+		{
+			if (event->GetType() == SystemShellEventType::SH_UPDATED)
+			{
+				ST_CORE_INFO("ScriptEngine: SH_UPDATED - {}", event->GetFilePath());
+			}
 
+			if (event->GetType() == SystemShellEventType::SH_CREATED)
+			{
+				ST_CORE_INFO("ScriptEngine: SH_CREATED - {}", event->GetFilePath());
+			}
 
+			if (event->GetType() == SystemShellEventType::SH_RENAMED)
+			{
+				ST_CORE_INFO("ScriptEngine: event SH_RENAMED - {} -> {}", event->GetFilePath(), event->GetNewFilePath());
+			}
+
+			if (event->GetType() == SystemShellEventType::SH_DELETED)
+			{
+				ST_CORE_INFO("ScriptEngine: event SH_DELETED - {}", event->GetFilePath());
+			}
+		};
+
+		FileWatcher::AddWatcher(s_Data->m_CoreScirptPath, s_Data->m_OnScriptUpdated);
+		FileWatcher::AddWatcher(s_Data->m_ClientScirptPath, s_Data->m_OnScriptUpdated);
+		FileWatcher::AddWatcher(s_Data->m_AssetsScriptPath, s_Data->m_OnAssetScriptsUpdated);
 	}
 
 	void ScriptEngine::Shutdown()
 	{
 		ShutdownMono();
-		delete s_Data;
-		s_Data = nullptr;
 
-		auto coreScirptPath = ResourceManager::GetScriptsPath() / s_CoreScriptName;
-		auto clientScirptPath = ResourceManager::GetScriptsPath() / s_ClientScriptName;
-		FileWatcher::RemoveWatcher(coreScirptPath);
-		FileWatcher::RemoveWatcher(clientScirptPath);
+		FileWatcher::RemoveWatcher(s_Data->m_CoreScirptPath);
+		FileWatcher::RemoveWatcher(s_Data->m_ClientScirptPath);
+		FileWatcher::RemoveWatcher(s_Data->m_AssetsScriptPath);
+
+		s_Data = nullptr;
+		delete s_Data;
 	}
 
 	void ScriptEngine::LoadAssembly()
@@ -295,6 +343,26 @@ namespace Stimpi
 		// Load Client Assembly
 		s_Data->m_ClientAssembly = LoadMonoAssembly(GetClientScriptPath().string());
 		s_Data->m_ClientAssemblyImage = mono_assembly_get_image(s_Data->m_ClientAssembly);
+	}
+
+
+	void ScriptEngine::LoadAssetAsseblies()
+	{
+		for (auto& directoryEntry : std::filesystem::directory_iterator(s_Data->m_AssetsScriptPath))
+		{
+			const auto& path = directoryEntry.path();
+			auto relativePath = std::filesystem::relative(path, ResourceManager::GetAssetsPath());
+			std::string filenameStr = relativePath.filename().string();
+
+			ST_CORE_INFO("-- {}", filenameStr);
+
+			auto assetAssembly = std::make_shared<AssetAssembly>();
+			assetAssembly->m_Assembly = LoadMonoAssembly(path.string());
+			assetAssembly->m_AssemblyImage = mono_assembly_get_image(assetAssembly->m_Assembly);
+
+			LoadClassesFromAssetAssembly(assetAssembly->m_Assembly, assetAssembly.get());
+			s_Data->m_AssetAssemblies[filenameStr] = assetAssembly;
+		}
 	}
 
 	void ScriptEngine::UnloadAssembly()
@@ -339,7 +407,7 @@ namespace Stimpi
 		s_Data->m_EntityClass = ScriptClass("Stimpi", "Entity", s_Data->m_CoreAssembly);
 
 		ScriptGlue::RegisterFucntions();
-		ScriptGlue::RegosterComponents();
+		ScriptGlue::RegisterComponents();
 
 		CreateScriptInstances();
 	}
@@ -375,6 +443,45 @@ namespace Stimpi
 				{
 					s_Data->m_ScriptClassNames.push_back(fullName);
 					s_Data->m_EntityClasses[fullName] = std::make_shared<ScriptClass>(nameSpace, name, assembly);
+				}
+			}
+		}
+	}
+
+	// TODO: rework this as it is more specialized for only loading single class
+	void ScriptEngine::LoadClassesFromAssetAssembly(MonoAssembly* assembly, AssetAssembly* assetAssembly)
+	{
+		MonoImage* image = mono_assembly_get_image(assembly);
+		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
+		int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
+		MonoClass* entityClass = GetClassInAssembly(s_Data->m_CoreAssembly, "Stimpi", "Entity"); //TODO: move this
+
+		for (int32_t i = 0; i < numTypes; i++)
+		{
+			uint32_t cols[MONO_TYPEDEF_SIZE];
+			mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE);
+
+			const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
+			const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
+			std::string fullName;
+			if (strlen(nameSpace) == 0)
+				fullName = name;
+			else
+				fullName = fmt::format("{}.{}", nameSpace, name);
+
+			MonoClass* monoClass = GetClassInAssembly(assembly, nameSpace, name);
+			if (entityClass == monoClass)
+				continue;
+
+			if (monoClass)
+			{
+				bool isEntity = mono_class_is_subclass_of(monoClass, entityClass, false);
+				if (isEntity)
+				{
+					s_Data->m_ScriptClassNames.push_back(fullName);
+					assetAssembly->m_ScriptClassName = fullName;
+					assetAssembly->m_EntityClass = std::make_shared<ScriptClass>(nameSpace, name, assembly);
+					s_Data->m_EntityClasses[fullName] = assetAssembly->m_EntityClass;
 				}
 			}
 		}
@@ -606,6 +713,7 @@ namespace Stimpi
 		s_Data->m_EntityInstances.clear();
 		if (s_Data->m_DeferreAsemblyReload)
 		{
+			// TODO: avoid reloading assembly
 			ReloadAssembly();
 			s_Data->m_DeferreAsemblyReload = false;
 		}

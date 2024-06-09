@@ -199,7 +199,27 @@ namespace Stimpi
 		// Pin hit box pos
 		pin->m_Pos = pinStartPos;
 
-		if (pin->m_Type == Pin::Type::OUTPUT || pin->m_Type == Pin::Type::INPUT)
+		if (pin->m_Type == Pin::Type::FLOW_OUT || pin->m_Type == Pin::Type::FLOW_IN)
+		{
+			ImVec2 points[6];
+			// Top
+			points[0] = { m_Canvas->m_Origin.x + (pinStartPos.x - 4.0f) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (pinStartPos.y - 6.0f) * m_Canvas->m_Scale };
+			points[1] = { m_Canvas->m_Origin.x + (pinStartPos.x + 4.0f) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (pinStartPos.y - 6.0f) * m_Canvas->m_Scale };
+			points[2] = { m_Canvas->m_Origin.x + (pinStartPos.x + 8.0f) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (pinStartPos.y) * m_Canvas->m_Scale };
+			points[3] = { m_Canvas->m_Origin.x + (pinStartPos.x + 4.0f) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (pinStartPos.y + 6.0f) * m_Canvas->m_Scale };
+			points[4] = { m_Canvas->m_Origin.x + (pinStartPos.x - 4.0f) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (pinStartPos.y + 6.0f) * m_Canvas->m_Scale };
+			points[5] = { m_Canvas->m_Origin.x + (pinStartPos.x - 4.0f) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (pinStartPos.y - 6.0f) * m_Canvas->m_Scale };
+
+			if (pin->m_Connected)
+			{
+				m_DrawList->AddConvexPolyFilled(points, 6, IM_COL32(255, 255, 255, 255));
+			}
+			else
+			{
+				m_DrawList->AddPolyline(points, 6, IM_COL32(255, 255, 255, 255), ImDrawListFlags_None, s_Style.m_PinThickness * m_Canvas->m_Scale);
+			}
+		}
+		else
 		{
 			// Circle part
 			float circleSegments = 10.0f * m_Canvas->m_Scale;
@@ -237,26 +257,6 @@ namespace Stimpi
 				{ m_Canvas->m_Origin.x + pinArrowP2.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + pinArrowP2.y * m_Canvas->m_Scale },
 				{ m_Canvas->m_Origin.x + pinArrowP3.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + pinArrowP3.y * m_Canvas->m_Scale },
 				GetPinVariantColor(pin));
-		}
-		else
-		{
-			ImVec2 points[6];
-			// Top
-			points[0] = { m_Canvas->m_Origin.x + (pinStartPos.x - 4.0f) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (pinStartPos.y - 6.0f) * m_Canvas->m_Scale };
-			points[1] = { m_Canvas->m_Origin.x + (pinStartPos.x + 4.0f) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (pinStartPos.y - 6.0f) * m_Canvas->m_Scale };
-			points[2] = { m_Canvas->m_Origin.x + (pinStartPos.x + 8.0f) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (pinStartPos.y) * m_Canvas->m_Scale };
-			points[3] = { m_Canvas->m_Origin.x + (pinStartPos.x + 4.0f) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (pinStartPos.y + 6.0f) * m_Canvas->m_Scale };
-			points[4] = { m_Canvas->m_Origin.x + (pinStartPos.x - 4.0f) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (pinStartPos.y + 6.0f) * m_Canvas->m_Scale };
-			points[5] = { m_Canvas->m_Origin.x + (pinStartPos.x - 4.0f) * m_Canvas->m_Scale, m_Canvas->m_Origin.y + (pinStartPos.y - 6.0f) * m_Canvas->m_Scale };
-
-			if (pin->m_Connected)
-			{
-				m_DrawList->AddConvexPolyFilled(points, 6, IM_COL32(255, 255, 255, 255));
-			}
-			else
-			{
-				m_DrawList->AddPolyline(points, 6, IM_COL32(255, 255, 255, 255), ImDrawListFlags_None, s_Style.m_PinThickness * m_Canvas->m_Scale);
-			}
 		}
 
 		// Pin text part

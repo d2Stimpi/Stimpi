@@ -9,6 +9,7 @@
 
 #include <functional>
 
+// TODO: move to struct
 #define THUMBNAIL_WIDTH 96
 #define THUMBNAIL_HEIGHT 116
 #define THUMBNAIL_SIZE (ImVec2(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT))

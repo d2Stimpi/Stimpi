@@ -44,11 +44,11 @@ namespace Stimpi
 				}
 				else
 				{
-					ST_CORE_INFO("Play the scene.");
-					m_ActiveScene->OnScenePlay();
-
 					// Save scene as temp file so it can be restored on Scene Stop
 					SceneManager::Instance()->SaveScene("tmp.d2s");
+
+					ST_CORE_INFO("Play the scene.");
+					m_ActiveScene->OnScenePlay();
 				}
 			}
 		}

@@ -1,11 +1,11 @@
 #include "stpch.h"
 #include "Gui/Nodes/GraphComponents.h"
 
+#include "Gui/Nodes/GraphPanel.h"
+
 namespace Stimpi
 {
 	NodePanelStyle s_Style;
-
-
 
 	/**
 	 * Helper Utility functions
@@ -124,7 +124,7 @@ namespace Stimpi
 
 		if (!node->m_OutPins.empty() && !node->m_InPins.empty())
 		{
-			size.x += s_Style.m_PinSpacing;
+			size.x += s_Style.m_PinSpacing*2;
 		}
 
 		if (node->m_HasHeader)
@@ -163,6 +163,7 @@ namespace Stimpi
 		case Variable::ValueType::Flow: return "";
 		case Variable::ValueType::Bool: return "Bool";
 		case Variable::ValueType::Int: return "Int";
+		case Variable::ValueType::Float: return "Float";
 		case Variable::ValueType::Vector2: return "Vector2";
 		case Variable::ValueType::String: return "String";
 		}
@@ -368,6 +369,29 @@ namespace Stimpi
 			{
 				return var->m_ID == rem->m_ID;
 			}));
+	}
+
+
+	Stimpi::Node* Graph::FindNodeByName(std::string name)
+	{
+		auto found = std::find_if(m_Nodes.begin(), m_Nodes.end(), [&name](auto node)
+			{
+				return node->m_Title == name;
+			});
+
+		if (found != m_Nodes.end())
+		{
+			return (*found).get();
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	Pin::Pin(Node* parent, Type type, std::shared_ptr<Variable> var)
+		: m_ParentNode(parent), m_Type(type), m_Variable(var), m_ID(GraphPanel::GetGlobalActiveGraph()->GeneratePinID())
+	{
 	}
 
 }

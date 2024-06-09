@@ -61,7 +61,7 @@ namespace Stimpi
 		bool IsMouseHoveringPin(Pin* pin);
 		Pin* GetMouseHoveredPin(Node* node);
 
-		ImVec2 GetNodePanelViewClickLocation();
+		ImVec2 GetNodePanelViewMouseLocation();
 		bool IsMouseHoveringConnection(PinConnection* connection);
 		PinConnection* GetMouseHoveredConnection();
 

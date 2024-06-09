@@ -6,6 +6,6 @@ namespace Stimpi
 	{
 	public:
 		static void RegisterFucntions();
-		static void RegosterComponents();
+		static void RegisterComponents();
 	};
 }

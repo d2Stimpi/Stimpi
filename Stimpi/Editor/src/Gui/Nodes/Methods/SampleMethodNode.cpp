@@ -20,8 +20,8 @@ namespace Stimpi
 			}, "SampleMethod", graph);
 
 		newNode->m_Type = Node::NodeType::Method;
-
 		newNode->m_CodeComponent = std::make_shared<SampleMethodNode>();
+
 		return newNode;
 	}
 

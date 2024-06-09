@@ -95,6 +95,7 @@
     <ClInclude Include="src\Gui\Nodes\Events\SampleEventNode.h" />
     <ClInclude Include="src\Gui\Nodes\Variables\VariableSetNode.h" />
     <ClInclude Include="src\Gui\Nodes\Variables\VariableGetNode.h" />
+    <ClInclude Include="src\Gui\Nodes\Methods\SetPositionNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
@@ -168,5 +169,6 @@
     <ClCompile Include="src\Gui\Nodes\Events\SampleEventNode.cpp" />
     <ClCompile Include="src\Gui\Nodes\Variables\VariableSetNode.cpp" />
     <ClCompile Include="src\Gui\Nodes\Variables\VariableGetNode.cpp" />
+    <ClCompile Include="src\Gui\Nodes\Methods\SetPositionNode.cpp" />
   </ItemGroup>
 </Project>

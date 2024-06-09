@@ -7,6 +7,7 @@
 
 namespace Stimpi
 {
+	static std::string s_Name = "OnCreate";
 
 	Stimpi::Node* OnCreateNode::CreateNode()
 	{
@@ -15,12 +16,17 @@ namespace Stimpi
 
 		Node* newNode = NodeBuilder::CreateNode({
 			{Pin::Type::FLOW_OUT, {Variable::ValueType::None, "Out", 0}}
-			}, "OnCreate", graph);
+			}, s_Name, graph);
 
 		newNode->m_Type = Node::NodeType::Create;
 
 		newNode->m_CodeComponent = std::make_shared<OnCreateNode>();
 		return newNode;
+	}
+
+	std::string OnCreateNode::GetName()
+	{
+		return s_Name;
 	}
 
 }

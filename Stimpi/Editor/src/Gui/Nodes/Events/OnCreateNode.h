@@ -9,5 +9,6 @@ namespace Stimpi
 	public:
 
 		static Node* CreateNode();
+		static std::string GetName();
 	};
 }

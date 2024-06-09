@@ -124,7 +124,7 @@ namespace Stimpi
 			{
 				if (ImGui::MenuItem("Run system cmd"))
 				{
-					System::ExecuteCmd("mono\\bin\\mcs TestGraph.cs -r:D:\\GitHub\\Stimpi\\resources\\scripts\\Stimpi-ScriptCore.dll  -target:library  -out:pera2.dll");
+					System::ExecuteCmd("mono\\bin\\mcs TempGenClass.cs -r:D:\\GitHub\\Stimpi\\resources\\scripts\\Stimpi-ScriptCore.dll  -target:library  -out:pera2.dll");
 				}
 
 				if (ImGui::MenuItem("Test Custom Script"))

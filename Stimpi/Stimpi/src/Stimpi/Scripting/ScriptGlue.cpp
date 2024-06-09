@@ -694,7 +694,7 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(Collision_GetContacts);
 	}
 
-	void ScriptGlue::RegosterComponents()
+	void ScriptGlue::RegisterComponents()
 	{
 		RegisterComponent<TagComponent>();
 		RegisterComponent<QuadComponent>();

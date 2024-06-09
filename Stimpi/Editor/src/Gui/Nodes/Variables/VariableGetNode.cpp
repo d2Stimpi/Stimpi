@@ -20,6 +20,7 @@ namespace Stimpi
 		auto& var = rem->m_Variable;
 		auto& attached = var->m_AttachedToPins;
 		
+		// Remove the link to variable->m_AttachedToPins since multiple nodes can link to single variable (duplicate var nodes)
 		attached.erase(std::find_if(attached.begin(), attached.end(), [&rem](auto pin)
 			{
 				return pin->m_ID == rem->m_ID;
@@ -60,7 +61,6 @@ namespace Stimpi
 		{
 			pin->m_Variable->m_AttachedToPins.push_back(pin);
 		}
-		
 
 		return newNode;
 	}

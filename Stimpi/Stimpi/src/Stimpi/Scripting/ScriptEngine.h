@@ -49,6 +49,8 @@ namespace Stimpi
 		std::vector<ClassIdentifier>::iterator end() { return m_ClassIdentifiers.end(); }
 	};
 
+	struct AssetAssembly;
+
 	class ST_API ScriptEngine
 	{
 	public:
@@ -56,8 +58,10 @@ namespace Stimpi
 		static void Shutdown();
 
 		static void LoadAssembly();
+		static void LoadAssetAsseblies();
 		static void UnloadAssembly();
 		static void LoadClassesFromAssembly(MonoAssembly* assembly);
+		static void LoadClassesFromAssetAssembly(MonoAssembly* assembly, AssetAssembly* assetAssembly);
 
 		static void LoadCustomClassesFromCoreAssembly(const ClassLoadingDetails& classDetails);
 		static void LoadCustomClassesFromClientAssembly(const ClassLoadingDetails& classDetails);

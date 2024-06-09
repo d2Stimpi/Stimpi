@@ -122,7 +122,7 @@ namespace Stimpi
 
 							m_Action = ControllAction::NODE_PIN_DRAG;
 							m_SelectedPin = hoveredPin;
-							m_PinFloatingTarget = m_PanelContext->GetNodePanelViewClickLocation();
+							m_PinFloatingTarget = m_PanelContext->GetNodePanelViewMouseLocation();
 							break; //exit case
 						}
 					}
@@ -197,7 +197,7 @@ namespace Stimpi
 			else  // Mouse button still pressed - node pin dragging
 			{
 				// Update floating target
-				m_PinFloatingTarget = m_PanelContext->GetNodePanelViewClickLocation();
+				m_PinFloatingTarget = m_PanelContext->GetNodePanelViewMouseLocation();
 			}
 			break;
 		case ControllAction::CONNECTION_ONPRESS:
@@ -218,7 +218,7 @@ namespace Stimpi
 					{
 						m_Action = ControllAction::NODE_PIN_DRAG;
 						m_SelectedPin = connection->m_SourcePin;
-						m_PinFloatingTarget = m_PanelContext->GetNodePanelViewClickLocation();
+						m_PinFloatingTarget = m_PanelContext->GetNodePanelViewMouseLocation();
 
 						BreakPinToPinConnection(connection, m_Graph);
 						m_SelectedConnection = nullptr;

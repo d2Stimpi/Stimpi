@@ -4,6 +4,7 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Core/Project.h"
 #include "Gui/EditorUtils.h"
+#include "Gui/Components/UIPayload.h"
 #include "Gui/Components/SearchPopup.h"
 #include "Gui/Components/Toolbar.h"
 #include "Gui/Components/ImGuiEx.h"
@@ -287,6 +288,9 @@ namespace Stimpi
 								ItemRightClickPopup();
 
 							}
+
+							UIPayload::BeginSource(PAYLOAD_NODE_VARIABLE_GET, variable->m_Text.c_str(), variable->m_Text.length(), variable->m_Text.c_str());
+
 							ImGui::PopID();
 							ImGui::TreePop();
 						}
@@ -436,6 +440,13 @@ namespace Stimpi
 					s_Context->m_DrawList->AddRect(s_Context->m_Canvas.m_PosMin, s_Context->m_Canvas.m_PosMax, IM_COL32(255, 255, 255, 255));
 
 					DrawGraphOverlay();
+
+					// Handle drag-dropped nodes
+					UIPayload::BeginTarget(PAYLOAD_NODE_VARIABLE_GET, [&](void* data, uint32_t size) {
+						std::string strData = std::string((char*)data, size);
+						ImVec2 mouseGraphPos = GetNodePanelViewMouseLocation();
+						CreateNodeByName(mouseGraphPos, strData);
+					});
 
 					ImGui::EndTabItem();
 				}
@@ -689,7 +700,7 @@ namespace Stimpi
 
 		if (show)
 		{
-			s_Context->m_NewNodePos = GetNodePanelViewClickLocation();
+			s_Context->m_NewNodePos = GetNodePanelViewMouseLocation();
 			m_ShowPopup = true;
 			SearchPopup::OpenPopup();
 		}
@@ -706,7 +717,7 @@ namespace Stimpi
 		}
 	}
 
-	ImVec2 GraphPanel::GetNodePanelViewClickLocation()
+	ImVec2 GraphPanel::GetNodePanelViewMouseLocation()
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		return { (io.MousePos.x - s_Context->m_Canvas.m_Origin.x) / s_Context->m_Canvas.m_Scale, (io.MousePos.y - s_Context->m_Canvas.m_Origin.y) / s_Context->m_Canvas.m_Scale };
@@ -714,7 +725,7 @@ namespace Stimpi
 
 	bool GraphPanel::IsMouseHoveringConnection(PinConnection* connection)
 	{
-		ImVec2 mousePos = GetNodePanelViewClickLocation();
+		ImVec2 mousePos = GetNodePanelViewMouseLocation();
 
 		for (auto it = connection->m_BezierLinePoints.begin(); std::next(it) != connection->m_BezierLinePoints.end(); it++)
 		{
@@ -927,7 +938,7 @@ namespace Stimpi
 					{
 						auto node = *iter;
 						// Only handle Variable type nodes
-						if (node->m_Type == Node::NodeType::Variable)
+						if (node->m_Type == Node::NodeType::Variable || node->m_Type == Node::NodeType::Method)
 						{
 							if (s_Context->m_SelectedVariable->m_ID == node->m_OutPins.front()->m_Variable->m_ID)
 							{

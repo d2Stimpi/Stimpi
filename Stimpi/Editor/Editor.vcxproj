@@ -161,6 +161,7 @@
     <ClInclude Include="src\Gui\Nodes\GraphRenderer.h" />
     <ClInclude Include="src\Gui\Nodes\GraphSerializer.h" />
     <ClInclude Include="src\Gui\Nodes\Methods\SampleMethodNode.h" />
+    <ClInclude Include="src\Gui\Nodes\Methods\SetPositionNode.h" />
     <ClInclude Include="src\Gui\Nodes\NodeBuilder.h" />
     <ClInclude Include="src\Gui\Nodes\NodeGraph.h" />
     <ClInclude Include="src\Gui\Nodes\Nodes.h" />
@@ -200,6 +201,7 @@
     <ClCompile Include="src\Gui\Nodes\GraphRenderer.cpp" />
     <ClCompile Include="src\Gui\Nodes\GraphSerializer.cpp" />
     <ClCompile Include="src\Gui\Nodes\Methods\SampleMethodNode.cpp" />
+    <ClCompile Include="src\Gui\Nodes\Methods\SetPositionNode.cpp" />
     <ClCompile Include="src\Gui\Nodes\NodeBuilder.cpp" />
     <ClCompile Include="src\Gui\Nodes\NodeGraph.cpp" />
     <ClCompile Include="src\Gui\Nodes\NodePanel.cpp" />
