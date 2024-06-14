@@ -18,7 +18,6 @@
 #include "ImGui/src/imgui_internal.h"
 
 // Window show toggle includes
-#include "Gui/Nodes/NodePanel.h"
 #include "Gui/Nodes/GraphPanel.h"
 
 #include <SDL.h>
@@ -107,12 +106,7 @@ namespace Stimpi
 
 			if (ImGui::BeginMenu("Window"))
 			{
-				if (ImGui::MenuItem("Node Panel", nullptr, NodePanel::IsVisible()))
-				{
-					NodePanel::ShowWindow(!NodePanel::IsVisible());
-				}
-
-				if (ImGui::MenuItem("Node Panel - v2", nullptr, GraphPanel::IsVisible()))
+				if (ImGui::MenuItem("Node Panel", nullptr, GraphPanel::IsVisible()))
 				{
 					GraphPanel::ShowWindow(!GraphPanel::IsVisible());
 				}

@@ -66,7 +66,7 @@ namespace Stimpi
 	{
 		for (auto& var : s_Context.m_Graph->m_Variables)
 		{
-			s_CodeWriter << VariableValueTypeToString(var->m_ValueType) << " " << var->m_Text << " = " << var->m_Value << ";" << std::endl;
+			s_CodeWriter << VariableValueTypeToString(var->m_ValueType) << " " << var->m_Name << " = " << var->m_Value << ";" << std::endl;
 		}
 	}
 

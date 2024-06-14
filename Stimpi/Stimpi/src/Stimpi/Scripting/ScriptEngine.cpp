@@ -297,11 +297,13 @@ namespace Stimpi
 			if (event->GetType() == SystemShellEventType::SH_UPDATED)
 			{
 				ST_CORE_INFO("ScriptEngine: SH_UPDATED - {}", event->GetFilePath());
+				ReloadAssetAssembly(event->GetFilePath());
 			}
 
 			if (event->GetType() == SystemShellEventType::SH_CREATED)
 			{
 				ST_CORE_INFO("ScriptEngine: SH_CREATED - {}", event->GetFilePath());
+				ReloadAssetAssembly(event->GetFilePath());
 			}
 
 			if (event->GetType() == SystemShellEventType::SH_RENAMED)
@@ -354,13 +356,13 @@ namespace Stimpi
 			auto relativePath = std::filesystem::relative(path, ResourceManager::GetAssetsPath());
 			std::string filenameStr = relativePath.filename().string();
 
-			ST_CORE_INFO("-- {}", filenameStr);
+			ST_CORE_INFO("Loading Asset script - {}", filenameStr);
 
 			auto assetAssembly = std::make_shared<AssetAssembly>();
 			assetAssembly->m_Assembly = LoadMonoAssembly(path.string());
 			assetAssembly->m_AssemblyImage = mono_assembly_get_image(assetAssembly->m_Assembly);
 
-			LoadClassesFromAssetAssembly(assetAssembly->m_Assembly, assetAssembly.get());
+			LoadClassesFromAssetAssembly(assetAssembly.get());
 			s_Data->m_AssetAssemblies[filenameStr] = assetAssembly;
 		}
 	}
@@ -412,6 +414,18 @@ namespace Stimpi
 		CreateScriptInstances();
 	}
 
+	void ScriptEngine::ReloadAssetAssembly(const std::filesystem::path& assetPath)
+	{
+		auto relativePath = std::filesystem::relative(assetPath, ResourceManager::GetAssetsPath());
+		std::string filenameStr = relativePath.filename().string();
+		auto& assetAssembly = s_Data->m_AssetAssemblies[filenameStr];
+		
+		assetAssembly->m_Assembly = LoadMonoAssembly(assetPath.string());
+		assetAssembly->m_AssemblyImage = mono_assembly_get_image(assetAssembly->m_Assembly);
+
+		LoadClassesFromAssetAssembly(assetAssembly.get());
+	}
+
 	void ScriptEngine::LoadClassesFromAssembly(MonoAssembly* assembly)
 	{
 		MonoImage* image = mono_assembly_get_image(assembly);
@@ -449,9 +463,9 @@ namespace Stimpi
 	}
 
 	// TODO: rework this as it is more specialized for only loading single class
-	void ScriptEngine::LoadClassesFromAssetAssembly(MonoAssembly* assembly, AssetAssembly* assetAssembly)
+	void ScriptEngine::LoadClassesFromAssetAssembly(AssetAssembly* assetAssembly)
 	{
-		MonoImage* image = mono_assembly_get_image(assembly);
+		MonoImage* image = mono_assembly_get_image(assetAssembly->m_Assembly);
 		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
 		int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
 		MonoClass* entityClass = GetClassInAssembly(s_Data->m_CoreAssembly, "Stimpi", "Entity"); //TODO: move this
@@ -469,7 +483,7 @@ namespace Stimpi
 			else
 				fullName = fmt::format("{}.{}", nameSpace, name);
 
-			MonoClass* monoClass = GetClassInAssembly(assembly, nameSpace, name);
+			MonoClass* monoClass = GetClassInAssembly(assetAssembly->m_Assembly, nameSpace, name);
 			if (entityClass == monoClass)
 				continue;
 
@@ -478,9 +492,16 @@ namespace Stimpi
 				bool isEntity = mono_class_is_subclass_of(monoClass, entityClass, false);
 				if (isEntity)
 				{
-					s_Data->m_ScriptClassNames.push_back(fullName);
+					if (HasScriptClass(fullName))
+					{
+						ST_CORE_INFO("Class {} already exists in Scripts collection", fullName);
+					}
+					else
+					{
+						s_Data->m_ScriptClassNames.push_back(fullName);
+					}
 					assetAssembly->m_ScriptClassName = fullName;
-					assetAssembly->m_EntityClass = std::make_shared<ScriptClass>(nameSpace, name, assembly);
+					assetAssembly->m_EntityClass = std::make_shared<ScriptClass>(nameSpace, name, assetAssembly->m_Assembly);
 					s_Data->m_EntityClasses[fullName] = assetAssembly->m_EntityClass;
 				}
 			}

@@ -12,6 +12,12 @@ namespace Stimpi
 {
 	enum class WindowType{ None = 0, SDL };
 
+	struct WindowConfiguration
+	{
+		uint32_t m_WindowWidth = 1280;
+		uint32_t m_WindowHeight = 720;
+	};
+
 	class Window
 	{
 	public:
@@ -29,6 +35,7 @@ namespace Stimpi
 		virtual void OnResizeEvent(uint32_t width, uint32_t height) = 0;
 
 		static Window* CreateAppWindow();
+		static WindowConfiguration GetWindowConfiguration();
 
 		uint32_t GetWidth() { return m_Width; }
 		uint32_t GetHeight() { return m_Height; }

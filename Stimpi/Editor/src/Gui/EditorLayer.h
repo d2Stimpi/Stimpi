@@ -19,7 +19,6 @@
 #include "Gui/Stats/EditorConfig.h"
 #include "Gui/Config/SceneConfig.h"
 // Test - WIP
-#include "Gui/Nodes/NodePanel.h"
 #include "Gui/Nodes/GraphPanel.h"
 
 #include "ImGui/src/imgui.h"
@@ -60,7 +59,6 @@ namespace Stimpi
 		SceneConfig m_SceneConfigWindow;
 
 		//Test-WIP
-		NodePanel m_NodePanel;
 		GraphPanel m_NodePanelNew;
 
 		//Scene data

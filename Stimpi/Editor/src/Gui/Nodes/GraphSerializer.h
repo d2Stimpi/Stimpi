@@ -15,6 +15,9 @@ namespace Stimpi
 		bool Deseriealize(const std::string& filePath);
 
 		// Graph component serialization
+		void SerializeVariable(YAML::Emitter& out, Variable* var);
+		bool DeserializeVariable(const YAML::Node& yamlNode, Variable* var);
+
 		void SerializeNode(YAML::Emitter& out, Node* node);
 		bool DeserializeNode(const YAML::Node& yamlNode, Node* node);
 

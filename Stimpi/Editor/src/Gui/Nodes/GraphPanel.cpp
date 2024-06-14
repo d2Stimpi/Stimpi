@@ -109,14 +109,14 @@ namespace Stimpi
 	static void DrawVariableNameInput(Variable* selected)
 	{
 		char nameInputBuff[32] = { "" };
-		if (selected->m_Text.length() < 32)
+		if (selected->m_Name.length() < 32)
 		{
-			strcpy_s(nameInputBuff, selected->m_Text.c_str());
+			strcpy_s(nameInputBuff, selected->m_Name.c_str());
 		}
 
 		if (ImGui::InputText("Variable Name##DetailsPanel", nameInputBuff, sizeof(nameInputBuff), ImGuiInputTextFlags_EnterReturnsTrue))
 		{
-			selected->m_Text = std::string(nameInputBuff);
+			selected->m_Name = std::string(nameInputBuff);
 
 			// Since the text label changes we need to update node size
 			for (auto& pin : selected->m_AttachedToPins)
@@ -278,7 +278,7 @@ namespace Stimpi
 						if (variable) // because removing of an item can happen while iterating collection
 						{
 							ImGui::PushID(variable->m_ID);
-							if (ImGui::TreeNodeEx((void*)&variable, ImGuiTreeNodeFlags_Leaf, variable->m_Text.c_str()))
+							if (ImGui::TreeNodeEx((void*)&variable, ImGuiTreeNodeFlags_Leaf, variable->m_Name.c_str()))
 							{
 								if (ImGui::IsItemClicked(ImGuiMouseButton_Left) || ImGui::IsItemClicked(ImGuiMouseButton_Right))
 								{
@@ -289,7 +289,7 @@ namespace Stimpi
 
 							}
 
-							UIPayload::BeginSource(PAYLOAD_NODE_VARIABLE_GET, variable->m_Text.c_str(), variable->m_Text.length(), variable->m_Text.c_str());
+							UIPayload::BeginSource(PAYLOAD_NODE_VARIABLE_GET, variable->m_Name.c_str(), variable->m_Name.length(), variable->m_Name.c_str());
 
 							ImGui::PopID();
 							ImGui::TreePop();
@@ -303,7 +303,7 @@ namespace Stimpi
 						auto graph = s_Context->m_ActiveGraph;
 						if (graph)
 						{
-							auto newVar = std::make_shared<Variable>();
+							auto newVar = std::make_shared<Variable>(Variable::ValueType::Int);
 							graph->m_Variables.emplace_back(newVar);
 						}
 					});
@@ -542,21 +542,21 @@ namespace Stimpi
 		std::shared_ptr<Pin> pin = std::make_shared<Pin>();
 		pin->m_ID = ++s_Context->m_ActiveGraph->m_NextPinID;
 		pin->m_ParentNode = newNode.get();
-		pin->m_Variable->m_Text = "Something";
+		pin->m_Variable->m_Name = "Something";
 		pin->m_Type = Pin::Type::INPUT;
 		newNode->m_InPins.emplace_back(pin);
 
 		std::shared_ptr<Pin> pin2 = std::make_shared<Pin>();
 		pin2->m_ID = ++s_Context->m_ActiveGraph->m_NextPinID;
 		pin2->m_ParentNode = newNode.get();
-		pin2->m_Variable->m_Text = "Else";
+		pin2->m_Variable->m_Name = "Else";
 		pin->m_Type = Pin::Type::INPUT;
 		newNode->m_InPins.emplace_back(pin2);
 
 		std::shared_ptr<Pin> pin3 = std::make_shared<Pin>();
 		pin3->m_ID = ++s_Context->m_ActiveGraph->m_NextPinID;
 		pin3->m_ParentNode = newNode.get();
-		pin3->m_Variable->m_Text = "Output";
+		pin3->m_Variable->m_Name = "Output";
 		pin3->m_Type = Pin::Type::OUTPUT;
 		newNode->m_OutPins.emplace_back(pin3);
 
@@ -576,7 +576,7 @@ namespace Stimpi
 			std::shared_ptr<Pin> pin = std::make_shared<Pin>();
 			pin->m_ID = s_Context->m_ActiveGraph->GeneratePinID();
 			pin->m_ParentNode = newNode.get();
-			pin->m_Variable->m_Text = item.m_Variable.m_Text;
+			pin->m_Variable->m_Name = item.m_Variable.m_Name;
 			pin->m_Type = item.m_Type;
 			newNode->m_InPins.emplace_back(pin);
 		}

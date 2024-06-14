@@ -100,7 +100,7 @@ namespace Stimpi
 			float maxWidth = 0.0f;
 			for (auto& pin : node->m_InPins)
 			{
-				ImVec2 textSize = ImGui::CalcTextSize(pin->m_Variable->m_Text.c_str());
+				ImVec2 textSize = ImGui::CalcTextSize(pin->m_Variable->m_Name.c_str());
 				maxWidth = std::max(textSize.x, maxWidth);
 			}
 
@@ -114,7 +114,7 @@ namespace Stimpi
 			float maxWidth = 0.0f;
 			for (auto& pin : node->m_OutPins)
 			{
-				ImVec2 textSize = ImGui::CalcTextSize(pin->m_Variable->m_Text.c_str());
+				ImVec2 textSize = ImGui::CalcTextSize(pin->m_Variable->m_Name.c_str());
 				maxWidth = std::max(textSize.x, maxWidth);
 			}
 

@@ -13,6 +13,7 @@
 
 // TODO: rework class layout
 // Graph class holds all structures - Nodes, Pins, Vars, etc...
+// Pin Types: Flow pin, Data pin
 
 namespace Stimpi
 {
@@ -45,7 +46,7 @@ namespace Stimpi
 		enum class ValueType { None = 0, Flow, Bool, Int, Float, Vector2, String };
 
 		ValueType m_ValueType;
-		std::string m_Text;
+		std::string m_Name;
 		pin_type_variant m_Value;
 
 		// For "internal use"
@@ -54,11 +55,15 @@ namespace Stimpi
 		std::vector<std::shared_ptr<Pin>> m_AttachedToPins;
 
 		Variable()
-			: m_ValueType(ValueType::Int), m_Text(GenNewVarName()), m_Value(0), m_ID(s_VarCount++), m_AttachedToPins({})
+			: m_ValueType(ValueType::None), m_Name(GenNewVarName()), m_Value(0), m_ID(s_VarCount++), m_AttachedToPins({})
+		{}
+
+		Variable(ValueType type)
+			: m_ValueType(type), m_Name(GenNewVarName()), m_Value(0), m_ID(s_VarCount++), m_AttachedToPins({})
 		{}
 
 		Variable(ValueType valueType, std::string text, pin_type_variant value)
-			: m_ValueType(valueType), m_Text(text), m_Value(value), m_ID(s_VarCount++), m_AttachedToPins({})
+			: m_ValueType(valueType), m_Name(text), m_Value(value), m_ID(s_VarCount++), m_AttachedToPins({})
 		{}
 	};
 

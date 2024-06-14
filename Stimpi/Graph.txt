@@ -1,0 +1,112 @@
+Variables:
+  Variable:
+    ValueType: Vector2
+    Name: NewVar_0
+    Value:
+      - 0
+      - 0
+    ID: 0
+    AttachedPins:
+      AttachedPin:
+        PinID: 1
+Nodes:
+  Node:
+    Position:
+      - 224
+      - 346
+    Size:
+      - 111.800003
+      - 26.6000004
+    ID: 1
+    Title: ""
+    HasHeader: false
+    NodeType: Variable
+    InputPins:
+      {}
+    OutputPins:
+      Pin:
+        Type: OUTPUT
+        ID: 1
+        Connected: true
+        SingleConnecton: false
+        Text: NewVar_0
+        PinValueType: Vector2
+        Position:
+          - 319
+          - 358.600006
+  Node:
+    Position:
+      - 249
+      - 135
+    Size:
+      - 126
+      - 66.5999985
+    ID: 2
+    Title: OnCreate
+    HasHeader: true
+    NodeType: Create
+    InputPins:
+      {}
+    OutputPins:
+      Pin:
+        Type: FLOW_OUT
+        ID: 2
+        Connected: true
+        SingleConnecton: false
+        Text: Out
+        PinValueType: Node
+        Position:
+          - 358.200012
+          - 177.600006
+  Node:
+    Position:
+      - 473
+      - 244
+    Size:
+      - 154
+      - 86.1999969
+    ID: 3
+    Title: Set Position
+    HasHeader: true
+    NodeType: Method
+    InputPins:
+      Pin:
+        Type: FLOW_IN
+        ID: 3
+        Connected: true
+        SingleConnecton: false
+        Text: In
+        PinValueType: Node
+        Position:
+          - 485.600006
+          - 286.600006
+      Pin:
+        Type: INPUT
+        ID: 4
+        Connected: true
+        SingleConnecton: false
+        Text: Position
+        PinValueType: Vector2
+        Position:
+          - 485.600006
+          - 306.200012
+    OutputPins:
+      Pin:
+        Type: FLOW_OUT
+        ID: 5
+        Connected: false
+        SingleConnecton: false
+        Text: Out
+        PinValueType: Node
+        Position:
+          - 610.200012
+          - 286.600006
+PinConnections:
+  PinConnection:
+    SourcePin: 1
+    DestinationPin: 4
+  PinConnection:
+    SourcePin: 2
+    DestinationPin: 3
+NextNodeID: 3
+NextPinID: 5

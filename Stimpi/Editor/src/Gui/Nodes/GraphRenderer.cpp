@@ -10,31 +10,17 @@ namespace Stimpi
 	static ImU32 GetPinVariantColor(Pin* pin)
 	{
 		ImU32 picked = IM_COL32(35, 195, 35, 255);
-		pin_type_variant val = pin->m_Variable->m_Value;
-
-		if (std::holds_alternative<bool>(val))
+		
+		switch (pin->m_Variable->m_ValueType)
 		{
-			picked = IM_COL32(35, 195, 35, 255);
-		}
-
-		if (std::holds_alternative<int>(val))
-		{
-			picked = IM_COL32(35, 35, 195, 255);
-		}
-
-		if (std::holds_alternative<float>(val))
-		{
-			picked = IM_COL32(195, 35, 35, 255);
-		}
-
-		if (std::holds_alternative<glm::vec2>(val))
-		{
-			picked = IM_COL32(195, 195, 35, 255);
-		}
-
-		if (std::holds_alternative<std::string>(val))
-		{
-			picked = IM_COL32(35, 195, 195, 255);
+		case Variable::ValueType::None: // No custom color
+		case Variable::ValueType::Flow: // No custom color
+			break;
+		case Variable::ValueType::Bool:		picked = IM_COL32(35, 195, 35, 255);	break;
+		case Variable::ValueType::Int:		picked = IM_COL32(35, 35, 195, 255);	break;
+		case Variable::ValueType::Float:	picked = IM_COL32(195, 35, 35, 255);	break;
+		case Variable::ValueType::Vector2:	picked = IM_COL32(195, 195, 35, 255);	break;
+		case Variable::ValueType::String:	picked = IM_COL32(35, 195, 195, 255);	break;
 		}
 
 		return picked;
@@ -263,7 +249,7 @@ namespace Stimpi
 		if (pin->m_Type == Pin::Type::OUTPUT || pin->m_Type == Pin::Type::INPUT)
 		{
 			ImVec2 textPos = pinStartPos;
-			ImVec2 textSize = ImGui::CalcTextSize(pin->m_Variable->m_Text.c_str());
+			ImVec2 textSize = ImGui::CalcTextSize(pin->m_Variable->m_Name.c_str());
 			textSize.x += s_Style.m_PinTextSpacing;
 
 			if (pin->m_Type == Pin::Type::OUTPUT || pin->m_Type == Pin::Type::FLOW_OUT)
@@ -281,7 +267,7 @@ namespace Stimpi
 			m_DrawList->AddText(
 				{ m_Canvas->m_Origin.x + textPos.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + textPos.y * m_Canvas->m_Scale },
 				IM_COL32(255, 255, 255, 255),
-				pin->m_Variable->m_Text.c_str());
+				pin->m_Variable->m_Name.c_str());
 			ImGui::SetWindowFontScale(1.0f);
 		}
 

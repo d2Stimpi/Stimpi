@@ -2,6 +2,7 @@
 #include "Stimpi/Graphics/Renderer2D.h"
 
 #include "Stimpi/Log.h"
+#include "Stimpi/Core/Window.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/glm.hpp>
@@ -17,8 +18,8 @@ namespace Stimpi
 	Renderer2D::Renderer2D()
 	{
 		m_RenderAPI = RenderAPI::CreateRenderAPI();
-		// TODO: get global window size? what size is FB?
-		m_FrameBuffer.reset(FrameBuffer::CreateFrameBuffer({ 1280, 720, 4 }));
+		WindowConfiguration windowConfig = Window::GetWindowConfiguration();
+		m_FrameBuffer.reset(FrameBuffer::CreateFrameBuffer({ windowConfig.m_WindowWidth, windowConfig.m_WindowHeight, 4/*Color Channels*/}));
 
 		// Init Quad rendering VAO, VBO
 		m_VAO.reset(VertexArrayObject::CreateVertexArrayObject({

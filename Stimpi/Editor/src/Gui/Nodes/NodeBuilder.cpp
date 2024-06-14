@@ -36,8 +36,8 @@ namespace Stimpi
 		{
 			for (auto& var : graph->m_Variables)
 			{
-				std::string setNodeName = std::string("Set_").append(var->m_Text);
-				std::string getNodeName = std::string("Get_").append(var->m_Text);
+				std::string setNodeName = std::string("Set_").append(var->m_Name);
+				std::string getNodeName = std::string("Get_").append(var->m_Name);
 				combinedList.push_back(setNodeName);
 				combinedList.push_back(getNodeName);
 			}
@@ -59,7 +59,7 @@ namespace Stimpi
 			pin->m_ParentNode = newNode;
 			pin->m_Type = item.m_Type;
 
-			pin->m_Variable->m_Text = item.m_Variable.m_Text;
+			pin->m_Variable->m_Name = item.m_Variable.m_Name;
 			pin->m_Variable->m_ValueType = item.m_Variable.m_ValueType;
 			pin->m_Variable->m_Value = item.m_Variable.m_Value; // TODO: consider removing from here as generic non-var nodes might not want this data
 
@@ -74,12 +74,12 @@ namespace Stimpi
 
 	Node* NodeBuilder::CreateNodeByName(std::string name, Graph* graph)
 	{
-		auto builderFunction = s_NodeBuilderFunctions[name];
+		auto& builderFunction = s_NodeBuilderFunctions[name];
 
 		// First check for VariableNodes to avoid name collision
 		for (auto& var : graph->m_Variables)
 		{
-			if (name.find(var->m_Text) != std::string::npos)
+			if (name.find(var->m_Name) != std::string::npos)
 			{
 				if (name.find("Get_") == 0)
 				{
@@ -93,7 +93,6 @@ namespace Stimpi
 				{
 					// TODO: Create both set and get, drag-drop gets in here
 					return VariableGetNode::CreateNode(var);
-					return nullptr;
 				}
 			}
 		}

@@ -22,7 +22,6 @@ namespace Stimpi
 			if (event.m_Event != 0)
 			{
 				ST_CORE_INFO("ShellEvet: {} - {} : {}", event.m_Event, event.m_FilePath, event.m_NewFilePath);
-				// TODO: pass event to FileWatcher
 				std::shared_ptr<SystemShellEvent> shEvent = std::make_shared<SystemShellEvent>();
 				shEvent.reset(SystemShellEvent::CreateSystemShellEvent(event));
 				FileWatcher::ProcessShellEvent(shEvent);
@@ -36,18 +35,22 @@ namespace Stimpi
 	auto s_WindowImplType = WindowType::SDL;
 
 	// TODO: move to some sort of config file
-	uint32_t s_WindowWidth = 1280;
-	uint32_t s_WindowHeight = 720;
+	WindowConfiguration s_WindowConfiguration;
 
 	Window* Window::CreateAppWindow()
 	{
 		switch (s_WindowImplType)
 		{
 			case Stimpi::WindowType::None: { ST_CORE_WARN("WindowImpl: not supported"); return nullptr; }
-			case Stimpi::WindowType::SDL: { return new WindowSDL(s_WindowWidth, s_WindowHeight); }
+			case Stimpi::WindowType::SDL: { return new WindowSDL(s_WindowConfiguration.m_WindowWidth, s_WindowConfiguration.m_WindowHeight); }
 		}
 		ST_CORE_ASSERT_MSG(true, "WindowImpl unknown!");
 		return nullptr;
+	}
+
+	Stimpi::WindowConfiguration Window::GetWindowConfiguration()
+	{
+		return s_WindowConfiguration;
 	}
 
 	/* SDL Window */

@@ -61,12 +61,13 @@ namespace Stimpi
 		static void LoadAssetAsseblies();
 		static void UnloadAssembly();
 		static void LoadClassesFromAssembly(MonoAssembly* assembly);
-		static void LoadClassesFromAssetAssembly(MonoAssembly* assembly, AssetAssembly* assetAssembly);
+		static void LoadClassesFromAssetAssembly(AssetAssembly* assetAssembly);
 
 		static void LoadCustomClassesFromCoreAssembly(const ClassLoadingDetails& classDetails);
 		static void LoadCustomClassesFromClientAssembly(const ClassLoadingDetails& classDetails);
 
 		static void ReloadAssembly();
+		static void ReloadAssetAssembly(const std::filesystem::path& assetPath);
 
 		static bool HasScriptClass(const std::string& className);
 		static std::shared_ptr<ScriptClass> GetScriptClassByName(const std::string& className);

@@ -54,9 +54,6 @@
     <ClInclude Include="src\Gui\MainManuBar.h">
       <Filter>Gui</Filter>
     </ClInclude>
-    <ClInclude Include="src\Gui\Nodes\NodePanel.h">
-      <Filter>Gui\Nodes</Filter>
-    </ClInclude>
     <ClInclude Include="src\Gui\PlayPanel.h">
       <Filter>Gui</Filter>
     </ClInclude>
@@ -131,9 +128,6 @@
     </ClCompile>
     <ClCompile Include="src\Gui\MainMenuBar.cpp">
       <Filter>Gui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Gui\Nodes\NodePanel.cpp">
-      <Filter>Gui\Nodes</Filter>
     </ClCompile>
     <ClCompile Include="src\Gui\PlayPanel.cpp">
       <Filter>Gui</Filter>

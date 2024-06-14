@@ -38,7 +38,7 @@ namespace Stimpi
 				*writer << "QuadComponent quad = GetComponent<QuadComponent>();" << std::endl;
 				*writer << "if (quad != null)" << std::endl;
 				*writer << "{" << std::endl;
-				*writer << "    quad.Position = " << pin->m_Variable->m_Text << ";" << std::endl;
+				*writer << "    quad.Position = " << pin->m_Variable->m_Name << ";" << std::endl;
 				*writer << "}" << std::endl;
 			}
 		}
