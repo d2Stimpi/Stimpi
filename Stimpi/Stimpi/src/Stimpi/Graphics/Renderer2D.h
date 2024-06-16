@@ -40,12 +40,6 @@ namespace Stimpi
 
 		// Cancel all render commands
 		void FlushScene();
-		
-		// Quad rendering - TODO: to be removed
-		void Submit(glm::vec4 quad, Texture* texture, Shader* shader);
-		void Submit(glm::vec4 quad, SubTexture* subtexture, Shader* shader);
-		void Submit(glm::vec4 quad, Shader* shader);
-		void Submit(glm::vec4 quad, glm::vec3 color, Shader* shader);
 
 		// Rotating Quad rendering
 		void Submit(glm::vec4 quad, float rotation, Texture* texture, Shader* shader);
@@ -83,8 +77,11 @@ namespace Stimpi
 		// To link with ImGui
 		FrameBuffer* GetFrameBuffer();
 
+		uint32_t GetFrameDrawCallCount() { return m_LastFrameDrawCallCnt; }
+		uint32_t GetFrameRednerCmdCount() { return m_LastFrameRenderedCmdCnt; }
 	private:
 		void Flush();
+		void FlushQuad();
 		void FlushCircle();
 		void FlushLine();
 		void RenderFrameBuffer(); // Used for Application to handle displaying of FBs ourselves
@@ -109,10 +106,10 @@ namespace Stimpi
 		OrthoCamera* m_ActiveCamera;
 
 		// Quad rendering
-		std::shared_ptr<VertexArrayObject> m_VAO;
-		std::shared_ptr<BufferObject> m_VBO;
-		std::vector<std::shared_ptr<RenderCommand>> m_RenderCmds;
-		std::vector<std::shared_ptr<RenderCommand>>::iterator m_ActiveRenderCmdIter;
+		std::shared_ptr<VertexArrayObject> m_QuadVAO;
+		std::shared_ptr<BufferObject> m_QuadVBO;
+		std::vector<std::shared_ptr<RenderCommand>> m_QuadRenderCmds;
+		std::vector<std::shared_ptr<RenderCommand>>::iterator m_ActiveQuadRenderCmdIter;
 
 		// Circle rendering
 		std::shared_ptr<VertexArrayObject> m_CircleVAO;
@@ -136,5 +133,7 @@ namespace Stimpi
 		// Debug data per frame
 		uint32_t m_DrawCallCnt;
 		uint32_t m_RenderedCmdCnt;
+		uint32_t m_LastFrameDrawCallCnt;
+		uint32_t m_LastFrameRenderedCmdCnt;
 	};
 }

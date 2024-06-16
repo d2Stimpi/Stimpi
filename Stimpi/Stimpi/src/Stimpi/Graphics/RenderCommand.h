@@ -60,7 +60,7 @@ namespace Stimpi
 		void PushVertex(glm::vec3 position, glm::vec3 color, glm::vec2 textureCoord)
 		{
 			VertexData vertex;
-			
+
 			vertex.m_Position = position;
 			vertex.m_Color = color;
 			vertex.m_TexCoord = textureCoord;

@@ -52,7 +52,7 @@ namespace Stimpi
 
 	struct QuadComponent
 	{
-		glm::vec2 m_Position = { 0.0f, 0.0f };
+		glm::vec3 m_Position = { 0.0f, 0.0f, 0.0f };
 		glm::vec2 m_Size = { 0.0f, 0.0f };
 		float m_Rotation{ 0.0f };
 
@@ -61,39 +61,49 @@ namespace Stimpi
 
 		QuadComponent() = default;
 		QuadComponent(const QuadComponent&) = default;
-		QuadComponent(const glm::vec4 quad, float rotation = 0.0f)
-			: m_Position(quad.x, quad.y), m_Size(quad.z, quad.w), m_Rotation(rotation) {}
-		QuadComponent(const glm::vec2& pos, const glm::vec2 size, float rotation = 0.0f)
+		QuadComponent(const glm::vec3& pos, const glm::vec2 size, float rotation = 0.0f)
 			: m_Position(pos), m_Size(size), m_Rotation(rotation) {}
 
-		operator glm::vec4() const { return glm::vec4(m_Position.x, m_Position.y, m_Size.x, m_Size.y); }
-		glm::vec2 Center() { return glm::vec2(m_Position.x + m_Size.x / 2.f, m_Position.y + m_Size.y / 2.f); }
-		float HalfWidth() { return m_Size.x / 2.0f; }
-		float HalfHeight() { return m_Size.y / 2.0f; }
+		glm::vec2 Center() { return glm::vec2(m_Position.x, m_Position.y); }
 
 		void Serialize(YAML::Emitter& out)
 		{
 			out << YAML::Key << "QuadComponent";
 			out << YAML::BeginSeq;
-				out << m_Position.x << m_Position.y << m_Size.x << m_Size.y << m_Rotation;
+				out << m_Position.x << m_Position.y << m_Position.z << m_Size.x << m_Size.y << m_Rotation;
 			out << YAML::EndSeq;
 		}
 
 		//De-serialize constructor
 		QuadComponent(const YAML::Node& node)
 		{
-			m_Position.x = node[0].as<float>();
-			m_Position.y = node[1].as<float>();
-			m_Size.x = node[2].as<float>();
-			m_Size.y = node[3].as<float>();
-			if (node[4])
-				m_Rotation = node[4].as<float>();
+			// Temp backward compatibility check
+			if (node[5])
+			{
+				m_Position.x = node[0].as<float>();
+				m_Position.y = node[1].as<float>();
+				m_Position.z = node[2].as<float>();
+				m_Size.x = node[3].as<float>();
+				m_Size.y = node[4].as<float>();
+				if (node[5])
+					m_Rotation = node[5].as<float>();
+			}
+			else
+			{
+				m_Position.x = node[0].as<float>();
+				m_Position.y = node[1].as<float>();
+				m_Position.z = 0.0f;
+				m_Size.x = node[2].as<float>();
+				m_Size.y = node[3].as<float>();
+				if (node[4])
+					m_Rotation = node[4].as<float>();
+			}
 		}
 	};
 
 	struct CircleComponent
 	{
-		glm::vec2 m_Position = { 0.0f, 0.0f };
+		glm::vec3 m_Position = { 0.0f, 0.0f, 0.0f };
 		glm::vec2 m_Size = { 0.0f, 0.0f };
 		float m_Rotation{ 0.0f };
 		glm::vec4 m_Color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -102,7 +112,7 @@ namespace Stimpi
 
 		CircleComponent() = default;
 		CircleComponent(const CircleComponent&) = default;
-		CircleComponent(glm::vec2 pos, glm::vec2 size, float thickness = 1.0f, float fade = 0.005f)
+		CircleComponent(glm::vec3 pos, glm::vec2 size, float thickness = 1.0f, float fade = 0.005f)
 			: m_Position(pos), m_Size(size), m_Thickness(thickness), m_Fade(fade)
 		{
 		}
@@ -120,7 +130,7 @@ namespace Stimpi
 				out << YAML::Key << "Position" << YAML::Value;
 				out << YAML::BeginSeq;
 				{
-					out << m_Position.x << m_Position.y;
+					out << m_Position.x << m_Position.y << m_Position.z;
 				}
 				out << YAML::EndSeq;
 
@@ -152,7 +162,7 @@ namespace Stimpi
 			if (node["Position"])
 			{
 				YAML::Node view = node["Position"];
-				m_Position = glm::vec2(view[0].as<float>(), view[1].as<float>());
+				m_Position = glm::vec3(view[0].as<float>(), view[1].as<float>(), view[2].as<float>());
 			}
 
 			if (node["Size"])

@@ -183,7 +183,7 @@ namespace Stimpi
 		if (ImGui::CollapsingHeaderIcon("Quad##ComponentName", EditorResources::GetIconTextureID(EDITOR_ICON_CUBE), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 		{
 			ImGui::Spacing();
-			ImGui::DragFloat2("Position##Quad", glm::value_ptr(component.m_Position));
+			ImGui::DragFloat3("Position##Quad", glm::value_ptr(component.m_Position));
 			ImGui::DragFloat2("Size##Quad", glm::value_ptr(component.m_Size));
 			ImGui::PushItemWidth(80.0f);
 			ImGui::DragFloat("Rotation", &component.m_Rotation, 0.01);
@@ -216,7 +216,7 @@ namespace Stimpi
 		if (ImGui::CollapsingHeaderIcon("Circle##ComponentName", EditorResources::GetIconTextureID(EDITOR_ICON_CUBE), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 		{
 			ImGui::Spacing();
-			ImGui::DragFloat2("Position##Circle", glm::value_ptr(component.m_Position));
+			ImGui::DragFloat3("Position##Circle", glm::value_ptr(component.m_Position));
 			ImGui::DragFloat2("Size##Circle", glm::value_ptr(component.m_Size));
 			ImGui::ColorEdit4("Color##CircleColor", glm::value_ptr(component.m_Color));
 			ImGui::PushItemWidth(80.0f);
@@ -772,14 +772,14 @@ namespace Stimpi
 				if (ImGui::MenuItem("Sprite"))
 				{
 					s_SelectedEntity = m_ActiveScene->CreateEntity("Sprite_Object");
-					s_SelectedEntity.AddComponent<QuadComponent>(glm::vec2(0.0f, 0.0f), glm::vec2(10.0f, 10.0f), 0.0f);
+					s_SelectedEntity.AddComponent<QuadComponent>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(10.0f, 10.0f), 0.0f);
 					s_SelectedEntity.AddComponent<SpriteComponent>();
 				}
 
 				if (ImGui::MenuItem("Circle"))
 				{
 					s_SelectedEntity = m_ActiveScene->CreateEntity("Circle_Object");
-					s_SelectedEntity.AddComponent<CircleComponent>(glm::vec2(0.0f, 0.0f), glm::vec2(10.0f, 10.0f));
+					s_SelectedEntity.AddComponent<CircleComponent>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(10.0f, 10.0f));
 				}
 
 				ImGui::EndMenu();

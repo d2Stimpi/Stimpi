@@ -180,13 +180,13 @@ namespace Stimpi
 						if (sprite.TextureLoaded())
 						{
 							if (sprite.m_Enable)
-								Renderer2D::Instance()->Submit(quad, quad.m_Rotation, sprite, m_DefaultShader.get());
+								Renderer2D::Instance()->Submit(quad.m_Position,  quad.m_Size, quad.m_Rotation, sprite, m_DefaultShader.get());
 							else
-								Renderer2D::Instance()->Submit(quad, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
+								Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
 						}
 						else
 						{
-							Renderer2D::Instance()->Submit(quad, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
+							Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
 						}
 					}
 
@@ -196,7 +196,7 @@ namespace Stimpi
 						auto& anim = entity.GetComponent<AnimatedSpriteComponent>();
 						if (anim.Loaded())
 						{
-							Renderer2D::Instance()->Submit(quad, quad.m_Rotation, anim, m_DefaultShader.get());
+							Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, anim, m_DefaultShader.get());
 						}
 					}
 
@@ -230,19 +230,16 @@ namespace Stimpi
 						auto& sprite = entity.GetComponent<SpriteComponent>();
 						if (sprite.TextureLoaded() && sprite.m_Enable)
 						{
-							glm::vec3 position = { circle.m_Position.x, circle.m_Position.y, 1.0f };
-							Renderer2D::Instance()->Submit(position, circle.m_Size, circle.m_Rotation, sprite, m_DefaultShader.get());
+							Renderer2D::Instance()->Submit(circle.m_Position, circle.m_Size, circle.m_Rotation, sprite, m_DefaultShader.get());
 						}
 						else
 						{
-							glm::vec3 position = { circle.m_Position.x, circle.m_Position.y, 1.0f };
-							Renderer2D::Instance()->DrawCircle(position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
+							Renderer2D::Instance()->DrawCircle(circle.m_Position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
 						}
 					}
 					else
 					{
-						glm::vec3 position = { circle.m_Position.x, circle.m_Position.y, 1.0f };
-						Renderer2D::Instance()->DrawCircle(position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
+						Renderer2D::Instance()->DrawCircle(circle.m_Position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
 					}
 
 					// Draw debug RigidBody Collider outline
@@ -547,7 +544,7 @@ namespace Stimpi
 						fixtureDef.restitution = bc2d.m_Restitution;
 						fixtureDef.restitutionThreshold = bc2d.m_RestitutionThreshold;
 
-						bodyDef.position.Set(center.x + bc2d.m_Offset.x, center.y + bc2d.m_Offset.y);
+						bodyDef.position.Set(center.x, center.y);
 						b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);
 						body->SetFixedRotation(rb2d.m_FixedRotation);
 						body->CreateFixture(&fixtureDef);
@@ -580,8 +577,8 @@ namespace Stimpi
 
 					b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
 					const auto& position = body->GetPosition();
-					quad.m_Position.x = position.x - quad.HalfWidth();
-					quad.m_Position.y = position.y - quad.HalfHeight();
+					quad.m_Position.x = position.x;
+					quad.m_Position.y = position.y;
 					quad.m_Rotation = body->GetAngle();
 
 					// Updated quad position by Collider offset

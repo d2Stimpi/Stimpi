@@ -10,6 +10,7 @@ namespace Stimpi
 		~OpenGLRenderAPI();
 
 		void EnableBlend();
+
 		void Clear(float r, float g, float b, float a) override;
 		
 		void UnbindTexture() override;

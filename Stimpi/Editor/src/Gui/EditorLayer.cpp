@@ -265,7 +265,7 @@ namespace Stimpi
 		if (m_SceneConfigWindow.ShowCheckerboardBg())
 		{
 			Stimpi::Renderer2D::Instance()->BeginScene(m_BackgroundCamera->GetOrthoCamera());
-			Stimpi::Renderer2D::Instance()->Submit({ 0.0f, 0.0f, canvasWidth, canvasHeight }, m_ShaderChecker.get());
+			Stimpi::Renderer2D::Instance()->Submit({ 0.0f, 0.0f, canvasWidth, canvasHeight }, 0.0f, m_ShaderChecker.get());
 			Stimpi::Renderer2D::Instance()->EndScene();
 		}
 

@@ -5,6 +5,7 @@ Scene:
     QuadComponent:
       - 4.28760767
       - 2.45006132
+      - 0
       - 50
       - 40
       - 0
@@ -27,8 +28,9 @@ Scene:
     TagComponent:
       Tag: Texture1
     QuadComponent:
-      - 100
-      - 20
+      - 105
+      - 35
+      - 0
       - 50
       - 40
       - 0
@@ -46,6 +48,7 @@ Scene:
     QuadComponent:
       - 200
       - 20
+      - 0
       - 50
       - 40
       - 0
@@ -63,6 +66,7 @@ Scene:
     QuadComponent:
       - 300
       - 20
+      - 0
       - 50
       - 40
       - 0
@@ -79,8 +83,9 @@ Scene:
       Tag: CirclePhys
     CircleComponent:
       Position:
-        - 45
-        - 44
+        - 44.3298492
+        - 43.8324623
+        - 0.0
       Size:
         - 10
         - 10
@@ -113,8 +118,9 @@ Scene:
     TagComponent:
       Tag: Ground
     QuadComponent:
-      - 7.01936054
-      - 13.2954826
+      - 40.1921272
+      - 12.4577875
+      - 0
       - 72.2658005
       - 5.21032476
       - 0
@@ -145,8 +151,9 @@ Scene:
     TagComponent:
       Tag: Box
     QuadComponent:
-      - 45.8809204
-      - 18.6538544
+      - 48.5615578
+      - 20.1617088
+      - 0
       - 10
       - 10
       - 0
@@ -177,8 +184,9 @@ Scene:
     TagComponent:
       Tag: Nero
     QuadComponent:
-      - 14.5088177
-      - 18.5390434
+      - 16.0166721
+      - 19.0416603
+      - 0
       - 8
       - 8
       - 0

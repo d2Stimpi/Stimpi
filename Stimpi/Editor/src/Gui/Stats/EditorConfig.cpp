@@ -2,6 +2,7 @@
 #include "Gui/Stats/EditorConfig.h"
 
 #include "Stimpi/Core/Time.h"
+#include "Stimpi/Graphics/Renderer2D.h"
 #include "Stimpi/Scene/Assets/AssetManager.h"
 #include "Stimpi/Scripting/ScriptEngine.h"
 
@@ -36,6 +37,13 @@ namespace Stimpi
 				if (ImGui::CollapsingHeader("Asset Manager##Global Stats", ImGuiTreeNodeFlags_DefaultOpen))
 				{
 					ImGui::Text("Assets usage count: %d", AssetManager::GetLoadedAssetsCount());
+				}
+
+				ImGui::Separator();
+				if (ImGui::CollapsingHeader("Renderer 2D##Global Stats", ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					ImGui::Text("Frame draw calls: %d", Renderer2D::Instance()->GetFrameDrawCallCount());
+					ImGui::Text("Frame render cmd count: %d", Renderer2D::Instance()->GetFrameRednerCmdCount());
 				}
 
 				ImGui::Separator();

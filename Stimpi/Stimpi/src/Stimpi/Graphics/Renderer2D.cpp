@@ -22,18 +22,18 @@ namespace Stimpi
 		m_FrameBuffer.reset(FrameBuffer::CreateFrameBuffer({ windowConfig.m_WindowWidth, windowConfig.m_WindowHeight, 4/*Color Channels*/}));
 
 		// Init Quad rendering VAO, VBO
-		m_VAO.reset(VertexArrayObject::CreateVertexArrayObject({
+		m_QuadVAO.reset(VertexArrayObject::CreateVertexArrayObject({
 			{ ShaderDataType::Float3, "a_Position"	},
 			{ ShaderDataType::Float3, "a_Color"		},
 			{ ShaderDataType::Float2, "a_TexCoord"	}
  		}));
-  		m_VAO->BindArray();
+  		m_QuadVAO->BindArray();
 
-		m_VBO.reset(BufferObject::CreateBufferObject(BufferObjectType::ARRAY_BUFFER));
-		m_VBO->BindBuffer();
-		m_VBO->InitBuffer(VERTEX_ARRAY_SIZE_QUADS);
+		m_QuadVBO.reset(BufferObject::CreateBufferObject(BufferObjectType::ARRAY_BUFFER));
+		m_QuadVBO->BindBuffer();
+		m_QuadVBO->InitBuffer(VERTEX_ARRAY_SIZE_QUADS);
 
-		m_VAO->EnableVertexAttribArray();
+		m_QuadVAO->EnableVertexAttribArray();
 
 		// Init Circle rendering VAO, VBO
 		m_CircleVAO.reset(VertexArrayObject::CreateVertexArrayObject({
@@ -71,8 +71,8 @@ namespace Stimpi
 		m_RenderedCmdCnt = 0;
 
 		// Init Quad cmd storage
-		m_RenderCmds.emplace_back(std::make_shared<RenderCommand>(m_VAO->VertexSize()));
-		m_ActiveRenderCmdIter = std::end(m_RenderCmds) - 1;
+		m_QuadRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_QuadVAO->VertexSize()));
+		m_ActiveQuadRenderCmdIter = std::end(m_QuadRenderCmds) - 1;
 
 		// Init Circle cmd storage
 		m_CircleRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_CircleVAO->VertexSize()));
@@ -86,7 +86,7 @@ namespace Stimpi
 		m_LineShader.reset(Shader::CreateShader("..\/assets\/shaders\/line.shader"));
 		// For local rendering of FBs
 		m_RenderFrameBufferShader.reset(Shader::CreateShader("..\/assets\/shaders\/framebuffer.shader"));
-		m_RenderFrameBufferCmd = std::make_shared<RenderCommand>(m_VAO->VertexSize());
+		m_RenderFrameBufferCmd = std::make_shared<RenderCommand>(m_QuadVAO->VertexSize());
 
 		// Populate fixed data, shader uniform is set every frame
 		m_RenderFrameBufferCmd->m_Texture = m_FrameBuffer->GetTexture();
@@ -122,37 +122,6 @@ namespace Stimpi
 	void Renderer2D::EndScene()
 	{
 		Flush();
-		FlushCircle();
-		FlushLine();
-	}
-	
-	void Renderer2D::Submit(glm::vec4 quad, Texture* texture, Shader* shader)
-	{	
-		glm::vec3 position = { quad.x + quad.z / 2.0f, quad.y + quad.w / 2.0f, 0.0f };
-		glm::vec2 scale = { quad.z, quad.w };
-
-		Submit(position, scale, 0.0f, texture, shader);
-	}
-
-	void Renderer2D::Submit(glm::vec4 quad, SubTexture* subtexture, Shader* shader)
-	{
-		glm::vec3 position = { quad.x + quad.z / 2.0f, quad.y + quad.w / 2.0f, 0.0f };
-		glm::vec2 scale = { quad.z, quad.w };
-
-		Submit(position, scale, 0.0f, subtexture, shader);
-	}
-
-	void Renderer2D::Submit(glm::vec4 quad, Shader* shader)
-	{
-		Submit(quad, (Texture*)nullptr, shader);
-	}
-
-	void Renderer2D::Submit(glm::vec4 quad, glm::vec3 color, Shader* shader)
-	{
-		glm::vec3 position = { quad.x + quad.z / 2.0f, quad.y + quad.w / 2.0f, 0.0f };
-		glm::vec2 scale = { quad.z, quad.w };
-
-		Submit(position, scale, 0.0f, color, shader);
 	}
 
 	void Renderer2D::Submit(glm::vec4 quad, float rotation, Texture* texture, Shader* shader)
@@ -187,7 +156,7 @@ namespace Stimpi
 	void Renderer2D::Submit(glm::vec3 pos, glm::vec2 scale, float rotation, Texture* texture, Shader* shader)
 	{
 		CheckTextureBatching(texture);
-		auto currnetCmd = *m_ActiveRenderCmdIter;
+		auto currnetCmd = *m_ActiveQuadRenderCmdIter;
 
 		CheckCapacity();
 		// First time call Submit after BeginScene
@@ -202,8 +171,8 @@ namespace Stimpi
 		else if ((currnetCmd->m_Texture != texture) || (currnetCmd->m_Shader != shader))
 		{
 			// If shader or texture changed
-			Flush();
-			currnetCmd = *m_ActiveRenderCmdIter;
+			FlushQuad();
+			currnetCmd = *m_ActiveQuadRenderCmdIter;
 			PushTransformedVertexData(currnetCmd.get(), pos, scale, rotation);
 			currnetCmd->m_Texture = texture;
 			currnetCmd->m_Shader = shader;
@@ -223,7 +192,7 @@ namespace Stimpi
 			return;
 
 		CheckTextureBatching(subtexture->GetTexture());
-		auto currnetCmd = *m_ActiveRenderCmdIter;
+		auto currnetCmd = *m_ActiveQuadRenderCmdIter;
 
 		CheckCapacity();
 		// First time call Submit after BeginScene
@@ -238,8 +207,8 @@ namespace Stimpi
 		else if ((currnetCmd->m_Texture != subtexture->GetTexture()) || (currnetCmd->m_Shader != shader))
 		{
 			// If shader or texture changed
-			Flush();
-			currnetCmd = *m_ActiveRenderCmdIter;
+			FlushQuad();
+			currnetCmd = *m_ActiveQuadRenderCmdIter;
 			PushTransformedVertexData(currnetCmd.get(), pos, scale, rotation, glm::vec3{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 			currnetCmd->m_Texture = subtexture->GetTexture();
 			currnetCmd->m_Shader = shader;
@@ -260,14 +229,14 @@ namespace Stimpi
 
 	void Renderer2D::Submit(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color, Shader* shader, glm::vec2 minUV/*{ 0.0f, 0.0f }*/, glm::vec2 maxUV/*{ 1.0f, 1.0f }*/)
 	{
-		auto currnetCmd = *m_ActiveRenderCmdIter;
+		auto currnetCmd = *m_ActiveQuadRenderCmdIter;
 
 		CheckCapacity();
 		// Flush if we have a texture set from other Submits or shader changed
 		if ((currnetCmd->m_Texture != nullptr) || (currnetCmd->m_Shader != shader))
 		{
-			Flush();
-			currnetCmd = *m_ActiveRenderCmdIter;
+			FlushQuad();
+			currnetCmd = *m_ActiveQuadRenderCmdIter;
 		}
 
 		PushTransformedVertexData(currnetCmd.get(), pos, scale, rotation, color, minUV, maxUV);
@@ -332,7 +301,15 @@ namespace Stimpi
 
 	void Renderer2D::Flush()
 	{
-		auto currnetCmd = *m_ActiveRenderCmdIter;
+		FlushQuad();
+		FlushCircle();
+		FlushLine();
+	}
+
+
+	void Renderer2D::FlushQuad()
+	{
+		auto currnetCmd = *m_ActiveQuadRenderCmdIter;
 
 		if (currnetCmd->m_Shader == nullptr)
 		{
@@ -343,8 +320,8 @@ namespace Stimpi
 		// For now set ViewProj camera uniform here
 		currnetCmd->m_Shader->SetUniform("u_ViewProjection", m_ActiveCamera->GetViewProjectionMatrix());
 
-		m_RenderCmds.emplace_back(std::make_shared<RenderCommand>(m_VAO->VertexSize()));
-		m_ActiveRenderCmdIter = std::end(m_RenderCmds) - 1;
+		m_QuadRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_QuadVAO->VertexSize()));
+		m_ActiveQuadRenderCmdIter = std::end(m_QuadRenderCmds) - 1;
 	}
 
 	void Renderer2D::FlushCircle()
@@ -415,13 +392,13 @@ namespace Stimpi
 
 	void Renderer2D::DrawFrame()
 	{
-		for (auto& renderCmd : m_RenderCmds)
+		for (auto& renderCmd : m_QuadRenderCmds)
 		{
 			// Skip last as it won't be filled with data
-			if (renderCmd != *m_ActiveRenderCmdIter)
+			if (renderCmd != *m_ActiveQuadRenderCmdIter)
 				DrawRenderCmd(renderCmd);
 		}
-		m_RenderedCmdCnt = m_RenderCmds.size() - 1; // last won't be filled with data
+		m_RenderedCmdCnt = m_QuadRenderCmds.size() - 1; // last won't be filled with data
 
 		for (auto& renderCmd : m_CircleRenderCmds)
 		{
@@ -455,6 +432,8 @@ namespace Stimpi
 
 		// Clear Debug data
 		ShowDebugData();
+		m_LastFrameDrawCallCnt = m_DrawCallCnt;
+		m_LastFrameRenderedCmdCnt = m_RenderedCmdCnt;
 		m_DrawCallCnt = 0;
 		m_RenderedCmdCnt = 0;
 	}
@@ -466,13 +445,13 @@ namespace Stimpi
 		shader->Use();
 		shader->SetBufferedUniforms();
 
-		m_VAO->BindArray();
-		m_VBO->BindBuffer();
+		m_QuadVAO->BindArray();
+		m_QuadVBO->BindBuffer();
 
 		if (renderCmd->m_Texture != nullptr)
 			renderCmd->m_Texture->UseTexture();
 
-		m_VBO->BufferSubData(0, renderCmd->Size(), renderCmd->Data());
+		m_QuadVBO->BufferSubData(0, renderCmd->Size(), renderCmd->Data());
 		m_RenderAPI->DrawArrays(DrawElementsMode::TRIANGLES, 0, renderCmd->m_VertexCount);
 		m_DrawCallCnt++;
 
@@ -532,13 +511,13 @@ namespace Stimpi
 
 	void Renderer2D::CheckCapacity()
 	{
-		auto currnetCmd = *m_ActiveRenderCmdIter;
+		auto currnetCmd = *m_ActiveQuadRenderCmdIter;
 		auto currentCricleCmd = *m_CircleActiveRenderCmdIter;
 		auto currentLineCmd = *m_LineActiveRenderCmdIter;
 
 		if (currnetCmd->m_VertexCount >= VERTEX_CMD_CAPACITY)
 		{
-			Flush();
+			FlushQuad();
 		}
 
 		if (currentCricleCmd->m_VertexCount >= VERTEX_CMD_CAPACITY)
@@ -554,25 +533,25 @@ namespace Stimpi
 
 	void Renderer2D::CheckTextureBatching(Texture* texture)
 	{
-		auto found = std::find_if(std::begin(m_RenderCmds), std::end(m_RenderCmds), [&texture](auto elem) -> bool {
+		auto found = std::find_if(std::begin(m_QuadRenderCmds), std::end(m_QuadRenderCmds), [&texture](auto elem) -> bool {
 			if (texture != nullptr && elem->m_Texture != nullptr)
 				return texture->GetTextureID() == elem->m_Texture->GetTextureID();
 			else
 				return false;
 			});
 
-		if (found != std::end(m_RenderCmds))
+		if (found != std::end(m_QuadRenderCmds))
 		{
-			m_ActiveRenderCmdIter = found;
+			m_ActiveQuadRenderCmdIter = found;
 		}
 	}
 
 	void Renderer2D::ClearRenderCommands()
 	{
 		// Clear Render commands
-		m_RenderCmds.clear();
-		m_RenderCmds.emplace_back(std::make_shared<RenderCommand>(m_VAO->VertexSize()));
-		m_ActiveRenderCmdIter = std::end(m_RenderCmds) - 1;
+		m_QuadRenderCmds.clear();
+		m_QuadRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_QuadVAO->VertexSize()));
+		m_ActiveQuadRenderCmdIter = std::end(m_QuadRenderCmds) - 1;
 
 		m_CircleRenderCmds.clear();
 		m_CircleRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_CircleVAO->VertexSize()));

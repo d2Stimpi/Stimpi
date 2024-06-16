@@ -147,6 +147,7 @@ namespace Stimpi
 		return hasComponent;
 	}
 	
+	// TODO: handle Z axis
 	static bool QuadComponent_SetPosition(uint32_t entityID, glm::vec2* position)
 	{
 		bool hasComponent = false;
@@ -158,7 +159,8 @@ namespace Stimpi
 		if (entity.HasComponent<QuadComponent>())
 		{
 			auto& quad = entity.GetComponent<QuadComponent>();
-			quad.m_Position = *position;
+			quad.m_Position.x = (*position).x;
+			quad.m_Position.y = (*position).y;
 			hasComponent = true;
 		}
 
