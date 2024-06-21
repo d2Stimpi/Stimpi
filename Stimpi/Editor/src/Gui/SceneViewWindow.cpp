@@ -53,9 +53,9 @@ namespace Stimpi
 	{
 		auto frameBuffer = Renderer2D::Instance()->GetFrameBuffer();
 		auto scene = SceneManager::Instance()->GetActiveScene();
-		auto camera = scene->GetRenderCamera();
-
 		ST_CORE_ASSERT(!scene);
+		auto camera = scene->GetRenderCamera();
+		ST_CORE_ASSERT(!camera);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("Scene View", &m_Show, m_Flags);

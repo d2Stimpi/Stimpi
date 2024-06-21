@@ -7,8 +7,12 @@
 #include "Stimpi/Graphics/OrthoCamera.h"
 #include "Stimpi/Graphics/FrameBuffer.h"
 
+#include "Stimpi/Log.h"
+
 namespace Stimpi
 {
+	enum class RenderCommandType { NONE = 0, QUAD, CIRLCE, LINE };
+
 	struct VertexData
 	{
 		glm::vec3 m_Position = glm::vec3(0.0f);
@@ -39,6 +43,7 @@ namespace Stimpi
 
 	struct RenderCommand
 	{
+		RenderCommandType m_Type;
 		Shader* m_Shader;
 		Texture* m_Texture;
 		std::vector<VertexData> m_VertexData;
@@ -48,8 +53,15 @@ namespace Stimpi
 		uint32_t m_VertexSize;
 
 
-		RenderCommand(uint32_t vertexSize)
-			: m_Shader(nullptr), m_Texture(nullptr), m_VertexData({}), m_CircleVertexData({}), m_LineVertexData({}), m_VertexCount(0), m_VertexSize(vertexSize)
+		RenderCommand(uint32_t vertexSize) :
+			m_Type(RenderCommandType::NONE),
+			m_Shader(nullptr),
+			m_Texture(nullptr),
+			m_VertexData({}),
+			m_CircleVertexData({}),
+			m_LineVertexData({}),
+			m_VertexCount(0),
+			m_VertexSize(vertexSize)
 		{}
 
 		uint32_t Size() { return m_VertexCount * m_VertexSize; }
@@ -57,8 +69,13 @@ namespace Stimpi
 		float* CircleData() { return &(m_CircleVertexData[0]); }
 		float* LineData() { return &(m_LineVertexData[0]); }
 
-		void PushVertex(glm::vec3 position, glm::vec3 color, glm::vec2 textureCoord)
+		void PushQuadVertex(glm::vec3 position, glm::vec3 color, glm::vec2 textureCoord)
 		{
+			ST_CORE_ASSERT((m_Type != RenderCommandType::NONE && m_Type != RenderCommandType::QUAD));
+
+			if (m_Type == RenderCommandType::NONE)
+				m_Type = RenderCommandType::QUAD;
+
 			VertexData vertex;
 
 			vertex.m_Position = position;
@@ -71,6 +88,11 @@ namespace Stimpi
 
 		void PushCircleVertex(glm::vec3 position, glm::vec3 color, glm::vec2 textureCoord, float thickness, float fade)
 		{
+			ST_CORE_ASSERT((m_Type != RenderCommandType::NONE && m_Type != RenderCommandType::CIRLCE));
+
+			if (m_Type == RenderCommandType::NONE)
+				m_Type = RenderCommandType::CIRLCE;
+
 			CircleVertexData vertex;
 
 			vertex.m_Position = position;
@@ -85,6 +107,11 @@ namespace Stimpi
 
 		void PushLineVertex(glm::vec3 position, glm::vec3 color)
 		{
+			ST_CORE_ASSERT((m_Type != RenderCommandType::NONE && m_Type != RenderCommandType::LINE));
+
+			if (m_Type == RenderCommandType::NONE)
+				m_Type = RenderCommandType::LINE;
+
 			LineVertexData vertex;
 
 			vertex.m_Position = position;

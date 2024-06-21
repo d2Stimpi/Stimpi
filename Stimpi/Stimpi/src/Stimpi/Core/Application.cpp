@@ -127,7 +127,7 @@ namespace Stimpi
 		}
 
 		// Process Event Queues
-		auto keyEvents = EventQueue<PhysicsEvent>::GetEvents();
+		auto& keyEvents = EventQueue<PhysicsEvent>::GetEvents();
 		for (auto& event : keyEvents)
 		{
 			//event->LogEvent();

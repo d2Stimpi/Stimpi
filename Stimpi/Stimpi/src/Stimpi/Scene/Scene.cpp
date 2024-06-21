@@ -169,7 +169,24 @@ namespace Stimpi
 		{
 			Stimpi::Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
 
-			for (auto entity : m_Entities)
+			// Sort on Entity level
+			auto sorted = m_Entities;
+			std::sort(sorted.begin(), sorted.end(), [](auto a, auto b)
+				{
+					if ((a.HasComponent<QuadComponent>() || a.HasComponent<CircleComponent>()) &&
+						(b.HasComponent<QuadComponent>() || b.HasComponent<CircleComponent>()))
+					{
+						glm::vec3 posA = a.HasComponent<QuadComponent>() ? a.GetComponent<QuadComponent>().m_Position :
+							a.GetComponent<CircleComponent>().m_Position;
+						glm::vec3 posB = b.HasComponent<QuadComponent>() ? b.GetComponent<QuadComponent>().m_Position :
+							b.GetComponent<CircleComponent>().m_Position;
+						return posA.z < posB.z;
+					}
+
+					return false;
+				});
+
+			for (auto entity : sorted)
 			{
 				if (entity.HasComponent<QuadComponent>())
 				{
@@ -180,7 +197,7 @@ namespace Stimpi
 						if (sprite.TextureLoaded())
 						{
 							if (sprite.m_Enable)
-								Renderer2D::Instance()->Submit(quad.m_Position,  quad.m_Size, quad.m_Rotation, sprite, m_DefaultShader.get());
+								Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite, m_DefaultShader.get());
 							else
 								Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
 						}
@@ -212,12 +229,12 @@ namespace Stimpi
 
 							if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::BOX)
 							{
-								Stimpi::Renderer2D::Instance()->DrawQuad(outlinePos, outlineSize, quad.m_Rotation, outlineColor);
+								Stimpi::Renderer2D::Instance()->SubmitSquare(outlinePos, outlineSize, quad.m_Rotation, outlineColor);
 							}
 							else if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::CIRLCE)
 							{
 								glm::vec2 circleOutlineSize(bc2d.m_Size.x * quad.m_Size.x * 2.0f, bc2d.m_Size.x * quad.m_Size.x * 2.0f);
-								Stimpi::Renderer2D::Instance()->DrawCircle(outlinePos, circleOutlineSize, outlineColor, 0.06f, 0.0f);
+								Stimpi::Renderer2D::Instance()->SubmitCircle(outlinePos, circleOutlineSize, outlineColor, 0.06f, 0.0f);
 							}
 						}
 					}
@@ -234,12 +251,12 @@ namespace Stimpi
 						}
 						else
 						{
-							Renderer2D::Instance()->DrawCircle(circle.m_Position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
+							Renderer2D::Instance()->SubmitCircle(circle.m_Position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
 						}
 					}
 					else
 					{
-						Renderer2D::Instance()->DrawCircle(circle.m_Position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
+						Renderer2D::Instance()->SubmitCircle(circle.m_Position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
 					}
 
 					// Draw debug RigidBody Collider outline
@@ -254,12 +271,12 @@ namespace Stimpi
 
 							if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::BOX)
 							{
-								Stimpi::Renderer2D::Instance()->DrawQuad(outlinePos, outlineSize, circle.m_Rotation, outlineColor);
+								Stimpi::Renderer2D::Instance()->SubmitSquare(outlinePos, outlineSize, circle.m_Rotation, outlineColor);
 							}
 							else if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::CIRLCE)
 							{
 								glm::vec2 circleOutlineSize(bc2d.m_Size.x * circle.m_Size.x * 2.0f, bc2d.m_Size.x * circle.m_Size.x * 2.0f);
-								Stimpi::Renderer2D::Instance()->DrawCircle(outlinePos, circleOutlineSize, outlineColor, 0.06f, 0.0f);
+								Stimpi::Renderer2D::Instance()->SubmitCircle(outlinePos, circleOutlineSize, outlineColor, 0.06f, 0.0f);
 							}
 						}
 					}
@@ -696,7 +713,7 @@ namespace Stimpi
 				{
 					for (Contact& contact : collision->m_Contacts)
 					{
-						Renderer2D::Instance()->DrawCircle({ contact.m_Point.x, contact.m_Point.y, 0.0f }, { 1.0f, 1.0f }, {}, 1.0f, 0.005f);
+						Renderer2D::Instance()->SubmitCircle({ contact.m_Point.x, contact.m_Point.y, 0.0f }, { 1.0f, 1.0f }, {}, 1.0f, 0.005f);
 					}
 				}
 			}

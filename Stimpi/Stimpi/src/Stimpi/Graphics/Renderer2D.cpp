@@ -70,17 +70,9 @@ namespace Stimpi
 		m_DrawCallCnt = 0;
 		m_RenderedCmdCnt = 0;
 
-		// Init Quad cmd storage
-		m_QuadRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_QuadVAO->VertexSize()));
-		m_ActiveQuadRenderCmdIter = std::end(m_QuadRenderCmds) - 1;
-
-		// Init Circle cmd storage
-		m_CircleRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_CircleVAO->VertexSize()));
-		m_CircleActiveRenderCmdIter = std::end(m_CircleRenderCmds) - 1;
-
-		// Init Line cmd storage
-		m_LineRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_LineVAO->VertexSize()));
-		m_LineActiveRenderCmdIter = std::end(m_LineRenderCmds) - 1;
+		// Init render cmd storage
+		m_RenderCmds.emplace_back(std::make_shared<RenderCommand>(0));
+		m_ActiveRenderCmdIter = std::end(m_RenderCmds) - 1;
 
 		m_CircleShader.reset(Shader::CreateShader("..\/assets\/shaders\/circle.shader"));
 		m_LineShader.reset(Shader::CreateShader("..\/assets\/shaders\/line.shader"));
@@ -124,65 +116,47 @@ namespace Stimpi
 		Flush();
 	}
 
-	void Renderer2D::Submit(glm::vec4 quad, float rotation, Texture* texture, Shader* shader)
-	{
-		glm::vec3 position = { quad.x + quad.z / 2.0f, quad.y + quad.w / 2.0f, 0.0f };
-		glm::vec2 scale = { quad.z, quad.w };
-
-		Submit(position, scale, rotation, texture, shader);
-	}
-
-	void Renderer2D::Submit(glm::vec4 quad, float rotation, SubTexture* subtexture, Shader* shader)
-	{
-		glm::vec3 position = { quad.x + quad.z / 2.0f, quad.y + quad.w / 2.0f, 0.0f };
-		glm::vec2 scale = { quad.z, quad.w };
-
-		Submit(position, scale, rotation, subtexture, shader);
-	}
-
-	void Renderer2D::Submit(glm::vec4 quad, float rotation, Shader* shader)
-	{
-		Submit(quad, rotation, (Texture*)nullptr, shader);
-	}
-
-	void Renderer2D::Submit(glm::vec4 quad, float rotation, glm::vec3 color, Shader* shader)
-	{
-		glm::vec3 position = { quad.x + quad.z / 2.0f, quad.y + quad.w / 2.0f, 0.0f };
-		glm::vec2 scale = { quad.z, quad.w };
-
-		Submit(position, scale, rotation, color, shader);
-	}
-
 	void Renderer2D::Submit(glm::vec3 pos, glm::vec2 scale, float rotation, Texture* texture, Shader* shader)
 	{
 		CheckTextureBatching(texture);
-		auto currnetCmd = *m_ActiveQuadRenderCmdIter;
+		auto currentCmd = *m_ActiveRenderCmdIter;
 
-		CheckCapacity();
-		// First time call Submit after BeginScene
-		if ((currnetCmd->m_Texture == nullptr) && ((currnetCmd->m_Shader == nullptr)))
+		// Check if some other type was used in active cmd
+		if (currentCmd->m_Type != RenderCommandType::QUAD && currentCmd->m_Type != RenderCommandType::NONE)
 		{
-			PushTransformedVertexData(currnetCmd.get(), pos, scale, rotation);
-			currnetCmd->m_Texture = texture;
-			currnetCmd->m_Shader = shader;
+			Flush();
+			currentCmd = *m_ActiveRenderCmdIter;
+			currentCmd->m_Texture = texture;
+			currentCmd->m_Shader = shader;
 
 			shader->SetUniform("u_texture", 0);
 		}
-		else if ((currnetCmd->m_Texture != texture) || (currnetCmd->m_Shader != shader))
+
+		CheckCapacity();
+		// First time call Submit after BeginScene
+		if ((currentCmd->m_Texture == nullptr) && ((currentCmd->m_Shader == nullptr)))
+		{
+			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation);
+			currentCmd->m_Texture = texture;
+			currentCmd->m_Shader = shader;
+
+			shader->SetUniform("u_texture", 0);
+		}
+		else if ((currentCmd->m_Texture != texture) || (currentCmd->m_Shader != shader))
 		{
 			// If shader or texture changed
-			FlushQuad();
-			currnetCmd = *m_ActiveQuadRenderCmdIter;
-			PushTransformedVertexData(currnetCmd.get(), pos, scale, rotation);
-			currnetCmd->m_Texture = texture;
-			currnetCmd->m_Shader = shader;
+			Flush();
+			currentCmd = *m_ActiveRenderCmdIter;
+			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation);
+			currentCmd->m_Texture = texture;
+			currentCmd->m_Shader = shader;
 
 			shader->SetUniform("u_texture", 0);
 		}
 		else
 		{
 			// Batching vertex data
-			PushTransformedVertexData(currnetCmd.get(), pos, scale, rotation);
+			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation);
 		}
 	}
 
@@ -192,33 +166,44 @@ namespace Stimpi
 			return;
 
 		CheckTextureBatching(subtexture->GetTexture());
-		auto currnetCmd = *m_ActiveQuadRenderCmdIter;
+		auto currentCmd = *m_ActiveRenderCmdIter;
 
-		CheckCapacity();
-		// First time call Submit after BeginScene
-		if ((currnetCmd->m_Texture == nullptr) && ((currnetCmd->m_Shader == nullptr)))
+		// Check if some other type was used in active cmd
+		if (currentCmd->m_Type != RenderCommandType::QUAD && currentCmd->m_Type != RenderCommandType::NONE)
 		{
-			PushTransformedVertexData(currnetCmd.get(), pos, scale, rotation, glm::vec3{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
-			currnetCmd->m_Texture = subtexture->GetTexture();
-			currnetCmd->m_Shader = shader;
+			Flush();
+			currentCmd = *m_ActiveRenderCmdIter;
+			currentCmd->m_Texture = subtexture->GetTexture();
+			currentCmd->m_Shader = shader;
 
 			shader->SetUniform("u_texture", 0);
 		}
-		else if ((currnetCmd->m_Texture != subtexture->GetTexture()) || (currnetCmd->m_Shader != shader))
+
+		CheckCapacity();
+		// First time call Submit after BeginScene
+		if ((currentCmd->m_Texture == nullptr) && ((currentCmd->m_Shader == nullptr)))
+		{
+			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation, glm::vec3{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+			currentCmd->m_Texture = subtexture->GetTexture();
+			currentCmd->m_Shader = shader;
+
+			shader->SetUniform("u_texture", 0);
+		}
+		else if ((currentCmd->m_Texture != subtexture->GetTexture()) || (currentCmd->m_Shader != shader))
 		{
 			// If shader or texture changed
-			FlushQuad();
-			currnetCmd = *m_ActiveQuadRenderCmdIter;
-			PushTransformedVertexData(currnetCmd.get(), pos, scale, rotation, glm::vec3{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
-			currnetCmd->m_Texture = subtexture->GetTexture();
-			currnetCmd->m_Shader = shader;
+			Flush();
+			currentCmd = *m_ActiveRenderCmdIter;
+			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation, glm::vec3{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+			currentCmd->m_Texture = subtexture->GetTexture();
+			currentCmd->m_Shader = shader;
 
 			shader->SetUniform("u_texture", 0);
 		}
 		else
 		{
 			// Batching vertex data
-			PushTransformedVertexData(currnetCmd.get(), pos, scale, rotation, glm::vec3{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation, glm::vec3{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 		}
 	}
 
@@ -229,43 +214,59 @@ namespace Stimpi
 
 	void Renderer2D::Submit(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color, Shader* shader, glm::vec2 minUV/*{ 0.0f, 0.0f }*/, glm::vec2 maxUV/*{ 1.0f, 1.0f }*/)
 	{
-		auto currnetCmd = *m_ActiveQuadRenderCmdIter;
+		auto currentCmd = *m_ActiveRenderCmdIter;
+
+		// Check if some other type was used in active cmd
+		if (currentCmd->m_Type != RenderCommandType::QUAD && currentCmd->m_Type != RenderCommandType::NONE)
+		{
+			Flush();
+			currentCmd = *m_ActiveRenderCmdIter;
+		}
 
 		CheckCapacity();
 		// Flush if we have a texture set from other Submits or shader changed
-		if ((currnetCmd->m_Texture != nullptr) || (currnetCmd->m_Shader != shader))
+		if ((currentCmd->m_Texture != nullptr) || (currentCmd->m_Shader != shader))
 		{
-			FlushQuad();
-			currnetCmd = *m_ActiveQuadRenderCmdIter;
+			Flush();
+			currentCmd = *m_ActiveRenderCmdIter;
 		}
 
-		PushTransformedVertexData(currnetCmd.get(), pos, scale, rotation, color, minUV, maxUV);
-		currnetCmd->m_Shader = shader;
+		PushTransformedVertexData(currentCmd.get(), pos, scale, rotation, color, minUV, maxUV);
+		currentCmd->m_Shader = shader;
 	}
 
-	void Renderer2D::DrawCircle(glm::vec3 pos, glm::vec2 scale, glm::vec3 color, float thickness, float fade)
+	void Renderer2D::SubmitCircle(glm::vec3 pos, glm::vec2 scale, glm::vec3 color, float thickness, float fade)
 	{
-		auto currnetCmd = *m_CircleActiveRenderCmdIter;
-		auto cmd = currnetCmd.get();
+		auto currentCmd = *m_ActiveRenderCmdIter;
 		glm::vec2 minUV = { -1.0f, -1.0f };
 		glm::vec2 maxUV = { 1.0f, 1.0f };
 
 		CheckCapacity();
 
+		// Check if some other type was used in active cmd
+		if (currentCmd->m_Type != RenderCommandType::CIRLCE && currentCmd->m_Type != RenderCommandType::NONE)
+		{
+			Flush();
+			currentCmd = *m_ActiveRenderCmdIter;
+		}
+
 		// Set cmd data
-		currnetCmd->m_Shader = m_CircleShader.get();
+		currentCmd->m_Shader = m_CircleShader.get();
 
 		// Apply transforms
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) *
 			glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f));
 
-		cmd->PushCircleVertex(transform * s_QuadVertexPosition[0], color, { minUV.x, minUV.y }, thickness, fade);
-		cmd->PushCircleVertex(transform * s_QuadVertexPosition[1], color, { maxUV.x, minUV.y }, thickness, fade);
-		cmd->PushCircleVertex(transform * s_QuadVertexPosition[2], color, { maxUV.x, maxUV.y }, thickness, fade);
+		if (currentCmd->m_VertexSize == 0)
+			currentCmd->m_VertexSize = m_CircleVAO->VertexSize();
 
-		cmd->PushCircleVertex(transform * s_QuadVertexPosition[2], color, { maxUV.x, maxUV.y }, thickness, fade);
-		cmd->PushCircleVertex(transform * s_QuadVertexPosition[3], color, { minUV.x, maxUV.y }, thickness, fade);
-		cmd->PushCircleVertex(transform * s_QuadVertexPosition[0], color, { minUV.x, minUV.y }, thickness, fade);
+		currentCmd->PushCircleVertex(transform * s_QuadVertexPosition[0], color, { minUV.x, minUV.y }, thickness, fade);
+		currentCmd->PushCircleVertex(transform * s_QuadVertexPosition[1], color, { maxUV.x, minUV.y }, thickness, fade);
+		currentCmd->PushCircleVertex(transform * s_QuadVertexPosition[2], color, { maxUV.x, maxUV.y }, thickness, fade);
+
+		currentCmd->PushCircleVertex(transform * s_QuadVertexPosition[2], color, { maxUV.x, maxUV.y }, thickness, fade);
+		currentCmd->PushCircleVertex(transform * s_QuadVertexPosition[3], color, { minUV.x, maxUV.y }, thickness, fade);
+		currentCmd->PushCircleVertex(transform * s_QuadVertexPosition[0], color, { minUV.x, minUV.y }, thickness, fade);
 	}
 
 	void Renderer2D::SetLineWidth(float width)
@@ -273,92 +274,59 @@ namespace Stimpi
 		m_RenderAPI->SetLineWidth(width);
 	}
 
-	void Renderer2D::DrawLine(glm::vec3 p0, glm::vec3 p1, glm::vec3 color)
+	void Renderer2D::SubmitLine(glm::vec3 p0, glm::vec3 p1, glm::vec3 color)
 	{
-		auto currentCmd = *m_LineActiveRenderCmdIter;
-		auto cmd = currentCmd.get();
+		auto currentCmd = *m_ActiveRenderCmdIter;
 
 		CheckCapacity();
+
+		// Check if some other type was used in active cmd
+		if (currentCmd->m_Type != RenderCommandType::LINE && currentCmd->m_Type != RenderCommandType::NONE)
+		{
+			Flush();
+			currentCmd = *m_ActiveRenderCmdIter;
+		}
 
 		// Set cmd data
 		currentCmd->m_Shader = m_LineShader.get();
 
-		cmd->PushLineVertex(p0, color);
-		cmd->PushLineVertex(p1, color);
+		if (currentCmd->m_VertexSize == 0)
+			currentCmd->m_VertexSize = m_LineVAO->VertexSize();
+
+		currentCmd->PushLineVertex(p0, color);
+		currentCmd->PushLineVertex(p1, color);
 	}
 
-	void Renderer2D::DrawQuad(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color)
+	void Renderer2D::SubmitSquare(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color)
 	{
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) *
 			glm::rotate(glm::mat4(1.0f), rotation/*glm::radians(rotation)*/, glm::vec3(0.0f, 0.0f, 1.0f)) *
 			glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f));
 
-		DrawLine(transform * s_QuadVertexPosition[0], transform * s_QuadVertexPosition[1], color);
-		DrawLine(transform * s_QuadVertexPosition[1], transform * s_QuadVertexPosition[2], color);
-		DrawLine(transform * s_QuadVertexPosition[2], transform * s_QuadVertexPosition[3], color);
-		DrawLine(transform * s_QuadVertexPosition[3], transform * s_QuadVertexPosition[0], color);
+		SubmitLine(transform * s_QuadVertexPosition[0], transform * s_QuadVertexPosition[1], color);
+		SubmitLine(transform * s_QuadVertexPosition[1], transform * s_QuadVertexPosition[2], color);
+		SubmitLine(transform * s_QuadVertexPosition[2], transform * s_QuadVertexPosition[3], color);
+		SubmitLine(transform * s_QuadVertexPosition[3], transform * s_QuadVertexPosition[0], color);
 	}
 
 	void Renderer2D::Flush()
 	{
-		FlushQuad();
-		FlushCircle();
-		FlushLine();
-	}
-
-
-	void Renderer2D::FlushQuad()
-	{
-		auto currnetCmd = *m_ActiveQuadRenderCmdIter;
+		auto currnetCmd = *m_ActiveRenderCmdIter;
 
 		if (currnetCmd->m_Shader == nullptr)
 		{
 			// No data to qualify as a valid RenderCommand
 			return;
 		}
-
+		
 		// For now set ViewProj camera uniform here
 		currnetCmd->m_Shader->SetUniform("u_ViewProjection", m_ActiveCamera->GetViewProjectionMatrix());
 
-		m_QuadRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_QuadVAO->VertexSize()));
-		m_ActiveQuadRenderCmdIter = std::end(m_QuadRenderCmds) - 1;
+		m_RenderCmds.emplace_back(std::make_shared<RenderCommand>(0));
+		m_ActiveRenderCmdIter = std::end(m_RenderCmds) - 1;
 	}
 
-	void Renderer2D::FlushCircle()
-	{
-		auto currnetCmd = *m_CircleActiveRenderCmdIter;
-
-		if (currnetCmd->m_Shader == nullptr)
-		{
-			// No data to qualify as a valid RenderCommand
-			return;
-		}
-
-		// For now set ViewProj camera uniform here
-		currnetCmd->m_Shader->SetUniform("u_ViewProjection", m_ActiveCamera->GetViewProjectionMatrix());
-
-		m_CircleRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_CircleVAO->VertexSize()));
-		m_CircleActiveRenderCmdIter = std::end(m_CircleRenderCmds) - 1;
-	}
-
-	void Renderer2D::FlushLine()
-	{
-		auto currnetCmd = *m_LineActiveRenderCmdIter;
-
-		if (currnetCmd->m_Shader == nullptr)
-		{
-			// No data to qualify as a valid RenderCommand
-			return;
-		}
-
-		// For now set ViewProj camera uniform here
-		currnetCmd->m_Shader->SetUniform("u_ViewProjection", m_ActiveCamera->GetViewProjectionMatrix());
-
-		m_LineRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_LineVAO->VertexSize()));
-		m_LineActiveRenderCmdIter = std::end(m_LineRenderCmds) - 1;
-	}
-
-	void Renderer2D::FlushScene()
+	void Renderer2D::ClearScene()
 	{
 		// Clear Render commands
 		ClearRenderCommands();
@@ -372,7 +340,7 @@ namespace Stimpi
 		m_RenderFrameBufferCmd->ClearData();
 		PushQuadVertexData(m_RenderFrameBufferCmd.get(), glm::vec4(0.0f, 0.0f, GetCanvasWidth(), GetCanvasHeight()));
 
-		DrawRenderCmd(m_RenderFrameBufferCmd);
+		DrawQuadRenderCmd(m_RenderFrameBufferCmd);
 	}
 
 	void Renderer2D::ResizeCanvas(uint32_t width, uint32_t height)
@@ -392,29 +360,20 @@ namespace Stimpi
 
 	void Renderer2D::DrawFrame()
 	{
-		for (auto& renderCmd : m_QuadRenderCmds)
+		for (auto& renderCmd : m_RenderCmds)
 		{
 			// Skip last as it won't be filled with data
-			if (renderCmd != *m_ActiveQuadRenderCmdIter)
-				DrawRenderCmd(renderCmd);
+			if (renderCmd != *m_ActiveRenderCmdIter)
+			{
+				if (renderCmd->m_Type == RenderCommandType::QUAD)
+					DrawQuadRenderCmd(renderCmd);
+				else if (renderCmd->m_Type == RenderCommandType::CIRLCE)
+					DrawCirlceRenderCmd(renderCmd);
+				else if (renderCmd->m_Type == RenderCommandType::LINE)
+					DrawLineRenderCmd(renderCmd);
+			}
 		}
-		m_RenderedCmdCnt = m_QuadRenderCmds.size() - 1; // last won't be filled with data
-
-		for (auto& renderCmd : m_CircleRenderCmds)
-		{
-			// Skip last as it won't be filled with data
-			if (renderCmd != *m_CircleActiveRenderCmdIter)
-				DrawCirlceRenderCmd(renderCmd);
-		}
-		m_RenderedCmdCnt += m_CircleRenderCmds.size() - 1;
-
-		for (auto& renderCmd : m_LineRenderCmds)
-		{
-			// Skip last as it won't be filled with data
-			if (renderCmd != *m_LineActiveRenderCmdIter)
-				DrawLineRenderCmd(renderCmd);
-		}
-		m_RenderedCmdCnt += m_LineRenderCmds.size() - 1;
+		m_RenderedCmdCnt += m_RenderCmds.size() - 1;
 	}
 
 	void Renderer2D::EndFrame()
@@ -438,7 +397,7 @@ namespace Stimpi
 		m_RenderedCmdCnt = 0;
 	}
 
-	void Renderer2D::DrawRenderCmd(std::shared_ptr<RenderCommand>& renderCmd)
+	void Renderer2D::DrawQuadRenderCmd(std::shared_ptr<RenderCommand>& renderCmd)
 	{
 		auto shader = renderCmd->m_Shader;
 
@@ -511,55 +470,32 @@ namespace Stimpi
 
 	void Renderer2D::CheckCapacity()
 	{
-		auto currnetCmd = *m_ActiveQuadRenderCmdIter;
-		auto currentCricleCmd = *m_CircleActiveRenderCmdIter;
-		auto currentLineCmd = *m_LineActiveRenderCmdIter;
-
-		if (currnetCmd->m_VertexCount >= VERTEX_CMD_CAPACITY)
-		{
-			FlushQuad();
-		}
-
-		if (currentCricleCmd->m_VertexCount >= VERTEX_CMD_CAPACITY)
-		{
-			FlushCircle();
-		}
-
-		if (currentLineCmd->m_VertexCount >= VERTEX_CMD_CAPACITY)
-		{
-			FlushLine();
-		}
-	}
+		auto currentCmd = *m_ActiveRenderCmdIter;
+		if (currentCmd->m_VertexCount >= VERTEX_CMD_CAPACITY)
+			Flush();
+	}	
 
 	void Renderer2D::CheckTextureBatching(Texture* texture)
 	{
-		auto found = std::find_if(std::begin(m_QuadRenderCmds), std::end(m_QuadRenderCmds), [&texture](auto elem) -> bool {
+		auto found = std::find_if(std::begin(m_RenderCmds), std::end(m_RenderCmds), [&texture](auto elem) -> bool {
 			if (texture != nullptr && elem->m_Texture != nullptr)
 				return texture->GetTextureID() == elem->m_Texture->GetTextureID();
 			else
 				return false;
 			});
 
-		if (found != std::end(m_QuadRenderCmds))
+		if (found != std::end(m_RenderCmds))
 		{
-			m_ActiveQuadRenderCmdIter = found;
+			m_ActiveRenderCmdIter = found;
 		}
 	}
 
 	void Renderer2D::ClearRenderCommands()
 	{
-		// Clear Render commands
-		m_QuadRenderCmds.clear();
-		m_QuadRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_QuadVAO->VertexSize()));
-		m_ActiveQuadRenderCmdIter = std::end(m_QuadRenderCmds) - 1;
+		m_RenderCmds.clear();
+		m_RenderCmds.emplace_back(std::make_shared<RenderCommand>(0));
+		m_ActiveRenderCmdIter = std::end(m_RenderCmds) - 1;
 
-		m_CircleRenderCmds.clear();
-		m_CircleRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_CircleVAO->VertexSize()));
-		m_CircleActiveRenderCmdIter = std::end(m_CircleRenderCmds) - 1;
-
-		m_LineRenderCmds.clear();
-		m_LineRenderCmds.emplace_back(std::make_shared<RenderCommand>(m_LineVAO->VertexSize()));
-		m_LineActiveRenderCmdIter = std::end(m_LineRenderCmds) - 1;
 	}
 
 	void Renderer2D::PushQuadVertexData(RenderCommand* cmd, glm::vec4 quad, glm::vec3 color /*= { 1.0f, 1.0f, 1.0f }*/, glm::vec2 min /*= { 0.0f, 0.0f }*/, glm::vec2 max /*= { 1.0f, 1.0f }*/)
@@ -576,12 +512,15 @@ namespace Stimpi
 			glm::rotate(glm::mat4(1.0f), rotation/*glm::radians(rotation)*/, glm::vec3(0.0f, 0.0f, 1.0f)) *
 			glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f));
 
-		cmd->PushVertex(transform * s_QuadVertexPosition[0], color, { min.x, min.y });
-		cmd->PushVertex(transform * s_QuadVertexPosition[1], color, { max.x, min.y });
-		cmd->PushVertex(transform * s_QuadVertexPosition[2], color, { max.x, max.y });
+		if (cmd->m_VertexSize == 0)
+			cmd->m_VertexSize = m_QuadVAO->VertexSize();
 
-		cmd->PushVertex(transform * s_QuadVertexPosition[2], color, { max.x, max.y });
-		cmd->PushVertex(transform * s_QuadVertexPosition[3], color, { min.x, max.y });
-		cmd->PushVertex(transform * s_QuadVertexPosition[0], color, { min.x, min.y });
+		cmd->PushQuadVertex(transform * s_QuadVertexPosition[0], color, { min.x, min.y });
+		cmd->PushQuadVertex(transform * s_QuadVertexPosition[1], color, { max.x, min.y });
+		cmd->PushQuadVertex(transform * s_QuadVertexPosition[2], color, { max.x, max.y });
+
+		cmd->PushQuadVertex(transform * s_QuadVertexPosition[2], color, { max.x, max.y });
+		cmd->PushQuadVertex(transform * s_QuadVertexPosition[3], color, { min.x, max.y });
+		cmd->PushQuadVertex(transform * s_QuadVertexPosition[0], color, { min.x, min.y });
 	}
 }

@@ -39,28 +39,19 @@ namespace Stimpi
 		void EndScene();
 
 		// Cancel all render commands
-		void FlushScene();
+		void ClearScene();
 
-		// Rotating Quad rendering
-		void Submit(glm::vec4 quad, float rotation, Texture* texture, Shader* shader);
-		void Submit(glm::vec4 quad, float rotation, SubTexture* subtexture, Shader* shader);
-		void Submit(glm::vec4 quad, float rotation, Shader* shader);
-		void Submit(glm::vec4 quad, float rotation, glm::vec3 color, Shader* shader);
-
-		// TODO: SubTexture rendering - UVs
 		// Rendering by Transforms
 		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, Texture* texture, Shader* shader);
 		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, SubTexture* subtexture, Shader* shader);
 		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, Shader* shader, glm::vec2 minUV = { 0.0f, 0.0f }, glm::vec2 maxUV = { 1.0f, 1.0f });
 		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color, Shader* shader, glm::vec2 minUV = { 0.0f, 0.0f }, glm::vec2 maxUV = { 1.0f, 1.0f });
 
-		// Circle shape rendering
-		void DrawCircle(glm::vec3 pos, glm::vec2 scale, glm::vec3 color, float thickness, float fade);
+		void SubmitCircle(glm::vec3 pos, glm::vec2 scale, glm::vec3 color, float thickness, float fade);
+		void SubmitSquare(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color);
+		void SubmitLine(glm::vec3 p0, glm::vec3 p1, glm::vec3 color);
 
-		// Line rendering
 		void SetLineWidth(float width);
-		void DrawLine(glm::vec3 p0, glm::vec3 p1, glm::vec3 color);
-		void DrawQuad(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color);
 
 		// Event Callbacks
 		void ResizeCanvas(uint32_t width, uint32_t height);
@@ -81,15 +72,12 @@ namespace Stimpi
 		uint32_t GetFrameRednerCmdCount() { return m_LastFrameRenderedCmdCnt; }
 	private:
 		void Flush();
-		void FlushQuad();
-		void FlushCircle();
-		void FlushLine();
 		void RenderFrameBuffer(); // Used for Application to handle displaying of FBs ourselves
 
 		void PushQuadVertexData(RenderCommand* cmd, glm::vec4 quad, glm::vec3 color = { 1.0f, 1.0f, 1.0f }, glm::vec2 min = { 0.0f, 0.0f }, glm::vec2 max = { 1.0f, 1.0f });
 		void PushTransformedVertexData(RenderCommand* cmd, glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color = { 1.0f, 1.0f, 1.0f }, glm::vec2 min = { 0.0f, 0.0f }, glm::vec2 max = { 1.0f, 1.0f });
 		
-		void DrawRenderCmd(std::shared_ptr<RenderCommand>& renderCmd);
+		void DrawQuadRenderCmd(std::shared_ptr<RenderCommand>& renderCmd);
 		void DrawCirlceRenderCmd(std::shared_ptr<RenderCommand>& renderCmd);
 		void DrawLineRenderCmd(std::shared_ptr<RenderCommand>& renderCmd);
 
@@ -108,22 +96,20 @@ namespace Stimpi
 		// Quad rendering
 		std::shared_ptr<VertexArrayObject> m_QuadVAO;
 		std::shared_ptr<BufferObject> m_QuadVBO;
-		std::vector<std::shared_ptr<RenderCommand>> m_QuadRenderCmds;
-		std::vector<std::shared_ptr<RenderCommand>>::iterator m_ActiveQuadRenderCmdIter;
 
 		// Circle rendering
 		std::shared_ptr<VertexArrayObject> m_CircleVAO;
 		std::shared_ptr<BufferObject> m_CircleVBO;
 		std::shared_ptr<Shader> m_CircleShader;
-		std::vector<std::shared_ptr<RenderCommand>> m_CircleRenderCmds;
-		std::vector<std::shared_ptr<RenderCommand>>::iterator m_CircleActiveRenderCmdIter;
 
 		// Line rendering
 		std::shared_ptr<VertexArrayObject> m_LineVAO;
 		std::shared_ptr<BufferObject> m_LineVBO;
 		std::shared_ptr<Shader> m_LineShader;
-		std::vector<std::shared_ptr<RenderCommand>> m_LineRenderCmds;
-		std::vector<std::shared_ptr<RenderCommand>>::iterator m_LineActiveRenderCmdIter;
+
+		// Rendering cmd (quads, circles, lines)
+		std::vector<std::shared_ptr<RenderCommand>> m_RenderCmds;
+		std::vector<std::shared_ptr<RenderCommand>>::iterator m_ActiveRenderCmdIter;
 
 		// For local rendering
 		std::shared_ptr<FrameBuffer> m_FrameBuffer;

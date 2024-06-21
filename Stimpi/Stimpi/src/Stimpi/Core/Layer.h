@@ -26,7 +26,7 @@ namespace Stimpi
 		std::string m_DebugName;
 	};
 
-	/* Layers - gives a way to distinguish and control blocks(layers) of processing engin logic and consuming events
+	/* Layers - gives a way to distinguish and control blocks(layers) of processing engine logic and consuming events
 	*  - UI
 	*  - Scene rendering
 	*  - overlay rendering etc...

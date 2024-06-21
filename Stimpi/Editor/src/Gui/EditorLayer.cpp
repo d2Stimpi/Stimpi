@@ -73,7 +73,7 @@ namespace Stimpi
 		OnSceneChangedListener onScneeChanged = [&]() {
 			ST_CORE_INFO("EditorLayer - onScneeChanged()");
 			
-			Renderer2D::Instance()->FlushScene();
+			Renderer2D::Instance()->ClearScene();
 
 			m_Scene = SceneManager::Instance()->GetActiveSceneRef();
 			m_Scene->SetCamera(m_EditorCamera.get());
@@ -232,7 +232,7 @@ namespace Stimpi
 		/* Sprite & Animation */
 		m_SpriteAnimPanel.OnUpdate(ts);
 		m_SpriteAnimPanel.OnImGuiRender();
-		/* Global Stats and Configs */
+		/* Global Stats and Configurations */
 		m_EditorConfigWindow.OnImGuiRender();
 		m_SceneConfigWindow.OnImGuiRender();
 		/* Node Panel */
@@ -265,7 +265,7 @@ namespace Stimpi
 		if (m_SceneConfigWindow.ShowCheckerboardBg())
 		{
 			Stimpi::Renderer2D::Instance()->BeginScene(m_BackgroundCamera->GetOrthoCamera());
-			Stimpi::Renderer2D::Instance()->Submit({ 0.0f, 0.0f, canvasWidth, canvasHeight }, 0.0f, m_ShaderChecker.get());
+			Stimpi::Renderer2D::Instance()->Submit({ canvasWidth / 2.0f, canvasHeight / 2.0f, 0.0f }, { canvasWidth, canvasHeight }, 0.0f, m_ShaderChecker.get());
 			Stimpi::Renderer2D::Instance()->EndScene();
 		}
 
