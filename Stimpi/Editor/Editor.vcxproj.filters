@@ -36,7 +36,7 @@
     <ClInclude Include="src\Gui\Components\UIPayload.h">
       <Filter>Gui\Components</Filter>
     </ClInclude>
-    <ClInclude Include="src\Gui\Config\SceneConfig.h">
+    <ClInclude Include="src\Gui\Config\SceneConfigPanel.h">
       <Filter>Gui\Config</Filter>
     </ClInclude>
     <ClInclude Include="src\Gui\ContentBrowserWindow.h">
@@ -93,6 +93,8 @@
     <ClInclude Include="src\Gui\Nodes\Variables\VariableSetNode.h" />
     <ClInclude Include="src\Gui\Nodes\Variables\VariableGetNode.h" />
     <ClInclude Include="src\Gui\Nodes\Methods\SetPositionNode.h" />
+    <ClInclude Include="src\Gui\Config\GraphicsConfigPanel.h" />
+    <ClInclude Include="src\Gui\Config\LayersConfigPanel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
@@ -111,7 +113,7 @@
     <ClCompile Include="src\Gui\Components\UIPayload.cpp">
       <Filter>Gui\Components</Filter>
     </ClCompile>
-    <ClCompile Include="src\Gui\Config\SceneConfig.cpp">
+    <ClCompile Include="src\Gui\Config\SceneConfigPanel.cpp">
       <Filter>Gui\Config</Filter>
     </ClCompile>
     <ClCompile Include="src\Gui\ContentBrowserWindow.cpp">
@@ -164,5 +166,7 @@
     <ClCompile Include="src\Gui\Nodes\Variables\VariableSetNode.cpp" />
     <ClCompile Include="src\Gui\Nodes\Variables\VariableGetNode.cpp" />
     <ClCompile Include="src\Gui\Nodes\Methods\SetPositionNode.cpp" />
+    <ClCompile Include="src\Gui\Config\GraphicsConfigPanel.cpp" />
+    <ClCompile Include="src\Gui\Config\LayersConfigPanel.cpp" />
   </ItemGroup>
 </Project>

@@ -363,5 +363,6 @@
       <Filter>Stimpi\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
+    <ClCompile Include="src\Stimpi\Core\Graphics.cpp" />
   </ItemGroup>
 </Project>

@@ -17,7 +17,9 @@
 #include "Gui/PlayPanel.h"
 #include "Gui/SpriteAnimPanel.h"
 #include "Gui/Stats/EditorConfig.h"
-#include "Gui/Config/SceneConfig.h"
+#include "Gui/Config/SceneConfigPanel.h"
+#include "Gui/Config/GraphicsConfigPanel.h"
+#include "Gui/Config/LayersConfigPanel.h"
 // Test - WIP
 #include "Gui/Nodes/GraphPanel.h"
 
@@ -56,7 +58,11 @@ namespace Stimpi
 
 		//Global stats/config
 		EditorConfig m_EditorConfigWindow;
-		SceneConfig m_SceneConfigWindow;
+		SceneConfigPanel m_SceneConfigWindow;
+
+		// Edit/Project/
+		GraphicsConfigPanel m_GraphicsConfigPanel;
+		LayersConfigPanel m_LayersConfigPanel;
 
 		//Test-WIP
 		GraphPanel m_NodePanelNew;

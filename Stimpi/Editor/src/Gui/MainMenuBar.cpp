@@ -14,6 +14,9 @@
 #include "Stimpi/Utils/FileWatcher.h"
 #include "Stimpi/Utils/SystemUtils.h"
 
+#include "Gui/Config/GraphicsConfigPanel.h"
+#include "Gui/Config/LayersConfigPanel.h"
+
 #include "ImGui/src/imgui.h"
 #include "ImGui/src/imgui_internal.h"
 
@@ -38,29 +41,69 @@ namespace Stimpi
 	{
 		if (ImGui::BeginMainMenuBar())
 		{
+#pragma region FILE
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("New Scene"))
+				if (ImGui::BeginMenu("New        ##File"))
 				{
-					SceneManager::Instance()->NewScene();
+					if (ImGui::MenuItem("Scene...##FileNew"))
+					{
+						SceneManager::Instance()->NewScene();
+					}
+
+					if (ImGui::MenuItem("Project...##FileNew"))
+					{
+						
+					}
+
+					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem("Open Scene", "Ctrl+O")) 
+				if (ImGui::BeginMenu("Open##File"))
 				{
-					std::string filePath = FileDialogs::OpenFile("d2S Scene (*.d2s)\0*.d2s\0");
-					if (!filePath.empty())
+					if (ImGui::MenuItem("Scene...##FileOpen", "Ctrl+O"))
 					{
-						SceneManager::Instance()->LoadScene(filePath);
+						std::string filePath = FileDialogs::OpenFile("d2S Scene (*.d2s)\0*.d2s\0");
+						if (!filePath.empty())
+						{
+							SceneManager::Instance()->LoadScene(filePath);
+						}
 					}
+
+					if (ImGui::MenuItem("Project...##FileOpen"))
+					{
+						std::string filePath = FileDialogs::OpenFile("d2S Project (*.d2sproj)\0*.d2sproj\0");
+						if (!filePath.empty())
+						{
+							Project::Load(filePath);
+						}
+					}
+
+					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem("Save Scene", "Ctrl+Shift+S")) 
+				if (ImGui::BeginMenu("Save##File"))
 				{
-					std::string filePath = FileDialogs::SaveFile("d2S Scene (*.d2s)\0*.d2s\0");
-					if (!filePath.empty())
+					if (ImGui::MenuItem("Scene...##FileSave", "Ctrl+Shift+S"))
 					{
-						SceneManager::Instance()->SaveScene(filePath);
+						std::string filePath = FileDialogs::SaveFile("d2S Scene (*.d2s)\0*.d2s\0");
+						if (!filePath.empty())
+						{
+							SceneManager::Instance()->SaveScene(filePath);
+						}
 					}
+
+					if (ImGui::MenuItem("Project...##FileSave"))
+					{
+						std::string projectFilePath = FileDialogs::SaveFile("d2S Project (*.d2sproj)\0*.d2sproj\0");
+						//projectFilePath.append(".d2sproj");
+						if (!projectFilePath.empty())
+						{
+							Project::Save(projectFilePath);
+						}
+					}
+
+					ImGui::EndMenu();
 				}
 
 				ImGui::Separator();
@@ -77,33 +120,31 @@ namespace Stimpi
 
 				ImGui::EndMenu();
 			}
-			// File - end
+#pragma endregion FILE
 
-			if (ImGui::BeginMenu("Project"))
+#pragma region EDIT
+			if (ImGui::BeginMenu("Edit"))
 			{
-				if (ImGui::MenuItem("Open"))
+				if (ImGui::BeginMenu("Project##Edit"))
 				{
-					//std::string filePath = FileDialogs::OpenFolder();
-					std::string filePath = FileDialogs::OpenFile("d2S Project (*.d2sproj)\0*.d2sproj\0");
-					if (!filePath.empty())
+					if (ImGui::MenuItem("Graphics"))
 					{
-						Project::Load(filePath);
+						GraphicsConfigPanel::ShowWindow(!GraphicsConfigPanel::IsVisible());
 					}
-				}
 
-				if (ImGui::MenuItem("Save"))
-				{
-					std::string projectFilePath = FileDialogs::SaveFile("d2S Project (*.d2sproj)\0*.d2sproj\0");
-					projectFilePath.append(".d2sproj");
-					if (!projectFilePath.empty())
+					if (ImGui::MenuItem("Layers"))
 					{
-						Project::Save(projectFilePath);
+						LayersConfigPanel::ShowWindow(!LayersConfigPanel::IsVisible());
 					}
+
+					ImGui::EndMenu();
 				}
 
 				ImGui::EndMenu();
 			}
+#pragma endregion EDIT
 
+#pragma region WINDOW
 			if (ImGui::BeginMenu("Window"))
 			{
 				if (ImGui::MenuItem("Node Panel", nullptr, GraphPanel::IsVisible()))
@@ -113,7 +154,9 @@ namespace Stimpi
 
 				ImGui::EndMenu();
 			}
+#pragma endregion WINDOW
 
+#pragma region TESTING
 			if (ImGui::BeginMenu("Testing"))
 			{
 				if (ImGui::MenuItem("Run system cmd"))
@@ -140,6 +183,7 @@ namespace Stimpi
 
 				ImGui::EndMenu();
 			}
+#pragma endregion TESTING
 
 #if 0
 			if (ImGui::BeginMenu("Mono"))

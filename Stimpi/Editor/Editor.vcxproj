@@ -147,7 +147,9 @@
     <ClInclude Include="src\Gui\Components\Thumbnail.h" />
     <ClInclude Include="src\Gui\Components\Toolbar.h" />
     <ClInclude Include="src\Gui\Components\UIPayload.h" />
-    <ClInclude Include="src\Gui\Config\SceneConfig.h" />
+    <ClInclude Include="src\Gui\Config\GraphicsConfigPanel.h" />
+    <ClInclude Include="src\Gui\Config\LayersConfigPanel.h" />
+    <ClInclude Include="src\Gui\Config\SceneConfigPanel.h" />
     <ClInclude Include="src\Gui\ContentBrowserWindow.h" />
     <ClInclude Include="src\Gui\EditorLayer.h" />
     <ClInclude Include="src\Gui\EditorUtils.h" />
@@ -186,7 +188,9 @@
     <ClCompile Include="src\Gui\Components\Thumbnail.cpp" />
     <ClCompile Include="src\Gui\Components\Toolbar.cpp" />
     <ClCompile Include="src\Gui\Components\UIPayload.cpp" />
-    <ClCompile Include="src\Gui\Config\SceneConfig.cpp" />
+    <ClCompile Include="src\Gui\Config\GraphicsConfigPanel.cpp" />
+    <ClCompile Include="src\Gui\Config\LayersConfigPanel.cpp" />
+    <ClCompile Include="src\Gui\Config\SceneConfigPanel.cpp" />
     <ClCompile Include="src\Gui\ContentBrowserWindow.cpp" />
     <ClCompile Include="src\Gui\EditorLayer.cpp" />
     <ClCompile Include="src\Gui\EditorUtils.cpp" />

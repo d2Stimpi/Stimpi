@@ -1,5 +1,5 @@
 #include "stpch.h"
-#include "Gui/Config/SceneConfig.h"
+#include "Gui/Config/SceneConfigPanel.h"
 
 #include "Stimpi/Core/Time.h"
 #include "Stimpi/Graphics/Renderer2D.h"
@@ -11,17 +11,17 @@
 namespace Stimpi
 {
 
-	SceneConfig::SceneConfig()
+	SceneConfigPanel::SceneConfigPanel()
 	{
 
 	}
 
-	SceneConfig::~SceneConfig()
+	SceneConfigPanel::~SceneConfigPanel()
 	{
 
 	}
 
-	void SceneConfig::OnImGuiRender()
+	void SceneConfigPanel::OnImGuiRender()
 	{
 		if (m_Show)
 		{
@@ -85,7 +85,7 @@ namespace Stimpi
 		}
 	}
 
-	bool SceneConfig::ShowCheckerboardBg()
+	bool SceneConfigPanel::ShowCheckerboardBg()
 	{
 		return m_ShowCheckerboardBg;
 	}

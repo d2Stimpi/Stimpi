@@ -22,10 +22,18 @@ namespace Stimpi
 				out << YAML::Key << "ProjectDir" << YAML::Value << project.m_ProjectDir.string();
 				out << YAML::Key << "AssetsSubDir" << YAML::Value << project.m_AssestsSubDir.string();
 				out << YAML::Key << "ScriptsSubDir" << YAML::Value << project.m_ScriptsSubDir.string();
+
+				// Graphic config
+				out << YAML::Key << "Graphics" << YAML::Value;
+				out << YAML::BeginMap;
+				{
+					out << YAML::Key << "RenderingOrderAxis" << YAML::Value << RenderingOrderAxisToString(project.m_GraphicsConfig.m_RenderingOrderAxis);
+				}
 				out << YAML::EndMap;
 			}
 			out << YAML::EndMap;
 		}
+		out << YAML::EndMap;
 
 		ResourceManager::Instance()->WriteToFile(projectFilePath.string(), out.c_str());
 		return true;
@@ -57,6 +65,20 @@ namespace Stimpi
 		if (node["ScriptsSubDir"])
 		{
 			config.m_ScriptsSubDir = node["ScriptsSubDir"].as<std::string>();
+		}
+
+		// Graphics config
+		if (node["Graphics"])
+		{
+			YAML::Node graphics = node["Graphics"];
+			if (graphics["RenderingOrderAxis"])
+			{
+				config.m_GraphicsConfig.m_RenderingOrderAxis = StringToRenderingOrderAxis(graphics["RenderingOrderAxis"].as<std::string>());
+			}
+			else
+			{
+				config.m_GraphicsConfig.m_RenderingOrderAxis = RenderingOrderAxis::None;
+			}
 		}
 
 		return config;

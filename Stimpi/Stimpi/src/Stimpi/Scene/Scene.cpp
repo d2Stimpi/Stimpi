@@ -15,6 +15,7 @@
 #include "Stimpi/Graphics/Renderer2D.h"
 
 #include "Stimpi/Core/InputManager.h"
+#include "Stimpi/Core/Project.h"
 #include "Stimpi/Core/Time.h"
 
 #include "Stimpi/Scripting/ScriptEngine.h"
@@ -31,13 +32,13 @@
 
 namespace Stimpi
 {
-	struct SceneConfig
+	struct SceneConfigPanel
 	{
 		// Debugging
 		bool m_EnableDebug = false;
 	};
 
-	static SceneConfig s_Config;
+	static SceneConfigPanel s_Config;
 
 	void Scene::EnableDebugMode(bool enable)
 	{
@@ -169,24 +170,37 @@ namespace Stimpi
 		{
 			Stimpi::Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
 
-			// Sort on Entity level
-			auto sorted = m_Entities;
-			std::sort(sorted.begin(), sorted.end(), [](auto a, auto b)
-				{
-					if ((a.HasComponent<QuadComponent>() || a.HasComponent<CircleComponent>()) &&
-						(b.HasComponent<QuadComponent>() || b.HasComponent<CircleComponent>()))
+			std::vector<Entity> entities = m_Entities;
+
+			GraphicsConfig graphicsConfig = Project::GetGraphicsConfig();
+			if (graphicsConfig.m_RenderingOrderAxis != RenderingOrderAxis::None)
+			{
+				std::sort(entities.begin(), entities.end(), [&graphicsConfig](auto a, auto b)
 					{
-						glm::vec3 posA = a.HasComponent<QuadComponent>() ? a.GetComponent<QuadComponent>().m_Position :
-							a.GetComponent<CircleComponent>().m_Position;
-						glm::vec3 posB = b.HasComponent<QuadComponent>() ? b.GetComponent<QuadComponent>().m_Position :
-							b.GetComponent<CircleComponent>().m_Position;
-						return posA.z < posB.z;
-					}
+						if ((a.HasComponent<QuadComponent>() || a.HasComponent<CircleComponent>()) &&
+							(b.HasComponent<QuadComponent>() || b.HasComponent<CircleComponent>()))
+						{
+							glm::vec3 posA = a.HasComponent<QuadComponent>() ? a.GetComponent<QuadComponent>().m_Position :
+								a.GetComponent<CircleComponent>().m_Position;
+							glm::vec3 posB = b.HasComponent<QuadComponent>() ? b.GetComponent<QuadComponent>().m_Position :
+								b.GetComponent<CircleComponent>().m_Position;
 
-					return false;
-				});
+							if (graphicsConfig.m_RenderingOrderAxis == RenderingOrderAxis::X_AXIS)
+								return posA.x < posB.x;
+							if (graphicsConfig.m_RenderingOrderAxis == RenderingOrderAxis::Y_AXIS)
+								return posA.y < posB.y;
+							if (graphicsConfig.m_RenderingOrderAxis == RenderingOrderAxis::Z_AXIS)
+								return posA.z < posB.z;
+							
+							// Default sorting
+							return posA.z < posB.z;
+						}
 
-			for (auto entity : sorted)
+						return false;
+					});
+			}
+
+			for (auto entity : entities)
 			{
 				if (entity.HasComponent<QuadComponent>())
 				{

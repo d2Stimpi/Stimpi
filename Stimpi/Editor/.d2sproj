@@ -4,3 +4,5 @@ Project:
   ProjectDir: D:/GitHub/Stimpi
   AssetsSubDir: assets
   ScriptsSubDir: resources/scripts
+Graphics:
+  RenderingOrderAxis: None

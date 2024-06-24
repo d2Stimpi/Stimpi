@@ -2,11 +2,11 @@
 
 namespace Stimpi
 {
-	class SceneConfig
+	class SceneConfigPanel
 	{
 	public:
-		SceneConfig();
-		~SceneConfig();
+		SceneConfigPanel();
+		~SceneConfigPanel();
 
 		void OnImGuiRender();
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Stimpi/Core/Core.h"
+#include "Stimpi/Graphics/Graphics.h"
 
 #include <filesystem>
 
@@ -15,6 +16,9 @@ namespace Stimpi
 		std::filesystem::path m_ProjectDir;
 		std::filesystem::path m_AssestsSubDir;
 		std::filesystem::path m_ScriptsSubDir;
+
+		// Graphics config
+		GraphicsConfig m_GraphicsConfig;
 
 		ProjectConfig() = default;
 	};
@@ -32,6 +36,9 @@ namespace Stimpi
 		static void Load(std::filesystem::path projectFilePath);
 		
 		static bool IsProjectPathValid() { return std::filesystem::exists(GetAssestsDir()); }
+
+		static GraphicsConfig GetGraphicsConfig() { return m_ActiveProject.m_GraphicsConfig; }
+		static void SetGraphicsConfig(const GraphicsConfig& config) { m_ActiveProject.m_GraphicsConfig = config; }
 	private:
 		static ProjectConfig m_ActiveProject;
 	};
