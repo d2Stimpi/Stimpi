@@ -1,6 +1,7 @@
 #include "stpch.h"
 #include "Gui/Components/ImGuiEx.h"
 
+#include "Gui/EditorUtils.h"
 #include "Stimpi/Log.h"
 
 namespace Stimpi
@@ -44,6 +45,7 @@ namespace Stimpi
 		ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 150);
 		std::string str = fmt::format("##{}", strID);
 		retVal = ImGui::InputText(str.c_str(), buf, bufSize, ImGuiInputTextFlags_EnterReturnsTrue);
+		EditorUtils::SetActiveItemCaptureKeyboard(false);
 
 		std::string btnID = fmt::format("##InvisibleButton{}", strID);
 		const ImVec2 label_size = ImGui::CalcTextSize(label, NULL, true); 
