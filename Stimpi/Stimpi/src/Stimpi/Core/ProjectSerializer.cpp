@@ -7,7 +7,7 @@
 namespace Stimpi
 {
 
-	bool ProjectSerializer::Serialize(std::filesystem::path projectFilePath, ProjectConfig project)
+	bool ProjectSerializer::Serialize(std::filesystem::path projectFilePath, ProjectConfig projectConfig)
 	{
 		YAML::Emitter out;
 
@@ -17,17 +17,33 @@ namespace Stimpi
 			out << YAML::Key << "Project" << YAML::Value;
 			out << YAML::BeginMap;
 			{
-				out << YAML::Key << "Name" << YAML::Value << project.m_Name;
-				out << YAML::Key << "StartingScene" << YAML::Value << project.m_StartingScene;
-				out << YAML::Key << "ProjectDir" << YAML::Value << project.m_ProjectDir.string();
-				out << YAML::Key << "AssetsSubDir" << YAML::Value << project.m_AssestsSubDir.string();
-				out << YAML::Key << "ScriptsSubDir" << YAML::Value << project.m_ScriptsSubDir.string();
+				out << YAML::Key << "Name" << YAML::Value << projectConfig.m_Name;
+				out << YAML::Key << "StartingScene" << YAML::Value << projectConfig.m_StartingScene;
+				out << YAML::Key << "ProjectDir" << YAML::Value << projectConfig.m_ProjectDir.string();
+				out << YAML::Key << "AssetsSubDir" << YAML::Value << projectConfig.m_AssestsSubDir.string();
+				out << YAML::Key << "ScriptsSubDir" << YAML::Value << projectConfig.m_ScriptsSubDir.string();
 
 				// Graphic config
 				out << YAML::Key << "Graphics" << YAML::Value;
 				out << YAML::BeginMap;
 				{
-					out << YAML::Key << "RenderingOrderAxis" << YAML::Value << RenderingOrderAxisToString(project.m_GraphicsConfig.m_RenderingOrderAxis);
+					out << YAML::Key << "RenderingOrderAxis" << YAML::Value << RenderingOrderAxisToString(projectConfig.m_GraphicsConfig.m_RenderingOrderAxis);
+				}
+				out << YAML::EndMap;
+
+				// SortingLayers config
+				out << YAML::Key << "SortingLayers" << YAML::Value;
+				out << YAML::BeginMap;
+				{
+					for (auto& layer : projectConfig.m_SortingLayers)
+					{
+						out << YAML::Key << "Layer" << YAML::Value;
+						out << YAML::BeginMap;
+						{
+							out << YAML::Key << "Name" << YAML::Value << layer->m_Name;
+						}
+						out << YAML::EndMap;
+					}
 				}
 				out << YAML::EndMap;
 			}
@@ -44,27 +60,27 @@ namespace Stimpi
 		YAML::Node loadData = YAML::LoadFile(projectFilePath.string());
 		YAML::Node node = loadData["Project"];
 
-		ProjectConfig config;
+		ProjectConfig projectConfig;
 
 		if (node["Name"])
 		{
-			config.m_Name = node["Name"].as<std::string>();
+			projectConfig.m_Name = node["Name"].as<std::string>();
 		}
 		if (node["StartingScene"])
 		{
-			config.m_StartingScene = node["StartingScene"].as<std::string>();
+			projectConfig.m_StartingScene = node["StartingScene"].as<std::string>();
 		}
 		if (node["ProjectDir"])
 		{
-			config.m_ProjectDir = node["ProjectDir"].as<std::string>();
+			projectConfig.m_ProjectDir = node["ProjectDir"].as<std::string>();
 		}
 		if (node["AssetsSubDir"])
 		{
-			config.m_AssestsSubDir = node["AssetsSubDir"].as<std::string>();
+			projectConfig.m_AssestsSubDir = node["AssetsSubDir"].as<std::string>();
 		}
 		if (node["ScriptsSubDir"])
 		{
-			config.m_ScriptsSubDir = node["ScriptsSubDir"].as<std::string>();
+			projectConfig.m_ScriptsSubDir = node["ScriptsSubDir"].as<std::string>();
 		}
 
 		// Graphics config
@@ -73,15 +89,34 @@ namespace Stimpi
 			YAML::Node graphics = node["Graphics"];
 			if (graphics["RenderingOrderAxis"])
 			{
-				config.m_GraphicsConfig.m_RenderingOrderAxis = StringToRenderingOrderAxis(graphics["RenderingOrderAxis"].as<std::string>());
+				projectConfig.m_GraphicsConfig.m_RenderingOrderAxis = StringToRenderingOrderAxis(graphics["RenderingOrderAxis"].as<std::string>());
 			}
 			else
 			{
-				config.m_GraphicsConfig.m_RenderingOrderAxis = RenderingOrderAxis::None;
+				projectConfig.m_GraphicsConfig.m_RenderingOrderAxis = RenderingOrderAxis::None;
 			}
 		}
 
-		return config;
+		// SortingLayers config
+		if (node["SortingLayers"])
+		{
+			YAML::Node sortingLayers = node["SortingLayers"];
+			for (YAML::const_iterator it = sortingLayers.begin(); it != sortingLayers.end(); it++)
+			{
+				YAML::Node layerNode = it->second;
+				std::shared_ptr<SortingLayer> newLayer;
+				
+				if (layerNode["Name"])
+				{
+					newLayer = std::make_shared<SortingLayer>(layerNode["Name"].as<std::string>());
+				}
+
+				if (newLayer)
+					projectConfig.m_SortingLayers.emplace_back(newLayer);
+			}
+		}
+
+		return projectConfig;
 	}
 
 }

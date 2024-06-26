@@ -420,6 +420,17 @@ namespace Stimpi
 		Physics::ClearActiveCollisions();
 	}
 
+	void Scene::OnSortingLayerRemove(const std::string layerName)
+	{
+		m_Registry.view<SortingGroupComponent>().each([&layerName](auto entity, auto& group)
+			{
+				if (group.m_SortingLayerName == layerName)
+				{
+					group.m_SortingLayerName = Project::GetDefaultSortingLayerName();
+				}
+			});
+	}
+
 	Stimpi::Entity Scene::MousePickEntity(float x, float y)
 	{
 		Entity picked = {};

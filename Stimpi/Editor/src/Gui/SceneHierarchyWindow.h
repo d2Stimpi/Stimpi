@@ -31,6 +31,7 @@ namespace Stimpi
 		void CircleComponentLayout(CircleComponent& component);
 		void ScriptComponentLayout(ScriptComponent& component);
 		void SpriteComponentLayout(SpriteComponent& component);
+		void SortingGroupComponentLayout(SortingGroupComponent& component);
 		void AnimatedSpriteComponentLayout(AnimatedSpriteComponent& component);
 		void CameraComponentLayout(CameraComponent& component);
 		void RigidBody2DComponentLayout(RigidBody2DComponent& component);

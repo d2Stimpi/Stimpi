@@ -58,7 +58,7 @@ namespace Stimpi
 				if (ImGui::TreeNodeEx((void*)&m_ActiveScene, node_flags | ImGuiTreeNodeFlags_DefaultOpen, "Scene"))
 				{
 					// Add Entity Button
-					ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 60);
+					ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 62);
 					if (ImGui::Button(" + ##NewEntity"))
 					{
 						s_SelectedEntity = m_ActiveScene->CreateEntity("NewEntity");
@@ -374,6 +374,63 @@ namespace Stimpi
 		SettingsPopupButton(cursor, "Sprite##ComponentPopup", popupContent);
 	}
 
+
+	void SceneHierarchyWindow::SortingGroupComponentLayout(SortingGroupComponent& component)
+	{
+		ImGui::Separator();
+		ImVec2 cursor = ImGui::GetCursorPos();	// To render SettingsPopupButton on the same line as Collapsing header
+
+		if (ImGui::CollapsingHeaderIcon("SortingGroup##ComponentName", EditorResources::GetIconTextureID(EDITOR_ICON_SPRITE), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
+		{
+			auto& sortingLayers = Project::GetSortingLayers();
+			std::string currentSortingLayer = component.m_SortingLayerName;
+
+			ImGui::Spacing();
+			if (ImGui::BeginCombo("Sorting Layer", currentSortingLayer.c_str()))
+			{
+				for (auto& layer : sortingLayers)
+				{
+					bool isSelected = layer->m_Name == currentSortingLayer;
+					if (ImGui::Selectable(layer->m_Name.c_str(), isSelected))
+					{
+						currentSortingLayer = layer->m_Name;
+						component.m_SortingLayerName = layer->m_Name;
+					}
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+
+				ImGui::EndCombo(); 
+			}
+
+			int orderInLayerInput = (int)component.m_OrderInLayer;
+			if (ImGui::InputInt("Order in Layer##SortingGroup", &orderInLayerInput))
+			{
+				if (orderInLayerInput < 0)
+					orderInLayerInput = 0;
+
+				component.m_OrderInLayer = orderInLayerInput;
+			}
+			EditorUtils::SetActiveItemCaptureKeyboard(false);
+			ImGui::Spacing();
+		}
+
+		auto popupContent = []() -> bool
+		{
+			bool showPoput = true;
+			if (ImGui::Selectable("Remove"))
+			{
+				showPoput = false;
+				s_SelectedEntity.RemoveComponent<SortingGroupComponent>();
+			}
+
+			return showPoput;
+		};
+
+		SettingsPopupButton(cursor, "SortingGroup##ComponentPopup", popupContent);
+	}
+
 	void SceneHierarchyWindow::AnimatedSpriteComponentLayout(AnimatedSpriteComponent& component)
 	{
 		ImGui::Separator();
@@ -633,6 +690,14 @@ namespace Stimpi
 				}
 			}
 
+			if (!s_SelectedEntity.HasComponent<SortingGroupComponent>())
+			{
+				if (ImGui::Selectable("SortingGroup##AddComponent"))
+				{
+					s_SelectedEntity.AddComponent<SortingGroupComponent>();
+				}
+			}
+
 			if (!s_SelectedEntity.HasComponent<AnimatedSpriteComponent>())
 			{
 				if (ImGui::Selectable("AnimatedSprite##AddComponent"))
@@ -703,6 +768,12 @@ namespace Stimpi
 			{
 				auto& component = s_SelectedEntity.GetComponent<SpriteComponent>();
 				SpriteComponentLayout(component);
+			}
+
+			if (s_SelectedEntity.HasComponent<SortingGroupComponent>())
+			{
+				auto& component = s_SelectedEntity.GetComponent<SortingGroupComponent>();
+				SortingGroupComponentLayout(component);
 			}
 
 			if (s_SelectedEntity.HasComponent<AnimatedSpriteComponent>())

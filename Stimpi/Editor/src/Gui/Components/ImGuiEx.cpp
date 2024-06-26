@@ -4,6 +4,8 @@
 #include "Gui/EditorUtils.h"
 #include "Stimpi/Log.h"
 
+#include "ImGui/src/imgui_internal.h"
+
 namespace Stimpi
 {
 	ImGuiExStyle s_Style;
@@ -40,24 +42,28 @@ namespace Stimpi
 
 		// Save cursor position
 		ImVec2 invisibleBtnPos = ImGui::GetCursorPos();
-
-		ImGui::Text(label);
-		ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 150);
-		std::string str = fmt::format("##{}", strID);
-		retVal = ImGui::InputText(str.c_str(), buf, bufSize, ImGuiInputTextFlags_EnterReturnsTrue);
-		EditorUtils::SetActiveItemCaptureKeyboard(false);
-
 		std::string btnID = fmt::format("##InvisibleButton{}", strID);
 		const ImVec2 label_size = ImGui::CalcTextSize(label, NULL, true); 
 		const ImVec2 frame_size = ImVec2(ImGui::GetWindowContentRegionWidth(), label_size.y + style.FramePadding.y * 2.0f);
 
-		// Invisible button is used to enable IsItemActive and IsItemHovered on this "item"
+		// Rendering highlight
+		ImVec2 pos = ImGui::GetCursorScreenPos();
+		ImRect bb = { pos.x - 3, pos.y - 1,  pos.x + frame_size.x + 6,  pos.y + frame_size.y + 1 };
+		if (ImGui::IsMouseHoveringRect(bb.Min, bb.Max) || selected)
+		{
+			const ImU32 col = ImGui::GetColorU32(ImGuiCol_HeaderHovered);
+			ImGui::RenderFrame(bb.Min, bb.Max, col, false, 0.0f);
+		}
+
+		ImGui::Text(label);
+		ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 150);
+		retVal = ImGui::InputText(strID, buf, bufSize, ImGuiInputTextFlags_EnterReturnsTrue);
+		EditorUtils::SetActiveItemCaptureKeyboard(false);
+
+		// Invisible button is used to enable Drag and Drop, IsItemActive and IsItemHovered on this "item"
 		// Restore cursor position to draw button
 		ImGui::SetCursorPos(invisibleBtnPos);
-		if (ImGui::InvisibleButton(btnID.c_str(), frame_size, ImGuiButtonFlags_None))
-		{
-			ST_CORE_INFO("Clicked invis button {}", strID);
-		}
+		ImGui::InvisibleButton(btnID.c_str(), frame_size, ImGuiButtonFlags_None);
 
 		return retVal;
 	}

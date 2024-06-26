@@ -34,6 +34,11 @@ namespace Stimpi
 			GetComponent<SpriteComponent>().Serialize(out);
 		}
 
+		if (HasComponent<SortingGroupComponent>())
+		{
+			GetComponent<SortingGroupComponent>().Serialize(out);
+		}
+
 		if (HasComponent<AnimatedSpriteComponent>())
 		{
 			GetComponent<AnimatedSpriteComponent>().Serialize(out);

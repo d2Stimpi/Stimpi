@@ -55,7 +55,7 @@ namespace Stimpi
 
 	void ResourceManager::NotifyOnSceneChange()
 	{
-		for (auto listener : m_OnProjectChangedListeners)
+		for (auto& listener : m_OnProjectChangedListeners)
 		{
 			listener();
 		}

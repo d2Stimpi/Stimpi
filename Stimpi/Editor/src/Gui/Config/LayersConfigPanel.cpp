@@ -2,6 +2,9 @@
 #include "Gui/Config/LayersConfigPanel.h"
 
 #include "Stimpi/Log.h"
+#include "Stimpi/Core/Project.h"
+#include "Stimpi/Scene/SceneManager.h"
+
 #include "Gui/Components/ImGuiEx.h"
 #include "Gui/Components/UIPayload.h"
 
@@ -12,21 +15,9 @@ namespace Stimpi
 {
 	bool LayersConfigPanel::m_Show = false;
 
-	// Temp
-	struct SortingLayer
-	{
-		std::string m_Name;
-
-		SortingLayer() = default;
-		SortingLayer(const SortingLayer&) = default;
-		SortingLayer(std::string name)
-			: m_Name(name)
-		{}
-	};
-
 	struct LayersConfigPanelContext
 	{
-		std::vector<std::shared_ptr<SortingLayer>> m_Layers;
+		size_t m_Selected = 0;				// 0 - no selection
 	};
 
 	static LayersConfigPanelContext* s_Context;
@@ -34,14 +25,6 @@ namespace Stimpi
 	LayersConfigPanel::LayersConfigPanel()
 	{
 		s_Context = new LayersConfigPanelContext();
-
-		// Test sample - TODO: hook to real data
-		std::vector<std::string> testData = { "Layer 1", "Layer 2", "Layer 3", "Layer 4" };
-		for (auto item : testData)
-		{
-			auto newLayer = std::make_shared<SortingLayer>(item);
-			s_Context->m_Layers.emplace_back(newLayer);
-		}
 	}
 
 	void LayersConfigPanel::OnImGuiRender()
@@ -53,42 +36,89 @@ namespace Stimpi
 				if (ImGui::CollapsingHeader("Sorting Layers##Layers Config", ImGuiTreeNodeFlags_DefaultOpen))
 				{
 					char layerNameInputBuff[32] = { "Default" };
+					bool mouseCaptured = false;
+					bool itemHovered = false;
 
-					for (size_t i = 0; i < s_Context->m_Layers.size(); i++)
+					auto& layers = Project::GetSortingLayers();
+					for (size_t i = 0; i < layers.size(); i++)
 					{
-						auto layer = s_Context->m_Layers[i];
+						auto& layer = layers[i];
 						if (layer->m_Name.length() < 32)
 							strcpy_s(layerNameInputBuff, layer->m_Name.c_str());
 
-						if (ImGuiEx::InputSelectable("Layer", layer->m_Name.c_str(), layerNameInputBuff, sizeof(layerNameInputBuff)))
+						bool selected = s_Context->m_Selected == i + 1;
+						std::string strID = fmt::format("##{}_{}", layer->m_Name, i);
+						if (ImGuiEx::InputSelectable("Layer", strID.c_str(), layerNameInputBuff, sizeof(layerNameInputBuff), selected))
 						{
 							layer->m_Name = std::string(layerNameInputBuff);
 						}
 
+						if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !mouseCaptured)
+						{
+							if (ImGui::IsItemHovered())
+							{
+								mouseCaptured = true; // skip handling mouse click event for further Layer elements
+								itemHovered = true;
+								s_Context->m_Selected = i + 1;
+							}
+						}
+
 						UIPayload::BeginSource("Payload_Layer", &i, sizeof(i), layer->m_Name.c_str());
 
-						UIPayload::BeginTarget("Payload_Layer", [&i](void* data, uint32_t size) {
+						UIPayload::BeginTarget("Payload_Layer", [&i, &layers](void* data, uint32_t size) {
 							size_t index = *(int*)data;
-							ST_CORE_INFO("Payload_Layer dropped: {}", index);
 
 							// Moving down in sequence
 							if (index < i)
 							{
 								for (size_t n = 0; n < i - index; n++)
 								{
-									std::swap(s_Context->m_Layers[index + n], s_Context->m_Layers[index + n + 1]);
+									std::swap(layers[index + n], layers[index + n + 1]);
 								}
+								s_Context->m_Selected = i + 1;
 							}
 							// Moving up in sequence
 							else
 							{
 								for (size_t n = 0; n < index - i; n++)
 								{
-									std::swap(s_Context->m_Layers[index - n], s_Context->m_Layers[index - n - 1]);
+									std::swap(layers[index - n], layers[index - n - 1]);
 								}
+								s_Context->m_Selected = i + 1;
 							}
 							});
 						
+					}
+
+					// Add/Remove Layer buttons
+					ImGui::SetCursorPosX(ImGui::GetWindowContentRegionWidth() - 52);
+					if (ImGui::Button("+##AddLayer", ImVec2(30.0f, 0)))
+					{
+						std::string newName = fmt::format("NewLayer_{}", layers.size());
+						auto newLayer = std::make_shared<SortingLayer>(newName);
+						layers.emplace_back(newLayer);
+					}
+					ImGui::SameLine(0.0f, 3.0f);
+					if (ImGui::Button("-##RemoveLayer", ImVec2(30.0f, 0)))
+					{
+						if (s_Context->m_Selected != 0)
+						{
+							// Notify Scene to update SortingLayerComponents
+							auto scene = SceneManager::Instance()->GetActiveScene();
+							if (scene)
+							{
+								scene->OnSortingLayerRemove(layers[s_Context->m_Selected - 1]->m_Name);
+							}
+							
+							layers.erase(std::next(layers.begin(), s_Context->m_Selected - 1));
+							s_Context->m_Selected = 0;
+						}
+					}
+
+					// IsItemHovered checks the remove button to avoid clearing selection index
+					if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !itemHovered && !ImGui::IsItemHovered())
+					{
+						s_Context->m_Selected = 0;
 					}
 				}
 				ImGui::End();

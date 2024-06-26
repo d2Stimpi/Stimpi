@@ -1,6 +1,17 @@
 Project:
   Name: Sandbox
   StartingScene: StartScene.d2s
-  ProjectDir: "D:/GitHub/Stimpi"
-  AssetsSubDir: "assets"
-  ScriptsSubDir: "resources/scripts"
+  ProjectDir: D:/GitHub/Stimpi
+  AssetsSubDir: assets
+  ScriptsSubDir: resources/scripts
+  Graphics:
+    RenderingOrderAxis: None
+  SortingLayers:
+    Layer:
+      Name: Background
+    Layer:
+      Name: Default
+    Layer:
+      Name: Front
+    Layer:
+      Name: UI

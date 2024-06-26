@@ -61,6 +61,10 @@ namespace Stimpi
 				{
 					entity.AddComponent<SpriteComponent>(SpriteComponent(entityNode["SpriteComponent"]));
 				}
+				if (entityNode["SortingGroupComponent"])
+				{
+					entity.AddComponent<SortingGroupComponent>(SortingGroupComponent(entityNode["SortingGroupComponent"]));
+				}
 				if (entityNode["AnimatedSpriteComponent"])
 				{
 					entity.AddComponent<AnimatedSpriteComponent>(AnimatedSpriteComponent(entityNode["AnimatedSpriteComponent"]));

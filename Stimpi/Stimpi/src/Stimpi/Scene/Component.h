@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Stimpi/Core/Core.h"
+#include "Stimpi/Core/Project.h"
 #include "Stimpi/Graphics/Texture.h"
 #include "Stimpi/Graphics/Shader.h"
 #include "Stimpi/Graphics/Animation/AnimatedSprite.h"
@@ -317,6 +318,42 @@ namespace Stimpi
 			else
 			{
 				m_Color = glm::vec4( 1.0f, 1.0f, 1.0f, 1.0f );
+			}
+		}
+	};
+
+	struct SortingGroupComponent
+	{
+		std::string m_SortingLayerName;	// Name will reference the SortingLayer, when Layer gets removed,
+										// we simply fail to match the layerName with existing layers
+		uint32_t m_OrderInLayer;
+
+		SortingGroupComponent() = default;
+		SortingGroupComponent(const SortingGroupComponent&) = default;
+		SortingGroupComponent(const std::string layerName, uint32_t order)
+			: m_SortingLayerName(layerName), m_OrderInLayer(order)
+		{}
+
+		void Serialize(YAML::Emitter& out)
+		{
+			out << YAML::Key << "SortingGroupComponent";
+			out << YAML::BeginMap;
+			{
+				out << YAML::Key << "SortingLayerName" << YAML::Value << m_SortingLayerName;
+				out << YAML::Key << "OrderInLayer" << YAML::Value << m_OrderInLayer;
+			}
+			out << YAML::EndMap;
+		}
+
+		SortingGroupComponent(const YAML::Node& node)
+		{
+			if (node["SortingLayerName"])
+			{
+				m_SortingLayerName = node["SortingLayerName"].as<std::string>();
+			}
+			if (node["OrderInLayer"])
+			{
+				m_OrderInLayer = node["OrderInLayer"].as<uint32_t>();
 			}
 		}
 	};
