@@ -438,7 +438,6 @@ namespace Stimpi
 
 		if (ImGui::CollapsingHeaderIcon("AnimatedSprite##ComponentName", EditorResources::GetIconTextureID(EDITOR_ICON_ANIM), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 		{
-			//ImGui::InvisibleButton("##asdasd", ImVec2(-1.0f, 24.0f));
 			ImGui::Spacing();
 			ImGui::PushItemWidth(80.0f);
 			if (ImGui::Button("Animation##AnimatedSpriteComponent"))
@@ -488,6 +487,31 @@ namespace Stimpi
 			ImGui::DragFloat("Playback speed", &playSpeed, 0.001f, 0.01f);
 			if (component.m_AnimSprite)
 				component.m_AnimSprite->SetPlaybackSpeed(playSpeed);
+
+			// Available animation list
+			if (ImGui::TreeNode("Animations##AnimatedSpriteComponent"))
+			{
+				UIPayload::BeginTarget(PAYLOAD_ANIMATION, [&component](void* data, uint32_t size) {
+					std::string strData = std::string((char*)data, size);
+					ST_CORE_INFO("Texture data dropped: {0}", strData.c_str());
+					component.AddAnimation(strData);
+					});
+
+				for (auto& anim : component.m_Animations)
+				{
+					ImGui::Text(anim->GetName().c_str());
+				}
+
+				ImGui::TreePop();
+			}
+			else
+			{
+				UIPayload::BeginTarget(PAYLOAD_ANIMATION, [&component](void* data, uint32_t size) {
+					std::string strData = std::string((char*)data, size);
+					ST_CORE_INFO("Texture data dropped: {0}", strData.c_str());
+					component.AddAnimation(strData);
+					});
+			}
 
 			ImGui::Spacing();
 		}

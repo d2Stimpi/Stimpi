@@ -67,6 +67,10 @@ namespace Stimpi
 		void UpdateComponentDependacies(Timestep ts);
 		void UpdateComponents(Timestep ts);
 
+		// Rendering and sorting
+		void SubmitForRendering(std::vector<Entity>& entities);
+		bool CompareByAxis(Entity a, Entity b);
+
 		// Scripting
 		void InitializeScripts();
 		void UpdateScripts(Timestep ts);

@@ -22,8 +22,6 @@ namespace Sandbox
 
             if (HasComponent<AnimatedSpriteComponent>())
                 m_AnimComponent = GetComponent<AnimatedSpriteComponent>();
-
-            //Compiler.DoSomeStuff();
         }
 
         public override void OnUpdate(float ts)

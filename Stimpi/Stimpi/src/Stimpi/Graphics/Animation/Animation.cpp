@@ -20,6 +20,8 @@ namespace Stimpi
 		AnimationSerializer serializer(newAnimation);
 		serializer.Deseriealize(file);
 
+		newAnimation->m_AssetPath = file;
+		newAnimation->m_Name = newAnimation->m_AssetPath.GetFileName();
 		return newAnimation;
 	}
 

@@ -113,7 +113,7 @@ namespace Stimpi
 
 	void Renderer2D::EndScene()
 	{
-		Flush();
+		FlushScene();
 	}
 
 	void Renderer2D::Submit(glm::vec3 pos, glm::vec2 scale, float rotation, Texture* texture, Shader* shader)
@@ -124,7 +124,7 @@ namespace Stimpi
 		// Check if some other type was used in active cmd
 		if (currentCmd->m_Type != RenderCommandType::QUAD && currentCmd->m_Type != RenderCommandType::NONE)
 		{
-			Flush();
+			NewCmd();
 			currentCmd = *m_ActiveRenderCmdIter;
 			currentCmd->m_Texture = texture;
 			currentCmd->m_Shader = shader;
@@ -145,7 +145,7 @@ namespace Stimpi
 		else if ((currentCmd->m_Texture != texture) || (currentCmd->m_Shader != shader))
 		{
 			// If shader or texture changed
-			Flush();
+			NewCmd();
 			currentCmd = *m_ActiveRenderCmdIter;
 			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation);
 			currentCmd->m_Texture = texture;
@@ -171,7 +171,7 @@ namespace Stimpi
 		// Check if some other type was used in active cmd
 		if (currentCmd->m_Type != RenderCommandType::QUAD && currentCmd->m_Type != RenderCommandType::NONE)
 		{
-			Flush();
+			NewCmd();
 			currentCmd = *m_ActiveRenderCmdIter;
 			currentCmd->m_Texture = subtexture->GetTexture();
 			currentCmd->m_Shader = shader;
@@ -192,7 +192,7 @@ namespace Stimpi
 		else if ((currentCmd->m_Texture != subtexture->GetTexture()) || (currentCmd->m_Shader != shader))
 		{
 			// If shader or texture changed
-			Flush();
+			NewCmd();
 			currentCmd = *m_ActiveRenderCmdIter;
 			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation, glm::vec3{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 			currentCmd->m_Texture = subtexture->GetTexture();
@@ -219,7 +219,7 @@ namespace Stimpi
 		// Check if some other type was used in active cmd
 		if (currentCmd->m_Type != RenderCommandType::QUAD && currentCmd->m_Type != RenderCommandType::NONE)
 		{
-			Flush();
+			NewCmd();
 			currentCmd = *m_ActiveRenderCmdIter;
 		}
 
@@ -227,7 +227,7 @@ namespace Stimpi
 		// Flush if we have a texture set from other Submits or shader changed
 		if ((currentCmd->m_Texture != nullptr) || (currentCmd->m_Shader != shader))
 		{
-			Flush();
+			NewCmd();
 			currentCmd = *m_ActiveRenderCmdIter;
 		}
 
@@ -246,7 +246,7 @@ namespace Stimpi
 		// Check if some other type was used in active cmd
 		if (currentCmd->m_Type != RenderCommandType::CIRLCE && currentCmd->m_Type != RenderCommandType::NONE)
 		{
-			Flush();
+			NewCmd();
 			currentCmd = *m_ActiveRenderCmdIter;
 		}
 
@@ -283,7 +283,7 @@ namespace Stimpi
 		// Check if some other type was used in active cmd
 		if (currentCmd->m_Type != RenderCommandType::LINE && currentCmd->m_Type != RenderCommandType::NONE)
 		{
-			Flush();
+			NewCmd();
 			currentCmd = *m_ActiveRenderCmdIter;
 		}
 
@@ -309,7 +309,7 @@ namespace Stimpi
 		SubmitLine(transform * s_QuadVertexPosition[3], transform * s_QuadVertexPosition[0], color);
 	}
 
-	void Renderer2D::Flush()
+	void Renderer2D::NewCmd()
 	{
 		auto currnetCmd = *m_ActiveRenderCmdIter;
 
@@ -324,6 +324,15 @@ namespace Stimpi
 
 		m_RenderCmds.emplace_back(std::make_shared<RenderCommand>(0));
 		m_ActiveRenderCmdIter = std::end(m_RenderCmds) - 1;
+	}
+
+
+	void Renderer2D::FlushScene()
+	{
+		NewCmd();
+		DrawFrame();
+		// Clear current Render commands
+		ClearRenderCommands();
 	}
 
 	void Renderer2D::ClearScene()
@@ -472,7 +481,7 @@ namespace Stimpi
 	{
 		auto currentCmd = *m_ActiveRenderCmdIter;
 		if (currentCmd->m_VertexCount >= VERTEX_CMD_CAPACITY)
-			Flush();
+			NewCmd();
 	}	
 
 	void Renderer2D::CheckTextureBatching(Texture* texture)

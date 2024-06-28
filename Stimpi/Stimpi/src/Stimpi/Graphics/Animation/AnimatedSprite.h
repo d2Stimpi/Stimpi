@@ -15,6 +15,10 @@ namespace Stimpi
 	{
 	public:
 		AnimatedSprite(FilePath path);
+
+		void SetAnimation(FilePath path);
+		void SetAnimation(Animation* animation);
+		std::shared_ptr<Animation> GetAnimation() { return m_Animation; }
 		
 		void Update(Timestep ts);
 		void SetCurrentFrame(uint32_t frame);

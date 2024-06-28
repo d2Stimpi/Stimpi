@@ -83,8 +83,8 @@ Scene:
       Tag: CirclePhys
     CircleComponent:
       Position:
-        - 42.4869156
-        - 43.4973907
+        - 44.3298492
+        - 43.8324623
         - 0
       Size:
         - 10
@@ -191,6 +191,6 @@ Scene:
       - 8
       - 0
     AnimatedSpriteComponent:
-      AnimFilePath: D:/GitHub/Stimpi\assets\animations\test.anim
+      AnimFilePath: D:\GitHub\Stimpi\assets\animations\test.anim
     ScriptComponent:
       ScriptName: Sandbox.Player

@@ -28,11 +28,15 @@ namespace Stimpi
 
 		SubTexture* GetSubTexture() { return m_SubTexture.get(); }
 		std::vector<AnimationFrameData>& GetFrames() { return m_Frames; }
+		FilePath GetAssetFilePath() { return m_AssetPath; }
+		std::string& GetName() { return m_Name; }
 
 		// AssetManager resource
 		static Animation* Create(std::string file);
 
 	private:
+		FilePath m_AssetPath;
+		std::string m_Name;
 		std::shared_ptr<SubTexture> m_SubTexture;
 		std::vector<AnimationFrameData> m_Frames;
 

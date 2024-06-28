@@ -168,140 +168,202 @@ namespace Stimpi
 		// Scene Rendering
 		if (m_RenderCamera)
 		{
-			Stimpi::Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
-
-			std::vector<Entity> entities = m_Entities;
-
 			GraphicsConfig graphicsConfig = Project::GetGraphicsConfig();
-			if (graphicsConfig.m_RenderingOrderAxis != RenderingOrderAxis::None)
-			{
-				std::sort(entities.begin(), entities.end(), [&graphicsConfig](auto a, auto b)
-					{
-						if ((a.HasComponent<QuadComponent>() || a.HasComponent<CircleComponent>()) &&
-							(b.HasComponent<QuadComponent>() || b.HasComponent<CircleComponent>()))
-						{
-							glm::vec3 posA = a.HasComponent<QuadComponent>() ? a.GetComponent<QuadComponent>().m_Position :
-								a.GetComponent<CircleComponent>().m_Position;
-							glm::vec3 posB = b.HasComponent<QuadComponent>() ? b.GetComponent<QuadComponent>().m_Position :
-								b.GetComponent<CircleComponent>().m_Position;
 
-							if (graphicsConfig.m_RenderingOrderAxis == RenderingOrderAxis::X_AXIS)
-								return posA.x < posB.x;
-							if (graphicsConfig.m_RenderingOrderAxis == RenderingOrderAxis::Y_AXIS)
-								return posA.y < posB.y;
-							if (graphicsConfig.m_RenderingOrderAxis == RenderingOrderAxis::Z_AXIS)
-								return posA.z < posB.z;
-							
-							// Default sorting
-							return posA.z < posB.z;
+			/** TODO: optimize
+			 * When in "Editor mode" we can check and sort by layers each frame.
+			 * In "Runtime mode" entities can be sorted once when created and grouped by layer.
+			 * Each time an entity would change the SortingGroup the containers can be updated only then.
+			 * Or just simply do it for both modes :P
+			 */
+
+			auto& sortingLayers = Project::GetSortingLayers();
+			for (auto& layer : sortingLayers)
+			{
+				std::vector<Entity> layerGroup;
+				auto group = m_Registry.group<SortingGroupComponent>();
+				
+				// Filter by layer
+				for (auto e : group)
+				{
+					Entity entity = { e, this };
+					if (entity.GetComponent<SortingGroupComponent>().m_SortingLayerName == layer->m_Name)
+						layerGroup.emplace_back(entity);
+				}
+
+				// Order by layer ID
+				std::sort(layerGroup.begin(), layerGroup.end(), [&graphicsConfig, this](auto a, auto b)
+					{
+						auto idA = a.GetComponent<SortingGroupComponent>().m_OrderInLayer;
+						auto idB = b.GetComponent<SortingGroupComponent>().m_OrderInLayer;
+
+						if (idA == idB && graphicsConfig.m_RenderingOrderAxis != RenderingOrderAxis::None)
+						{
+							return CompareByAxis(a, b);
 						}
 
-						return false;
+						return idA < idB;
+					});
+
+				// Pass filtered and sorted entities for rendering
+				if (!layerGroup.empty())
+				{
+					Stimpi::Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
+					SubmitForRendering(layerGroup);
+					Stimpi::Renderer2D::Instance()->EndScene();
+				}
+			}
+
+			// Render entities that don't use SortingGroup component
+			Stimpi::Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
+
+			std::vector<Entity> unordered;
+			for (auto entity : m_Entities)
+			{
+				if (!entity.HasComponent<SortingGroupComponent>())
+					unordered.emplace_back(entity);
+			}
+
+			if (graphicsConfig.m_RenderingOrderAxis != RenderingOrderAxis::None)
+			{
+				std::sort(unordered.begin(), unordered.end(), [&graphicsConfig, this](auto a, auto b)
+					{
+						return CompareByAxis(a, b);
 					});
 			}
 
-			for (auto entity : entities)
-			{
-				if (entity.HasComponent<QuadComponent>())
-				{
-					auto& quad = entity.GetComponent<QuadComponent>();
-					if (entity.HasComponent<SpriteComponent>())
-					{
-						auto& sprite = entity.GetComponent<SpriteComponent>();
-						if (sprite.TextureLoaded())
-						{
-							if (sprite.m_Enable)
-								Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite, m_DefaultShader.get());
-							else
-								Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
-						}
-						else
-						{
-							Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
-						}
-					}
-
-					// Draw AnimatedSprite if available (can overlap with Sprite)
-					if (entity.HasComponent<AnimatedSpriteComponent>())
-					{
-						auto& anim = entity.GetComponent<AnimatedSpriteComponent>();
-						if (anim.Loaded())
-						{
-							Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, anim, m_DefaultShader.get());
-						}
-					}
-
-					// Draw debug RigidBody Collider outline
-					if (Physics::ShowColliderOutlineEnabled())
-					{
-						if (entity.HasComponent<BoxCollider2DComponent>())
-						{
-							auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
-							glm::vec3 outlineColor(0.80f, 0.3f, 0.2f);
-							glm::vec3 outlinePos(quad.Center() + bc2d.m_Offset, 0.0f);
-							glm::vec2 outlineSize(bc2d.m_Size.x * quad.m_Size.x * 2.0f, bc2d.m_Size.y * quad.m_Size.y * 2.0f);
-
-							if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::BOX)
-							{
-								Stimpi::Renderer2D::Instance()->SubmitSquare(outlinePos, outlineSize, quad.m_Rotation, outlineColor);
-							}
-							else if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::CIRLCE)
-							{
-								glm::vec2 circleOutlineSize(bc2d.m_Size.x * quad.m_Size.x * 2.0f, bc2d.m_Size.x * quad.m_Size.x * 2.0f);
-								Stimpi::Renderer2D::Instance()->SubmitCircle(outlinePos, circleOutlineSize, outlineColor, 0.06f, 0.0f);
-							}
-						}
-					}
-				}
-				else if (entity.HasComponent<CircleComponent>())
-				{
-					auto& circle = entity.GetComponent<CircleComponent>();
-					if (entity.HasComponent<SpriteComponent>())
-					{
-						auto& sprite = entity.GetComponent<SpriteComponent>();
-						if (sprite.TextureLoaded() && sprite.m_Enable)
-						{
-							Renderer2D::Instance()->Submit(circle.m_Position, circle.m_Size, circle.m_Rotation, sprite, m_DefaultShader.get());
-						}
-						else
-						{
-							Renderer2D::Instance()->SubmitCircle(circle.m_Position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
-						}
-					}
-					else
-					{
-						Renderer2D::Instance()->SubmitCircle(circle.m_Position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
-					}
-
-					// Draw debug RigidBody Collider outline
-					if (Physics::ShowColliderOutlineEnabled())
-					{
-						if (entity.HasComponent<BoxCollider2DComponent>())
-						{
-							auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
-							glm::vec3 outlineColor(0.80f, 0.3f, 0.2f);
-							glm::vec3 outlinePos(circle.Center() + bc2d.m_Offset, 0.0f);
-							glm::vec2 outlineSize(bc2d.m_Size.x * circle.m_Size.x * 2.0f, bc2d.m_Size.y * circle.m_Size.y * 2.0f);
-
-							if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::BOX)
-							{
-								Stimpi::Renderer2D::Instance()->SubmitSquare(outlinePos, outlineSize, circle.m_Rotation, outlineColor);
-							}
-							else if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::CIRLCE)
-							{
-								glm::vec2 circleOutlineSize(bc2d.m_Size.x * circle.m_Size.x * 2.0f, bc2d.m_Size.x * circle.m_Size.x * 2.0f);
-								Stimpi::Renderer2D::Instance()->SubmitCircle(outlinePos, circleOutlineSize, outlineColor, 0.06f, 0.0f);
-							}
-						}
-					}
-				}
-			}
+			SubmitForRendering(unordered);
 
 			Stimpi::Renderer2D::Instance()->EndScene();
 		}
 		
 		if (s_Config.m_EnableDebug)
 			OnDebugUpdate(ts);
+	}
+
+	void Scene::SubmitForRendering(std::vector<Entity>& entities)
+	{
+		for (auto entity : entities)
+		{
+			if (entity.HasComponent<QuadComponent>())
+			{
+				auto& quad = entity.GetComponent<QuadComponent>();
+				if (entity.HasComponent<SpriteComponent>())
+				{
+					auto& sprite = entity.GetComponent<SpriteComponent>();
+					if (sprite.TextureLoaded())
+					{
+						if (sprite.m_Enable)
+							Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite, m_DefaultShader.get());
+						else
+							Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
+					}
+					else
+					{
+						Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
+					}
+				}
+
+				// Draw AnimatedSprite if available (can overlap with Sprite)
+				if (entity.HasComponent<AnimatedSpriteComponent>())
+				{
+					auto& anim = entity.GetComponent<AnimatedSpriteComponent>();
+					if (anim.Loaded())
+					{
+						Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, anim, m_DefaultShader.get());
+					}
+				}
+
+				// Draw debug RigidBody Collider outline
+				if (Physics::ShowColliderOutlineEnabled())
+				{
+					if (entity.HasComponent<BoxCollider2DComponent>())
+					{
+						auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+						glm::vec3 outlineColor(0.80f, 0.3f, 0.2f);
+						glm::vec3 outlinePos(quad.Center() + bc2d.m_Offset, 0.0f);
+						glm::vec2 outlineSize(bc2d.m_Size.x * quad.m_Size.x * 2.0f, bc2d.m_Size.y * quad.m_Size.y * 2.0f);
+
+						if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::BOX)
+						{
+							Stimpi::Renderer2D::Instance()->SubmitSquare(outlinePos, outlineSize, quad.m_Rotation, outlineColor);
+						}
+						else if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::CIRLCE)
+						{
+							glm::vec2 circleOutlineSize(bc2d.m_Size.x * quad.m_Size.x * 2.0f, bc2d.m_Size.x * quad.m_Size.x * 2.0f);
+							Stimpi::Renderer2D::Instance()->SubmitCircle(outlinePos, circleOutlineSize, outlineColor, 0.06f, 0.0f);
+						}
+					}
+				}
+			}
+			else if (entity.HasComponent<CircleComponent>())
+			{
+				auto& circle = entity.GetComponent<CircleComponent>();
+				if (entity.HasComponent<SpriteComponent>())
+				{
+					auto& sprite = entity.GetComponent<SpriteComponent>();
+					if (sprite.TextureLoaded() && sprite.m_Enable)
+					{
+						Renderer2D::Instance()->Submit(circle.m_Position, circle.m_Size, circle.m_Rotation, sprite, m_DefaultShader.get());
+					}
+					else
+					{
+						Renderer2D::Instance()->SubmitCircle(circle.m_Position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
+					}
+				}
+				else
+				{
+					Renderer2D::Instance()->SubmitCircle(circle.m_Position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
+				}
+
+				// Draw debug RigidBody Collider outline
+				if (Physics::ShowColliderOutlineEnabled())
+				{
+					if (entity.HasComponent<BoxCollider2DComponent>())
+					{
+						auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+						glm::vec3 outlineColor(0.80f, 0.3f, 0.2f);
+						glm::vec3 outlinePos(circle.Center() + bc2d.m_Offset, 0.0f);
+						glm::vec2 outlineSize(bc2d.m_Size.x * circle.m_Size.x * 2.0f, bc2d.m_Size.y * circle.m_Size.y * 2.0f);
+
+						if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::BOX)
+						{
+							Stimpi::Renderer2D::Instance()->SubmitSquare(outlinePos, outlineSize, circle.m_Rotation, outlineColor);
+						}
+						else if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::CIRLCE)
+						{
+							glm::vec2 circleOutlineSize(bc2d.m_Size.x * circle.m_Size.x * 2.0f, bc2d.m_Size.x * circle.m_Size.x * 2.0f);
+							Stimpi::Renderer2D::Instance()->SubmitCircle(outlinePos, circleOutlineSize, outlineColor, 0.06f, 0.0f);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	bool Scene::CompareByAxis(Entity a, Entity b)
+	{
+		if ((a.HasComponent<QuadComponent>() || a.HasComponent<CircleComponent>()) &&
+			(b.HasComponent<QuadComponent>() || b.HasComponent<CircleComponent>()))
+		{
+			glm::vec3 posA = a.HasComponent<QuadComponent>() ? a.GetComponent<QuadComponent>().m_Position :
+				a.GetComponent<CircleComponent>().m_Position;
+			glm::vec3 posB = b.HasComponent<QuadComponent>() ? b.GetComponent<QuadComponent>().m_Position :
+				b.GetComponent<CircleComponent>().m_Position;
+
+			auto graphicsConfig = Project::GetGraphicsConfig();
+			if (graphicsConfig.m_RenderingOrderAxis == RenderingOrderAxis::X_AXIS)
+				return posA.x < posB.x;
+			if (graphicsConfig.m_RenderingOrderAxis == RenderingOrderAxis::Y_AXIS)
+				return posA.y < posB.y;
+			if (graphicsConfig.m_RenderingOrderAxis == RenderingOrderAxis::Z_AXIS)
+				return posA.z < posB.z;
+
+			// Default sorting
+			return posA.z < posB.z;
+		}
+
+		return false;
 	}
 
 	void Scene::OnSceneStep()

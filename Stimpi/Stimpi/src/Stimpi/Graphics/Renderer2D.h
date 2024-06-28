@@ -71,7 +71,8 @@ namespace Stimpi
 		uint32_t GetFrameDrawCallCount() { return m_LastFrameDrawCallCnt; }
 		uint32_t GetFrameRednerCmdCount() { return m_LastFrameRenderedCmdCnt; }
 	private:
-		void Flush();
+		void NewCmd();
+		void FlushScene();
 		void RenderFrameBuffer(); // Used for Application to handle displaying of FBs ourselves
 
 		void PushQuadVertexData(RenderCommand* cmd, glm::vec4 quad, glm::vec3 color = { 1.0f, 1.0f, 1.0f }, glm::vec2 min = { 0.0f, 0.0f }, glm::vec2 max = { 1.0f, 1.0f });

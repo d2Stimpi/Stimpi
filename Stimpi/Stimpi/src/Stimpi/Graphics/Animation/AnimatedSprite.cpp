@@ -14,6 +14,18 @@ namespace Stimpi
 		m_FramesCount = m_Animation->GetFrames().size();
 	}
 
+	void AnimatedSprite::SetAnimation(FilePath path)
+	{
+		m_Animation.reset(Animation::Create(path));
+		m_FramesCount = m_Animation->GetFrames().size();
+	}
+
+	void AnimatedSprite::SetAnimation(Animation* animation)
+	{
+		m_Animation.reset(animation);
+		m_FramesCount = m_Animation->GetFrames().size();
+	}
+
 	void AnimatedSprite::Update(Timestep ts)
 	{
 		if (m_State == AnimationState::RUNNING)

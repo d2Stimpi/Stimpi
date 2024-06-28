@@ -324,9 +324,9 @@ namespace Stimpi
 
 	struct SortingGroupComponent
 	{
-		std::string m_SortingLayerName;	// Name will reference the SortingLayer, when Layer gets removed,
-										// we simply fail to match the layerName with existing layers
-		uint32_t m_OrderInLayer;
+		std::string m_SortingLayerName = "Default";	// Name will reference the SortingLayer, when Layer gets removed,
+													// we simply fail to match the layerName with existing layers
+		uint32_t m_OrderInLayer = 0;
 
 		SortingGroupComponent() = default;
 		SortingGroupComponent(const SortingGroupComponent&) = default;
@@ -347,6 +347,9 @@ namespace Stimpi
 
 		SortingGroupComponent(const YAML::Node& node)
 		{
+			m_SortingLayerName = "Default";
+			m_OrderInLayer = 0;
+
 			if (node["SortingLayerName"])
 			{
 				m_SortingLayerName = node["SortingLayerName"].as<std::string>();
@@ -361,6 +364,7 @@ namespace Stimpi
 	struct AnimatedSpriteComponent
 	{
 		std::shared_ptr<AnimatedSprite> m_AnimSprite;
+		std::vector<std::shared_ptr<Animation>> m_Animations;
 		std::string m_AnimAssetPath;
 
 		AnimatedSpriteComponent() = default;
@@ -369,6 +373,7 @@ namespace Stimpi
 			: m_AnimAssetPath(filePath)
 		{
 			m_AnimSprite = std::make_shared<AnimatedSprite>(m_AnimAssetPath);
+			m_Animations.emplace_back(m_AnimSprite->GetAnimation());
 		}
 
 		bool IsAnimationSet()
@@ -379,7 +384,15 @@ namespace Stimpi
 		void SetAnimation(const std::string filePath)
 		{
 			m_AnimAssetPath = filePath;
-			m_AnimSprite = std::make_shared<AnimatedSprite>(m_AnimAssetPath);
+			m_AnimSprite->SetAnimation(filePath);
+		}
+
+		void AddAnimation(const std::string filePath)
+		{
+			auto newAnim = std::make_shared<Animation>();
+			newAnim.reset(Animation::Create(filePath));
+
+			m_Animations.emplace_back(newAnim);
 		}
 
 		void Start()
@@ -449,6 +462,7 @@ namespace Stimpi
 			{
 				m_AnimAssetPath = node["AnimFilePath"].as<std::string>();
 				m_AnimSprite = std::make_shared<AnimatedSprite>(m_AnimAssetPath);
+				m_Animations.emplace_back(m_AnimSprite->GetAnimation());
 			}
 		}
 	};
