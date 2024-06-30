@@ -364,16 +364,15 @@ namespace Stimpi
 	struct AnimatedSpriteComponent
 	{
 		std::shared_ptr<AnimatedSprite> m_AnimSprite;
-		std::vector<std::shared_ptr<Animation>> m_Animations;
-		std::string m_AnimAssetPath;
+		std::shared_ptr<Animation> m_DefaultAnimation;
+		//std::vector<std::shared_ptr<Animation>> m_Animations;
+		std::unordered_map<std::string, std::shared_ptr<Animation>> m_Animations;
+		bool m_AutoPlay = false; // Auto play the default anim on start
 
-		AnimatedSpriteComponent() = default;
 		AnimatedSpriteComponent(const AnimatedSpriteComponent&) = default;
-		AnimatedSpriteComponent(const std::string filePath)
-			: m_AnimAssetPath(filePath)
+		AnimatedSpriteComponent()
 		{
-			m_AnimSprite = std::make_shared<AnimatedSprite>(m_AnimAssetPath);
-			m_Animations.emplace_back(m_AnimSprite->GetAnimation());
+			m_AnimSprite = std::make_shared<AnimatedSprite>();
 		}
 
 		bool IsAnimationSet()
@@ -381,18 +380,30 @@ namespace Stimpi
 			return m_AnimSprite != nullptr;
 		}
 
-		void SetAnimation(const std::string filePath)
+		void SetAnimation(const std::string& filePath)
 		{
-			m_AnimAssetPath = filePath;
 			m_AnimSprite->SetAnimation(filePath);
 		}
 
-		void AddAnimation(const std::string filePath)
+		void SetDefailtAnimation(const std::string& filePath)
 		{
 			auto newAnim = std::make_shared<Animation>();
 			newAnim.reset(Animation::Create(filePath));
 
-			m_Animations.emplace_back(newAnim);
+			m_DefaultAnimation = newAnim;
+		}
+
+		void AddAnimation(const std::string& filePath)
+		{
+			auto newAnim = std::make_shared<Animation>();
+			newAnim.reset(Animation::Create(filePath));
+
+			m_Animations[newAnim->GetName()] = newAnim;
+		}
+
+		void RemoveAnimation(const std::string& name)
+		{
+			m_Animations.erase(name);
 		}
 
 		void Start()
@@ -448,21 +459,54 @@ namespace Stimpi
 			out << YAML::Key << "AnimatedSpriteComponent";
 			out << YAML::BeginMap;
 			{
-				if (m_AnimSprite)
+				if (m_DefaultAnimation)
 				{
-					out << YAML::Key << "AnimFilePath" << YAML::Value << m_AnimAssetPath;
+					out << YAML::Key << "DefaultAnimation" << YAML::Value << m_DefaultAnimation->GetAssetFilePath().GetPath().string();
 				}
+				out << YAML::Key << "Animations";
+				out << YAML::BeginMap;
+				{
+					for (auto& anim : m_Animations)
+					{
+						out << YAML::Key << "Animation";
+						out << YAML::BeginMap;
+						{
+							out << YAML::Key << "AnimationAssetPath" << YAML::Value << anim.second->GetAssetFilePath().GetPath().string();
+						}
+						out << YAML::EndMap;
+					}
+				}
+				out << YAML::EndMap;
+				out << YAML::Key << "AutoPlay" << YAML::Value << m_AutoPlay;
 			}
 			out << YAML::EndMap;
 		}
 
 		AnimatedSpriteComponent(const YAML::Node& node)
 		{
-			if (node["AnimFilePath"])
+			m_AnimSprite = std::make_shared<AnimatedSprite>();
+			m_AutoPlay = false;
+
+			if (node["DefaultAnimation"])
 			{
-				m_AnimAssetPath = node["AnimFilePath"].as<std::string>();
-				m_AnimSprite = std::make_shared<AnimatedSprite>(m_AnimAssetPath);
-				m_Animations.emplace_back(m_AnimSprite->GetAnimation());
+				SetDefailtAnimation(node["DefaultAnimation"].as<std::string>());
+				m_AnimSprite->SetAnimation(m_DefaultAnimation);
+			}
+			if (node["Animations"])
+			{
+				YAML::Node anims = node["Animations"];
+				for (YAML::const_iterator it = anims.begin(); it != anims.end(); it++)
+				{
+					YAML::Node anim = it->second;
+					if (anim["AnimationAssetPath"])
+					{
+						AddAnimation(anim["AnimationAssetPath"].as<std::string>());
+					}
+				}
+			}
+			if (node["AutoPlay"])
+			{
+				m_AutoPlay = node["AutoPlay"].as<bool>();
 			}
 		}
 	};

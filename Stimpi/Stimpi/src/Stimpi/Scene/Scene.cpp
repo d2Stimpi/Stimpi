@@ -442,6 +442,7 @@ namespace Stimpi
 	void Scene::SetCamera(Camera* camera)
 	{
 		m_SceneCamera = camera;
+		m_RenderCamera = camera;
 	}
 
 	void Scene::OnScenePlay()

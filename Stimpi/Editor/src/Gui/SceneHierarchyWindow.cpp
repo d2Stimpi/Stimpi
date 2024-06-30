@@ -191,7 +191,7 @@ namespace Stimpi
 			ImGui::Spacing();
 		}
 
-		auto popupContent = []() -> bool
+		auto popupContentQuad = []() -> bool
 		{
 			bool showPoput = true;
 			if (ImGui::Selectable("Remove"))
@@ -203,7 +203,7 @@ namespace Stimpi
 			return showPoput;
 		};
 
-		SettingsPopupButton(cursor, "Quad##ComponentPopup", popupContent);
+		SettingsPopupButton(cursor, "Quad##ComponentPopup", popupContentQuad);
 	}
 
 	void SceneHierarchyWindow::CircleComponentLayout(CircleComponent& component)
@@ -226,7 +226,7 @@ namespace Stimpi
 			ImGui::Spacing();
 		}
 
-		auto popupContent = []() -> bool
+		auto popupContentCircle = []() -> bool
 		{
 			bool showPoput = true;
 			if (ImGui::Selectable("Remove"))
@@ -238,7 +238,7 @@ namespace Stimpi
 			return showPoput;
 		};
 
-		SettingsPopupButton(cursor, "Circle##ComponentPopup", popupContent);
+		SettingsPopupButton(cursor, "Circle##ComponentPopup", popupContentCircle);
 	}
 
 	void SceneHierarchyWindow::ScriptComponentLayout(ScriptComponent& component)
@@ -303,7 +303,7 @@ namespace Stimpi
 			ImGui::Spacing();
 		}
 
-		auto popupContent = []() -> bool
+		auto popupContentScript = []() -> bool
 		{
 			bool showPoput = true;
 			if (ImGui::Selectable("Remove"))
@@ -316,7 +316,7 @@ namespace Stimpi
 			return showPoput;
 		};
 
-		SettingsPopupButton(cursor, "Script##ComponentPopup", popupContent);
+		SettingsPopupButton(cursor, "Script##ComponentPopup", popupContentScript);
 	}
 
 	void SceneHierarchyWindow::SpriteComponentLayout(SpriteComponent& component)
@@ -359,7 +359,7 @@ namespace Stimpi
 			ImGui::Spacing();
 		}
 
-		auto popupContent = []() -> bool
+		auto popupContentSprite = []() -> bool
 		{
 			bool showPoput = true;
 			if (ImGui::Selectable("Remove"))
@@ -371,7 +371,7 @@ namespace Stimpi
 			return showPoput;
 		};
 
-		SettingsPopupButton(cursor, "Sprite##ComponentPopup", popupContent);
+		SettingsPopupButton(cursor, "Sprite##ComponentPopup", popupContentSprite);
 	}
 
 
@@ -416,7 +416,7 @@ namespace Stimpi
 			ImGui::Spacing();
 		}
 
-		auto popupContent = []() -> bool
+		auto popupContentSortingGroup = []() -> bool
 		{
 			bool showPoput = true;
 			if (ImGui::Selectable("Remove"))
@@ -428,7 +428,7 @@ namespace Stimpi
 			return showPoput;
 		};
 
-		SettingsPopupButton(cursor, "SortingGroup##ComponentPopup", popupContent);
+		SettingsPopupButton(cursor, "SortingGroup##ComponentPopup", popupContentSortingGroup);
 	}
 
 	void SceneHierarchyWindow::AnimatedSpriteComponentLayout(AnimatedSpriteComponent& component)
@@ -439,36 +439,38 @@ namespace Stimpi
 		if (ImGui::CollapsingHeaderIcon("AnimatedSprite##ComponentName", EditorResources::GetIconTextureID(EDITOR_ICON_ANIM), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 		{
 			ImGui::Spacing();
-			ImGui::PushItemWidth(80.0f);
-			if (ImGui::Button("Animation##AnimatedSpriteComponent"))
+			ImGui::Text("Default Animation");
+			ImGui::SameLine(0.0f, 30.0f);
+			if (ImGui::Button(">##AnimatedSpriteComponent_Default", ImVec2(0.0f, 20.0f)))
 			{
-				std::string filePath = FileDialogs::OpenFile("Animation (*.anim)\0*.anim\0");
-				if (!filePath.empty())
+				if (component.m_AnimSprite)
 				{
-					component.SetAnimation(filePath);
+					component.m_AnimSprite->SetAnimation(component.m_DefaultAnimation);
+					component.m_AnimSprite->Start();
 				}
 			}
-			ImGui::PopItemWidth();
+			ImGui::SameLine(0.0f, 5.0f);
+			ImGui::Text(component.m_DefaultAnimation->GetName().c_str());
 
 			UIPayload::BeginTarget(PAYLOAD_ANIMATION, [&component](void* data, uint32_t size) {
 				std::string strData = std::string((char*)data, size);
 				ST_CORE_INFO("Texture data dropped: {0}", strData.c_str());
-				component.SetAnimation(strData);
+				component.SetDefailtAnimation(strData);
 				});
 
-			if (ImGui::Button("Play##AnimatedSpriteComponent"))
+			if (ImGui::Button(">##AnimatedSpriteComponent"))
 			{
 				if (component.m_AnimSprite)
 					component.m_AnimSprite->Start();
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("Pause##AnimatedSpriteComponent"))
+			if (ImGui::Button("=##AnimatedSpriteComponent"))
 			{
 				if (component.m_AnimSprite)
 					component.m_AnimSprite->Pause();
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("Stop##AnimatedSpriteComponent"))
+			if (ImGui::Button("x##AnimatedSpriteComponent"))
 			{
 				if (component.m_AnimSprite)
 					component.m_AnimSprite->Stop();
@@ -484,22 +486,85 @@ namespace Stimpi
 			float playSpeed = 1.0f;
 			if (component.m_AnimSprite)
 				playSpeed = component.m_AnimSprite->GetPlaybackSpeed();
-			ImGui::DragFloat("Playback speed", &playSpeed, 0.001f, 0.01f);
+			ImGui::SameLine();
+			ImGui::SetNextItemWidth(50.0f);
+			if (ImGui::DragFloat("Playback speed", &playSpeed, 0.001f, 0.01f))
+			{
+				if (playSpeed < 0.001f) playSpeed = 0.001;
+			}
 			if (component.m_AnimSprite)
 				component.m_AnimSprite->SetPlaybackSpeed(playSpeed);
 
 			// Available animation list
 			if (ImGui::TreeNode("Animations##AnimatedSpriteComponent"))
 			{
+				// Target is TreeNode
 				UIPayload::BeginTarget(PAYLOAD_ANIMATION, [&component](void* data, uint32_t size) {
 					std::string strData = std::string((char*)data, size);
-					ST_CORE_INFO("Texture data dropped: {0}", strData.c_str());
 					component.AddAnimation(strData);
 					});
 
+				ImGui::Spacing();
+
+				uint32_t animNum = 0;
+				std::string toBeRemoved = "";
 				for (auto& anim : component.m_Animations)
 				{
-					ImGui::Text(anim->GetName().c_str());
+					std::string animLabel = fmt::format("Animation_{}", animNum);
+					std::string buttonLabel = fmt::format(">##AnimatedSpriteComponent_{}", animNum);
+					ImGui::Text("Animation");
+					ImGui::SameLine(0.0f, 30.0f);
+					if (ImGui::Button(buttonLabel.c_str(), ImVec2(0.0f, 20.0f)))
+					{
+						if (component.m_AnimSprite)
+						{
+							component.m_AnimSprite->SetAnimation(anim.second);
+							component.m_AnimSprite->Start();
+						}
+					}
+					ImGui::SameLine(0.0f, 5.0f);
+					float availableWidth = ImGui::GetWindowContentRegionWidth() - ImGui::GetCursorPosX() - 18.0f; // 18.0f is for "..." and a button
+					std::string str = EditorUtils::StringTrimByWidth(anim.second->GetName(), availableWidth);
+					ImGui::Text(str.c_str());
+
+					ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 15.0f, 5.0f);
+					std::string editButtonLabel = fmt::format("##EditAnimationButton_{}", animNum);
+					std::string animSettingsPopup = fmt::format("##EditAnimationPopup_{}", animNum);
+					static bool showAnimSettings = false;
+					if (ImGuiEx::IconButton(editButtonLabel.c_str(), EDITOR_ICON_GEAR))
+					{
+						showAnimSettings = true;
+						ImGui::OpenPopup(animSettingsPopup.c_str());
+					}
+
+					auto animSettingsPopupContent = [&anim, &toBeRemoved]() -> bool
+					{
+						bool showPoput = true;
+						if (ImGui::Selectable("Remove"))
+						{
+							showPoput = false;
+							toBeRemoved = anim.first;
+						}
+
+						return showPoput;
+					};
+
+					if (showAnimSettings)
+					{
+						if (ImGui::BeginPopup(animSettingsPopup.c_str(), ImGuiWindowFlags_NoMove))
+						{
+							showAnimSettings = animSettingsPopupContent();
+							ImGui::EndPopup();
+						}
+					}
+
+					animNum++;
+				}
+
+				// Finish cleanup, if Animation was selected for removal by popup
+				if (toBeRemoved != "")
+				{
+					component.RemoveAnimation(toBeRemoved);
 				}
 
 				ImGui::TreePop();
@@ -508,7 +573,6 @@ namespace Stimpi
 			{
 				UIPayload::BeginTarget(PAYLOAD_ANIMATION, [&component](void* data, uint32_t size) {
 					std::string strData = std::string((char*)data, size);
-					ST_CORE_INFO("Texture data dropped: {0}", strData.c_str());
 					component.AddAnimation(strData);
 					});
 			}
@@ -516,7 +580,7 @@ namespace Stimpi
 			ImGui::Spacing();
 		}
 
-		auto popupContent = []() -> bool
+		auto popupContentAnimatedSprite = []() -> bool
 		{
 			bool showPoput = true;
 			if (ImGui::Selectable("Remove"))
@@ -528,7 +592,7 @@ namespace Stimpi
 			return showPoput;
 		};
 
-		SettingsPopupButton(cursor, "AnimatedSprite##ComponentPopup", popupContent);
+		SettingsPopupButton(cursor, "AnimatedSprite##ComponentPopup", popupContentAnimatedSprite);
 	}
 
 	void SceneHierarchyWindow::CameraComponentLayout(CameraComponent& component)
@@ -560,7 +624,7 @@ namespace Stimpi
 			component.m_Camera->SetOrthoView(view);
 		}
 
-		auto popupContent = []() -> bool
+		auto popupContentCamera = []() -> bool
 		{
 			bool showPoput = true;
 			if (ImGui::Selectable("Remove"))
@@ -572,7 +636,7 @@ namespace Stimpi
 			return showPoput;
 		};
 
-		SettingsPopupButton(cursor, "Camera##ComponentPopup", popupContent);
+		SettingsPopupButton(cursor, "Camera##ComponentPopup", popupContentCamera);
 	}
 
 	void SceneHierarchyWindow::RigidBody2DComponentLayout(RigidBody2DComponent& component)
@@ -610,7 +674,7 @@ namespace Stimpi
 			ImGui::Spacing();
 		}
 
-		auto popupContent = []() -> bool
+		auto popupContentRigidBody2D = []() -> bool
 		{
 			bool showPoput = true;
 			if (ImGui::Selectable("Remove"))
@@ -622,7 +686,7 @@ namespace Stimpi
 			return showPoput;
 		};
 
-		SettingsPopupButton(cursor, "RigidBody2D##ComponentPopup", popupContent);
+		SettingsPopupButton(cursor, "RigidBody2D##ComponentPopup", popupContentRigidBody2D);
 	}
 
 	void SceneHierarchyWindow::BoxCollider2DComponentLayout(BoxCollider2DComponent& component)
@@ -667,7 +731,7 @@ namespace Stimpi
 			ImGui::Spacing();
 		}
 
-		auto popupContent = []() -> bool
+		auto popupContentBoxCollider = []() -> bool
 		{
 			bool showPoput = true;
 			if (ImGui::Selectable("Remove"))
@@ -679,7 +743,7 @@ namespace Stimpi
 			return showPoput;
 		};
 
-		SettingsPopupButton(cursor, "BoxCollider##ComponentPopup", popupContent);
+		SettingsPopupButton(cursor, "BoxCollider##ComponentPopup", popupContentBoxCollider);
 	}
 
 	void SceneHierarchyWindow::AddComponentLayout()

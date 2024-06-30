@@ -14,10 +14,11 @@ namespace Stimpi
 	class ST_API AnimatedSprite
 	{
 	public:
+		AnimatedSprite();
 		AnimatedSprite(FilePath path);
 
 		void SetAnimation(FilePath path);
-		void SetAnimation(Animation* animation);
+		void SetAnimation(std::shared_ptr<Animation> animation);
 		std::shared_ptr<Animation> GetAnimation() { return m_Animation; }
 		
 		void Update(Timestep ts);

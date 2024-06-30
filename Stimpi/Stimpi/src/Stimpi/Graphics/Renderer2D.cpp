@@ -7,6 +7,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/glm.hpp>
 
+/**
+ * TODO: Consider making shader usage more flexible. Adding custom shader usage.
+ * FIXME: Custom shader can fix pixel wobble effect (moving objects). 
+ *   Cam.size / FB.siza (canvas) will be rounding factor or fix in shader.
+ */
+
 namespace Stimpi
 {
 	// Quad vertex data for rendering by Transforms

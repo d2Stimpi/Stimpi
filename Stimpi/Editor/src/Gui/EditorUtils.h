@@ -22,5 +22,8 @@ namespace Stimpi
 		// Bound checks
 		static bool IsPositionInCurrentWindow(ImVec2 pos);
 		static bool IsMouseContainedInRegion(ImVec2 min, ImVec2 max);
+
+		// Text trim by size limit
+		static std::string StringTrimByWidth(std::string text, float widthLimit);
 	};
 }

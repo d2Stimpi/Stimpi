@@ -264,6 +264,10 @@ namespace Stimpi
 		m_ShaderChecker->SetUniform("u_Projection", m_BackgroundCamera->GetProjectionMatrix());
 		m_ShaderChecker->SetUniform("u_resolution", glm::vec2(canvasWidth, canvasHeight));
 
+		/* Scene View - render after scene so Gizmo won't lag behind 1 frame */
+		// TODO: Fix Gizmo rendering, split to Update()/Render()
+		m_SceneViewWindow.OnImGuiRender();
+
 		auto renderer = Renderer2D::Instance();
 		renderer->StartFrame();
 		{
@@ -276,9 +280,6 @@ namespace Stimpi
 			}
 
 			m_Scene->OnUpdate(ts);
-
-			/* Scene View - render after scene so Gizmo won't lag behind 1 frame */
-			m_SceneViewWindow.OnImGuiRender();
 		}
 		renderer->EndFrame();
 

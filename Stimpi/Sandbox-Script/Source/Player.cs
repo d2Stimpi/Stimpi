@@ -69,6 +69,13 @@ namespace Sandbox
                 if (Input.IsKeyPressed(KeyCode.KEY_E))
                     rotation -= ts * speed;
 
+                // Round the position to 1 decimal
+                /*string str = pos.X.ToString("n1");
+                pos.X = Convert.ToSingle(str);
+                str = pos.Y.ToString("n1");
+                pos.Y = Convert.ToSingle(str);
+                Console.WriteLine($"Converted Pos to: {pos}");*/
+
                 m_Quad.Position = pos;
                 m_Quad.Size = size;
                 m_Quad.Rotation = rotation;

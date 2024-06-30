@@ -72,4 +72,16 @@ namespace Stimpi
 		return false;
 	}
 
+	std::string EditorUtils::StringTrimByWidth(std::string text, float widthLimit)
+	{
+		float lenSize = text.length() * (ImGui::GetFontSize() / 2.0f + 1); // approximation "good enough"
+		if (lenSize > widthLimit)
+		{
+			uint32_t len = widthLimit / (ImGui::GetFontSize() / 2.0f + 1);
+			text = text.substr(0, len);
+			text.append("...");
+		}
+		return text;
+	}
+
 }
