@@ -1,7 +1,7 @@
 Scene:
   Entity:
     TagComponent:
-      Tag: Entity
+      Tag: Camera
     QuadComponent:
       - 4.28760767
       - 2.45006132
@@ -9,8 +9,6 @@ Scene:
       - 50
       - 40
       - 0
-    ScriptComponent:
-      ScriptName: Sandbox.Actor
     CameraComponent:
       Position:
         - 4.28760767
@@ -85,7 +83,7 @@ Scene:
       Position:
         - 44.3298492
         - 43.8324623
-        - 0.0
+        - 0
       Size:
         - 10
         - 10
@@ -191,6 +189,10 @@ Scene:
       - 8
       - 0
     AnimatedSpriteComponent:
-      AnimFilePath: D:/GitHub/Stimpi\assets\animations\test.anim
+      DefaultAnimation: D:/GitHub/Stimpi\assets\animations\test.anim
+      Animations:
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\slap.anim
+      AutoPlay: false
     ScriptComponent:
       ScriptName: Sandbox.Player

@@ -15,6 +15,7 @@
 #include "Gui/Gizmo2D.h"
 #include "Gui/EditorUtils.h"
 
+#include <cmath>
 
 namespace Stimpi
 {
@@ -75,11 +76,11 @@ namespace Stimpi
 		// TODO: configurable aspect ratio
 		if (((float)winSize.x / 1.7778f) >= (float)winSize.y)
 		{
-			frameBuffer->Resize(winSize.x, ((float)winSize.x / 1.7778f));
+			frameBuffer->Resize(winSize.x, std::round((float)winSize.x / 1.7778f));
 		}
 		else
 		{
-			frameBuffer->Resize(((float)winSize.y*1.778f), winSize.y);
+			frameBuffer->Resize(std::round((float)winSize.y*1.778f), winSize.y);
 		}
 
 		ImGuiIO& io = ImGui::GetIO();

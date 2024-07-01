@@ -79,6 +79,17 @@ namespace Sandbox
                 m_Quad.Position = pos;
                 m_Quad.Size = size;
                 m_Quad.Rotation = rotation;
+
+                // Update camera to follow player
+                Entity camera = FindEntityByName("Camera");
+                if (camera != null)
+                {
+                    //Console.WriteLine("Camera found");
+                    QuadComponent quad = camera.GetComponent<QuadComponent>();
+                    Vector2 offset = new Vector2(-50f, -30f);
+                    quad.Position = pos + offset;
+                }
+
             }
         }
     }

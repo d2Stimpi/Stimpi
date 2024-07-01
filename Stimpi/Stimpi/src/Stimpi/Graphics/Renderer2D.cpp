@@ -84,6 +84,7 @@ namespace Stimpi
 		m_LineShader.reset(Shader::CreateShader("..\/assets\/shaders\/line.shader"));
 		// For local rendering of FBs
 		m_RenderFrameBufferShader.reset(Shader::CreateShader("..\/assets\/shaders\/framebuffer.shader"));
+		//m_RenderFrameBufferShader.reset(Shader::CreateShader("..\/assets\/shaders\/pixelart.shader"));
 		m_RenderFrameBufferCmd = std::make_shared<RenderCommand>(m_QuadVAO->VertexSize());
 
 		// Populate fixed data, shader uniform is set every frame
@@ -135,7 +136,7 @@ namespace Stimpi
 			currentCmd->m_Texture = texture;
 			currentCmd->m_Shader = shader;
 
-			shader->SetUniform("u_texture", 0);
+			SetShaderUniforms(shader);
 		}
 
 		CheckCapacity();
@@ -146,7 +147,7 @@ namespace Stimpi
 			currentCmd->m_Texture = texture;
 			currentCmd->m_Shader = shader;
 
-			shader->SetUniform("u_texture", 0);
+			SetShaderUniforms(shader);
 		}
 		else if ((currentCmd->m_Texture != texture) || (currentCmd->m_Shader != shader))
 		{
@@ -157,7 +158,7 @@ namespace Stimpi
 			currentCmd->m_Texture = texture;
 			currentCmd->m_Shader = shader;
 
-			shader->SetUniform("u_texture", 0);
+			SetShaderUniforms(shader);
 		}
 		else
 		{
@@ -182,7 +183,7 @@ namespace Stimpi
 			currentCmd->m_Texture = subtexture->GetTexture();
 			currentCmd->m_Shader = shader;
 
-			shader->SetUniform("u_texture", 0);
+			SetShaderUniforms(shader);
 		}
 
 		CheckCapacity();
@@ -193,7 +194,7 @@ namespace Stimpi
 			currentCmd->m_Texture = subtexture->GetTexture();
 			currentCmd->m_Shader = shader;
 
-			shader->SetUniform("u_texture", 0);
+			SetShaderUniforms(shader);
 		}
 		else if ((currentCmd->m_Texture != subtexture->GetTexture()) || (currentCmd->m_Shader != shader))
 		{
@@ -204,7 +205,7 @@ namespace Stimpi
 			currentCmd->m_Texture = subtexture->GetTexture();
 			currentCmd->m_Shader = shader;
 
-			shader->SetUniform("u_texture", 0);
+			SetShaderUniforms(shader);
 		}
 		else
 		{
@@ -349,13 +350,36 @@ namespace Stimpi
 
 	void Renderer2D::RenderFrameBuffer()
 	{
-		m_RenderFrameBufferShader->SetUniform("u_texture", 0);
+		SetShaderUniforms(m_RenderFrameBufferShader.get());
 		m_RenderFrameBufferShader->SetUniform("u_ViewProjection", m_ActiveCamera->GetViewProjectionMatrix());
 
 		m_RenderFrameBufferCmd->ClearData();
 		PushQuadVertexData(m_RenderFrameBufferCmd.get(), glm::vec4(0.0f, 0.0f, GetCanvasWidth(), GetCanvasHeight()));
 
 		DrawQuadRenderCmd(m_RenderFrameBufferCmd);
+	}
+
+
+	void Renderer2D::SetShaderUniforms(Shader* shader)
+	{
+		auto currnetCmd = *m_ActiveRenderCmdIter;
+
+		if (shader == nullptr)
+			return;
+
+		shader->SetUniform("u_texture", 0);
+		
+		if (currnetCmd->m_Texture != nullptr)
+		{
+			auto width = currnetCmd->m_Texture->GetWidth();
+			auto height = currnetCmd->m_Texture->GetHeight();
+			shader->SetUniform("u_TexelSize", glm::vec4(1.0f/width, 1.0f/height, (float)width, (float)height));
+		}
+
+		auto camView = m_ActiveCamera->GetViewQuad();
+		auto zoom = m_ActiveCamera->GetZoom();
+		float texelPerPixel = camView.w / m_FrameBuffer->GetHeight() / zoom;  // camView.y - width
+		shader->SetUniform("u_TexelsPerPixel", texelPerPixel);
 	}
 
 	void Renderer2D::ResizeCanvas(uint32_t width, uint32_t height)

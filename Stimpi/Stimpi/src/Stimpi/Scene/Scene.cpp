@@ -74,19 +74,12 @@ namespace Stimpi
 
 		m_RuntimeState = RuntimeState::STOPPED;
 		m_DefaultShader.reset(Shader::CreateShader("..\/assets\/shaders\/shader.shader"));
+		//m_DefaultShader.reset(Shader::CreateShader("..\/assets\/shaders\/pixelart.shader"));
 		m_DefaultSolidColorShader.reset(Shader::CreateShader("..\/assets\/shaders\/solidcolor.shader"));
 
 		// Collision listener for Box2D
 		m_ContactListener = std::make_unique<ContactListener>();
 		m_ContactListener->SetContext(this);
-
-		// Test save
-		/*Animation anim;
-		AnimationSerializer serializer(&anim);
-		serializer.Serialize("..\/assets\/animations\/test.anim");*/
-		// Test load
-		/*Animation* animLoad = Animation::Create("..\/assets\/animations\/test.anim");
-		ST_CORE_INFO("");*/
 
 #if USE_TEST_STUFF
 		/* Test stuff below */
@@ -140,7 +133,6 @@ namespace Stimpi
 
 	void Scene::OnUpdate(Timestep ts)
 	{
-		UpdateComponentDependacies(ts);
 
 		if (m_RuntimeState == RuntimeState::RUNNING)
 		{
@@ -158,6 +150,8 @@ namespace Stimpi
 			// Ensure rendering of AnimSprite frame 0
 			UpdateComponents(0);
 		}
+
+		UpdateComponentDependacies(ts);
 
 		/* When not in Running state, use Editor sourced camera */
 		if (m_RuntimeState == RuntimeState::STOPPED)
@@ -370,8 +364,6 @@ namespace Stimpi
 	{
 		Timestep ts = Time::Instance()->GetFrameTime();
 
-		UpdateComponentDependacies(ts);
-
 		// Update Scripts
 		UpdateScripts(ts);
 
@@ -380,6 +372,8 @@ namespace Stimpi
 
 		// Update components that depend on timestep
 		UpdateComponents(ts);
+
+		UpdateComponentDependacies(ts);
 	}
 
 	void Scene::OnEvent(Event* event)
