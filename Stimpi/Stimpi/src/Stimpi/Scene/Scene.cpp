@@ -73,8 +73,8 @@ namespace Stimpi
 		ScriptEngine::ClearScriptInstances();
 
 		m_RuntimeState = RuntimeState::STOPPED;
-		m_DefaultShader.reset(Shader::CreateShader("..\/assets\/shaders\/shader.shader"));
-		//m_DefaultShader.reset(Shader::CreateShader("..\/assets\/shaders\/pixelart.shader"));
+		//m_DefaultShader.reset(Shader::CreateShader("..\/assets\/shaders\/shader.shader"));
+		m_DefaultShader.reset(Shader::CreateShader("..\/assets\/shaders\/pixelart.shader"));
 		m_DefaultSolidColorShader.reset(Shader::CreateShader("..\/assets\/shaders\/solidcolor.shader"));
 
 		// Collision listener for Box2D
@@ -202,14 +202,14 @@ namespace Stimpi
 				// Pass filtered and sorted entities for rendering
 				if (!layerGroup.empty())
 				{
-					Stimpi::Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
+					Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
 					SubmitForRendering(layerGroup);
-					Stimpi::Renderer2D::Instance()->EndScene();
+					Renderer2D::Instance()->EndScene();
 				}
 			}
 
 			// Render entities that don't use SortingGroup component
-			Stimpi::Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
+			Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
 
 			std::vector<Entity> unordered;
 			for (auto entity : m_Entities)
@@ -228,7 +228,7 @@ namespace Stimpi
 
 			SubmitForRendering(unordered);
 
-			Stimpi::Renderer2D::Instance()->EndScene();
+			Renderer2D::Instance()->EndScene();
 		}
 		
 		if (s_Config.m_EnableDebug)
@@ -280,12 +280,12 @@ namespace Stimpi
 
 						if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::BOX)
 						{
-							Stimpi::Renderer2D::Instance()->SubmitSquare(outlinePos, outlineSize, quad.m_Rotation, outlineColor);
+							Renderer2D::Instance()->SubmitSquare(outlinePos, outlineSize, quad.m_Rotation, outlineColor);
 						}
 						else if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::CIRLCE)
 						{
 							glm::vec2 circleOutlineSize(bc2d.m_Size.x * quad.m_Size.x * 2.0f, bc2d.m_Size.x * quad.m_Size.x * 2.0f);
-							Stimpi::Renderer2D::Instance()->SubmitCircle(outlinePos, circleOutlineSize, outlineColor, 0.06f, 0.0f);
+							Renderer2D::Instance()->SubmitCircle(outlinePos, circleOutlineSize, outlineColor, 0.06f, 0.0f);
 						}
 					}
 				}
@@ -322,12 +322,12 @@ namespace Stimpi
 
 						if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::BOX)
 						{
-							Stimpi::Renderer2D::Instance()->SubmitSquare(outlinePos, outlineSize, circle.m_Rotation, outlineColor);
+							Renderer2D::Instance()->SubmitSquare(outlinePos, outlineSize, circle.m_Rotation, outlineColor);
 						}
 						else if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::CIRLCE)
 						{
 							glm::vec2 circleOutlineSize(bc2d.m_Size.x * circle.m_Size.x * 2.0f, bc2d.m_Size.x * circle.m_Size.x * 2.0f);
-							Stimpi::Renderer2D::Instance()->SubmitCircle(outlinePos, circleOutlineSize, outlineColor, 0.06f, 0.0f);
+							Renderer2D::Instance()->SubmitCircle(outlinePos, circleOutlineSize, outlineColor, 0.06f, 0.0f);
 						}
 					}
 				}
@@ -393,12 +393,12 @@ namespace Stimpi
 		return entity;
 	}
 
-	Stimpi::Entity Scene::GetEntityByHandle(entt::entity handle)
+	Entity Scene::GetEntityByHandle(entt::entity handle)
 	{
 		return Entity(handle, this);
 	}
 
-	Stimpi::Entity Scene::FindentityByName(std::string_view name)
+	Entity Scene::FindentityByName(std::string_view name)
 	{
 		auto view = m_Registry.view<TagComponent>();
 		for (auto entity : view)
@@ -416,7 +416,7 @@ namespace Stimpi
 		m_Entities.erase(std::remove(std::begin(m_Entities), std::end(m_Entities), entity));
 	}
 
-	Stimpi::Entity Scene::CopyEntity(const Entity entity)
+	Entity Scene::CopyEntity(const Entity entity)
 	{
 		Entity newEntity = { m_Registry.create(), this };
 		auto dst = newEntity.GetHandle();
@@ -488,7 +488,7 @@ namespace Stimpi
 			});
 	}
 
-	Stimpi::Entity Scene::MousePickEntity(float x, float y)
+	Entity Scene::MousePickEntity(float x, float y)
 	{
 		Entity picked = {};
 
@@ -750,7 +750,12 @@ namespace Stimpi
 		if (owner.HasComponent<ScriptComponent>())
 		{
 			auto instance = ScriptEngine::GetScriptInstance(owner);
-			ST_CORE_ASSERT_MSG(!instance, "Processing physics event, but no Script instance!");
+			if (instance == nullptr)
+			{
+				//ST_CORE_INFO("Skipp processing physics event, no Script instance! OwnerID: {}", (uint32_t)owner);
+				//ST_CORE_ASSERT_MSG(!instance, "Processing physics event, but no Script instance! Owner: {}", (uint32_t)owner);
+				return true;
+			}
 
 			if (event->GetType() == PhysicsEventType::COLLISION_BEGIN)
 			{

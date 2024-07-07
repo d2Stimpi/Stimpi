@@ -1,6 +1,7 @@
 #include "Stimpi.h"
 #include "Stimpi/Core/EntryPoint.h"
 
+#include "Stimpi/Scene/ResourceManager.h"
 #include "Gui/EditorLayer.h"
 
 class EditorApp : public Stimpi::Application
@@ -21,5 +22,8 @@ private:
 
 Stimpi::Application* Stimpi::CreateApplication()
 {
+	// Load project data
+	Stimpi::ResourceManager::LoadDefaultProject();
+
 	return new EditorApp();
 }

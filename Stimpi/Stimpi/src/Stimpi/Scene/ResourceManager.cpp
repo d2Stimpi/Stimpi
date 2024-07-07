@@ -12,14 +12,7 @@ namespace Stimpi
 {
 	ResourceManager::ResourceManager()
 	{
-		// Load the default "Sandbox" project
-		Project::Load("../Sandbox.d2sproj");
 
-		// Verify selected/default project
-		if (!Project::IsProjectPathValid())
-		{
-			ST_CORE_ASSERT(true, "Invalid project configuration!");
-		}
 	}
 
 	ResourceManager::~ResourceManager()
@@ -58,6 +51,20 @@ namespace Stimpi
 		for (auto& listener : m_OnProjectChangedListeners)
 		{
 			listener();
+		}
+	}
+
+
+	bool ResourceManager::LoadDefaultProject()
+	{
+		// Load the default "Sandbox" project
+		Project::Load("../Sandbox.d2sproj");
+
+		// Verify selected/default project
+		if (!Project::IsProjectPathValid())
+		{
+			ST_CORE_INFO("Invalid project configuration!");
+			ST_CORE_ASSERT(true, "TODO - load fail handling");
 		}
 	}
 

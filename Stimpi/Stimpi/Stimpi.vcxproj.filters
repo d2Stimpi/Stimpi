@@ -211,14 +211,19 @@
     <ClInclude Include="src\Stimpi\Utils\ThreadPool.h">
       <Filter>Stimpi\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\Utils\YamlCustomTypes.h">
+      <Filter>Stimpi\Utils</Filter>
+    </ClInclude>
     <ClInclude Include="src\stpch.h" />
-    <ClInclude Include="src\Stimpi\Utils\YamlCustomTypes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Core\Application.cpp">
       <Filter>Stimpi\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Core\Event.cpp">
+      <Filter>Stimpi\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Core\Graphics.cpp">
       <Filter>Stimpi\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Core\InputManager.cpp">
@@ -363,6 +368,5 @@
       <Filter>Stimpi\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
-    <ClCompile Include="src\Stimpi\Core\Graphics.cpp" />
   </ItemGroup>
 </Project>

@@ -14,6 +14,8 @@ namespace Sandbox
         private QuadComponent m_Quad;
         public float speed = 16.0f;
 
+        Entity camera;
+
         public override void OnCreate()
         {
             Console.WriteLine($"OnCreate: {ID}");
@@ -22,6 +24,8 @@ namespace Sandbox
 
             if (HasComponent<AnimatedSpriteComponent>())
                 m_AnimComponent = GetComponent<AnimatedSpriteComponent>();
+
+            camera = FindEntityByName("Camera");
         }
 
         public override void OnUpdate(float ts)
@@ -69,25 +73,29 @@ namespace Sandbox
                 if (Input.IsKeyPressed(KeyCode.KEY_E))
                     rotation -= ts * speed;
 
-                // Round the position to 1 decimal
-                /*string str = pos.X.ToString("n1");
-                pos.X = Convert.ToSingle(str);
-                str = pos.Y.ToString("n1");
-                pos.Y = Convert.ToSingle(str);
-                Console.WriteLine($"Converted Pos to: {pos}");*/
-
                 m_Quad.Position = pos;
                 m_Quad.Size = size;
                 m_Quad.Rotation = rotation;
 
                 // Update camera to follow player
-                Entity camera = FindEntityByName("Camera");
+                //Entity camera = FindEntityByName("Camera");
                 if (camera != null)
                 {
                     //Console.WriteLine("Camera found");
                     QuadComponent quad = camera.GetComponent<QuadComponent>();
                     Vector2 offset = new Vector2(-50f, -30f);
                     quad.Position = pos + offset;
+
+                    if (Input.IsKeyPressed(KeyCode.KEY_KP_PLUS))
+                    {
+                        Vector2 camSize = quad.Size;
+                        quad.Size = camSize + new Vector2(10.0f, 10.0f);
+                    }
+                    if (Input.IsKeyPressed(KeyCode.KEY_KP_MINUS))
+                    {
+                        Vector2 camSize = quad.Size;
+                        quad.Size = camSize - new Vector2(10.0f, 10.0f);
+                    }
                 }
 
             }

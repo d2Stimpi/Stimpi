@@ -70,7 +70,8 @@ namespace Stimpi
 		m_BackgroundCamera->SetPosition({ 0.0f, 0.0f, 0.0f });
 
 		SceneManager::Instance()->LoadStartingScene();
-		OnSceneChangedListener onScneeChanged = [&]() {
+		OnSceneChangedListener onSceneChanged = [&]()
+		{
 			ST_CORE_INFO("EditorLayer - onScneeChanged()");
 			
 			Renderer2D::Instance()->ClearScene();
@@ -81,7 +82,7 @@ namespace Stimpi
 			// Update when scene changes
 			SetupComponentContext(m_Scene.get());
 		};
-		SceneManager::Instance()->RegisterOnSceneChangeListener(onScneeChanged);
+		SceneManager::Instance()->RegisterOnSceneChangeListener(onSceneChanged);
 
 		m_Scene = SceneManager::Instance()->GetActiveSceneRef();
 		m_Scene->SetCamera(m_EditorCamera.get());

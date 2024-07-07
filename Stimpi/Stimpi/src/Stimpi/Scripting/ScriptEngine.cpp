@@ -28,7 +28,7 @@
 
 #define SCRIPTENGINE_DBG	(false)
 
-#define MONO_LIB_PATH	"mono/lib/mono/4.5"
+#define MONO_LIB_PATH	"../mono/lib/mono/4.5"
 
 namespace Stimpi
 {

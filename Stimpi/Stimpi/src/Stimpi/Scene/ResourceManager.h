@@ -26,6 +26,8 @@ namespace Stimpi
 		static std::filesystem::path GetScriptsPath() { return Instance()->GetScriptsPathInternal(); }
 		static std::filesystem::path GetDefaultProjectPath() { return Instance()->GetDefaultProjectPathInternal(); }
 
+		static bool LoadDefaultProject();
+
 		void ClearFile(const std::string& fileName);
 		void WriteToFile(const std::string& fileName, const char* data);
 		void WriteToFile(const std::string& fileName, const YAML::Node& data);

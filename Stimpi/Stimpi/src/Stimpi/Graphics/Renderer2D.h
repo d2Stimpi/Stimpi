@@ -116,6 +116,7 @@ namespace Stimpi
 
 		// For local rendering
 		std::shared_ptr<FrameBuffer> m_FrameBuffer;
+		std::shared_ptr<OrthoCamera> m_FramebufferCamera;
 		std::shared_ptr<Shader> m_RenderFrameBufferShader;
 		std::shared_ptr<RenderCommand> m_RenderFrameBufferCmd;
 

@@ -83,9 +83,10 @@ namespace Stimpi
 		m_CircleShader.reset(Shader::CreateShader("..\/assets\/shaders\/circle.shader"));
 		m_LineShader.reset(Shader::CreateShader("..\/assets\/shaders\/line.shader"));
 		// For local rendering of FBs
-		m_RenderFrameBufferShader.reset(Shader::CreateShader("..\/assets\/shaders\/framebuffer.shader"));
-		//m_RenderFrameBufferShader.reset(Shader::CreateShader("..\/assets\/shaders\/pixelart.shader"));
+		//m_RenderFrameBufferShader.reset(Shader::CreateShader("..\/assets\/shaders\/framebuffer.shader"));
+		m_RenderFrameBufferShader.reset(Shader::CreateShader("..\/assets\/shaders\/pixelart.shader"));
 		m_RenderFrameBufferCmd = std::make_shared<RenderCommand>(m_QuadVAO->VertexSize());
+		m_FramebufferCamera = std::make_shared<OrthoCamera>(0.0f, 1280.0f, 0.0f, 720.0f);
 
 		// Populate fixed data, shader uniform is set every frame
 		m_RenderFrameBufferCmd->m_Texture = m_FrameBuffer->GetTexture();
@@ -350,8 +351,15 @@ namespace Stimpi
 
 	void Renderer2D::RenderFrameBuffer()
 	{
-		SetShaderUniforms(m_RenderFrameBufferShader.get());
-		m_RenderFrameBufferShader->SetUniform("u_ViewProjection", m_ActiveCamera->GetViewProjectionMatrix());
+		auto width = m_FrameBuffer->GetWidth();
+		auto height = m_FrameBuffer->GetHeight();
+		auto camView = m_ActiveCamera->GetViewQuad();
+		auto zoom = m_ActiveCamera->GetZoom();
+		float texelPerPixel = camView.w / m_FrameBuffer->GetHeight() / zoom;  // camView.y - width
+
+		m_RenderFrameBufferShader->SetUniform("u_TexelSize", glm::vec4(1.0f / width, 1.0f / height, (float)width, (float)height));
+		m_RenderFrameBufferShader->SetUniform("u_TexelsPerPixel", texelPerPixel);
+		m_RenderFrameBufferShader->SetUniform("u_ViewProjection", m_FramebufferCamera->GetViewProjectionMatrix());
 
 		m_RenderFrameBufferCmd->ClearData();
 		PushQuadVertexData(m_RenderFrameBufferCmd.get(), glm::vec4(0.0f, 0.0f, GetCanvasWidth(), GetCanvasHeight()));
@@ -385,6 +393,11 @@ namespace Stimpi
 	void Renderer2D::ResizeCanvas(uint32_t width, uint32_t height)
 	{
 		m_FrameBuffer->Resize(width, height);
+
+		if (m_LocalRendering)
+		{
+			m_FramebufferCamera->Resize(0.0, width, 0.0f, height);
+		}
 	}
 
 	/* Render logic here below */

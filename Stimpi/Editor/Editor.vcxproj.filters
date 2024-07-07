@@ -4,6 +4,9 @@
     <Filter Include="Gui">
       <UniqueIdentifier>{6AF0870B-D6F9-877C-5F75-9E7CCB7D937C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Gui\CodeGen">
+      <UniqueIdentifier>{2E84C917-9A39-420D-232E-3CE48FE23811}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Gui\Components">
       <UniqueIdentifier>{3F7FA332-2B4D-9738-14E1-075F004E739D}</UniqueIdentifier>
     </Filter>
@@ -13,6 +16,15 @@
     <Filter Include="Gui\Nodes">
       <UniqueIdentifier>{B299BD40-1E04-72B7-6742-235DD3EB4F0C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Gui\Nodes\Events">
+      <UniqueIdentifier>{562993D3-4222-B225-6B54-97AA57AC9131}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gui\Nodes\Methods">
+      <UniqueIdentifier>{F5952E87-61AC-2C1D-AA23-B83E1679FDA4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gui\Nodes\Variables">
+      <UniqueIdentifier>{BABBE6DB-261D-C4E9-AF8A-0A9C1BEBFAA8}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Gui\Stats">
       <UniqueIdentifier>{48C71A41-B431-CFB7-FD6F-805D6919AD0C}</UniqueIdentifier>
     </Filter>
@@ -21,6 +33,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Gui\CodeGen\ClassBuilder.h">
+      <Filter>Gui\CodeGen</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\CodeGen\CodeWriter.h">
+      <Filter>Gui\CodeGen</Filter>
+    </ClInclude>
     <ClInclude Include="src\Gui\Components\ImGuiEx.h">
       <Filter>Gui\Components</Filter>
     </ClInclude>
@@ -33,8 +51,17 @@
     <ClInclude Include="src\Gui\Components\Thumbnail.h">
       <Filter>Gui\Components</Filter>
     </ClInclude>
+    <ClInclude Include="src\Gui\Components\Toolbar.h">
+      <Filter>Gui\Components</Filter>
+    </ClInclude>
     <ClInclude Include="src\Gui\Components\UIPayload.h">
       <Filter>Gui\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Config\GraphicsConfigPanel.h">
+      <Filter>Gui\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Config\LayersConfigPanel.h">
+      <Filter>Gui\Config</Filter>
     </ClInclude>
     <ClInclude Include="src\Gui\Config\SceneConfigPanel.h">
       <Filter>Gui\Config</Filter>
@@ -53,6 +80,51 @@
     </ClInclude>
     <ClInclude Include="src\Gui\MainManuBar.h">
       <Filter>Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Nodes\CodeComponent.h">
+      <Filter>Gui\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Nodes\Events\OnCreateNode.h">
+      <Filter>Gui\Nodes\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Nodes\Events\SampleEventNode.h">
+      <Filter>Gui\Nodes\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Nodes\GraphComponents.h">
+      <Filter>Gui\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Nodes\GraphController.h">
+      <Filter>Gui\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Nodes\GraphPanel.h">
+      <Filter>Gui\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Nodes\GraphRenderer.h">
+      <Filter>Gui\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Nodes\GraphSerializer.h">
+      <Filter>Gui\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Nodes\Methods\SampleMethodNode.h">
+      <Filter>Gui\Nodes\Methods</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Nodes\Methods\SetPositionNode.h">
+      <Filter>Gui\Nodes\Methods</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Nodes\NodeBuilder.h">
+      <Filter>Gui\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Nodes\NodeGraph.h">
+      <Filter>Gui\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Nodes\Nodes.h">
+      <Filter>Gui\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Nodes\Variables\VariableGetNode.h">
+      <Filter>Gui\Nodes\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Nodes\Variables\VariableSetNode.h">
+      <Filter>Gui\Nodes\Variables</Filter>
     </ClInclude>
     <ClInclude Include="src\Gui\PlayPanel.h">
       <Filter>Gui</Filter>
@@ -75,29 +147,15 @@
     <ClInclude Include="src\Gui\Utils\Utils.h">
       <Filter>Gui\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="src\Gui\Components\Toolbar.h" />
-    <ClInclude Include="src\Gui\Nodes\GraphComponents.h" />
-    <ClInclude Include="src\Gui\Nodes\GraphSerializer.h" />
-    <ClInclude Include="src\Gui\Nodes\NodeGraph.h" />
-    <ClInclude Include="src\Gui\Nodes\GraphPanel.h" />
-    <ClInclude Include="src\Gui\Nodes\GraphRenderer.h" />
-    <ClInclude Include="src\Gui\Nodes\GraphController.h" />
-    <ClInclude Include="src\Gui\Nodes\NodeBuilder.h" />
-    <ClInclude Include="src\Gui\CodeGen\CodeWriter.h" />
-    <ClInclude Include="src\Gui\CodeGen\ClassBuilder.h" />
-    <ClInclude Include="src\Gui\Nodes\Nodes.h" />
-    <ClInclude Include="src\Gui\Nodes\CodeComponent.h" />
-    <ClInclude Include="src\Gui\Nodes\Events\OnCreateNode.h" />
-    <ClInclude Include="src\Gui\Nodes\Methods\SampleMethodNode.h" />
-    <ClInclude Include="src\Gui\Nodes\Events\SampleEventNode.h" />
-    <ClInclude Include="src\Gui\Nodes\Variables\VariableSetNode.h" />
-    <ClInclude Include="src\Gui\Nodes\Variables\VariableGetNode.h" />
-    <ClInclude Include="src\Gui\Nodes\Methods\SetPositionNode.h" />
-    <ClInclude Include="src\Gui\Config\GraphicsConfigPanel.h" />
-    <ClInclude Include="src\Gui\Config\LayersConfigPanel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
+    <ClCompile Include="src\Gui\CodeGen\ClassBuilder.cpp">
+      <Filter>Gui\CodeGen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\CodeGen\CodeWriter.cpp">
+      <Filter>Gui\CodeGen</Filter>
+    </ClCompile>
     <ClCompile Include="src\Gui\Components\ImGuiEx.cpp">
       <Filter>Gui\Components</Filter>
     </ClCompile>
@@ -110,8 +168,17 @@
     <ClCompile Include="src\Gui\Components\Thumbnail.cpp">
       <Filter>Gui\Components</Filter>
     </ClCompile>
+    <ClCompile Include="src\Gui\Components\Toolbar.cpp">
+      <Filter>Gui\Components</Filter>
+    </ClCompile>
     <ClCompile Include="src\Gui\Components\UIPayload.cpp">
       <Filter>Gui\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Config\GraphicsConfigPanel.cpp">
+      <Filter>Gui\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Config\LayersConfigPanel.cpp">
+      <Filter>Gui\Config</Filter>
     </ClCompile>
     <ClCompile Include="src\Gui\Config\SceneConfigPanel.cpp">
       <Filter>Gui\Config</Filter>
@@ -131,6 +198,48 @@
     <ClCompile Include="src\Gui\MainMenuBar.cpp">
       <Filter>Gui</Filter>
     </ClCompile>
+    <ClCompile Include="src\Gui\Nodes\CodeComponent.cpp">
+      <Filter>Gui\Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Nodes\Events\OnCreateNode.cpp">
+      <Filter>Gui\Nodes\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Nodes\Events\SampleEventNode.cpp">
+      <Filter>Gui\Nodes\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Nodes\GraphComponents.cpp">
+      <Filter>Gui\Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Nodes\GraphController.cpp">
+      <Filter>Gui\Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Nodes\GraphPanel.cpp">
+      <Filter>Gui\Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Nodes\GraphRenderer.cpp">
+      <Filter>Gui\Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Nodes\GraphSerializer.cpp">
+      <Filter>Gui\Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Nodes\Methods\SampleMethodNode.cpp">
+      <Filter>Gui\Nodes\Methods</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Nodes\Methods\SetPositionNode.cpp">
+      <Filter>Gui\Nodes\Methods</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Nodes\NodeBuilder.cpp">
+      <Filter>Gui\Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Nodes\NodeGraph.cpp">
+      <Filter>Gui\Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Nodes\Variables\VariableGetNode.cpp">
+      <Filter>Gui\Nodes\Variables</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Nodes\Variables\VariableSetNode.cpp">
+      <Filter>Gui\Nodes\Variables</Filter>
+    </ClCompile>
     <ClCompile Include="src\Gui\PlayPanel.cpp">
       <Filter>Gui</Filter>
     </ClCompile>
@@ -149,24 +258,5 @@
     <ClCompile Include="src\Gui\Utils\EditorResources.cpp">
       <Filter>Gui\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="src\Gui\Components\Toolbar.cpp" />
-    <ClCompile Include="src\Gui\Nodes\GraphSerializer.cpp" />
-    <ClCompile Include="src\Gui\Nodes\NodeGraph.cpp" />
-    <ClCompile Include="src\Gui\Nodes\GraphPanel.cpp" />
-    <ClCompile Include="src\Gui\Nodes\GraphRenderer.cpp" />
-    <ClCompile Include="src\Gui\Nodes\GraphController.cpp" />
-    <ClCompile Include="src\Gui\Nodes\GraphComponents.cpp" />
-    <ClCompile Include="src\Gui\Nodes\NodeBuilder.cpp" />
-    <ClCompile Include="src\Gui\CodeGen\CodeWriter.cpp" />
-    <ClCompile Include="src\Gui\CodeGen\ClassBuilder.cpp" />
-    <ClCompile Include="src\Gui\Nodes\CodeComponent.cpp" />
-    <ClCompile Include="src\Gui\Nodes\Events\OnCreateNode.cpp" />
-    <ClCompile Include="src\Gui\Nodes\Methods\SampleMethodNode.cpp" />
-    <ClCompile Include="src\Gui\Nodes\Events\SampleEventNode.cpp" />
-    <ClCompile Include="src\Gui\Nodes\Variables\VariableSetNode.cpp" />
-    <ClCompile Include="src\Gui\Nodes\Variables\VariableGetNode.cpp" />
-    <ClCompile Include="src\Gui\Nodes\Methods\SetPositionNode.cpp" />
-    <ClCompile Include="src\Gui\Config\GraphicsConfigPanel.cpp" />
-    <ClCompile Include="src\Gui\Config\LayersConfigPanel.cpp" />
   </ItemGroup>
 </Project>

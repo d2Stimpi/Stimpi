@@ -57,6 +57,7 @@ project "Stimpi"
 		postbuildcommands
 		{
 			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Application"),
+			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Runtime"),
 			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Editor")
 		}
 	
