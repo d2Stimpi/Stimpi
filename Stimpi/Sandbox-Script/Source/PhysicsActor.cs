@@ -29,7 +29,7 @@ namespace Sandbox
             if (playerEntity != null)
             {
                 Actor player = playerEntity.As<Actor>();
-                Console.WriteLine("Player found");
+                //Console.WriteLine("Player found");
                 player.speed = 30.0f;
             }
         }
@@ -49,7 +49,7 @@ namespace Sandbox
                 if (comp != null)
                 {
                     comp.GetTransform(out Vector2 transformPos, out float angle);
-                    Console.WriteLine($"Body Transform: pos = {transformPos.X}, {transformPos.Y} angle = {angle}");
+                    //Console.WriteLine($"Body Transform: pos = {transformPos.X}, {transformPos.Y} angle = {angle}");
 
                     Vector2 newPos = new Vector2(transformPos.X + 1, transformPos.Y);
                     comp.SetTransform(newPos, angle);
@@ -83,25 +83,27 @@ namespace Sandbox
         {
             base.OnCollisionBegin(collision);
 
+            bool log = false;
+
             Contact[] contacts = collision.Contacts;
             if (contacts != null)
             {
-                Console.WriteLine($"Contact impact velocity: {collision.ImpactVelocty.X}, {collision.ImpactVelocty.Y}");
-                Console.WriteLine($"Contact points count: {contacts.Length}");
+                if (log) Console.WriteLine($"Contact impact velocity: {collision.ImpactVelocty.X}, {collision.ImpactVelocty.Y}");
+                if (log) Console.WriteLine($"Contact points count: {contacts.Length}");
                 foreach (Contact contact in contacts)
                 {
                     if (contact != null)
                     {
-                        Console.WriteLine($"Contact point: {contact.Point.X}, {contact.Point.Y}");
-                        Console.WriteLine($"Contact point impact velocity: {contact.ImpactVelocty.X}, {contact.ImpactVelocty.Y}");
+                        if (log) Console.WriteLine($"Contact point: {contact.Point.X}, {contact.Point.Y}");
+                        if (log) Console.WriteLine($"Contact point impact velocity: {contact.ImpactVelocty.X}, {contact.ImpactVelocty.Y}");
                     }
                     else
-                        Console.WriteLine("Invalid contact !?");
+                        if (log) Console.WriteLine("Invalid contact !?");
                 }
             }
             else
-            { 
-                Console.WriteLine("Contacts is null");
+            {
+                if (log) Console.WriteLine("Contacts is null");
             }
 
             Vector2 f = new Vector2(0.0f, jumpForce);

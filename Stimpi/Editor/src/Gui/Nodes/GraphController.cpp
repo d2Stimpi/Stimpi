@@ -268,7 +268,7 @@ namespace Stimpi
 
 	void GraphContorller::HandleKeyPresses()
 	{
-		if (InputManager::Instance()->IsKeyPressed(ST_KEY_DELETE))
+		if (InputManager::Instance()->IsKeyDown(ST_KEY_DELETE))
 		{
 			if (m_SelectedNode)
 			{

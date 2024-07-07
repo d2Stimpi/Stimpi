@@ -54,6 +54,9 @@ namespace Stimpi
 		void OnSceneResume();
 		void OnSceneStop();
 
+		// Camera
+		void UpdateMainCamera();
+
 		// Component change events
 		void OnSortingLayerRemove(const std::string layerName);
 

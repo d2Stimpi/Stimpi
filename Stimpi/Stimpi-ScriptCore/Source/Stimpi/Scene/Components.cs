@@ -194,4 +194,55 @@ namespace Stimpi
             return InternalCalls.RigidBody2DComponent_SetTransform(Entity.ID, ref position, ref angle);
         }
     }
+
+    public class CameraComponent : Component
+    {
+        public bool IsMain
+        {
+            get
+            {
+                if (!InternalCalls.CameraComponent_GetIsMain(Entity.ID, out bool outIsMain))
+                    Console.WriteLine($"Entity {Entity.ID} does not have CameraComponent (get isMain)");
+
+                return outIsMain;
+            }
+            set
+            {
+                if (!InternalCalls.CameraComponent_SetIsMain(Entity.ID, value))
+                    Console.WriteLine($"Entity {Entity.ID} does not have CameraComponent (set isMain)");
+            }
+        }
+
+        public Vector2 Position
+        {
+            get
+            {
+                if (!InternalCalls.QuadComponent_GetPosition(Entity.ID, out Vector2 retPos))
+                    Console.WriteLine($"Entity {Entity.ID} does not have Camera-QuadComonent (get pos)");
+
+                return retPos;
+            }
+            set
+            {
+                if (!InternalCalls.QuadComponent_SetPosition(Entity.ID, ref value))
+                    Console.WriteLine($"Entity {Entity.ID} does not have Camera-QuadComonent (set pos)");
+            }
+        }
+
+        public float Zoom
+        {
+            get
+            {
+                if (!InternalCalls.CameraComponent_GetZoom(Entity.ID, out float zoom))
+                    Console.WriteLine($"Entity {Entity.ID} does not have CameraComonent (get zoom)");
+
+                return zoom;
+            }
+            set
+            {
+                if (!InternalCalls.CameraComponent_SetZoom(Entity.ID, ref value))
+                    Console.WriteLine($"Entity {Entity.ID} does not have CameraComonent (set zoom)");
+            }
+        }
+    }
 }

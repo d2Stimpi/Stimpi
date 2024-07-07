@@ -386,9 +386,34 @@ namespace Stimpi
 
 #pragma region Input
 
+	static bool Input_IsKeyDown(uint32_t keycode)
+	{
+		return InputManager::Instance()->IsKeyDown(keycode);
+	}
+
 	static bool Input_IsKeyPressed(uint32_t keycode)
 	{
 		return InputManager::Instance()->IsKeyPressed(keycode);
+	}
+
+	static bool Input_IsKeyUp(uint32_t keycode)
+	{
+		return InputManager::Instance()->IsKeyUp(keycode);
+	}
+
+	static bool Input_IsMouseDown(uint32_t mousecode)
+	{
+		return InputManager::Instance()->IsMouseButtonDown(mousecode);
+	}
+
+	static bool Input_IsMousePressed(uint32_t mousecode)
+	{
+		return InputManager::Instance()->IsMouseButtonPressed(mousecode);
+	}
+
+	static bool Input_IsMouseUp(uint32_t mousecode)
+	{
+		return InputManager::Instance()->IsMouseButtonUp(mousecode);
 	}
 
 #pragma endregion Input
@@ -591,6 +616,49 @@ namespace Stimpi
 		return hasComponent;
 	}
 
+	static bool Physics_GetLinearVelocity(uint32_t entityID, glm::vec2* velocity)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<RigidBody2DComponent>();
+		if (hasComponent)
+		{
+			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+			b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+			auto value = body->GetLinearVelocity();
+			*velocity = { value.x, value.y };
+		}
+
+		return hasComponent;
+	}
+
+	static bool Physics_SetLinearVelocity(uint32_t entityID, glm::vec2* velocity)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<RigidBody2DComponent>();
+		if (hasComponent)
+		{
+			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+			b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+			body->SetLinearVelocity({velocity->x, velocity->y});
+		}
+
+		return hasComponent;
+	}
+
+#pragma endregion Pysics
+
+#pragma region Collision
+
 	static bool Collision_GetImpactVelocity(uint32_t entityID, uint32_t otherID, glm::vec2* velocity)
 	{
 		auto scene = SceneManager::Instance()->GetActiveScene();
@@ -639,7 +707,88 @@ namespace Stimpi
 		return nullptr;
 	}
 
-#pragma endregion Pysics
+#pragma endregion Collision
+
+#pragma region Camera
+
+	static bool CameraComponent_GetIsMain(uint32_t entityID, bool* isMain)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<CameraComponent>();
+		if (hasComponent)
+		{
+			auto& camera = entity.GetComponent<CameraComponent>();
+			*isMain = camera.m_IsMain;
+		}
+
+		return hasComponent;
+	}
+
+	static bool CameraComponent_SetIsMain(uint32_t entityID, bool isMain)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<CameraComponent>();
+		if (hasComponent)
+		{
+			auto& camera = entity.GetComponent<CameraComponent>();
+			camera.m_IsMain = isMain;
+			// Trigger "Main" camera update
+			scene->UpdateMainCamera();
+		}
+
+		return hasComponent;
+	}
+
+	static bool CameraComponent_GetZoom(uint32_t entityID, float* zoom)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<CameraComponent>();
+		if (hasComponent)
+		{
+			auto& camera = entity.GetComponent<CameraComponent>();
+			if (camera.m_Camera)
+				*zoom = camera.m_Camera->GetZoomFactor();
+		}
+
+		return hasComponent;
+	}
+
+	static bool CameraComponent_SetZoom(uint32_t entityID, float zoom)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<CameraComponent>();
+		if (hasComponent)
+		{
+			auto& camera = entity.GetComponent<CameraComponent>();
+			if (camera.m_Camera)
+				camera.m_Camera->SetZoomFactor(zoom);
+		}
+
+		return hasComponent;
+	}
+
+#pragma endregion Camera
+
 
 	void ScriptGlue::RegisterFucntions()
 	{
@@ -677,19 +826,30 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_SetRigidBodyType);
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_GetFixedRotation);
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_SetFixedRotation);
-
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_GetTransform);
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_SetTransform);
 
+		// CameraComponent
+		ST_ADD_INTERNAL_CALL(CameraComponent_GetIsMain);
+		ST_ADD_INTERNAL_CALL(CameraComponent_SetIsMain);
+		ST_ADD_INTERNAL_CALL(CameraComponent_GetZoom);
+		ST_ADD_INTERNAL_CALL(CameraComponent_SetZoom);
 
 		// Input
+		ST_ADD_INTERNAL_CALL(Input_IsKeyDown);
 		ST_ADD_INTERNAL_CALL(Input_IsKeyPressed);
+		ST_ADD_INTERNAL_CALL(Input_IsKeyUp);
+		ST_ADD_INTERNAL_CALL(Input_IsMouseDown);
+		ST_ADD_INTERNAL_CALL(Input_IsMousePressed);
+		ST_ADD_INTERNAL_CALL(Input_IsMouseUp);
 
 		// Physics
 		ST_ADD_INTERNAL_CALL(Physics_ApplyForce);
 		ST_ADD_INTERNAL_CALL(Physics_ApplyForceCenter);
 		ST_ADD_INTERNAL_CALL(Physics_ApplyLinearImpulse);
 		ST_ADD_INTERNAL_CALL(Physics_ApplyLinearImpulseCenter);
+		ST_ADD_INTERNAL_CALL(Physics_GetLinearVelocity);
+		ST_ADD_INTERNAL_CALL(Physics_SetLinearVelocity);
 
 		// Collisions
 		ST_ADD_INTERNAL_CALL(Collision_GetImpactVelocity);

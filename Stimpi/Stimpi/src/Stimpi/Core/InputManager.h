@@ -51,8 +51,13 @@ namespace Stimpi
 		bool HandleKeyboardEvent(KeyboardEvent event);
 		bool HandleMouseEvent(MouseEvent event);
 
+		static bool IsKeyDown(uint32_t keycode);
 		static bool IsKeyPressed(uint32_t keycode);
+		static bool IsKeyUp(uint32_t keycode);
+
+		static bool IsMouseButtonDown(uint8_t mbt);
 		static bool IsMouseButtonPressed(uint8_t mbt);
+		static bool IsMouseButtonUp(uint8_t mbt);
 
 		void AddEvent(KeyboardEvent event);
 		void AddEvent(MouseEvent event);

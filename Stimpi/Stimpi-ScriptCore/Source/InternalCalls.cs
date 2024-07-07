@@ -71,9 +71,30 @@ namespace Stimpi
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool RigidBody2DComponent_SetTransform(uint entityID, ref Vector2 position, ref float angle);
 
-        /* Input */
+        /* CameraComponent */
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool CameraComponent_GetIsMain(uint entityID, out bool isMain);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool CameraComponent_SetIsMain(uint entityID, bool isMain);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool CameraComponent_GetZoom(uint entityID, out float zoom);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool CameraComponent_SetZoom(uint entityID, ref float zoom);
+
+        /* Input - Keyboard */
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool Input_IsKeyDown(KeyCode keycode);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool Input_IsKeyPressed(KeyCode keycode);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool Input_IsKeyUp(KeyCode keycode);
+        /* Input - Mouse */
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool Input_IsMouseDown(MouseCode mousecode);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool Input_IsMousePressed(MouseCode mousecode);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool Input_IsMouseUp(MouseCode mousecode);
 
         /* Physics */
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -84,6 +105,10 @@ namespace Stimpi
         public extern static bool Physics_ApplyLinearImpulse(uint entityID, ref Vector2 impulse, ref Vector2 point, bool wake);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool Physics_ApplyLinearImpulseCenter(uint entityID, ref Vector2 impulse, bool wake);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool Physics_GetLinearVelocity(uint entityID, out Vector2 velocity);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool Physics_SetLinearVelocity(uint entityID, ref Vector2 velocity);
 
         /* Collision */
         [MethodImplAttribute(MethodImplOptions.InternalCall)]

@@ -477,6 +477,25 @@ namespace Stimpi
 		Physics::ClearActiveCollisions();
 	}
 
+	void Scene::UpdateMainCamera()
+	{
+		bool mainCameraFound = false;
+
+		m_Registry.view<CameraComponent>().each([=, &mainCameraFound](auto entity, auto& ncs)
+			{
+				if (ncs.m_IsMain)
+				{
+					m_RenderCamera = ncs.m_Camera.get();
+					mainCameraFound = true;
+				}
+			});
+
+		if (!mainCameraFound)
+		{
+			m_RenderCamera = m_SceneCamera;
+		}
+	}
+
 	void Scene::OnSortingLayerRemove(const std::string layerName)
 	{
 		m_Registry.view<SortingGroupComponent>().each([&layerName](auto entity, auto& group)

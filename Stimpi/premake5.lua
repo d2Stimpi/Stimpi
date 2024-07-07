@@ -19,6 +19,7 @@ include "Dependancies"
 
 -- run other projects premake5.lua scripts
 include "Application"
+include "Runtime"
 include "Editor"
 include "Stimpi"
 

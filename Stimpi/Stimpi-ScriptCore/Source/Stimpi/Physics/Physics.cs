@@ -27,5 +27,23 @@ namespace Stimpi
         {
             return InternalCalls.Physics_ApplyLinearImpulseCenter(entityID, ref impulse, wake);
         }
+
+        public static bool GetLinearVelocity(uint entityID, out Vector2 velocity)
+        {
+            bool result = InternalCalls.Physics_GetLinearVelocity(entityID, out velocity);
+            if (!result)
+                Console.WriteLine($"GetLinearVelocity failed - no RigidBody2DComponent component on entity {entityID}");
+
+            return result;
+        }
+
+        public static bool SetLinearVelocity(uint entityID, Vector2 velocity)
+        {
+            bool result = InternalCalls.Physics_SetLinearVelocity(entityID, ref velocity);
+            if (!result)
+                Console.WriteLine($"SetLinearVelocity failed - no RigidBody2DComponent component on entity {entityID}");
+
+            return result;
+        }
     }
 }

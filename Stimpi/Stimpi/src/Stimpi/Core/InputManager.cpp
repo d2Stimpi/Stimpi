@@ -4,7 +4,9 @@
 namespace Stimpi
 {
 	KeyboardEventType s_KeyStates[ST_NUM_KEYCODES];
+	KeyboardEventType s_KeyStatesInstant[ST_NUM_KEYCODES];	// Event data lasts only 1 frame, for detecting ON_DOWN and ON_UP
 	MouseEventType s_MouseButtonStates[ST_NUM_MOUSE_CODES];
+	MouseEventType s_MouseButtonStatesInstant[ST_NUM_MOUSE_CODES];
 
 	InputManager* InputManager::Instance()
 	{
@@ -73,9 +75,24 @@ namespace Stimpi
 		return handled;
 	}
 
+	bool InputManager::IsKeyDown(uint32_t keycode)
+	{
+		return s_KeyStatesInstant[keycode] == KeyboardEventType::KEY_EVENT_DOWN;
+	}
+
 	bool InputManager::IsKeyPressed(uint32_t keycode)
 	{
 		return s_KeyStates[keycode] == KeyboardEventType::KEY_EVENT_DOWN;
+	}
+
+	bool InputManager::IsKeyUp(uint32_t keycode)
+	{
+		return s_KeyStatesInstant[keycode] == KeyboardEventType::KEY_EVENT_UP;
+	}
+
+	bool InputManager::IsMouseButtonDown(uint8_t mbt)
+	{
+		return s_MouseButtonStatesInstant[mbt] == MouseEventType::MOUSE_EVENT_BUTTONDOWN;
 	}
 
 	bool InputManager::IsMouseButtonPressed(uint8_t mbt)
@@ -83,27 +100,56 @@ namespace Stimpi
 		return s_MouseButtonStates[mbt] == MouseEventType::MOUSE_EVENT_BUTTONDOWN;
 	}
 
+	bool InputManager::IsMouseButtonUp(uint8_t mbt)
+	{
+		return s_MouseButtonStatesInstant[mbt] == MouseEventType::MOUSE_EVENT_BUTTONUP;
+	}
+
 	void InputManager::AddEvent(KeyboardEvent event)
 	{
 		m_KeyboardEvents.push_back(event);
 		// Update KeyState data
-		if ((event.GetType() == KeyboardEventType::KEY_EVENT_DOWN) || (event.GetType() == KeyboardEventType::KEY_EVENT_UP))
+		if ((event.GetType() == KeyboardEventType::KEY_EVENT_DOWN) ||
+			(event.GetType() == KeyboardEventType::KEY_EVENT_UP))
 		{
 			s_KeyStates[event.GetKeyCode()] = event.GetType();
+			s_KeyStatesInstant[event.GetKeyCode()] = event.GetType();
 		}
+
+		//ST_CORE_INFO("Input: Keyboard event - {}", GetStringKeyboardEvent(event.GetType()));
 	}
 
 	void InputManager::AddEvent(MouseEvent event)
 	{
 		m_MouseEvents.push_back(event);
-		if ((event.GetType() == MouseEventType::MOUSE_EVENT_BUTTONDOWN) || (event.GetType() == MouseEventType::MOUSE_EVENT_BUTTONUP))
+		if ((event.GetType() == MouseEventType::MOUSE_EVENT_BUTTONDOWN) ||
+			(event.GetType() == MouseEventType::MOUSE_EVENT_BUTTONUP))
 		{
 			s_MouseButtonStates[event.GetButton()] = event.GetType();
+			s_MouseButtonStatesInstant[event.GetButton()] = event.GetType();
 		}
+
+		//ST_CORE_INFO("Input: Mouse event - {}", GetStringMouseEvent(event.GetType()));
 	}
 
 	void InputManager::ClearEvents()
 	{
+		// Reset key states if no active keys
+		for (auto& event : m_KeyboardEvents)
+		{
+			if ((s_KeyStatesInstant[event.GetKeyCode()] == KeyboardEventType::KEY_EVENT_DOWN) ||
+				(s_KeyStatesInstant[event.GetKeyCode()] == KeyboardEventType::KEY_EVENT_UP))
+				s_KeyStatesInstant[event.GetKeyCode()] = KeyboardEventType::NONE;
+		}
+
+		// Reset button states if no active buttons
+		for (auto& event : m_MouseEvents)
+		{
+			if ((s_MouseButtonStatesInstant[event.GetButton()] == MouseEventType::MOUSE_EVENT_BUTTONDOWN) ||
+				(s_MouseButtonStatesInstant[event.GetButton()] == MouseEventType::MOUSE_EVENT_BUTTONUP))
+				s_MouseButtonStatesInstant[event.GetButton()] = MouseEventType::NONE;
+		}
+
 		m_KeyboardEvents.clear();
 		m_MouseEvents.clear();
 	}

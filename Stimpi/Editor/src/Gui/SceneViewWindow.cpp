@@ -118,15 +118,15 @@ namespace Stimpi
 			static GizmoAction action = GizmoAction::NONE;
 			if (EditorUtils::WantCaptureKeyboard())
 			{
-				if (InputManager::Instance()->IsKeyPressed(ST_KEY_Q))
+				if (InputManager::Instance()->IsKeyDown(ST_KEY_Q))
 				{
 					action = GizmoAction::NONE;
 				}
-				if (InputManager::Instance()->IsKeyPressed(ST_KEY_W))
+				if (InputManager::Instance()->IsKeyDown(ST_KEY_W))
 				{
 					action = GizmoAction::TRANSLATE;
 				}
-				if (InputManager::Instance()->IsKeyPressed(ST_KEY_E))
+				if (InputManager::Instance()->IsKeyDown(ST_KEY_E))
 				{
 					action = GizmoAction::SCALE;
 				}
