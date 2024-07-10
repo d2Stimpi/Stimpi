@@ -292,7 +292,7 @@ namespace Stimpi
 				ImGui::Separator();
 				auto fields = scriptClass->GetAllFields();
 				auto tagName = s_SelectedEntity.GetComponent<TagComponent>().m_Tag;
-				for (auto item : fields)
+				for (auto item : fields)	// TODO: make as vector of ScriptField
 				{
 					std::string fieldName = ScriptEngine::GetFieldName(item).c_str();
 
@@ -300,26 +300,36 @@ namespace Stimpi
 					std::shared_ptr<ScriptInstance> scriptInstance = ScriptEngine::GetScriptInstance(s_SelectedEntity);
 					if (scriptInstance != nullptr)
 					{
+
 						auto field = scriptInstance->GetScriptFieldFromMonoField(item);
-						if (field->GetFieldType() == FieldType::FIELD_TYPE_CLASS)
+						ST_CORE_INFO("Field type: {}", field->GetFieldTypeName());
+						if (field->GetFieldType() == FieldType::FIELD_TYPE_CLASS || field->GetFieldType() == FieldType::FIELD_TYPE_STRUCT)
 						{
-							uint32_t fieldData = 0;
-							field->ReadFieldValue(&fieldData);
-							Entity entity = m_ActiveScene->GetEntityByHandle((entt::entity)fieldData);
-							TagComponent tag = entity.GetComponent<TagComponent>();
+							if (field->GetFieldTypeName() == "Entity")
+							{
+								uint32_t fieldData = 0;
+								field->ReadFieldValue(&fieldData);
+								Entity entity = m_ActiveScene->GetEntityByHandle((entt::entity)fieldData);
+								std::string tagStr = "None";
+								if (entity)
+								{
+									TagComponent tag = entity.GetComponent<TagComponent>();
+									tagStr = tag.m_Tag;
+								}
 
-							// Unique field label
-							std::string label = fmt::format("##ScriptClassField_{}_{}", fieldName, (uint32_t)s_SelectedEntity);
-							std::string text = fmt::format("{} ({})", tag.m_Tag, field->GetFieldTypename());
-							ImGui::InputText(label.c_str(), text.data(), text.length(), ImGuiInputTextFlags_ReadOnly);
+								// Unique field label
+								std::string label = fmt::format("##ScriptClassField_{}_{}", fieldName, (uint32_t)s_SelectedEntity);
+								std::string text = fmt::format("{} ({})", tagStr, field->GetFieldTypeName());
+								ImGui::InputText(label.c_str(), text.data(), text.length(), ImGuiInputTextFlags_ReadOnly);
 
-							UIPayload::BeginTarget(PAYLOAD_DATA_TYPE_ENTITY, [&component, &field](void* data, uint32_t size) {
-								field->SetFieldValue(data);
-								});
+								UIPayload::BeginTarget(PAYLOAD_DATA_TYPE_ENTITY, [&component, &field](void* data, uint32_t size) {
+									field->SetFieldValue(data);
+									});
 
 
-							ImGui::SameLine();
-							ImGui::Text(fieldName.c_str());
+								ImGui::SameLine();
+								ImGui::Text(fieldName.c_str());
+							}
 						}
 						else
 						{

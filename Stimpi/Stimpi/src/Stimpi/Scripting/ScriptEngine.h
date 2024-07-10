@@ -199,6 +199,7 @@ namespace Stimpi
 		FIELD_TYPE_UINT,
 
 		FIELD_TYPE_CLASS,
+		FIELD_TYPE_STRUCT,
 	};
 
 	class ST_API ScriptField
@@ -211,11 +212,10 @@ namespace Stimpi
 		void SetFieldValue(void* value);
 
 		FieldType GetFieldType() { return m_Type; }
-		std::string GetFieldTypename();
+		std::string GetFieldTypeName();
 	private:
-		ScriptInstance* m_Instance;
+		ScriptInstance* m_Instance; // Owner of the field
 		MonoClassField* m_MonoField;
-		void* m_Data;
 		FieldType m_Type;
 	};
 }

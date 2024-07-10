@@ -224,10 +224,11 @@ namespace Stimpi
 		{
 			switch (monoType)
 			{
-			case MONO_TYPE_R4:		return FieldType::FIELD_TYPE_FLOAT;
-			case MONO_TYPE_U4:		return FieldType::FIELD_TYPE_UINT;
-			case MONO_TYPE_I4:		return FieldType::FIELD_TYPE_INT;
-			case MONO_TYPE_CLASS:	return FieldType::FIELD_TYPE_CLASS;
+			case MONO_TYPE_R4:			return FieldType::FIELD_TYPE_FLOAT;
+			case MONO_TYPE_U4:			return FieldType::FIELD_TYPE_UINT;
+			case MONO_TYPE_I4:			return FieldType::FIELD_TYPE_INT;
+			case MONO_TYPE_CLASS:		return FieldType::FIELD_TYPE_CLASS;
+			case MONO_TYPE_VALUETYPE:	return FieldType::FIELD_TYPE_STRUCT;
 			}
 
 			return FieldType::UNKNOWN;
@@ -1054,7 +1055,7 @@ namespace Stimpi
 	/* ======== ScriptField ======== */
 
 	ScriptField::ScriptField(ScriptInstance* instance, MonoClassField* field)
-		: m_Instance(instance), m_MonoField(field), m_Data(nullptr)
+		: m_Instance(instance), m_MonoField(field)
 	{
 		MonoType* monoType = mono_field_get_type(field);
 		uint32_t dataType = mono_type_get_type(monoType);
@@ -1069,8 +1070,11 @@ namespace Stimpi
 	{
 		if (m_Type == FieldType::FIELD_TYPE_CLASS)
 		{
+			MonoObject* monoObj = nullptr;
 			MonoType* monoType = mono_field_get_type(m_MonoField);
-			ScriptGlue::GetFieldValue(m_Instance->GetInstance(), mono_type_get_name(monoType), value);
+			mono_field_get_value(m_Instance->GetInstance(), m_MonoField, &monoObj);
+			
+			ScriptGlue::GetFieldValue(monoObj, mono_type_get_name(monoType), value);
 		}
 		else
 		{
@@ -1082,8 +1086,19 @@ namespace Stimpi
 	{
 		if (m_Type == FieldType::FIELD_TYPE_CLASS)
 		{
+			MonoObject* monoObj = nullptr;
 			MonoType* monoType = mono_field_get_type(m_MonoField);
-			ScriptGlue::SetFieldValue(m_Instance->GetInstance(), mono_type_get_name(monoType), value);
+			mono_field_get_value(m_Instance->GetInstance(), m_MonoField, &monoObj);
+			if (monoObj == nullptr)
+			{
+				MonoClass* monoClass = mono_class_from_mono_type(monoType);
+				monoObj = mono_object_new(ScriptEngine::GetAppDomain(), monoClass);
+				mono_runtime_object_init(monoObj);
+				// Set new object to owner class as a field
+				mono_field_set_value(m_Instance->GetInstance(), m_MonoField, monoObj);
+			}
+
+			ScriptGlue::SetFieldValue(monoObj, mono_type_get_name(monoType), value);
 		}
 		else
 		{
@@ -1091,8 +1106,7 @@ namespace Stimpi
 		}
 	}
 
-
-	std::string ScriptField::GetFieldTypename()
+	std::string ScriptField::GetFieldTypeName()
 	{
 		MonoType* monoType = mono_field_get_type(m_MonoField);
 		std::string name = mono_type_get_name(monoType);

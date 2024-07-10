@@ -15,6 +15,7 @@ namespace Sandbox
         public float speed = 16.0f;
 
         public Entity camera;
+        public Vector2 vector;
 
         public override void OnCreate()
         {
@@ -25,8 +26,8 @@ namespace Sandbox
             if (HasComponent<AnimatedSpriteComponent>())
                 m_AnimComponent = GetComponent<AnimatedSpriteComponent>();
 
-            camera = FindEntityByName("Camera");
-            Console.WriteLine($"Camera found - ID {camera.ID}");
+            /*camera = FindEntityByName("Camera");
+            Console.WriteLine($"Camera found - ID {camera.ID}");*/
         }
 
         public override void OnUpdate(float ts)
