@@ -120,8 +120,6 @@ namespace Stimpi
 		ST_CORE_TRACE("{0}: OnDetach", m_DebugName);
 	}
 
-	static bool show_demo_window = true;
-	static bool show_scene_config_window = true;
 	static ImVec2 wsLog;
 	static ImVec2 uvLog;
 
@@ -135,16 +133,6 @@ namespace Stimpi
 			if (!EditorUtils::WantCaptureKeyboard())	// Bail out if we are processing some input text for example
 				return false;
 
-			if (keyEvent->GetKeyCode() == SDL_SCANCODE_P && keyEvent->GetType() == KeyboardEventType::KEY_EVENT_DOWN)
-			{
-				show_scene_config_window = !show_scene_config_window;
-				return true;
-			}
-			if (keyEvent->GetKeyCode() == SDL_SCANCODE_O && keyEvent->GetType() == KeyboardEventType::KEY_EVENT_DOWN)
-			{
-				show_demo_window = !show_demo_window;
-				return true;
-			}
 			return false;
 		});
 
@@ -250,12 +238,6 @@ namespace Stimpi
 			if (m_SceneViewWindow.IsFocused())
 				m_CameraController->Update(ts);
 		}
-
-
-		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-		if (show_demo_window)
-			ImGui::ShowDemoWindow(&show_demo_window);
-		
 
 		// Custom Rendering stuff
 		auto canvasWidth = Stimpi::Renderer2D::Instance()->GetCanvasWidth();

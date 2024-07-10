@@ -27,6 +27,8 @@
 
 namespace Stimpi
 {
+	static bool s_ShowDemo = false;
+
 	MainMenuBar::MainMenuBar()
 	{
 
@@ -185,6 +187,16 @@ namespace Stimpi
 			}
 #pragma endregion TESTING
 
+			if (ImGui::BeginMenu("ImGui"))
+			{
+				if (ImGui::MenuItem("ShowDemo", nullptr, s_ShowDemo))
+				{
+					s_ShowDemo = !s_ShowDemo;
+				}
+
+				ImGui::EndMenu();
+			}
+
 #if 0
 			if (ImGui::BeginMenu("Mono"))
 			{
@@ -228,5 +240,8 @@ namespace Stimpi
 #endif
 			ImGui::EndMainMenuBar();
 		}
+
+		if (s_ShowDemo)
+			ImGui::ShowDemoWindow(&s_ShowDemo);
 	}
 }

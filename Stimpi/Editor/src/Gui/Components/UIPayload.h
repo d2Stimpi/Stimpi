@@ -7,6 +7,8 @@
 #define PAYLOAD_NODE_VARIABLE_GET	"Payload_Node_Variable_Get"
 #define PAYLOAD_NODE_VARIABLE_SET	"Payload_Node_Variable_Set"
 
+#define PAYLOAD_DATA_TYPE_ENTITY	"Payload_Data_Type_Entity"
+
 namespace Stimpi
 {
 	using OnPayloadDropFunction = std::function<void(void* data, uint32_t size)>;

@@ -190,6 +190,17 @@ namespace Stimpi
 		std::vector<std::shared_ptr<ScriptField>> m_ScriptFields;
 	};
 
+	enum class FieldType 
+	{ 
+		UNKNOWN = 0, 
+		
+		FIELD_TYPE_FLOAT,
+		FIELD_TYPE_INT,
+		FIELD_TYPE_UINT,
+
+		FIELD_TYPE_CLASS,
+	};
+
 	class ST_API ScriptField
 	{
 	public:
@@ -198,9 +209,13 @@ namespace Stimpi
 		MonoClassField* GetMonoField() { return m_MonoField; }
 		void ReadFieldValue(void* value);
 		void SetFieldValue(void* value);
+
+		FieldType GetFieldType() { return m_Type; }
+		std::string GetFieldTypename();
 	private:
 		ScriptInstance* m_Instance;
 		MonoClassField* m_MonoField;
 		void* m_Data;
+		FieldType m_Type;
 	};
 }

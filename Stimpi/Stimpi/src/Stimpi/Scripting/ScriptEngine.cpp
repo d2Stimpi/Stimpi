@@ -26,7 +26,7 @@
  *  - Find a better way to handle Field & Property data, keeping a local value, type handling...
  */
 
-#define SCRIPTENGINE_DBG	(false)
+#define SCRIPTENGINE_DBG	(true)
 
 #define MONO_LIB_PATH	"../mono/lib/mono/4.5"
 
@@ -186,6 +186,52 @@ namespace Stimpi
 				}
 			}
 		}
+
+		/**
+		 * Mono types  -> Cpp types
+		 *
+		 * MONO_TYPE_I
+		 * MONO_TYPE_U		-> pointer ?
+		 *
+		 * MONO_TYPE_BOOLEAN
+		 * MONO_TYPE_CHAR
+		 * MONO_TYPE_I1		-> int8_t
+		 * MONO_TYPE_U1		-> uint8_t
+		 *
+		 * MONO_TYPE_I2		-> int16_t
+		 * MONO_TYPE_U2		-> uint16_t
+		 *
+		 * MONO_TYPE_I4		-> int32_t
+		 * MONO_TYPE_U4		-> uint32_t
+		 *
+		 * MONO_TYPE_STRING	-> mono string
+		 *
+		 * MONO_TYPE_CLASS
+		 * MONO_TYPE_OBJECT
+		 *
+		 * MONO_TYPE_PTR
+		 * MONO_TYPE_FNPTR
+		 * MONO_TYPE_ARRAY
+		 * MONO_TYPE_SZARRAY
+		 *
+		 * MONO_TYPE_I8		-> int64_t
+		 * MONO_TYPE_U8		-> uint64_t
+		 * MONO_TYPE_R4		-> float
+		 * MONO_TYPE_R8		-> double
+		 */
+
+		static FieldType GetFieldTypeFromMonoType(uint32_t monoType)
+		{
+			switch (monoType)
+			{
+			case MONO_TYPE_R4:		return FieldType::FIELD_TYPE_FLOAT;
+			case MONO_TYPE_U4:		return FieldType::FIELD_TYPE_UINT;
+			case MONO_TYPE_I4:		return FieldType::FIELD_TYPE_INT;
+			case MONO_TYPE_CLASS:	return FieldType::FIELD_TYPE_CLASS;
+			}
+
+			return FieldType::UNKNOWN;
+		}
 	};
 
 	/**
@@ -274,6 +320,7 @@ namespace Stimpi
 
 		ScriptGlue::RegisterFucntions();
 		ScriptGlue::RegisterComponents();
+		ScriptGlue::RegisterDataMappings();
 
 		// Register Hot reload watcher
 		s_Data->m_OnScriptUpdated = [](SystemShellEvent* event)
@@ -1011,25 +1058,46 @@ namespace Stimpi
 	{
 		MonoType* monoType = mono_field_get_type(field);
 		uint32_t dataType = mono_type_get_type(monoType);
-		switch (dataType)
-		{
-		case MONO_TYPE_R4:
-
-			break;
-		default:
-			break;
-		}
+		m_Type = Utils::GetFieldTypeFromMonoType(dataType);
+		
+		ST_CORE_INFO("SE - Mono type name: {}", mono_type_get_name(monoType));
+		ST_CORE_INFO("SE - Mono field name: {}", mono_field_get_name(field));
 	}
 
 	// TODO: reading only initial value from C# and store it locally in ScriptEngine - rework stuff
 	void ScriptField::ReadFieldValue(void* value)
 	{
-		mono_field_get_value(m_Instance->GetInstance(), m_MonoField, value);
+		if (m_Type == FieldType::FIELD_TYPE_CLASS)
+		{
+			MonoType* monoType = mono_field_get_type(m_MonoField);
+			ScriptGlue::GetFieldValue(m_Instance->GetInstance(), mono_type_get_name(monoType), value);
+		}
+		else
+		{
+			mono_field_get_value(m_Instance->GetInstance(), m_MonoField, value);
+		}
 	}
 
 	void ScriptField::SetFieldValue(void* value)
 	{
-		mono_field_set_value(m_Instance->GetInstance(), m_MonoField, value);
+		if (m_Type == FieldType::FIELD_TYPE_CLASS)
+		{
+			MonoType* monoType = mono_field_get_type(m_MonoField);
+			ScriptGlue::SetFieldValue(m_Instance->GetInstance(), mono_type_get_name(monoType), value);
+		}
+		else
+		{
+			mono_field_set_value(m_Instance->GetInstance(), m_MonoField, value);
+		}
+	}
+
+
+	std::string ScriptField::GetFieldTypename()
+	{
+		MonoType* monoType = mono_field_get_type(m_MonoField);
+		std::string name = mono_type_get_name(monoType);
+		size_t pos = name.find_last_of('.');
+		return name.substr(pos + 1);
 	}
 
 }

@@ -860,11 +860,85 @@ namespace Stimpi
 	{
 		RegisterComponent<TagComponent>();
 		RegisterComponent<QuadComponent>();
+		RegisterComponent<CircleComponent>();
 		RegisterComponent<SpriteComponent>();
 		RegisterComponent<CameraComponent>();
 		RegisterComponent<RigidBody2DComponent>();
 		RegisterComponent<BoxCollider2DComponent>();
 		RegisterComponent<AnimatedSpriteComponent>();
 	}
+
+#pragma region FieldDataTypeMapping
+
+#define ST_ADD_FIELD_TYPE_READ(FieldName, ReadFunc)			s_FieldDataTypeReadFunctions[FieldName] = ReadFunc;
+#define ST_ADD_FIELD_TYPE_WRITE(FieldName, WriteFunc)		s_FieldDataTypeWriteFunctions[FieldName] = WriteFunc;
+
+	static std::unordered_map<std::string, std::function<void(MonoObject*, void*)>> s_FieldDataTypeReadFunctions;
+	static std::unordered_map<std::string, std::function<void(MonoObject*, void*)>> s_FieldDataTypeWriteFunctions;
+
+	static void Entity_Unpack(MonoObject* object, void* data)
+	{
+		MonoType* monoType = mono_reflection_type_from_name("Stimpi.Entity", ScriptEngine::GetCoreAssemblyImage());
+		if (monoType)
+		{
+			MonoClass* klass = mono_class_from_mono_type(monoType);
+			auto objClass = mono_object_get_class(object);
+			auto cam = mono_class_get_field_from_name(objClass, "camera");
+
+			MonoClassField* nested;
+			void* iter = NULL;
+			while ((nested = mono_class_get_fields(objClass, &iter))) {
+				ST_CORE_INFO("** {}", mono_field_get_name(nested));
+
+				MonoType* type = mono_field_get_type(nested);
+				MonoClass* subClass = mono_type_get_class(type);
+
+				if (subClass)
+				{
+					MonoClassField* nested2;
+					void* iter2 = NULL;
+					while ((nested2 = mono_class_get_fields(subClass, &iter2))) {
+						ST_CORE_INFO("**** {}", mono_field_get_name(nested2));
+					}
+				}
+			}
+
+			MonoClassField* entity = mono_class_get_field_from_name(klass, "ID");
+			mono_field_get_value(object, entity, data);
+		}
+	}
+
+	static void Entity_Pack(MonoObject* object, void* data)
+	{
+		MonoType* monoType = mono_reflection_type_from_name("Stimpi.Entity", ScriptEngine::GetCoreAssemblyImage());
+		if (monoType)
+		{
+			MonoClass* klass = mono_class_from_mono_type(monoType);
+			MonoClassField* entity = mono_class_get_field_from_name(klass, "ID");
+			mono_field_set_value(object, entity, data);
+		}
+	}
+
+	void ScriptGlue::RegisterDataMappings()
+	{
+		ST_ADD_FIELD_TYPE_READ("Stimpi.Entity",		Entity_Unpack);
+		ST_ADD_FIELD_TYPE_WRITE("Stimpi.Entity",	Entity_Pack);
+	}
+
+
+	void ScriptGlue::GetFieldValue(MonoObject* object, const std::string& name, void* data)
+	{
+		if (s_FieldDataTypeReadFunctions.find(name) != s_FieldDataTypeReadFunctions.end())
+			s_FieldDataTypeReadFunctions.at(name)(object, data);
+	}
+
+
+	void ScriptGlue::SetFieldValue(MonoObject* object, const std::string& name, void* data)
+	{
+		if (s_FieldDataTypeWriteFunctions.find(name) != s_FieldDataTypeWriteFunctions.end())
+			s_FieldDataTypeWriteFunctions.at(name)(object, data);
+	}
+
+#pragma endregion FieldDataTypeMapping
 
 }

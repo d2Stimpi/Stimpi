@@ -75,6 +75,7 @@ namespace Stimpi
 						}
 					}
 
+					static Entity preSelect;
 					for (auto entity : m_ActiveScene->m_Entities)
 					{
 						ImGui::PushID((uint32_t)entity);
@@ -87,11 +88,21 @@ namespace Stimpi
 
 						if (ImGui::TreeNodeEx((void*)&entity, leaf_flags,"%s", entityTag.c_str()))
 						{
-							if (ImGui::IsItemClicked())
+							if (ImGui::IsItemClicked() /*&& ImGui::IsMouseReleased(0)*/)
 							{
-								s_SelectedEntity = entity;
+								//s_SelectedEntity = entity;
 							}
 						}
+						if (ImGui::IsItemHovered())
+						{
+							if (ImGui::IsMouseDown(0))
+								preSelect = entity;
+							else if (ImGui::IsMouseReleased(0))
+								s_SelectedEntity = preSelect;
+						}
+
+						UIPayload::BeginSource(PAYLOAD_DATA_TYPE_ENTITY, &entity, sizeof(entity), entityTag.c_str());
+
 						ImGui::PopID();
 					}
 					ImGui::TreePop();
@@ -289,12 +300,37 @@ namespace Stimpi
 					std::shared_ptr<ScriptInstance> scriptInstance = ScriptEngine::GetScriptInstance(s_SelectedEntity);
 					if (scriptInstance != nullptr)
 					{
-						float fNum = 0.0f;
 						auto field = scriptInstance->GetScriptFieldFromMonoField(item);
-						field->ReadFieldValue(&fNum);
-						if (ImGui::InputFloat(fmt::format("{}##{}", fieldName, tagName).c_str(), &fNum, 0.0f, 0.0f, "%.3f", fieldInputFlags))
+						if (field->GetFieldType() == FieldType::FIELD_TYPE_CLASS)
 						{
-							field->SetFieldValue(&fNum);
+							uint32_t fieldData = 0;
+							field->ReadFieldValue(&fieldData);
+							Entity entity = m_ActiveScene->GetEntityByHandle((entt::entity)fieldData);
+							TagComponent tag = entity.GetComponent<TagComponent>();
+
+							// Unique field label
+							std::string label = fmt::format("##ScriptClassField_{}_{}", fieldName, (uint32_t)s_SelectedEntity);
+							std::string text = fmt::format("{} ({})", tag.m_Tag, field->GetFieldTypename());
+							ImGui::InputText(label.c_str(), text.data(), text.length(), ImGuiInputTextFlags_ReadOnly);
+
+							UIPayload::BeginTarget(PAYLOAD_DATA_TYPE_ENTITY, [&component, &field](void* data, uint32_t size) {
+								field->SetFieldValue(data);
+								});
+
+
+							ImGui::SameLine();
+							ImGui::Text(fieldName.c_str());
+						}
+						else
+						{
+							float fNum = 0.0f;
+							field->ReadFieldValue(&fNum);
+							if (ImGui::InputFloat(fmt::format("{}##{}", "", tagName).c_str(), &fNum, 0.0f, 0.0f, "%.3f", fieldInputFlags))
+							{
+								field->SetFieldValue(&fNum);
+							}
+							ImGui::SameLine();
+							ImGui::Text(fieldName.c_str());
 						}
 					}
 				}

@@ -14,7 +14,7 @@ namespace Sandbox
         private QuadComponent m_Quad;
         public float speed = 16.0f;
 
-        Entity camera;
+        public Entity camera;
 
         public override void OnCreate()
         {
@@ -26,6 +26,7 @@ namespace Sandbox
                 m_AnimComponent = GetComponent<AnimatedSpriteComponent>();
 
             camera = FindEntityByName("Camera");
+            Console.WriteLine($"Camera found - ID {camera.ID}");
         }
 
         public override void OnUpdate(float ts)
