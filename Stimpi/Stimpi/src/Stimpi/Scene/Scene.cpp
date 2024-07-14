@@ -67,7 +67,7 @@ namespace Stimpi
 	{
 		// Workaround - Create 0 value Entity and never use it. Fixes check for valid Entity
 		m_Registry.create();
-		ComponentObserver::InitOnConstructObservers(m_Registry, this);
+		ComponentObserver::InitComponentObservers(m_Registry, this);
 
 		// Clear script instances - they are created in OnScriptConstruct
 		ScriptEngine::ClearScriptInstances();
@@ -128,7 +128,7 @@ namespace Stimpi
 
 	Scene::~Scene()
 	{
-		ComponentObserver::DeinitOnConstructObservers(m_Registry);
+		ComponentObserver::DeinitConstructObservers(m_Registry);
 	}
 
 	void Scene::OnUpdate(Timestep ts)

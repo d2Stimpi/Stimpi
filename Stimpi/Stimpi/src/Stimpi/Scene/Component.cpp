@@ -69,7 +69,7 @@ namespace Stimpi
 			AssetManager::Release(sprite.m_TextureHandle);
 	}
 
-	void ComponentObserver::InitOnConstructObservers(entt::registry& reg, Scene* scene)
+	void ComponentObserver::InitComponentObservers(entt::registry& reg, Scene* scene)
 	{
 		s_ActiveScene = scene;
 
@@ -84,7 +84,7 @@ namespace Stimpi
 		reg.on_destroy<SpriteComponent>().connect<&OnSpriteDestruct>();
 	}
 
-	void ComponentObserver::DeinitOnConstructObservers(entt::registry& reg)
+	void ComponentObserver::DeinitConstructObservers(entt::registry& reg)
 	{
 		// on_construct
 		reg.on_construct<QuadComponent>().disconnect<&OnQuadConstruct>();

@@ -1,10 +1,11 @@
 #include "stpch.h"
-#include "Gui/SceneHierarchyWindow.h"
+#include "Gui/Panels/SceneHierarchyWindow.h"
 
 #include "Gui/Components/UIPayload.h"
 #include "Gui/Components/SearchPopup.h"
 #include "Gui/EditorUtils.h"
 #include "Gui/Components/ImGuiEx.h"
+#include "Gui/Panels/ScriptFieldFragment.h"
 
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Entity.h"
@@ -25,6 +26,8 @@ namespace Stimpi
 
 	SceneHierarchyWindow::SceneHierarchyWindow()
 	{
+		ScriptFieldFragment::RegisterScriptFieldFunctions();
+
 		OnSceneChangedListener onScneeChanged = [&]() {
 			ST_CORE_INFO("Scene change detected!");
 			m_ActiveScene = SceneManager::Instance()->GetActiveScene();
@@ -274,7 +277,7 @@ namespace Stimpi
 			
 			if (showPopup)
 			{
-				auto filterData = ScriptEngine::GetScriptClassNames();
+				auto& filterData = ScriptEngine::GetScriptClassNames();
 				if (SearchPopup::OnImGuiRender(filterData))
 				{
 					component.m_ScriptName = SearchPopup::GetSelection();
@@ -290,57 +293,35 @@ namespace Stimpi
 				ImGuiInputTextFlags fieldInputFlags = ImGuiInputTextFlags_EnterReturnsTrue;
 
 				ImGui::Separator();
-				auto fields = scriptClass->GetAllFields();
-				auto tagName = s_SelectedEntity.GetComponent<TagComponent>().m_Tag;
-				for (auto item : fields)	// TODO: make as vector of ScriptField
+				std::shared_ptr<ScriptInstance> scriptInstance = ScriptEngine::GetScriptInstance(s_SelectedEntity);
+				if (scriptInstance != nullptr)
 				{
-					std::string fieldName = ScriptEngine::GetFieldName(item).c_str();
-
-					// Populate with data from Entity's class Instance
-					std::shared_ptr<ScriptInstance> scriptInstance = ScriptEngine::GetScriptInstance(s_SelectedEntity);
-					if (scriptInstance != nullptr)
+					auto& fields = scriptInstance->GetFields();
+					auto& tagName = s_SelectedEntity.GetComponent<TagComponent>().m_Tag;
+					for (auto& item : fields)
 					{
+						auto& field = item.second;
+						std::string& fieldName = field->GetName();
+						std::string& fieldTypeName = field->GetFieldTypeName();
 
-						auto field = scriptInstance->GetScriptFieldFromMonoField(item);
-						ST_CORE_INFO("Field type: {}", field->GetFieldTypeName());
-						if (field->GetFieldType() == FieldType::FIELD_TYPE_CLASS || field->GetFieldType() == FieldType::FIELD_TYPE_STRUCT)
+						if (ScriptFieldFragment::IsFieldTypeSupported(fieldTypeName))
 						{
-							if (field->GetFieldTypeName() == "Entity")
-							{
-								uint32_t fieldData = 0;
-								field->ReadFieldValue(&fieldData);
-								Entity entity = m_ActiveScene->GetEntityByHandle((entt::entity)fieldData);
-								std::string tagStr = "None";
-								if (entity)
-								{
-									TagComponent tag = entity.GetComponent<TagComponent>();
-									tagStr = tag.m_Tag;
-								}
-
-								// Unique field label
-								std::string label = fmt::format("##ScriptClassField_{}_{}", fieldName, (uint32_t)s_SelectedEntity);
-								std::string text = fmt::format("{} ({})", tagStr, field->GetFieldTypeName());
-								ImGui::InputText(label.c_str(), text.data(), text.length(), ImGuiInputTextFlags_ReadOnly);
-
-								UIPayload::BeginTarget(PAYLOAD_DATA_TYPE_ENTITY, [&component, &field](void* data, uint32_t size) {
-									field->SetFieldValue(data);
-									});
-
-
-								ImGui::SameLine();
-								ImGui::Text(fieldName.c_str());
-							}
+							ScriptFieldFragment::ScriptFieldInput(scriptInstance->GetInstance().get(), field.get());
 						}
 						else
 						{
-							float fNum = 0.0f;
-							field->ReadFieldValue(&fNum);
-							if (ImGui::InputFloat(fmt::format("{}##{}", "", tagName).c_str(), &fNum, 0.0f, 0.0f, "%.3f", fieldInputFlags))
+							// FIXME: temp check to prevent fNum corruption
+							if (field->GetType() != FieldType::FIELD_TYPE_CLASS && field->GetType() != FieldType::FIELD_TYPE_STRUCT)
 							{
-								field->SetFieldValue(&fNum);
+								float fNum = 0.0f;
+								field->GetValue(&fNum);
+								if (ImGui::InputFloat(fmt::format("{}##{}", "", tagName).c_str(), &fNum, 0.0f, 0.0f, "%.3f", fieldInputFlags))
+								{
+									field->SetValue(&fNum);
+								}
+								ImGui::SameLine();
+								ImGui::Text(fieldName.c_str());
 							}
-							ImGui::SameLine();
-							ImGui::Text(fieldName.c_str());
 						}
 					}
 				}

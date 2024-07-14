@@ -12,7 +12,7 @@
 // Gui includes
 #include "Gui/ContentBrowserWindow.h"
 #include "Gui/SceneViewWindow.h"
-#include "Gui/SceneHierarchyWindow.h"
+#include "Gui/Panels/SceneHierarchyWindow.h"
 #include "Gui/MainManuBar.h"
 #include "Gui/PlayPanel.h"
 #include "Gui/SpriteAnimPanel.h"

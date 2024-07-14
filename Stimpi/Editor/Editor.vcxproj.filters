@@ -129,7 +129,7 @@
     <ClInclude Include="src\Gui\PlayPanel.h">
       <Filter>Gui</Filter>
     </ClInclude>
-    <ClInclude Include="src\Gui\SceneHierarchyWindow.h">
+    <ClInclude Include="src\Gui\Panels\SceneHierarchyWindow.h">
       <Filter>Gui</Filter>
     </ClInclude>
     <ClInclude Include="src\Gui\SceneViewWindow.h">
@@ -147,6 +147,7 @@
     <ClInclude Include="src\Gui\Utils\Utils.h">
       <Filter>Gui\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\Gui\Panels\ScriptFieldFragment.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
@@ -243,7 +244,7 @@
     <ClCompile Include="src\Gui\PlayPanel.cpp">
       <Filter>Gui</Filter>
     </ClCompile>
-    <ClCompile Include="src\Gui\SceneHierarchyWindow.cpp">
+    <ClCompile Include="src\Gui\Panels\SceneHierarchyWindow.cpp">
       <Filter>Gui</Filter>
     </ClCompile>
     <ClCompile Include="src\Gui\SceneViewWindow.cpp">
@@ -258,5 +259,6 @@
     <ClCompile Include="src\Gui\Utils\EditorResources.cpp">
       <Filter>Gui\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="src\Gui\Panels\ScriptFieldFragment.cpp" />
   </ItemGroup>
 </Project>

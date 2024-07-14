@@ -11,7 +11,7 @@
 #include "Stimpi/Scene/Utils/SceneUtils.h"
 
 #include "Gui/Components/UIPayload.h"
-#include "Gui/SceneHierarchyWindow.h"
+#include "Gui/Panels/SceneHierarchyWindow.h"
 #include "Gui/Gizmo2D.h"
 #include "Gui/EditorUtils.h"
 

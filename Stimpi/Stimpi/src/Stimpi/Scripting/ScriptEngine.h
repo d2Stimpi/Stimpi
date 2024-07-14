@@ -21,6 +21,8 @@ namespace Stimpi
 {
 	class ScriptClass;
 	class ScriptInstance; 
+	//class ScriptField;
+	class ScriptObject;
 	class ScriptField;
 
 	struct ClassIdentifier
@@ -133,8 +135,8 @@ namespace Stimpi
 		MonoMethod* GetMethod(const std::string& methodName, int parameterCount);
 		MonoObject* InvokeMethod(MonoObject* instance, MonoMethod* method, void** params);
 
-		MonoClassField* GetField(const std::string& fieldName);
-		std::vector<MonoClassField*>& GetAllFields() { return m_Fields; }
+		MonoClassField* GetMonoField(const std::string& fieldName);
+		std::vector<MonoClassField*>& GetAllMonoFields() { return m_Fields; }
 	private:
 		void LoadFields();
 		void LoadProperties();
@@ -163,10 +165,11 @@ namespace Stimpi
 		void InvokeOnCollisionPreSolve(Collision collision);
 		void InvokeOnCollisionPostSolve(Collision collision);
 
-		MonoObject* GetInstance() { return m_Instance; }
-		std::vector<std::shared_ptr<ScriptField>>& GetFields() { return m_ScriptFields; }
+		MonoObject* GetMonoInstance();
 
-		std::shared_ptr<ScriptField> GetScriptFieldFromMonoField(MonoClassField* field);
+		std::shared_ptr<ScriptObject>& GetInstance();
+
+		std::unordered_map<std::string, std::shared_ptr<ScriptField>>& GetFields();
 
 		// Custom method invocation - for non-Entity scripts
 		void InvokeMethod(std::string methodName, int parameterCount = 0, void** params = nullptr);
@@ -175,7 +178,7 @@ namespace Stimpi
 		std::shared_ptr<ScriptClass> m_ScriptClass;
 		Entity m_Entity;
 
-		MonoObject* m_Instance = nullptr;
+		std::shared_ptr<ScriptObject> m_Instance;
 		MonoMethod* m_Constructor = nullptr;
 		MonoMethod* m_OnCreateMethod = nullptr;
 		MonoMethod* m_OnUpdateMethod = nullptr;
@@ -185,9 +188,26 @@ namespace Stimpi
 		MonoMethod* m_OnCollisionEnd = nullptr;
 		MonoMethod* m_OnCollisionPreSolve = nullptr;
 		MonoMethod* m_OnCollisionPostSolve = nullptr;
+	};
 
-		/* Manage a collection of ScriptField objects that are wrappers around C# Field */
-		std::vector<std::shared_ptr<ScriptField>> m_ScriptFields;
+	class ST_API ScriptObject
+	{
+	public:
+		ScriptObject(MonoObject* obj);
+		ScriptObject(std::string typeName);
+
+		MonoObject* GetMonoObject() { return m_MonoObject; }
+		void GetFieldValue(const std::string& fieldName, void* data);
+		void SetFieldValue(const std::string& fieldName, void* data);
+		std::shared_ptr<ScriptObject> GetFieldAsObject(const std::string& fieldName, bool createNew);
+
+		std::unordered_map<std::string, std::shared_ptr<ScriptField>>& GetFields();
+
+	private:
+		void PopulateFieldsData();
+
+		MonoObject* m_MonoObject;
+		std::unordered_map<std::string, std::shared_ptr<ScriptField>> m_Fields;
 	};
 
 	enum class FieldType 
@@ -205,17 +225,22 @@ namespace Stimpi
 	class ST_API ScriptField
 	{
 	public:
-		ScriptField(ScriptInstance* instance, MonoClassField* field);
+		ScriptField(ScriptObject* parent, MonoClassField* monoField);
 
-		MonoClassField* GetMonoField() { return m_MonoField; }
-		void ReadFieldValue(void* value);
-		void SetFieldValue(void* value);
+		void GetValue(void* data);
+		void SetValue(void* data);
 
-		FieldType GetFieldType() { return m_Type; }
-		std::string GetFieldTypeName();
+		std::string& GetName() { return m_Name; }
+		std::string& GetFieldTypeName() { return m_FieldTypeName; }
+		std::string& GetFieldTypeShortName() { return m_FieldTypeShortName; }
+		FieldType  GetType() { return m_Type; }
+
 	private:
-		ScriptInstance* m_Instance; // Owner of the field
+		ScriptObject* m_ParentObject;
 		MonoClassField* m_MonoField;
+		std::string m_Name;
+		std::string m_FieldTypeName;
+		std::string m_FieldTypeShortName;
 		FieldType m_Type;
 	};
 }

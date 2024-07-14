@@ -297,8 +297,6 @@ namespace Stimpi
 
 		OnSceneChangedListener onScneeChanged = [&]() {
 			s_Data->m_Scene = SceneManager::Instance()->GetActiveSceneRef();
-			// Re-create Script instances
-			//CreateScriptInstances();
 		};
 		SceneManager::Instance()->RegisterOnSceneChangeListener(onScneeChanged);
 
@@ -321,7 +319,6 @@ namespace Stimpi
 
 		ScriptGlue::RegisterFucntions();
 		ScriptGlue::RegisterComponents();
-		ScriptGlue::RegisterDataMappings();
 
 		// Register Hot reload watcher
 		s_Data->m_OnScriptUpdated = [](SystemShellEvent* event)
@@ -761,9 +758,9 @@ namespace Stimpi
 
 	void ScriptEngine::OnScenePlay()
 	{
-		for (auto element : s_Data->m_EntityInstances)
+		for (auto& element : s_Data->m_EntityInstances)
 		{
-			auto instance = element.second;
+			auto& instance = element.second;
 			instance->InvokeOnCreate();
 		}
 	}
@@ -841,8 +838,8 @@ namespace Stimpi
 	{
 		if (s_Data->m_EntityInstances.find(entityID) != s_Data->m_EntityInstances.end())
 		{
-			auto instance = s_Data->m_EntityInstances.at(entityID);
-			return instance->GetInstance();
+			auto& instance = s_Data->m_EntityInstances.at(entityID);
+			return instance->GetMonoInstance();
 		}
 		else
 		{
@@ -917,7 +914,7 @@ namespace Stimpi
 		return nullptr;
 	}
 
-	MonoClassField* ScriptClass::GetField(const std::string& fieldName)
+	MonoClassField* ScriptClass::GetMonoField(const std::string& fieldName)
 	{
 		return mono_class_get_field_from_name(m_Class, fieldName.c_str());
 	}
@@ -954,7 +951,7 @@ namespace Stimpi
 	ScriptInstance::ScriptInstance(std::shared_ptr<ScriptClass> scriptClass, Entity entity)
 		: m_ScriptClass(scriptClass), m_Entity(entity)
 	{
-		m_Instance = m_ScriptClass->Instantiate();
+		m_Instance = std::make_shared<ScriptObject>(m_ScriptClass->Instantiate());
 		m_Constructor = s_Data->m_EntityClass.GetMethod(".ctor", 1);
 		m_OnCreateMethod = m_ScriptClass->GetMethod("OnCreate", 0);
 		m_OnUpdateMethod = m_ScriptClass->GetMethod("OnUpdate", 1);
@@ -965,25 +962,17 @@ namespace Stimpi
 		m_OnCollisionPreSolve = m_ScriptClass->GetMethod("OnCollisionPreSolve", 1);
 		m_OnCollisionPostSolve = m_ScriptClass->GetMethod("OnCollisionPostSolve", 1);
 
-		/* Populate Fields found in ScriptClass */
-		auto fields = m_ScriptClass->GetAllFields();
-		for (auto field : fields)
-		{
-			auto scriptField = std::make_shared<ScriptField>(this, field);
-			m_ScriptFields.push_back(scriptField);
-		}
-
 		void* param = &entity;
-		m_ScriptClass->InvokeMethod(m_Instance, m_Constructor, &param);
+		m_ScriptClass->InvokeMethod(m_Instance->GetMonoObject(), m_Constructor, &param);
 	}
 
 	ScriptInstance::ScriptInstance(std::shared_ptr<ScriptClass> scriptClass)
 		: m_ScriptClass(scriptClass), m_Entity({})
 	{
-		m_Instance = m_ScriptClass->Instantiate();
+		m_Instance = std::make_shared<ScriptObject>(m_ScriptClass->Instantiate());
 		m_Constructor = m_ScriptClass->GetMethod(".ctor", 0);
 
-		m_ScriptClass->InvokeMethod(m_Instance, m_Constructor, nullptr);
+		m_ScriptClass->InvokeMethod(m_Instance->GetMonoObject(), m_Constructor, nullptr);
 	}
 
 	ScriptInstance::~ScriptInstance()
@@ -994,52 +983,58 @@ namespace Stimpi
 	void ScriptInstance::InvokeOnCreate()
 	{
 		if (m_OnCreateMethod)
-			m_ScriptClass->InvokeMethod(m_Instance, m_OnCreateMethod, nullptr);
+			m_ScriptClass->InvokeMethod(m_Instance->GetMonoObject(), m_OnCreateMethod, nullptr);
 	}
 
 	void ScriptInstance::InvokeOnUpdate(float ts)
 	{
 		void* param = &ts;
 		if (m_OnUpdateMethod)
-			m_ScriptClass->InvokeMethod(m_Instance, m_OnUpdateMethod, &param);
+			m_ScriptClass->InvokeMethod(m_Instance->GetMonoObject(), m_OnUpdateMethod, &param);
 	}
 
 	void ScriptInstance::InvokeOnCollisionBegin(Collision collision)
 	{
 		void* param = &collision;
 		if (m_OnCollisionBegin)
-			m_ScriptClass->InvokeMethod(m_Instance, m_OnCollisionBegin, &param);
+			m_ScriptClass->InvokeMethod(m_Instance->GetMonoObject(), m_OnCollisionBegin, &param);
 	}
 
 	void ScriptInstance::InvokeOnCollisionEnd(Collision collision)
 	{
 		void* param = &collision;
 		if (m_OnCollisionEnd)
-			m_ScriptClass->InvokeMethod(m_Instance, m_OnCollisionEnd, &param);
+			m_ScriptClass->InvokeMethod(m_Instance->GetMonoObject(), m_OnCollisionEnd, &param);
 	}
 
 	void ScriptInstance::InvokeOnCollisionPreSolve(Collision collision)
 	{
 		void* param = &collision;
 		if (m_OnCollisionPreSolve)
-			m_ScriptClass->InvokeMethod(m_Instance, m_OnCollisionPreSolve, &param);
+			m_ScriptClass->InvokeMethod(m_Instance->GetMonoObject(), m_OnCollisionPreSolve, &param);
 	}
 
 	void ScriptInstance::InvokeOnCollisionPostSolve(Collision collision)
 	{
 		void* param = &collision;
 		if (m_OnCollisionPostSolve)
-			m_ScriptClass->InvokeMethod(m_Instance, m_OnCollisionPostSolve, &param);
+			m_ScriptClass->InvokeMethod(m_Instance->GetMonoObject(), m_OnCollisionPostSolve, &param);
 	}
 
-	std::shared_ptr<Stimpi::ScriptField> ScriptInstance::GetScriptFieldFromMonoField(MonoClassField* field)
+	MonoObject* ScriptInstance::GetMonoInstance()
 	{
-		for (auto item : m_ScriptFields)
-		{
-			if (item->GetMonoField() == field)
-				return item;
-		}
-		return nullptr;
+		return m_Instance->GetMonoObject();
+	}
+
+	std::shared_ptr<Stimpi::ScriptObject>& ScriptInstance::GetInstance()
+	{
+		return m_Instance;
+	}
+
+
+	std::unordered_map<std::string, std::shared_ptr<Stimpi::ScriptField>>& ScriptInstance::GetFields()
+	{
+		return m_Instance->GetFields();
 	}
 
 	// This causes a small leak, looking up method all the time. Use only for testing stuff
@@ -1048,70 +1043,118 @@ namespace Stimpi
 		MonoMethod* method = m_ScriptClass->GetMethod(methodName, parameterCount);
 		if (method)
 		{
-			m_ScriptClass->InvokeMethod(m_Instance, method, params);
+			m_ScriptClass->InvokeMethod(m_Instance->GetMonoObject(), method, params);
+		}
+	}
+
+	/* ======== ScriptObject ======== */
+
+	ScriptObject::ScriptObject(MonoObject* obj)
+		: m_MonoObject(obj)
+	{
+		PopulateFieldsData();
+	}
+
+
+	ScriptObject::ScriptObject(std::string typeName)
+		: m_MonoObject(nullptr)
+	{
+		//TODO: check if const char* -> char* has no side effects
+		MonoType* monoType = mono_reflection_type_from_name((char*)typeName.c_str(), s_Data->m_CoreAssemblyImage);
+		if (monoType)
+		{
+			m_MonoObject = mono_object_new(ScriptEngine::GetAppDomain(), mono_class_from_mono_type(monoType));
+			mono_runtime_object_init(m_MonoObject);
+			PopulateFieldsData();
+		}
+	}
+
+	void ScriptObject::GetFieldValue(const std::string& fieldName, void* data)
+	{
+		if (m_Fields.find(fieldName) != m_Fields.end())
+		{
+			m_Fields.at(fieldName)->GetValue(data);
+		}
+	}
+
+	void ScriptObject::SetFieldValue(const std::string& fieldName, void* data)
+	{
+		if (m_Fields.find(fieldName) != m_Fields.end())
+		{
+			m_Fields.at(fieldName)->SetValue(data);
+		}
+	}
+
+	std::shared_ptr<ScriptObject> ScriptObject::GetFieldAsObject(const std::string& fieldName, bool createNew)
+	{
+		std::shared_ptr<ScriptObject> retObject = nullptr;
+
+		if (m_Fields.find(fieldName) != m_Fields.end())
+		{
+			auto& field = m_Fields.at(fieldName);
+			void* fieldData = nullptr;
+			GetFieldValue(fieldName, &fieldData);
+			if (fieldData)
+			{
+				retObject = std::make_shared<ScriptObject>((MonoObject*)fieldData);
+			}
+			else if (createNew)
+			{
+				retObject = std::make_shared<ScriptObject>(field->GetFieldTypeName());
+				SetFieldValue(fieldName, retObject->GetMonoObject());
+			}
+		}
+
+		return retObject;
+	}
+
+	std::unordered_map<std::string, std::shared_ptr<ScriptField>>& ScriptObject::GetFields()
+	{
+		return m_Fields;
+	}
+
+	void ScriptObject::PopulateFieldsData()
+	{
+		MonoClass* klass;
+		MonoClassField* field;
+		MonoType* fieldType;
+		void* iter = nullptr;
+
+		klass = mono_object_get_class(m_MonoObject);
+		while ((field = mono_class_get_fields(klass, &iter)) != nullptr)
+		{
+			fieldType = mono_field_get_type(field);
+			uint32_t type = mono_type_get_type(fieldType);
+
+			std::string fieldName = mono_field_get_name(field);
+			m_Fields[fieldName] = std::make_shared<ScriptField>(this, field);
 		}
 	}
 
 	/* ======== ScriptField ======== */
 
-	ScriptField::ScriptField(ScriptInstance* instance, MonoClassField* field)
-		: m_Instance(instance), m_MonoField(field)
+	ScriptField::ScriptField(ScriptObject* parent, MonoClassField* monoField)
+		: m_ParentObject(parent), m_MonoField(monoField)
 	{
-		MonoType* monoType = mono_field_get_type(field);
+		MonoType* monoType = mono_field_get_type(monoField);
 		uint32_t dataType = mono_type_get_type(monoType);
 		m_Type = Utils::GetFieldTypeFromMonoType(dataType);
-		
-		ST_CORE_INFO("SE - Mono type name: {}", mono_type_get_name(monoType));
-		ST_CORE_INFO("SE - Mono field name: {}", mono_field_get_name(field));
+		m_Name = mono_field_get_name(monoField);
+		m_FieldTypeName = mono_type_get_name(monoType);
+
+		size_t pos = m_FieldTypeName.find_last_of('.');
+		m_FieldTypeShortName = m_FieldTypeName.substr(pos + 1);
 	}
 
-	// TODO: reading only initial value from C# and store it locally in ScriptEngine - rework stuff
-	void ScriptField::ReadFieldValue(void* value)
+	void ScriptField::GetValue(void* data)
 	{
-		if (m_Type == FieldType::FIELD_TYPE_CLASS)
-		{
-			MonoObject* monoObj = nullptr;
-			MonoType* monoType = mono_field_get_type(m_MonoField);
-			mono_field_get_value(m_Instance->GetInstance(), m_MonoField, &monoObj);
-			
-			ScriptGlue::GetFieldValue(monoObj, mono_type_get_name(monoType), value);
-		}
-		else
-		{
-			mono_field_get_value(m_Instance->GetInstance(), m_MonoField, value);
-		}
+		mono_field_get_value(m_ParentObject->GetMonoObject(), m_MonoField, data);
 	}
 
-	void ScriptField::SetFieldValue(void* value)
-	{
-		if (m_Type == FieldType::FIELD_TYPE_CLASS)
-		{
-			MonoObject* monoObj = nullptr;
-			MonoType* monoType = mono_field_get_type(m_MonoField);
-			mono_field_get_value(m_Instance->GetInstance(), m_MonoField, &monoObj);
-			if (monoObj == nullptr)
-			{
-				MonoClass* monoClass = mono_class_from_mono_type(monoType);
-				monoObj = mono_object_new(ScriptEngine::GetAppDomain(), monoClass);
-				mono_runtime_object_init(monoObj);
-				// Set new object to owner class as a field
-				mono_field_set_value(m_Instance->GetInstance(), m_MonoField, monoObj);
-			}
 
-			ScriptGlue::SetFieldValue(monoObj, mono_type_get_name(monoType), value);
-		}
-		else
-		{
-			mono_field_set_value(m_Instance->GetInstance(), m_MonoField, value);
-		}
-	}
-
-	std::string ScriptField::GetFieldTypeName()
+	void ScriptField::SetValue(void* data)
 	{
-		MonoType* monoType = mono_field_get_type(m_MonoField);
-		std::string name = mono_type_get_name(monoType);
-		size_t pos = name.find_last_of('.');
-		return name.substr(pos + 1);
+		mono_field_set_value(m_ParentObject->GetMonoObject(), m_MonoField, data);
 	}
 
 }

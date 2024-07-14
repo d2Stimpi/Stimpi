@@ -27,8 +27,8 @@ namespace Stimpi
 	class ComponentObserver
 	{
 	public:
-		static void InitOnConstructObservers(entt::registry& reg, Scene* scene);
-		static void DeinitOnConstructObservers(entt::registry& reg);
+		static void InitComponentObservers(entt::registry& reg, Scene* scene);
+		static void DeinitConstructObservers(entt::registry& reg);
 	};
 
 	struct TagComponent
