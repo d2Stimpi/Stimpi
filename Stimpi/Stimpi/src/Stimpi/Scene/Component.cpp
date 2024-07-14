@@ -44,11 +44,10 @@ namespace Stimpi
 
 		if (entity.HasComponent<ScriptComponent>())
 		{
-			ScriptComponent component = entity.GetComponent<ScriptComponent>();
+			ScriptComponent& component = entity.GetComponent<ScriptComponent>();
 			if (!component.m_ScriptName.empty())
 			{
-				//TODO: Check if already created
-				ScriptEngine::OnScriptComponentAdd(component.m_ScriptName, entity);
+				component.m_ScriptInstance = ScriptEngine::OnScriptComponentAdd(component.m_ScriptName, entity);
 			}
 		}
 		

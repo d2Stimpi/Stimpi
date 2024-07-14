@@ -88,7 +88,7 @@ namespace Stimpi
 		static void OnSceneStop();
 
 		// Script component
-		static void OnScriptComponentAdd(const std::string& className, Entity entity);
+		static std::shared_ptr<ScriptInstance> OnScriptComponentAdd(const std::string& className, Entity entity);
 		static void OnScriptComponentRemove(Entity entity);
 
 		// Instance functions
@@ -170,6 +170,7 @@ namespace Stimpi
 		std::shared_ptr<ScriptObject>& GetInstance();
 
 		std::unordered_map<std::string, std::shared_ptr<ScriptField>>& GetFields();
+		std::shared_ptr<ScriptField> GetFieldByName(const std::string& fieldName);
 
 		// Custom method invocation - for non-Entity scripts
 		void InvokeMethod(std::string methodName, int parameterCount = 0, void** params = nullptr);
@@ -202,6 +203,7 @@ namespace Stimpi
 		std::shared_ptr<ScriptObject> GetFieldAsObject(const std::string& fieldName, bool createNew);
 
 		std::unordered_map<std::string, std::shared_ptr<ScriptField>>& GetFields();
+		std::shared_ptr<ScriptField> GetFieldByName(const std::string& fieldName);
 
 	private:
 		void PopulateFieldsData();

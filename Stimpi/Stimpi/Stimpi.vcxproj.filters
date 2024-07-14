@@ -215,6 +215,7 @@
       <Filter>Stimpi\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\stpch.h" />
+    <ClInclude Include="src\Stimpi\Scripting\ScriptSerializer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Core\Application.cpp">
@@ -368,5 +369,6 @@
       <Filter>Stimpi\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
+    <ClCompile Include="src\Stimpi\Scripting\ScriptSerializer.cpp" />
   </ItemGroup>
 </Project>

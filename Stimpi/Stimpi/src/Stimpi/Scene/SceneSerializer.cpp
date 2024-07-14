@@ -71,7 +71,8 @@ namespace Stimpi
 				}
 				if (entityNode["ScriptComponent"])
 				{
-					entity.AddComponent<ScriptComponent>(ScriptComponent(entityNode["ScriptComponent"]));
+					ScriptComponent& scriptComponent = entity.AddComponent<ScriptComponent>(ScriptComponent(entityNode["ScriptComponent"]));
+					scriptComponent.PopulateScriptInstanceData(entityNode["ScriptComponent"]);
 				}
 				if (entityNode["CameraComponent"])
 				{

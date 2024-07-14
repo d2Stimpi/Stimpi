@@ -97,6 +97,8 @@ Scene:
       Fade: 0.00499999989
     ScriptComponent:
       ScriptName: Sandbox.PhysicsActor
+      ScriptFields:
+        {}
     RigidBody2DComponent:
       Type: Dynamic
       FixedRotation: false
@@ -196,3 +198,10 @@ Scene:
       AutoPlay: false
     ScriptComponent:
       ScriptName: Sandbox.Player
+      ScriptFields:
+        Field:
+          Type: FIELD_TYPE_CLASS
+          FieldTypeName: Stimpi.Entity
+          Name: camera
+          FieldData:
+            ID: 1

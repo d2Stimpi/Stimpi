@@ -26,7 +26,6 @@ namespace Stimpi
 	static std::string EntityFieldTypeFragment(ScriptObject* ownerObj, ScriptField* field)
 	{
 		uint32_t fieldData = 0;
-		void* entityField = nullptr;
 		auto entityObj = ownerObj->GetFieldAsObject(field->GetName(), false);
 		if (entityObj)
 		{

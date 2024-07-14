@@ -319,6 +319,7 @@ namespace Stimpi
 
 		ScriptGlue::RegisterFucntions();
 		ScriptGlue::RegisterComponents();
+		ScriptSeriaizer::RegisterSirializableTypes();
 
 		// Register Hot reload watcher
 		s_Data->m_OnScriptUpdated = [](SystemShellEvent* event)
@@ -785,7 +786,7 @@ namespace Stimpi
 		}
 	}
 
-	void ScriptEngine::OnScriptComponentAdd(const std::string& className, Entity entity)
+	std::shared_ptr<ScriptInstance> ScriptEngine::OnScriptComponentAdd(const std::string& className, Entity entity)
 	{
 		// Remove previously used entry on the same entity
 		OnScriptComponentRemove(entity);
@@ -793,6 +794,8 @@ namespace Stimpi
 		auto classInstance = CreateScriptInstance(className, entity);
 		if (classInstance)
 			s_Data->m_EntityInstances[entity] = classInstance;
+
+		return classInstance;
 	}
 
 	void ScriptEngine::OnScriptComponentRemove(Entity entity)
@@ -1037,6 +1040,12 @@ namespace Stimpi
 		return m_Instance->GetFields();
 	}
 
+
+	std::shared_ptr<Stimpi::ScriptField> ScriptInstance::GetFieldByName(const std::string& fieldName)
+	{
+		return m_Instance->GetFieldByName(fieldName);
+	}
+
 	// This causes a small leak, looking up method all the time. Use only for testing stuff
 	void ScriptInstance::InvokeMethod(std::string methodName, int parameterCount, void** params)
 	{
@@ -1113,6 +1122,17 @@ namespace Stimpi
 		return m_Fields;
 	}
 
+
+	std::shared_ptr<Stimpi::ScriptField> ScriptObject::GetFieldByName(const std::string& fieldName)
+	{
+		if (m_Fields.find(fieldName) != m_Fields.end())
+		{
+			return m_Fields.at(fieldName);
+		}
+
+		return nullptr;
+	}
+
 	void ScriptObject::PopulateFieldsData()
 	{
 		MonoClass* klass;
@@ -1124,10 +1144,13 @@ namespace Stimpi
 		while ((field = mono_class_get_fields(klass, &iter)) != nullptr)
 		{
 			fieldType = mono_field_get_type(field);
-			uint32_t type = mono_type_get_type(fieldType);
 
-			std::string fieldName = mono_field_get_name(field);
-			m_Fields[fieldName] = std::make_shared<ScriptField>(this, field);
+			uint8_t vis = Utils::GetFieldAccessibility(field);
+			if (vis & (uint8_t)Accessibility::PUBLIC)
+			{
+				std::string fieldName = mono_field_get_name(field);
+				m_Fields[fieldName] = std::make_shared<ScriptField>(this, field);
+			}
 		}
 	}
 

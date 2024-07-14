@@ -10,6 +10,7 @@
 #include "Stimpi/Scene/Camera.h"
 #include "Stimpi/Scene/Assets/AssetManager.h"
 #include "Stimpi/Scripting/ScriptEngine.h"
+#include "Stimpi/Scripting/ScriptSerializer.h"
 
 #include <glm/glm.hpp>
 #include <yaml-cpp/yaml.h>
@@ -584,6 +585,7 @@ namespace Stimpi
 	struct ScriptComponent
 	{
 		std::string m_ScriptName;
+		std::shared_ptr<ScriptInstance> m_ScriptInstance;
 
 		ScriptComponent() = default;
 		ScriptComponent(const ScriptComponent&) = default;
@@ -594,6 +596,21 @@ namespace Stimpi
 			out << YAML::BeginMap;
 			{
 				out << YAML::Key << "ScriptName" << YAML::Value << m_ScriptName;
+				if (m_ScriptInstance)
+				{
+					out << YAML::Key << "ScriptFields";
+					out << YAML::BeginMap;
+					{
+						auto fields = m_ScriptInstance->GetFields();
+						auto object = m_ScriptInstance->GetInstance();
+						for (auto& item : fields)
+						{
+							auto field = item.second;
+							ScriptSeriaizer::SerializeScriptField(out, object.get(), field.get());
+						}
+					}
+					out << YAML::EndMap;
+				}
 			}
 			out << YAML::EndMap;
 		}
@@ -604,6 +621,37 @@ namespace Stimpi
 			if (node["ScriptName"])
 			{
 				m_ScriptName = node["ScriptName"].as<std::string>();
+			}
+		}
+
+		void PopulateScriptInstanceData(const YAML::Node& node)
+		{
+			if (node["ScriptFields"])
+			{
+				YAML::Node fields = node["ScriptFields"];
+				for (YAML::const_iterator it = fields.begin(); it != fields.end(); it++)
+				{
+					YAML::Node fieldNode = it->second;
+					auto object = m_ScriptInstance->GetInstance();
+					
+					if (!fieldNode["Name"] || !fieldNode["Type"] || !fieldNode["FieldData"])
+						return;
+
+					std::string fieldName = fieldNode["Name"].as<std::string>();
+					FieldType fieldType = ScriptSeriaizer::StringToFieldType(fieldNode["Type"].as<std::string>());
+					if ((fieldType == FieldType::FIELD_TYPE_CLASS) || (fieldType == FieldType::FIELD_TYPE_STRUCT))
+					{
+						auto field = m_ScriptInstance->GetFieldByName(fieldName);
+						if (field)
+						{
+							ScriptSeriaizer::DeserializeScriptField(fieldNode, object.get(), field.get());
+						}
+					}
+					else
+					{
+						// TODO: handle other types
+					}
+				}
 			}
 		}
 	};
