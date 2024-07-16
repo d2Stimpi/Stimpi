@@ -10,6 +10,7 @@ namespace Sandbox
 {
     class Player : Entity
     {
+        [SerializeField]
         private AnimatedSpriteComponent m_AnimComponent;
         private QuadComponent m_Quad;
         public float speed = 16.0f;

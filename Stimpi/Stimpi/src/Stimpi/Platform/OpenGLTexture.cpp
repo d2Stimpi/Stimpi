@@ -3,6 +3,7 @@
 
 #include "Stimpi/Log.h"
 #include "Stimpi/Utils/ThreadPool.h"
+#include "Stimpi/Scene/ResourceManager.h"
 
 #include <glad/glad.h>
 #include <stb_image.h>
@@ -21,6 +22,11 @@ namespace Stimpi
 
 	OpenGLTexture::OpenGLTexture(std::string file)
 	{
+		// TODO:
+		// Get the project specified path where Textures are expected to be stored
+		auto texturePath = std::filesystem::absolute(ResourceManager::GetAssetsPath()) / file;
+		m_AssetPath = file;
+
 		//LoadTexture(file);
 		LoadDataAsync(file);
 	}

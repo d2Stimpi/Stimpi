@@ -41,6 +41,11 @@ namespace Stimpi
 		return Project::GetScriptsDir();
 	}
 
+	std::filesystem::path ResourceManager::GetResourcesPathInternal()
+	{
+		return Project::GetResourcesDir();
+	}
+
 	std::filesystem::path ResourceManager::GetDefaultProjectPathInternal()
 	{
 		return DEFAULT_PROJECT_PATH;

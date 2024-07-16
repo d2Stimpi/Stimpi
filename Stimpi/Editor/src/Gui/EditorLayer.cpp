@@ -60,7 +60,7 @@ namespace Stimpi
 		EditorResources::LoadTextues();
 
 		// Scene Init
-		m_ShaderChecker.reset(Shader::CreateShader("..\/assets\/shaders\/checkerboard.shader"));
+		m_ShaderChecker.reset(Shader::CreateShader("checkerboard.shader"));
 		// Editor camera init
 		m_EditorCamera = std::make_shared<Camera>(0.0f, 128.0f, 0.0f, 72.0f); // TODO: expose to Editor
 		m_EditorCamera->SetPosition({ 0.0f, 0.0f, 0.0f });

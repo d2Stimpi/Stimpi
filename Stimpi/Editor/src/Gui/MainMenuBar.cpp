@@ -183,6 +183,32 @@ namespace Stimpi
 					}
 				}
 
+				if (ImGui::MenuItem("Field Attributes Test"))
+				{
+					ScriptEngine::LoadCustomClassesFromCoreAssembly({
+						{ "Stimpi", "AttributeTest" }
+					});
+					auto scriptClass = ScriptEngine::GetClassByClassIdentifier({ "Stimpi", "AttributeTest" });
+					if (scriptClass)
+					{
+						auto scriptInstance = ScriptInstance(scriptClass);
+						auto type = ScriptEngine::GetMonoReflectionTypeByName("Sandbox.Player");
+						if (type)
+						{
+							void* param = type;
+							scriptInstance.InvokeMethod("ListTypeFields", 1, &param);
+						}
+						else
+						{
+							ST_INFO("Type not found!");
+						}
+					}
+					else
+					{
+						ST_INFO("Class not found!");
+					}
+				}
+
 				ImGui::EndMenu();
 			}
 #pragma endregion TESTING

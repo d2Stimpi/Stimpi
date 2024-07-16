@@ -3,6 +3,7 @@
 
 #include "Stimpi/Log.h"
 #include "Stimpi/Scene/SceneManager.h"
+#include "Stimpi/Scripting/ScriptGlueTypes.h"
 
 #include "Gui/Components/UIPayload.h"
 #include "Gui/Panels/SceneHierarchyWindow.h"
@@ -57,8 +58,8 @@ namespace Stimpi
 
 	void ScriptFieldFragment::RegisterScriptFieldFunctions()
 	{
-		ST_REGISTER_FIELD_FRAGMENT_TYPE("Stimpi.Entity", EntityFieldTypeFragment);
-		ST_REGISTER_FIELD_PAYLOAD_TYPE("Stimpi.Entity", EntityFieldTypePayload);
+		ST_REGISTER_FIELD_FRAGMENT_TYPE(s_EntityType, EntityFieldTypeFragment);
+		ST_REGISTER_FIELD_PAYLOAD_TYPE(s_EntityType, EntityFieldTypePayload);
 	}
 
 	bool ScriptFieldFragment::IsFieldTypeSupported(const std::string& typeName)

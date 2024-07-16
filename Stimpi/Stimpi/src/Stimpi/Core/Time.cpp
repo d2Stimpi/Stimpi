@@ -4,7 +4,7 @@
 namespace Stimpi
 {
 	Time::Time()
-		:m_DeltaTime(0.0f), m_TimeScale(0.0f), m_Fps(DEFAULT_FPS), m_FpsTime(0.0f)
+		:m_DeltaTime(0.0f), m_TimeScale(0.0f), m_Fps(DEFAULT_FPS), m_FpsTime(1000.0f/DEFAULT_FPS)
 	{
 
 	}

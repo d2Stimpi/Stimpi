@@ -216,6 +216,7 @@
     </ClInclude>
     <ClInclude Include="src\stpch.h" />
     <ClInclude Include="src\Stimpi\Scripting\ScriptSerializer.h" />
+    <ClInclude Include="src\Stimpi\Scripting\ScriptGlueTypes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Core\Application.cpp">

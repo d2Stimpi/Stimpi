@@ -74,8 +74,8 @@ namespace Stimpi
 
 		m_RuntimeState = RuntimeState::STOPPED;
 		//m_DefaultShader.reset(Shader::CreateShader("..\/assets\/shaders\/shader.shader"));
-		m_DefaultShader.reset(Shader::CreateShader("..\/assets\/shaders\/pixelart.shader"));
-		m_DefaultSolidColorShader.reset(Shader::CreateShader("..\/assets\/shaders\/solidcolor.shader"));
+		m_DefaultShader.reset(Shader::CreateShader("pixelart.shader"));
+		m_DefaultSolidColorShader.reset(Shader::CreateShader("solidcolor.shader"));
 
 		// Collision listener for Box2D
 		m_ContactListener = std::make_unique<ContactListener>();
@@ -83,8 +83,6 @@ namespace Stimpi
 
 #if USE_TEST_STUFF
 		/* Test stuff below */
-		m_SubTexture = std::make_shared<SubTexture>(ResourceManager::Instance()->LoadTexture("..\/assets\/sprite_sheets\/sonic-sprite-sheet.png"), glm::vec2{ 0.0f, 0.0f }, glm::vec2{ 150.0f, 150.0f });
-		m_TestTexture = ResourceManager::Instance()->LoadTexture("..\/assets\/textures\/Picture1.jpg");
 
 		s_TestObj = CreateEntity("ScriptedObj");
 		s_TestObj.AddComponent<QuadComponent>(glm::vec4{ 100.0f, 100.0f, 50.0f, 50.0f });
@@ -133,7 +131,6 @@ namespace Stimpi
 
 	void Scene::OnUpdate(Timestep ts)
 	{
-
 		if (m_RuntimeState == RuntimeState::RUNNING)
 		{
 			// Update Scripts
@@ -806,7 +803,7 @@ namespace Stimpi
 
 	void Scene::OnDebugUpdate(Timestep ts)
 	{
-		auto activeCollisions = Physics::GetActiveCollisions();
+		auto& activeCollisions = Physics::GetActiveCollisions();
 
 		// Debug render - Collision contact points
 		if (m_RenderCamera)
@@ -815,7 +812,7 @@ namespace Stimpi
 		
 			if (Physics::ShowCollisionsContactPointsEnabled())
 			{
-				for (auto collision : activeCollisions)
+				for (auto& collision : activeCollisions)
 				{
 					for (Contact& contact : collision->m_Contacts)
 					{

@@ -24,6 +24,7 @@ namespace Stimpi
 		static std::filesystem::path GetProjectPath() { return Instance()->GetProjectPathInternal(); }
 		static std::filesystem::path GetAssetsPath() { return Instance()->GetAssetsPathInternal(); }
 		static std::filesystem::path GetScriptsPath() { return Instance()->GetScriptsPathInternal(); }
+		static std::filesystem::path GetResourcesPath() { return Instance()->GetResourcesPathInternal(); }
 		static std::filesystem::path GetDefaultProjectPath() { return Instance()->GetDefaultProjectPathInternal(); }
 
 		static bool LoadDefaultProject();
@@ -46,6 +47,7 @@ namespace Stimpi
 		std::filesystem::path GetProjectPathInternal();
 		std::filesystem::path GetAssetsPathInternal();
 		std::filesystem::path GetScriptsPathInternal();
+		std::filesystem::path GetResourcesPathInternal();
 		std::filesystem::path GetDefaultProjectPathInternal();
 		
 		void NotifyOnSceneChange();

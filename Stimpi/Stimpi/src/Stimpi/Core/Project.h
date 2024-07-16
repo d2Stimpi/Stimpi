@@ -32,6 +32,7 @@ namespace Stimpi
 		static std::filesystem::path GetProjectDir() { return m_ActiveProject.m_ProjectDir; }
 		static std::filesystem::path GetAssestsDir() { return m_ActiveProject.m_ProjectDir / m_ActiveProject.m_AssestsSubDir; }
 		static std::filesystem::path GetScriptsDir() { return m_ActiveProject.m_ProjectDir / m_ActiveProject.m_ScriptsSubDir; }
+		static std::filesystem::path GetResourcesDir() { return m_ActiveProject.m_ProjectDir / "resources"; }
 
 		static std::filesystem::path GetStartingScenePath() { return GetAssestsDir() / "scenes" / m_ActiveProject.m_StartingScene; }
 

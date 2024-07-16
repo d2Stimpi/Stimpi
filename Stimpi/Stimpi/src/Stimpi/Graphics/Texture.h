@@ -33,8 +33,9 @@ namespace Stimpi
 
 		uint32_t GetWidth() { return m_Width; }
 		uint32_t GetHeight() { return m_Height; }
+		std::string& GetAssetPath() { return m_AssetPath; }
 
-		static Texture* CreateTexture(std::string file);
+		static Texture* CreateTexture(std::string filePath);
 		static Texture* CreateFrameBufferTexture();
 
 		// AssetManager
@@ -43,5 +44,6 @@ namespace Stimpi
 	protected:
 		uint32_t m_Width{ 0 };
 		uint32_t m_Height{ 0 };
+		std::string m_AssetPath;
 	};
 }

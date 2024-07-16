@@ -15,13 +15,13 @@ extern "C"
 	typedef struct _MonoClassField MonoClassField;
 	typedef struct _MonoType MonoType;
 	typedef struct _MonoProperty MonoProperty;
+	typedef struct _MonoReflectionType MonoReflectionType;
 }
 
 namespace Stimpi
 {
 	class ScriptClass;
-	class ScriptInstance; 
-	//class ScriptField;
+	class ScriptInstance;
 	class ScriptObject;
 	class ScriptField;
 
@@ -102,6 +102,9 @@ namespace Stimpi
 
 		// UI Stuff
 		static std::vector<std::string>& GetScriptClassNames();
+
+		// Mono wrappers
+		static MonoReflectionType* GetMonoReflectionTypeByName(std::string typeName);
 
 		// Debugging
 		static uint64_t GetGCUsedSize();

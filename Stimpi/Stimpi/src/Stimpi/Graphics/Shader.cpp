@@ -8,6 +8,8 @@
 #include "Stimpi/Platform/OpenGLShader.h"
 #include "Stimpi/Log.h"
 
+#include "Stimpi/Scene/ResourceManager.h"
+
 namespace Stimpi
 {
 	Shader::~Shader()
@@ -17,9 +19,12 @@ namespace Stimpi
 
 	Shader* Shader::CreateShader(const std::string& fileName)
 	{
+		// Get the project specified path where shaders are expected to be stored
+		auto shaderFolderPath = std::filesystem::absolute(ResourceManager::GetResourcesPath()) / "shaders" / fileName;
+
 		switch (Graphics::GetAPI())
 		{
-		case GraphicsAPI::OpenGL: return new OpenGLShader(fileName);
+		case GraphicsAPI::OpenGL: return new OpenGLShader(shaderFolderPath.string());
 		case GraphicsAPI::None: ST_CORE_CRITICAL("GraphicsAPI: not supported!"); return nullptr;
 		}
 	}

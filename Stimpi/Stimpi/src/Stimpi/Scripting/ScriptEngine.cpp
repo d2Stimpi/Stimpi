@@ -286,7 +286,6 @@ namespace Stimpi
 
 	static ScriptEngineData* s_Data;
 	static std::string s_CoreScriptName = "Stimpi-ScriptCore.dll";
-	static std::string s_CoreScriptDir = "../resources/scripts";
 
 	static std::string s_ClientScriptName = "Sandbox-Script.dll";
 
@@ -714,8 +713,7 @@ namespace Stimpi
 
 	std::filesystem::path ScriptEngine::GetCoreScriptPath()
 	{
-		std::filesystem::path coreScriptDir(s_CoreScriptDir);
-		return coreScriptDir / s_CoreScriptName;
+		return ResourceManager::GetScriptsPath() / s_CoreScriptName;
 	}
 
 	std::filesystem::path ScriptEngine::GetClientScriptPath()
@@ -860,6 +858,17 @@ namespace Stimpi
 		return s_Data->m_ScriptClassNames;
 	}
 
+
+	MonoReflectionType* ScriptEngine::GetMonoReflectionTypeByName(std::string typeName)
+	{
+		MonoType* monoType = mono_reflection_type_from_name(typeName.data(), ScriptEngine::GetCoreAssemblyImage());
+		if (monoType == nullptr)
+			monoType = mono_reflection_type_from_name(typeName.data(), s_Data->m_ClientAssemblyImage);
+		if (monoType)
+			return mono_type_get_object(ScriptEngine::GetAppDomain(), monoType);
+
+		return nullptr;
+	}
 
 	uint64_t ScriptEngine::GetGCUsedSize()
 	{

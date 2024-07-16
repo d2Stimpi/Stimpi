@@ -213,6 +213,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Scene\Utils\SceneUtils.h" />
     <ClInclude Include="src\Stimpi\Scripting\ScriptEngine.h" />
     <ClInclude Include="src\Stimpi\Scripting\ScriptGlue.h" />
+    <ClInclude Include="src\Stimpi\Scripting\ScriptGlueTypes.h" />
     <ClInclude Include="src\Stimpi\Scripting\ScriptSerializer.h" />
     <ClInclude Include="src\Stimpi\Utils\FilePath.h" />
     <ClInclude Include="src\Stimpi\Utils\FileWatcher.h" />

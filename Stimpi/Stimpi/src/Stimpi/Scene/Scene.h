@@ -101,10 +101,6 @@ namespace Stimpi
 		std::shared_ptr<Stimpi::Shader> m_DefaultShader;
 		std::shared_ptr<Stimpi::Shader> m_DefaultSolidColorShader;
 
-		// Test
-		std::shared_ptr<SubTexture> m_SubTexture;
-		Texture* m_TestTexture;
-
 		// Physics
 		b2World* m_PhysicsWorld = nullptr;
 		std::shared_ptr <ContactListener> m_ContactListener;

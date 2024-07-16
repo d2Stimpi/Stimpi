@@ -601,11 +601,11 @@ namespace Stimpi
 					out << YAML::Key << "ScriptFields";
 					out << YAML::BeginMap;
 					{
-						auto fields = m_ScriptInstance->GetFields();
-						auto object = m_ScriptInstance->GetInstance();
+						auto& fields = m_ScriptInstance->GetFields();
+						auto& object = m_ScriptInstance->GetInstance();
 						for (auto& item : fields)
 						{
-							auto field = item.second;
+							auto& field = item.second;
 							ScriptSeriaizer::SerializeScriptField(out, object.get(), field.get());
 						}
 					}
@@ -632,7 +632,7 @@ namespace Stimpi
 				for (YAML::const_iterator it = fields.begin(); it != fields.end(); it++)
 				{
 					YAML::Node fieldNode = it->second;
-					auto object = m_ScriptInstance->GetInstance();
+					auto& object = m_ScriptInstance->GetInstance();
 					
 					if (!fieldNode["Name"] || !fieldNode["Type"] || !fieldNode["FieldData"])
 						return;

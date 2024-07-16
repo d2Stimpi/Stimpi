@@ -5,6 +5,7 @@
 #include "Stimpi/Graphics/Graphics.h"
 #include "Stimpi/Platform/OpenGLTexture.h"
 
+
 namespace Stimpi
 {
 	Texture::~Texture()
@@ -12,11 +13,11 @@ namespace Stimpi
 		//ST_CORE_INFO("~Texture");
 	}
 
-	Texture* Texture::CreateTexture(std::string file)
+	Texture* Texture::CreateTexture(std::string filePath)
 	{
 		switch (Graphics::GetAPI())
 		{
-		case GraphicsAPI::OpenGL: return new OpenGLTexture(file);
+		case GraphicsAPI::OpenGL: return new OpenGLTexture(filePath);
 		case GraphicsAPI::None: ST_CORE_CRITICAL("GraphicsAPI: not supported!"); return nullptr;
 		}
 

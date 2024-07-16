@@ -1,6 +1,8 @@
 #include "stpch.h"
 #include "Stimpi/Scripting/ScriptSerializer.h"
 
+#include "Stimpi/Scripting/ScriptGlueTypes.h"
+
 #define ST_REGISTER_FIELD_TYPE_SERIALIZE(FieldTypeName, Func)		s_SerializeByTypeFunctions[FieldTypeName] = Func;
 #define ST_REGISTER_FIELD_TYPE_DESERIALIZE(FieldTypeName, Func)		s_DeserializeByTypeFunctions[FieldTypeName] = Func;
 
@@ -67,8 +69,8 @@ namespace Stimpi
 
 	void ScriptSeriaizer::RegisterSirializableTypes()
 	{
-		ST_REGISTER_FIELD_TYPE_SERIALIZE("Stimpi.Entity", EntitySerialize);
-		ST_REGISTER_FIELD_TYPE_DESERIALIZE("Stimpi.Entity", EntityDeserialize);
+		ST_REGISTER_FIELD_TYPE_SERIALIZE(s_EntityType, EntitySerialize);
+		ST_REGISTER_FIELD_TYPE_DESERIALIZE(s_EntityType, EntityDeserialize);
 	}
 
 	void ScriptSeriaizer::SerializeScriptField(YAML::Emitter& out, ScriptObject* ownerObj, ScriptField* field)
