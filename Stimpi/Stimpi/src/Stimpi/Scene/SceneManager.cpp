@@ -25,12 +25,14 @@ namespace Stimpi
 
 	void SceneManager::NewScene()
 	{
+		m_ActiveScenePath = "";
 		m_ActiveScene.reset(new Scene());
 		NotifyOnSceneChange();
 	}
 
 	void SceneManager::LoadScene(const std::string& filePath)
 	{
+		m_ActiveScenePath = filePath;
 		m_ActiveScene.reset(new Scene());
 		m_ActiveScene->SetName(FilePath(filePath).GetFileNameStem());
 		SceneSerializer serializer(m_ActiveScene.get());
@@ -40,6 +42,7 @@ namespace Stimpi
 
 	void SceneManager::SaveScene(const std::string& filePath)
 	{
+		m_ActiveScenePath = filePath;
 		SceneSerializer serializer(m_ActiveScene.get());
 		serializer.Serialize(filePath);
 	}

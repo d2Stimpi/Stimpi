@@ -2,6 +2,7 @@
 
 #include "Stimpi/Core/Core.h"
 #include "Stimpi/Graphics/Graphics.h"
+#include "Stimpi/Physics/Physics.h"
 
 #include <filesystem>
 
@@ -19,6 +20,8 @@ namespace Stimpi
 
 		// Graphics config
 		GraphicsConfig m_GraphicsConfig;
+		// Physics config
+		PhysicsConfig m_PhysicsConfig;
 
 		// Sorting Layers - Rendering
 		std::vector<std::shared_ptr<SortingLayer>> m_SortingLayers;

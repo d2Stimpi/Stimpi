@@ -149,6 +149,7 @@
     <ClInclude Include="src\Gui\Components\UIPayload.h" />
     <ClInclude Include="src\Gui\Config\GraphicsConfigPanel.h" />
     <ClInclude Include="src\Gui\Config\LayersConfigPanel.h" />
+    <ClInclude Include="src\Gui\Config\PhysicsConfigPanel.h" />
     <ClInclude Include="src\Gui\Config\SceneConfigPanel.h" />
     <ClInclude Include="src\Gui\ContentBrowserWindow.h" />
     <ClInclude Include="src\Gui\EditorLayer.h" />
@@ -191,6 +192,7 @@
     <ClCompile Include="src\Gui\Components\UIPayload.cpp" />
     <ClCompile Include="src\Gui\Config\GraphicsConfigPanel.cpp" />
     <ClCompile Include="src\Gui\Config\LayersConfigPanel.cpp" />
+    <ClCompile Include="src\Gui\Config\PhysicsConfigPanel.cpp" />
     <ClCompile Include="src\Gui\Config\SceneConfigPanel.cpp" />
     <ClCompile Include="src\Gui\ContentBrowserWindow.cpp" />
     <ClCompile Include="src\Gui\EditorLayer.cpp" />

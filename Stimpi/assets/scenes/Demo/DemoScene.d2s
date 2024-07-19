@@ -1,0 +1,78 @@
+Scene:
+  Entity:
+    TagComponent:
+      Tag: MainCamera
+    QuadComponent:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    CameraComponent:
+      Position:
+        - 0
+        - 0
+        - 0
+      Rotation: 0
+      Zoom: 1
+      ViewQuad:
+        - 0
+        - 128
+        - 0
+        - 72
+      IsMain: true
+  Entity:
+    TagComponent:
+      Tag: GroundArea
+    QuadComponent:
+      - 64
+      - 36
+      - 0
+      - 256
+      - 144
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 0.568627477
+        - 0.349981397
+        - 0.214629009
+        - 1
+    SortingGroupComponent:
+      SortingLayerName: Background
+      OrderInLayer: 0
+  Entity:
+    TagComponent:
+      Tag: Player
+    QuadComponent:
+      - 6
+      - 24.9142895
+      - 0
+      - 5
+      - 5
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 0.406862736
+        - 0.0777825862
+        - 0.0777825862
+        - 1
+    RigidBody2DComponent:
+      Type: Dynamic
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5

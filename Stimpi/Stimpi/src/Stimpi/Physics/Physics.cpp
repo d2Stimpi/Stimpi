@@ -8,13 +8,14 @@ namespace Stimpi
 		return (a->m_Owner == b->m_Owner) && (a->m_ColliderEntityID == b->m_ColliderEntityID);
 	}
 
-	struct PhysicsConfig
+	struct PhysicsDebugConfig
 	{
+		// Debugging
 		bool m_ShowDbgColliderOutline = false;
 		bool m_ShowDbgCollisionContactPoints = false;
 	};
 
-	PhysicsConfig s_Data;
+	PhysicsDebugConfig s_Data;
 
 	std::vector<std::shared_ptr<Collision>> m_ActiveCollisions;
 

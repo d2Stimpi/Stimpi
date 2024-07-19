@@ -16,6 +16,7 @@ extern "C"
 	typedef struct _MonoType MonoType;
 	typedef struct _MonoProperty MonoProperty;
 	typedef struct _MonoReflectionType MonoReflectionType;
+	typedef struct _MonoString MonoString;
 }
 
 namespace Stimpi
@@ -105,6 +106,8 @@ namespace Stimpi
 
 		// Mono wrappers
 		static MonoReflectionType* GetMonoReflectionTypeByName(std::string typeName);
+		static MonoReflectionType* GetMonoReflectionType(MonoType* type);
+		static MonoString* CreateMonoString(const std::string& str);
 
 		// Debugging
 		static uint64_t GetGCUsedSize();
@@ -116,6 +119,7 @@ namespace Stimpi
 		static void ShutdownMono();
 
 		static void LoadCustomClassesFromAssembly(MonoAssembly* assembly, const ClassLoadingDetails& classDetails);
+		static void LoadInternalClasses();
 
 		static MonoAssembly* LoadMonoAssembly(const std::string& assemblyPath);
 		static MonoClass* GetClassInAssembly(MonoAssembly* assembly, const char* namespaceName, const char* className);
@@ -136,7 +140,7 @@ namespace Stimpi
 		MonoObject* Instantiate();
 
 		MonoMethod* GetMethod(const std::string& methodName, int parameterCount);
-		MonoObject* InvokeMethod(MonoObject* instance, MonoMethod* method, void** params);
+		void* InvokeMethod(MonoObject* instance, MonoMethod* method, void** params);
 
 		MonoClassField* GetMonoField(const std::string& fieldName);
 		std::vector<MonoClassField*>& GetAllMonoFields() { return m_Fields; }
@@ -176,7 +180,7 @@ namespace Stimpi
 		std::shared_ptr<ScriptField> GetFieldByName(const std::string& fieldName);
 
 		// Custom method invocation - for non-Entity scripts
-		void InvokeMethod(std::string methodName, int parameterCount = 0, void** params = nullptr);
+		void* InvokeMethod(std::string methodName, int parameterCount = 0, void** params = nullptr);
 
 	private:
 		std::shared_ptr<ScriptClass> m_ScriptClass;
@@ -201,6 +205,7 @@ namespace Stimpi
 		ScriptObject(std::string typeName);
 
 		MonoObject* GetMonoObject() { return m_MonoObject; }
+		MonoType* GetMonoType() { return m_MonoType; }
 		void GetFieldValue(const std::string& fieldName, void* data);
 		void SetFieldValue(const std::string& fieldName, void* data);
 		std::shared_ptr<ScriptObject> GetFieldAsObject(const std::string& fieldName, bool createNew);
@@ -212,6 +217,7 @@ namespace Stimpi
 		void PopulateFieldsData();
 
 		MonoObject* m_MonoObject;
+		MonoType* m_MonoType;
 		std::unordered_map<std::string, std::shared_ptr<ScriptField>> m_Fields;
 	};
 
@@ -238,7 +244,9 @@ namespace Stimpi
 		std::string& GetName() { return m_Name; }
 		std::string& GetFieldTypeName() { return m_FieldTypeName; }
 		std::string& GetFieldTypeShortName() { return m_FieldTypeShortName; }
-		FieldType  GetType() { return m_Type; }
+		FieldType GetType() { return m_Type; }
+
+		bool IsSerializable();
 
 	private:
 		ScriptObject* m_ParentObject;

@@ -11,6 +11,7 @@
 #include "Stimpi/Scene/Component.h"
 
 #include "Stimpi/Scripting/ScriptGlue.h"
+#include "Stimpi/Scripting/ScriptGlueTypes.h"
 
 #include "mono/jit/jit.h"
 #include "mono/metadata/appdomain.h"
@@ -282,6 +283,9 @@ namespace Stimpi
 		FileWatchListener m_OnScriptUpdated;
 		FileWatchListener m_OnAssetScriptsUpdated;	// Track script assets (generated from VisualScripting)
 		bool m_DeferreAsemblyReload = false;	// Reload assembly if script change was detected and scene was running
+
+		// CustomAttributes.cs class instance
+		std::shared_ptr<ScriptInstance> m_AttributeLookup;
 	};
 
 	static ScriptEngineData* s_Data;
@@ -313,6 +317,12 @@ namespace Stimpi
 		Utils::PrintAssemblyTypes(s_Data->m_ClientAssembly);
 		LoadClassesFromAssembly(s_Data->m_CoreAssembly);
 		LoadClassesFromAssembly(s_Data->m_ClientAssembly);
+
+		/**
+		 * Load classes that are used internally for retrieving data from C#,
+		 * such as field Attributes.
+		 */
+		LoadInternalClasses();
 
 		s_Data->m_EntityClass = ScriptClass("Stimpi", "Entity", s_Data->m_CoreAssembly);
 
@@ -589,6 +599,13 @@ namespace Stimpi
 				}
 			}
 		}
+	}
+
+	void ScriptEngine::LoadInternalClasses()
+	{
+		ScriptEngine::LoadCustomClassesFromCoreAssembly({{ s_CoreNamespace, s_AttributeLookup }});
+		auto scriptClass = ScriptEngine::GetClassByClassIdentifier({ s_CoreNamespace, s_AttributeLookup });
+		s_Data->m_AttributeLookup = std::make_shared<ScriptInstance>(scriptClass);
 	}
 
 	void ScriptEngine::LoadCustomClassesFromCoreAssembly(const ClassLoadingDetails& classDetails)
@@ -870,6 +887,19 @@ namespace Stimpi
 		return nullptr;
 	}
 
+	MonoReflectionType* ScriptEngine::GetMonoReflectionType(MonoType* type)
+	{
+		if (type)
+			return mono_type_get_object(ScriptEngine::GetAppDomain(), type);
+
+		return nullptr;
+	}
+
+	MonoString* ScriptEngine::CreateMonoString(const std::string& str)
+	{
+		return mono_string_new(ScriptEngine::GetAppDomain(), str.c_str());
+	}
+
 	uint64_t ScriptEngine::GetGCUsedSize()
 	{
 		return mono_gc_get_used_size();
@@ -913,17 +943,21 @@ namespace Stimpi
 		return monoMethod;
 	}
 
-	MonoObject* ScriptClass::InvokeMethod(MonoObject* instance, MonoMethod* method, void** params)
+	void* ScriptClass::InvokeMethod(MonoObject* instance, MonoMethod* method, void** params)
 	{
-		MonoObject* exception;
-		mono_runtime_invoke(method, instance, params, &exception);
+		MonoObject* exception = nullptr;
+		MonoObject* returnObj = nullptr;
+		void* retVal = nullptr;
+		returnObj = mono_runtime_invoke(method, instance, params, &exception);
+		if (returnObj)
+			retVal = mono_object_unbox(returnObj);
 
 		if (exception)
 		{
 			mono_print_unhandled_exception(exception);
 		}
 
-		return nullptr;
+		return retVal;
 	}
 
 	MonoClassField* ScriptClass::GetMonoField(const std::string& fieldName)
@@ -1056,13 +1090,14 @@ namespace Stimpi
 	}
 
 	// This causes a small leak, looking up method all the time. Use only for testing stuff
-	void ScriptInstance::InvokeMethod(std::string methodName, int parameterCount, void** params)
+	void* ScriptInstance::InvokeMethod(std::string methodName, int parameterCount, void** params)
 	{
 		MonoMethod* method = m_ScriptClass->GetMethod(methodName, parameterCount);
 		if (method)
 		{
-			m_ScriptClass->InvokeMethod(m_Instance->GetMonoObject(), method, params);
+			return m_ScriptClass->InvokeMethod(m_Instance->GetMonoObject(), method, params);
 		}
+		return nullptr;
 	}
 
 	/* ======== ScriptObject ======== */
@@ -1070,6 +1105,9 @@ namespace Stimpi
 	ScriptObject::ScriptObject(MonoObject* obj)
 		: m_MonoObject(obj)
 	{
+		MonoClass* klass = mono_object_get_class(m_MonoObject);
+		m_MonoType = mono_class_get_type(klass);
+
 		PopulateFieldsData();
 	}
 
@@ -1077,7 +1115,6 @@ namespace Stimpi
 	ScriptObject::ScriptObject(std::string typeName)
 		: m_MonoObject(nullptr)
 	{
-		//TODO: check if const char* -> char* has no side effects
 		MonoType* monoType = mono_reflection_type_from_name((char*)typeName.c_str(), s_Data->m_CoreAssemblyImage);
 		if (monoType)
 		{
@@ -1187,6 +1224,23 @@ namespace Stimpi
 	void ScriptField::SetValue(void* data)
 	{
 		mono_field_set_value(m_ParentObject->GetMonoObject(), m_MonoField, data);
+	}
+
+	bool ScriptField::IsSerializable()
+	{
+		if (s_Data->m_AttributeLookup)
+		{
+			void* attrParam[2];
+			attrParam[0] = ScriptEngine::GetMonoReflectionType(m_ParentObject->GetMonoType());
+			attrParam[1] = ScriptEngine::CreateMonoString(m_Name);
+			void* res = s_Data->m_AttributeLookup->InvokeMethod("HasSerializeFieldAttribute", 2, attrParam);
+			if (res)
+			{
+				return *(bool*)res;
+			}
+		}
+
+		return false;
 	}
 
 }

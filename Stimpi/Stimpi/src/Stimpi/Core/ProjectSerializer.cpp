@@ -31,6 +31,19 @@ namespace Stimpi
 				}
 				out << YAML::EndMap;
 
+				// Physics config
+				out << YAML::Key << "Physics" << YAML::Value;
+				out << YAML::BeginMap;
+				{
+					out << YAML::Key << "GravityFoce" << YAML::Value;
+					out << YAML::BeginSeq;
+					{
+						out << projectConfig.m_PhysicsConfig.m_GravityForce.x << projectConfig.m_PhysicsConfig.m_GravityForce.y;
+					}
+					out << YAML::EndSeq;
+				}
+				out << YAML::EndMap;
+
 				// SortingLayers config
 				out << YAML::Key << "SortingLayers" << YAML::Value;
 				out << YAML::BeginMap;
@@ -94,6 +107,17 @@ namespace Stimpi
 			else
 			{
 				projectConfig.m_GraphicsConfig.m_RenderingOrderAxis = RenderingOrderAxis::None;
+			}
+		}
+
+		// Physics config
+		if (node["Physics"])
+		{
+			YAML::Node physics = node["Physics"];
+			if (physics["GravityFoce"])
+			{
+				YAML::Node gravity = physics["GravityFoce"];
+				projectConfig.m_PhysicsConfig.m_GravityForce = glm::vec2(gravity[0].as<float>(), gravity[1].as<float>());
 			}
 		}
 

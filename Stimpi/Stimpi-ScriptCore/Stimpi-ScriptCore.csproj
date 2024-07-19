@@ -59,7 +59,7 @@
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Dist|x64' ">
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CustomAttribudes.cs" />
+    <Compile Include="Source\Stimpi\CustomAttribudes.cs" />
     <Compile Include="Source\Stimpi\Input\Input.cs" />
     <Compile Include="Source\InternalCalls.cs" />
     <Compile Include="Source\Stimpi\Input\KeyCode.cs" />

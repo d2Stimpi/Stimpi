@@ -15,6 +15,7 @@ namespace Sandbox
         private QuadComponent m_Quad;
         public float speed = 16.0f;
 
+        [SerializeField]
         public Entity camera;
         public Vector2 vector;
 

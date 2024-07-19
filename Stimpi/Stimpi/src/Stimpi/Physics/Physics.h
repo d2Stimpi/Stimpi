@@ -8,6 +8,9 @@
 
 namespace Stimpi
 {
+	/**
+	 * Represents objects collision contact point
+	 */
 	struct Contact
 	{
 		glm::vec2 m_Point = { 0.0f, 0.0f };
@@ -17,6 +20,9 @@ namespace Stimpi
 		Contact(const Contact& contact) = default;
 	};
 
+	/**
+	 * Collision data
+	 */
 	struct Collision
 	{
 		uint32_t m_Owner = 0;							// Collision data owner Entity ID
@@ -32,6 +38,14 @@ namespace Stimpi
 		}
 
 		static bool Compare(Collision* a, Collision* b);
+	};
+
+	/**
+	 * Used for Project specific Physics configurations
+	 */
+	struct PhysicsConfig
+	{
+		glm::vec2 m_GravityForce = { 0.0f, -9.8f }; 
 	};
 
 	class ST_API Physics

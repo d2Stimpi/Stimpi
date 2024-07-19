@@ -12,7 +12,7 @@ namespace Stimpi
 	RenderingOrderAxis StringToRenderingOrderAxis(const std::string& axis);
 
 	/**
-	 * Used for general Rendering configurations
+	 * Used for Project specific Rendering configurations
 	 */
 	struct GraphicsConfig
 	{

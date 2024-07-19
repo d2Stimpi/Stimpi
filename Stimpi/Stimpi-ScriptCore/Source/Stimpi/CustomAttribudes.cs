@@ -12,7 +12,7 @@ namespace Stimpi
     {
     }
 
-    public class AttributeTest
+    public class AttributeLookup
     {
         public static void ListTypeFields(Type type)
         {
@@ -30,6 +30,26 @@ namespace Stimpi
                 }
                 Console.WriteLine($"is Serializable {Attribute.IsDefined(field, typeof(SerializeField))}");
             }
+        }
+
+        public static void TestStrArgs(string str, string str2)
+        {
+            Console.WriteLine("TestStrArg: " + str + str2);
+        }
+
+        public static bool HasSerializeFieldAttribute(Type type, string fieldName)
+        {
+            TypeInfo typeInfo = type.GetTypeInfo();
+            var fields = typeInfo.GetRuntimeFields();
+            foreach (var field in fields)
+            {
+                if (field.Name == fieldName)
+                {
+                    return Attribute.IsDefined(field, typeof(SerializeField));
+                }
+            }
+
+            throw new ArgumentException($"Field {fieldName} not found in {type.Name}");
         }
     }
 }

@@ -21,6 +21,8 @@ namespace Stimpi
 		Scene* GetActiveScene() { return m_ActiveScene.get(); }
 		std::shared_ptr<Scene> GetActiveSceneRef() { return m_ActiveScene; }
 
+		FilePath GetActiveScenePath() { return m_ActiveScenePath; }
+
 		void NewScene();
 		void LoadScene(const std::string& filePath);
 		void SaveScene(const std::string& filePath);
@@ -32,6 +34,7 @@ namespace Stimpi
 		void NotifyOnSceneChange();
 	private:
 		std::shared_ptr<Scene> m_ActiveScene;
+		FilePath m_ActiveScenePath;
 		std::vector<OnSceneChangedListener> m_OnSceneChangeListeners;
 	};
 }

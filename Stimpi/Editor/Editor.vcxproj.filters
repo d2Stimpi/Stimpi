@@ -148,6 +148,7 @@
       <Filter>Gui\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\Gui\Panels\ScriptFieldFragment.h" />
+    <ClInclude Include="src\Gui\Config\PhysicsConfigPanel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
@@ -260,5 +261,6 @@
       <Filter>Gui\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\Gui\Panels\ScriptFieldFragment.cpp" />
+    <ClCompile Include="src\Gui\Config\PhysicsConfigPanel.cpp" />
   </ItemGroup>
 </Project>
