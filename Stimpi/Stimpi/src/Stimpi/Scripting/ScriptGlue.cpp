@@ -109,6 +109,22 @@ namespace Stimpi
 	{
 		return ScriptEngine::GetManagedInstance(entityID);
 	}
+
+	static MonoObject* CreateScriptInstance(MonoString* name)
+	{
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+
+		char* nameCStr = mono_string_to_utf8(name);
+		Entity entity = scene->CreateEntity(nameCStr);
+		auto classInstance = ScriptEngine::CreateScriptInstance(nameCStr, entity);
+		mono_free(nameCStr);
+
+		if (classInstance)
+			return classInstance->GetMonoInstance();
+
+		return nullptr;
+	}
 	
 
 #pragma endregion Component
@@ -549,6 +565,23 @@ namespace Stimpi
 		return hasComponent;
 	}
 
+	static bool RigidBody2DComponent_InitializePhysics2DBody(uint32_t entityID)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<RigidBody2DComponent>();
+		if (hasComponent)
+		{
+			scene->Initialize2DPhysicsBody(entity);
+		}
+
+		return hasComponent;
+	}
+
 #pragma endregion RigidBody2DComponent
 
 #pragma region Pysics
@@ -815,6 +848,7 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(Entity_RemoveComponent);
 		ST_ADD_INTERNAL_CALL(Entity_FindEntityByName);
 		ST_ADD_INTERNAL_CALL(GetScriptInstace);
+		ST_ADD_INTERNAL_CALL(CreateScriptInstance);
 
 		// TagComponent
 		ST_ADD_INTERNAL_CALL(TagComponent_GetString);
@@ -845,6 +879,7 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_SetFixedRotation);
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_GetTransform);
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_SetTransform);
+		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_InitializePhysics2DBody);
 
 		// CameraComponent
 		ST_ADD_INTERNAL_CALL(CameraComponent_GetIsMain);

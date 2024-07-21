@@ -504,6 +504,12 @@ namespace Stimpi
 			});
 	}
 
+
+	void Scene::Initialize2DPhysicsBody(Entity entity)
+	{
+		CreatePhysicsBody(entity);
+	}
+
 	Entity Scene::MousePickEntity(float x, float y)
 	{
 		Entity picked = {};
@@ -611,72 +617,82 @@ namespace Stimpi
 		m_Registry.view<RigidBody2DComponent>().each([=](auto e, auto& rb2d)
 			{
 				Entity entity = { e, this };
-				if (entity.HasComponent<QuadComponent>() || entity.HasComponent<CircleComponent>())
-				{
-					glm::vec2 center(0.0f, 0.0f);
-					glm::vec2 size(0.0f, 0.0f);
-					float rotation = 0.0f;
-
-					if (entity.HasComponent<QuadComponent>())
-					{
-						auto& quad = entity.GetComponent<QuadComponent>();
-						center = quad.Center();
-						size = quad.m_Size;
-						rotation = quad.m_Rotation;
-					}
-					else if (entity.HasComponent<CircleComponent>())
-					{
-						auto& cicle = entity.GetComponent<CircleComponent>();
-						center = cicle.Center();
-						size = cicle.m_Size;
-						rotation = cicle.m_Rotation;
-					}
-
-					b2BodyDef bodyDef;
-					bodyDef.type = Rigidbody2DTypeToBox2DType(rb2d.m_Type);
-					bodyDef.position.Set(center.x, center.y);
-					bodyDef.angle = rotation;
-					bodyDef.userData.pointer = (uint32_t)entity;
-
-					if (entity.HasComponent<BoxCollider2DComponent>())
-					{
-						auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
-						b2FixtureDef fixtureDef;
-						b2PolygonShape boxShape;
-						b2CircleShape circleShape;
-
-						if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::BOX)
-						{
-							boxShape.SetAsBox(bc2d.m_Size.x * size.x, bc2d.m_Size.y * size.y);
-							fixtureDef.shape = &boxShape;
-						}
-						else if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::CIRLCE)
-						{
-							circleShape.m_radius = bc2d.m_Size.x * size.x;
-							fixtureDef.shape = &circleShape;
-						}
-
-						fixtureDef.density = bc2d.m_Density;
-						fixtureDef.friction = bc2d.m_Friction;
-						fixtureDef.restitution = bc2d.m_Restitution;
-						fixtureDef.restitutionThreshold = bc2d.m_RestitutionThreshold;
-
-						bodyDef.position.Set(center.x, center.y);
-						b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);
-						body->SetFixedRotation(rb2d.m_FixedRotation);
-						body->CreateFixture(&fixtureDef);
-						rb2d.m_RuntimeBody = body;
-					}
-					else
-					{
-						b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);
-						body->SetFixedRotation(rb2d.m_FixedRotation);
-						rb2d.m_RuntimeBody = body;
-					}
-				}
+				CreatePhysicsBody(entity);
 			});
 
 		m_PhysicsWorld->SetContactListener(m_ContactListener.get());
+	}
+
+
+	void Scene::CreatePhysicsBody(Entity entity)
+	{
+		if (entity.HasComponent<RigidBody2DComponent>())
+		{
+			RigidBody2DComponent& rb2d = entity.GetComponent<RigidBody2DComponent>();
+			if (entity.HasComponent<QuadComponent>() || entity.HasComponent<CircleComponent>())
+			{
+				glm::vec2 center(0.0f, 0.0f);
+				glm::vec2 size(0.0f, 0.0f);
+				float rotation = 0.0f;
+
+				if (entity.HasComponent<QuadComponent>())
+				{
+					auto& quad = entity.GetComponent<QuadComponent>();
+					center = quad.Center();
+					size = quad.m_Size;
+					rotation = quad.m_Rotation;
+				}
+				else if (entity.HasComponent<CircleComponent>())
+				{
+					auto& cicle = entity.GetComponent<CircleComponent>();
+					center = cicle.Center();
+					size = cicle.m_Size;
+					rotation = cicle.m_Rotation;
+				}
+
+				b2BodyDef bodyDef;
+				bodyDef.type = Rigidbody2DTypeToBox2DType(rb2d.m_Type);
+				bodyDef.position.Set(center.x, center.y);
+				bodyDef.angle = rotation;
+				bodyDef.userData.pointer = (uint32_t)entity;
+
+				if (entity.HasComponent<BoxCollider2DComponent>())
+				{
+					auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+					b2FixtureDef fixtureDef;
+					b2PolygonShape boxShape;
+					b2CircleShape circleShape;
+
+					if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::BOX)
+					{
+						boxShape.SetAsBox(bc2d.m_Size.x * size.x, bc2d.m_Size.y * size.y);
+						fixtureDef.shape = &boxShape;
+					}
+					else if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::CIRLCE)
+					{
+						circleShape.m_radius = bc2d.m_Size.x * size.x;
+						fixtureDef.shape = &circleShape;
+					}
+
+					fixtureDef.density = bc2d.m_Density;
+					fixtureDef.friction = bc2d.m_Friction;
+					fixtureDef.restitution = bc2d.m_Restitution;
+					fixtureDef.restitutionThreshold = bc2d.m_RestitutionThreshold;
+
+					bodyDef.position.Set(center.x, center.y);
+					b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);
+					body->SetFixedRotation(rb2d.m_FixedRotation);
+					body->CreateFixture(&fixtureDef);
+					rb2d.m_RuntimeBody = body;
+				}
+				else
+				{
+					b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);
+					body->SetFixedRotation(rb2d.m_FixedRotation);
+					rb2d.m_RuntimeBody = body;
+				}
+			}
+		}
 	}
 
 	void Scene::UpdatePhysicsSimulation(Timestep ts)
@@ -693,17 +709,25 @@ namespace Stimpi
 					auto& quad = entity.GetComponent<QuadComponent>();
 
 					b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
-					const auto& position = body->GetPosition();
-					quad.m_Position.x = position.x;
-					quad.m_Position.y = position.y;
-					quad.m_Rotation = body->GetAngle();
-
-					// Updated quad position by Collider offset
-					if (entity.HasComponent<BoxCollider2DComponent>())
+					if (body)
 					{
-						auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
-						quad.m_Position.x -= bc2d.m_Offset.x;
-						quad.m_Position.y -= bc2d.m_Offset.y;
+						const auto& position = body->GetPosition();
+						quad.m_Position.x = position.x;
+						quad.m_Position.y = position.y;
+						quad.m_Rotation = body->GetAngle();
+
+						// Updated quad position by Collider offset
+						if (entity.HasComponent<BoxCollider2DComponent>())
+						{
+							auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+							quad.m_Position.x -= bc2d.m_Offset.x;
+							quad.m_Position.y -= bc2d.m_Offset.y;
+						}
+					}
+					else
+					{
+						auto& tag = entity.GetComponent<TagComponent>();
+						ST_CORE_WARN("Entity {} has no Physics Body initialized!", tag.m_Tag);
 					}
 				}
 
@@ -712,17 +736,25 @@ namespace Stimpi
 					auto& circle = entity.GetComponent<CircleComponent>();
 
 					b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
-					const auto& position = body->GetPosition();
-					circle.m_Position.x = position.x;
-					circle.m_Position.y = position.y;
-					circle.m_Rotation = body->GetAngle();
-
-					// Updated quad position by Collider offset
-					if (entity.HasComponent<BoxCollider2DComponent>())
+					if (body)
 					{
-						auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
-						circle.m_Position.x -= bc2d.m_Offset.x;
-						circle.m_Position.y -= bc2d.m_Offset.y;
+						const auto& position = body->GetPosition();
+						circle.m_Position.x = position.x;
+						circle.m_Position.y = position.y;
+						circle.m_Rotation = body->GetAngle();
+
+						// Updated quad position by Collider offset
+						if (entity.HasComponent<BoxCollider2DComponent>())
+						{
+							auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+							circle.m_Position.x -= bc2d.m_Offset.x;
+							circle.m_Position.y -= bc2d.m_Offset.y;
+						}
+					}
+					else
+					{
+						auto& tag = entity.GetComponent<TagComponent>();
+						ST_CORE_WARN("Entity {} has no Physics Body initialized!", tag.m_Tag);
 					}
 				}
 			});

@@ -20,6 +20,8 @@ namespace Stimpi
         public extern static uint Entity_FindEntityByName(string name);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static object GetScriptInstace(uint entityID);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static object CreateScriptInstance(string name);
 
         /* TagComponent */
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -70,6 +72,8 @@ namespace Stimpi
         public extern static bool RigidBody2DComponent_GetTransform(uint entityID, out Vector2 outPosition, out float outAngle);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool RigidBody2DComponent_SetTransform(uint entityID, ref Vector2 position, ref float angle);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool RigidBody2DComponent_InitializePhysics2DBody(uint entityID);
 
         /* CameraComponent */
         [MethodImplAttribute(MethodImplOptions.InternalCall)]

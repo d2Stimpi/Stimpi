@@ -76,6 +76,17 @@ namespace Stimpi
             return null;
         }
 
+        public static T Create<T>() where T : Entity, new()
+        {
+            object instance = InternalCalls.CreateScriptInstance(typeof(T).FullName);
+            if (instance is T)
+                return instance as T;
+
+            return null;
+        }
+
+        // TODO: remove entity and perform necessary cleanup
+
         public virtual void OnCreate()
         {
             Console.WriteLine("OnCreate Entity");

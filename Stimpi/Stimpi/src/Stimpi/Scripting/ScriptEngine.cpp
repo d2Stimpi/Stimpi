@@ -762,7 +762,6 @@ namespace Stimpi
 			{
 				auto scriptComponent = entity.GetComponent<ScriptComponent>();
 				auto scriptInstance = CreateScriptInstance(scriptComponent.m_ScriptName, entity);
-				s_Data->m_EntityInstances[entity] = scriptInstance;
 			}
 		}
 	}
@@ -807,8 +806,6 @@ namespace Stimpi
 		OnScriptComponentRemove(entity);
 
 		auto classInstance = CreateScriptInstance(className, entity);
-		if (classInstance)
-			s_Data->m_EntityInstances[entity] = classInstance;
 
 		return classInstance;
 	}
@@ -825,9 +822,25 @@ namespace Stimpi
 	{
 		auto scriptClass = GetScriptClassByName(className);
 		if (scriptClass == nullptr)
+		{
+			ST_CORE_ERROR("CreateScriptInstance failed, invalid className: {}", className);
 			return nullptr;
+		}
 
-		return std::make_shared<ScriptInstance>(scriptClass, entity);
+		auto classInstance = std::make_shared<ScriptInstance>(scriptClass, entity);
+		if (classInstance)
+			s_Data->m_EntityInstances[entity] = classInstance;
+
+		// When in running mode, invoke onCreate on the new instance
+		if (s_Data->m_Scene)
+		{
+			if (s_Data->m_Scene->GetRuntimeState() != RuntimeState::STOPPED)
+			{
+				classInstance->InvokeOnCreate();
+			}
+		}
+
+		return classInstance;
 	}
 
 

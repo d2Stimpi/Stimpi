@@ -60,6 +60,9 @@ namespace Stimpi
 		// Component change events
 		void OnSortingLayerRemove(const std::string layerName);
 
+		// Physics
+		void Initialize2DPhysicsBody(Entity entity);
+
 		// Debugging
 		static void EnableDebugMode(bool enable);
 
@@ -81,6 +84,7 @@ namespace Stimpi
 
 		// Physics
 		void InitializePhysics();
+		void CreatePhysicsBody(Entity entity);
 		void UpdatePhysicsSimulation(Timestep ts);
 		void DeinitializePhysics();
 		bool ProcessPhysicsEvent(PhysicsEvent* event);

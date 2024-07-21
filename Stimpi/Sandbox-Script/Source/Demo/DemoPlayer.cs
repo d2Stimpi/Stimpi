@@ -80,6 +80,16 @@ namespace Demo
                 Physics.SetLinearVelocity(ID, Vector2.Zero);
             }
 
+            // Test - create a bullet
+            if (Input.IsKeyDown(KeyCode.KEY_SPACE))
+            {
+                Bullet bullet = Entity.Create<Bullet>();
+                Console.WriteLine("Setting target for Bullet");
+                bullet.TargetEntity = Cursor;
+                bullet.StartPos = Quad.Position;
+                bullet.InitializeTarget();
+            }
+
 
             if (Input.IsKeyPressed(KeyCode.KEY_D))
             {

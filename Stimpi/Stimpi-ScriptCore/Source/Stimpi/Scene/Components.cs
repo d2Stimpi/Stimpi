@@ -193,6 +193,11 @@ namespace Stimpi
         {
             return InternalCalls.RigidBody2DComponent_SetTransform(Entity.ID, ref position, ref angle);
         }
+
+        public bool InitializePhysics2DBody()
+        {
+            return InternalCalls.RigidBody2DComponent_InitializePhysics2DBody(Entity.ID);
+        }
     }
 
     public class CameraComponent : Component
@@ -244,5 +249,10 @@ namespace Stimpi
                     Console.WriteLine($"Entity {Entity.ID} does not have CameraComonent (set zoom)");
             }
         }
+    }
+
+    public class ScriptComponent : Component
+    {
+
     }
 }

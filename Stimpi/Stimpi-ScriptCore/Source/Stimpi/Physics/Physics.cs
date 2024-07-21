@@ -45,5 +45,14 @@ namespace Stimpi
 
             return result;
         }
+
+        public static bool InitializePhysics2DBody(uint entityID)
+        {
+            bool result = InternalCalls.RigidBody2DComponent_InitializePhysics2DBody(entityID);
+            if (!result)
+                Console.WriteLine($"SetLinearVelocity failed - no RigidBody2DComponent component on entity {entityID}");
+
+            return result;
+        }
     }
 }
