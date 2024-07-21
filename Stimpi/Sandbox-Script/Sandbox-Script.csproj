@@ -62,6 +62,7 @@
     <Compile Include="Source\Actor.cs" />
     <Compile Include="Source\Ball.cs" />
     <Compile Include="Source\Demo\Bullet.cs" />
+    <Compile Include="Source\Demo\DemoPlayer.cs" />
     <Compile Include="Source\PhysicsActor.cs" />
     <Compile Include="Source\PhysicsTest.cs" />
     <Compile Include="Source\Player.cs" />

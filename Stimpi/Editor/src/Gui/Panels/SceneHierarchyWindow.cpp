@@ -315,7 +315,8 @@ namespace Stimpi
 							{
 								float fNum = 0.0f;
 								field->GetValue(&fNum);
-								if (ImGui::InputFloat(fmt::format("{}##{}", "", tagName).c_str(), &fNum, 0.0f, 0.0f, "%.3f", fieldInputFlags))
+								std::string label = fmt::format("{}##{}", field->GetName(), tagName);
+								if (ImGui::InputFloat(label.c_str(), &fNum, 0.0f, 0.0f, "%.3f", fieldInputFlags))
 								{
 									field->SetValue(&fNum);
 								}

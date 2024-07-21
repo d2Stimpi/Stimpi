@@ -6,6 +6,8 @@
 #include "Stimpi/Core/KeyCodes.h"
 #include "Stimpi/Core/MouseCodes.h"
 
+#include <glm/glm.hpp>
+
 /* 
 * TODO: Mouse events
 *  - Scroll Up/Down poll events
@@ -59,6 +61,8 @@ namespace Stimpi
 		static bool IsMouseButtonPressed(uint8_t mbt);
 		static bool IsMouseButtonUp(uint8_t mbt);
 
+		glm::vec2 GetMousePosition();
+
 		void AddEvent(KeyboardEvent event);
 		void AddEvent(MouseEvent event);
 
@@ -70,5 +74,7 @@ namespace Stimpi
 
 		std::vector<MouseEvnetHandler*> m_mouseEventHandlers;
 		std::vector<MouseEvent> m_MouseEvents;
+
+		glm::vec2 m_MouseCursorPosition;
 	};
 }

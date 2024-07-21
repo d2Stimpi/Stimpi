@@ -39,5 +39,11 @@ namespace Stimpi
         {
             return InternalCalls.Input_IsMouseUp(code);
         }
+
+        public static Vector2 GetMousePosition()
+        {
+            InternalCalls.Input_GetMousePosition(out Vector2 position);
+            return position;
+        }
     }
 }

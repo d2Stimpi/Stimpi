@@ -3,6 +3,7 @@
 
 #include "Stimpi/Core/Project.h"
 
+#include <glm/gtc/type_ptr.hpp>
 #include "ImGui/src/imgui.h"
 
 namespace Stimpi
@@ -15,10 +16,12 @@ namespace Stimpi
 		{
 			if (ImGui::Begin("Physics Config##Project", &m_Show)) // ImGuiWindowFlags_NoResize
 			{
+				PhysicsConfig& physicsConfig = Project::GetPhysicsConfig();
+
 				ImGui::Text("Gravity force value");
 				ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 105);
 				ImGui::SetNextItemWidth(100);
-
+				ImGui::DragFloat2("##GravityForce_Config", glm::value_ptr(physicsConfig.m_GravityForce));
 
 				ImGui::End();
 			}

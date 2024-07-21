@@ -95,6 +95,8 @@ namespace Stimpi
         public extern static bool Input_IsMousePressed(MouseCode mousecode);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool Input_IsMouseUp(MouseCode mousecode);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool Input_GetMousePosition(out Vector2 position);
 
         /* Physics */
         [MethodImplAttribute(MethodImplOptions.InternalCall)]

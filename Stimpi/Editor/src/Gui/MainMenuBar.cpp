@@ -16,6 +16,7 @@
 
 #include "Gui/Config/GraphicsConfigPanel.h"
 #include "Gui/Config/LayersConfigPanel.h"
+#include "Gui/Config/PhysicsConfigPanel.h"
 
 #include "ImGui/src/imgui.h"
 #include "ImGui/src/imgui_internal.h"
@@ -143,6 +144,11 @@ namespace Stimpi
 					if (ImGui::MenuItem("Layers"))
 					{
 						LayersConfigPanel::ShowWindow(!LayersConfigPanel::IsVisible());
+					}
+
+					if (ImGui::MenuItem("Physics"))
+					{
+						PhysicsConfigPanel::ShowWindow(!PhysicsConfigPanel::IsVisible());
 					}
 
 					ImGui::EndMenu();

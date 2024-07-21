@@ -1,6 +1,8 @@
 #include "stpch.h"
 #include "Stimpi/Core/InputManager.h"
 
+#include "Stimpi/Core/WindowManager.h"
+
 namespace Stimpi
 {
 	KeyboardEventType s_KeyStates[ST_NUM_KEYCODES];
@@ -105,6 +107,12 @@ namespace Stimpi
 		return s_MouseButtonStatesInstant[mbt] == MouseEventType::MOUSE_EVENT_BUTTONUP;
 	}
 
+	glm::vec2 InputManager::GetMousePosition()
+	{
+		return WindowManager::Instance()->GetMouseWindowPostition();
+		//return m_MouseCursorPosition;
+	}
+
 	void InputManager::AddEvent(KeyboardEvent event)
 	{
 		m_KeyboardEvents.push_back(event);
@@ -127,6 +135,11 @@ namespace Stimpi
 		{
 			s_MouseButtonStates[event.GetButton()] = event.GetType();
 			s_MouseButtonStatesInstant[event.GetButton()] = event.GetType();
+		}
+
+		if (event.GetType() == MouseEventType::MOUSE_EVENT_MOTION)
+		{
+			m_MouseCursorPosition = { event.GetX(), event.GetY() };
 		}
 
 		//ST_CORE_INFO("Input: Mouse event - {}", GetStringMouseEvent(event.GetType()));

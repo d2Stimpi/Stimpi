@@ -72,6 +72,13 @@ namespace Stimpi
 		m_Hovered = ImGui::IsWindowHovered();
 		m_Focused = ImGui::IsWindowFocused();
 
+		m_WindowSize = winSize;
+		m_WindowPosition = pos;
+		// Limit mouse position to screen
+		m_MousePosition = ImGui::GetMousePos();
+		glm::vec2 bound = SceneUtils::SquareBoundPosition({ winSize.x, winSize.y }, { m_MousePosition.x - pos.x, m_MousePosition.y - pos.y });
+		m_MousePosition = ImVec2(bound.x, bound.y);
+
 		// Aspect ratio 16:9
 		// TODO: configurable aspect ratio
 		if (((float)winSize.x / 1.7778f) >= (float)winSize.y)

@@ -6,6 +6,7 @@
 
 #include "Stimpi/Core/EventQueue.h"
 #include "Stimpi/Core/InputManager.h"
+#include "Stimpi/Core/WindowManager.h"
 #include "Stimpi/Core/Time.h"
 #include "Stimpi/Scene/Assets/AssetManager.h"
 #include "Stimpi/Utils/ThreadPool.h"
@@ -29,6 +30,8 @@ namespace Stimpi
 		Stimpi::Log::Init();
 		m_Window.reset(Window::CreateAppWindow());
 		m_Context.CreateContext(m_Window.get());
+
+		WindowManager::Instance()->SetActiveWindow(m_Window.get());
 
 		// Init ScriptEngine runtime
 		ScriptEngine::Init();

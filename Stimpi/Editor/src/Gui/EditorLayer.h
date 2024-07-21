@@ -20,6 +20,7 @@
 #include "Gui/Config/SceneConfigPanel.h"
 #include "Gui/Config/GraphicsConfigPanel.h"
 #include "Gui/Config/LayersConfigPanel.h"
+#include "Gui/Config/PhysicsConfigPanel.h"
 // Test - WIP
 #include "Gui/Nodes/GraphPanel.h"
 
@@ -63,6 +64,7 @@ namespace Stimpi
 		// Edit/Project/
 		GraphicsConfigPanel m_GraphicsConfigPanel;
 		LayersConfigPanel m_LayersConfigPanel;
+		PhysicsConfigPanel m_PhysicsConfigPanel;
 
 		//Test-WIP
 		GraphPanel m_NodePanelNew;

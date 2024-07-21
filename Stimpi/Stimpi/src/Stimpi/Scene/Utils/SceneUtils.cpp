@@ -31,6 +31,7 @@ namespace Stimpi
 			fbSize.y = (uint32_t)windowSize.y;
 		}
 		// Calculate visible camera bounds. Not full FrameBuffer is always visible
+		// Multiply with Window/Framebuffer ratio
 		glm::vec2 cameraVisibleSize = { cameraBounds.y * windowSize.x / fbSize.x, cameraBounds.w * windowSize.y / fbSize.y };
 
 		// Adjusted camera view and window size ratio
@@ -75,6 +76,27 @@ namespace Stimpi
 		glm::vec2 winPos = { worldPos.x * scale.x, worldPos.y * scale.y };
 
 		return winPos;
+	}
+
+	glm::vec2 SceneUtils::WindowToScenePosition(glm::vec2 windowSize, glm::vec2 screenPos)
+	{
+		return { screenPos.x,  windowSize.y - screenPos.y };
+	}
+
+	glm::vec2 SceneUtils::SquareBoundPosition(glm::vec2 windowSize, glm::vec2 screnePos)
+	{
+		glm::vec2 bound = screnePos;
+
+		if (bound.x < 0.0f)	
+			bound.x = 0;
+		if (bound.x > windowSize.x)	
+			bound.x = windowSize.x;
+		if (bound.y < 0.0f)	
+			bound.y = 0;
+		if (bound.y > windowSize.y)	
+			bound.y = windowSize.y;
+
+		return bound;
 	}
 
 	bool SceneUtils::IsContainedInSquare(glm::vec2 point, glm::vec2 min, glm::vec2 max)

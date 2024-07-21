@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime;
 
 namespace Stimpi
 {
@@ -19,6 +20,10 @@ namespace Stimpi
 
         public static Vector2 Zero { get { return new Vector2(0.0f, 0.0f); } }
         public static Vector2 One { get { return new Vector2(1.0f, 1.0f); } }
+
+        public float Length { get { return (float)Math.Sqrt(X*X + Y*Y); } }
+        public Vector2 Unit { get { return new Vector2(X/Length, Y/Length); } }
+        public Vector2 Inv { get { return new Vector2(-X, -Y); } }
 
         public override string ToString()
         {

@@ -47,8 +47,8 @@ Scene:
     TagComponent:
       Tag: Player
     QuadComponent:
-      - 6
-      - 24.9142895
+      - 64
+      - 36
       - 0
       - 5
       - 5
@@ -61,6 +61,21 @@ Scene:
         - 0.0777825862
         - 0.0777825862
         - 1
+    ScriptComponent:
+      ScriptName: Demo.DemoPlayer
+      ScriptFields:
+        Field:
+          Type: FIELD_TYPE_CLASS
+          FieldTypeName: Stimpi.Entity
+          Name: Camera
+          FieldData:
+            ID: 1
+        Field:
+          Type: FIELD_TYPE_CLASS
+          FieldTypeName: Stimpi.Entity
+          Name: Cursor
+          FieldData:
+            ID: 4
     RigidBody2DComponent:
       Type: Dynamic
       FixedRotation: false
@@ -76,3 +91,24 @@ Scene:
       Friction: 0.5
       Restitution: 0
       RestitutionThreshold: 0.5
+  Entity:
+    TagComponent:
+      Tag: Cursor
+    QuadComponent:
+      - -66.9730835
+      - 108.687462
+      - 0
+      - 2
+      - 2
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 1
+        - 1
+        - 1
+        - 1
+    SortingGroupComponent:
+      SortingLayerName: Front
+      OrderInLayer: 0

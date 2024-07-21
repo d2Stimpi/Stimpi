@@ -126,6 +126,12 @@ namespace Stimpi
 		return pending;
 	}
 
+
+	void WindowSDL::GetWindowPosition(int* x, int* y)
+	{
+		SDL_GetWindowPosition(m_Window, x, y);
+	}
+
 	void WindowSDL::SwapWindow()
 	{
 		SDL_GL_SwapWindow(m_Window);

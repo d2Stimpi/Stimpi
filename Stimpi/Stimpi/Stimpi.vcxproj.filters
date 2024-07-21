@@ -217,6 +217,8 @@
     <ClInclude Include="src\stpch.h" />
     <ClInclude Include="src\Stimpi\Scripting\ScriptSerializer.h" />
     <ClInclude Include="src\Stimpi\Scripting\ScriptGlueTypes.h" />
+    <ClInclude Include="src\Stimpi\Core\WindowManager.h" />
+    <ClInclude Include="src\Stimpi\Core\Runtime.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Core\Application.cpp">
@@ -371,5 +373,7 @@
     </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
     <ClCompile Include="src\Stimpi\Scripting\ScriptSerializer.cpp" />
+    <ClCompile Include="src\Stimpi\Core\WindowManager.cpp" />
+    <ClCompile Include="src\Stimpi\Core\Runtime.cpp" />
   </ItemGroup>
 </Project>

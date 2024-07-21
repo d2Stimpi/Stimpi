@@ -3,10 +3,12 @@
 
 #include "Stimpi/Log.h"
 #include "Stimpi/Core/InputManager.h"
+#include "Stimpi/Core/WindowManager.h"
 #include "Stimpi/Core/KeyCodes.h"
 
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/SceneManager.h"
+#include "Stimpi/Scene/Utils/SceneUtils.h"
 
 #include "box2d/b2_body.h"
 #include "box2d/b2_math.h"
@@ -414,6 +416,21 @@ namespace Stimpi
 	static bool Input_IsMouseUp(uint32_t mousecode)
 	{
 		return InputManager::Instance()->IsMouseButtonUp(mousecode);
+	}
+
+	static bool Input_GetMousePosition(glm::vec2* outPosition)
+	{
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto camera = scene->GetRenderCamera();
+		ST_CORE_ASSERT(!camera);
+
+		glm::vec2 mouseWinPos = InputManager::Instance()->GetMousePosition();
+		glm::vec2 winSize = WindowManager::Instance()->GetWindowSize();
+		glm::vec2 scenePos = SceneUtils::WindowToScenePosition(winSize, mouseWinPos);
+		*outPosition = SceneUtils::WindowToWorldPoint(camera, winSize, scenePos);
+
+		return true;
 	}
 
 #pragma endregion Input
@@ -842,6 +859,7 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(Input_IsMouseDown);
 		ST_ADD_INTERNAL_CALL(Input_IsMousePressed);
 		ST_ADD_INTERNAL_CALL(Input_IsMouseUp);
+		ST_ADD_INTERNAL_CALL(Input_GetMousePosition);
 
 		// Physics
 		ST_ADD_INTERNAL_CALL(Physics_ApplyForce);

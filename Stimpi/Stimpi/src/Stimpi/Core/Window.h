@@ -28,6 +28,8 @@ namespace Stimpi
 		virtual void Deinit() = 0;
 		virtual bool PollEvent(Event** e) = 0;
 
+		virtual void GetWindowPosition(int* x, int* y) = 0;
+
 		// Perform Render buffer swapping
 		virtual void SwapWindow() = 0;
 
@@ -57,6 +59,8 @@ namespace Stimpi
 		void Init() override;
 		void Deinit() override;
 		bool PollEvent(Event** e) override;
+
+		void GetWindowPosition(int* x, int* y) override;
 
 		// Perform Render buffer swapping
 		void SwapWindow() override;

@@ -22,6 +22,8 @@ private:
 
 Stimpi::Application* Stimpi::CreateApplication()
 {
+	SET_EDITOR_RUNTIME_MODE
+
 	// Load project data
 	Stimpi::ResourceManager::LoadDefaultProject();
 

@@ -133,11 +133,11 @@ namespace Stimpi
 	{
 		if (m_RuntimeState == RuntimeState::RUNNING)
 		{
-			// Update Scripts
-			UpdateScripts(ts);
-
 			// Physics
 			UpdatePhysicsSimulation(ts);
+
+			// Update Scripts
+			UpdateScripts(ts);
 
 			// Update components that depend on timestep
 			UpdateComponents(ts);
@@ -605,7 +605,9 @@ namespace Stimpi
 
 	void Scene::InitializePhysics()
 	{
-		m_PhysicsWorld = new b2World({ 0.0f, -9.8f });
+		glm::vec2 gravityForce = Project::GetPhysicsConfig().m_GravityForce;
+
+		m_PhysicsWorld = new b2World({ gravityForce.x, gravityForce.y });
 		m_Registry.view<RigidBody2DComponent>().each([=](auto e, auto& rb2d)
 			{
 				Entity entity = { e, this };

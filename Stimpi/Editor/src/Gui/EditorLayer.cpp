@@ -13,6 +13,7 @@
 #include "Gui/Gizmo2D.h"
 #include "Gui/Utils/EditorResources.h"
 
+#include "Stimpi/Core/WindowManager.h"
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/ResourceManager.h"
 
@@ -98,6 +99,24 @@ namespace Stimpi
 
 		// Window/Panel context set
 		SetupComponentContext(m_Scene.get());
+
+		// Set functions for WindowManager
+		WindowManagerEditor* windowManager = (WindowManagerEditor*)WindowManager::Instance();
+		windowManager->SetWindowPositionGetter([&]() -> glm::vec2
+			{
+				ImVec2 pos = m_SceneViewWindow.GetWindowPosition();
+				return { pos.x, pos.y };
+			});
+		windowManager->SetWindowSizeGetter([&]() -> glm::vec2
+			{
+				ImVec2 size = m_SceneViewWindow.GetWindowSize();
+				return { size.x, size.y };
+			});
+		windowManager->SetMouseWindowPositionGetter([&]() -> glm::vec2
+			{
+				ImVec2 size = m_SceneViewWindow.GetMousePosition();
+				return { size.x, size.y };
+			});
 	}
 
 	EditorLayer::~EditorLayer()
@@ -229,6 +248,7 @@ namespace Stimpi
 		/* Edit/Project */
 		m_GraphicsConfigPanel.OnImGuiRender();
 		m_LayersConfigPanel.OnImGuiRender();
+		m_PhysicsConfigPanel.OnImGuiRender();
 
 		// Camera movement update - only when in Stopped state
 		if (m_Scene->GetRuntimeState() == RuntimeState::STOPPED)
