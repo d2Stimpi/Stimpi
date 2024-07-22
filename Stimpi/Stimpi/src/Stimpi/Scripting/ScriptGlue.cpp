@@ -105,6 +105,29 @@ namespace Stimpi
 		return entity;
 	}
 
+	static bool Entity_Remove(uint32_t entityID)
+	{
+		bool removed = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		if (scene->IsEntityValid(entity))
+		{
+			ScriptEngine::RemoveEntityScriptInstance(entityID);
+		}
+
+		return removed;
+	}
+
+	static bool Entity_IsValidEntityID(uint32_t entityID)
+	{
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		return scene->IsEntityValid(entity);
+	}
+
 	static MonoObject* GetScriptInstace(uint32_t entityID)
 	{
 		return ScriptEngine::GetManagedInstance(entityID);
@@ -117,9 +140,11 @@ namespace Stimpi
 
 		char* nameCStr = mono_string_to_utf8(name);
 		Entity entity = scene->CreateEntity(nameCStr);
-		auto classInstance = ScriptEngine::CreateScriptInstance(nameCStr, entity);
+		entity.AddComponent<ScriptComponent>(nameCStr);
+		//auto classInstance = ScriptEngine::CreateScriptInstance(nameCStr, entity);
 		mono_free(nameCStr);
 
+		auto classInstance = ScriptEngine::GetScriptInstance(entity);
 		if (classInstance)
 			return classInstance->GetMonoInstance();
 
@@ -576,7 +601,7 @@ namespace Stimpi
 		hasComponent = entity.HasComponent<RigidBody2DComponent>();
 		if (hasComponent)
 		{
-			scene->Initialize2DPhysicsBody(entity);
+			scene->CreatePhysicsBody(entity);
 		}
 
 		return hasComponent;
@@ -847,6 +872,8 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(Entity_AddComponent);
 		ST_ADD_INTERNAL_CALL(Entity_RemoveComponent);
 		ST_ADD_INTERNAL_CALL(Entity_FindEntityByName);
+		ST_ADD_INTERNAL_CALL(Entity_Remove);
+		ST_ADD_INTERNAL_CALL(Entity_IsValidEntityID);
 		ST_ADD_INTERNAL_CALL(GetScriptInstace);
 		ST_ADD_INTERNAL_CALL(CreateScriptInstance);
 

@@ -26,7 +26,6 @@ namespace Demo
             if (Cursor != null)
             {
                 CursorQuad = Cursor.GetComponent<QuadComponent>();
-                Console.WriteLine("Cursor quad ref created");
             }
         }
 
@@ -37,7 +36,6 @@ namespace Demo
             {
                 Vector2 mousePos = Input.GetMousePosition();
                 CursorQuad.Position = mousePos;
-                //Console.WriteLine($"Cursor quad new pos {CursorQuad.Position} , mouse pos {mousePos}");
             }
 
             if (Quad != null)
@@ -84,14 +82,18 @@ namespace Demo
             if (Input.IsKeyDown(KeyCode.KEY_SPACE))
             {
                 Bullet bullet = Entity.Create<Bullet>();
-                Console.WriteLine("Setting target for Bullet");
-                bullet.TargetEntity = Cursor;
-                bullet.StartPos = Quad.Position;
-                bullet.InitializeTarget();
+
+                float size = Quad.Size.X * 1.25f;
+                Vector2 mousePos = Input.GetMousePosition();
+                Vector2 fireLocation = Quad.Position;
+
+                Vector2 dir = mousePos - fireLocation;
+                fireLocation += dir.Unit * size;
+
+                bullet.Initialize(this, CursorQuad.Position, fireLocation);
             }
 
-
-            if (Input.IsKeyPressed(KeyCode.KEY_D))
+            /*if (Input.IsKeyPressed(KeyCode.KEY_D))
             {
                 Physics.GetLinearVelocity(ID, out Vector2 outVel);
                 Vector2 vel = new Vector2(Velocity, outVel.Y);
@@ -145,7 +147,7 @@ namespace Demo
                 Physics.GetLinearVelocity(ID, out Vector2 outVel);
                 Vector2 vel = new Vector2(outVel.X, 0.0f);
                 Physics.SetLinearVelocity(ID, vel);
-            }
+            }*/
         }
     }
 }

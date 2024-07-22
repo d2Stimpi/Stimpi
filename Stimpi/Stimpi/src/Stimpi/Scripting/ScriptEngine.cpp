@@ -27,7 +27,7 @@
  *  - Find a better way to handle Field & Property data, keeping a local value, type handling...
  */
 
-#define SCRIPTENGINE_DBG	(true)
+#define SCRIPTENGINE_DBG	(false)
 
 #define MONO_LIB_PATH	"../mono/lib/mono/4.5"
 
@@ -267,6 +267,7 @@ namespace Stimpi
 		/* Scene data - Class Instances per entity */
 		std::shared_ptr<Scene> m_Scene;
 		std::unordered_map<uint32_t, std::shared_ptr<ScriptInstance>> m_EntityInstances;
+		std::vector<uint32_t> m_EntitiesToRemove;
 
 		// Custom Non-Entity classes
 		std::vector<std::string> m_ClassNames;
@@ -738,6 +739,23 @@ namespace Stimpi
 		return ResourceManager::GetScriptsPath() / s_ClientScriptName;
 	}
 
+	/**
+	 * Remove all script instances marked for removal after Update step
+	 */
+	void ScriptEngine::CleanUpRemovedInstances()
+	{
+		if (!s_Data->m_EntitiesToRemove.empty())
+		{
+			for (auto entity : s_Data->m_EntitiesToRemove)
+			{
+				s_Data->m_EntityInstances.erase(entity);
+				s_Data->m_Scene->RemoveEntity((entt::entity)entity);
+			}
+		}
+
+		s_Data->m_EntitiesToRemove.clear();
+	}
+
 	MonoImage* ScriptEngine::GetCoreAssemblyImage()
 	{
 		return s_Data->m_CoreAssemblyImage;
@@ -782,11 +800,13 @@ namespace Stimpi
 
 	void ScriptEngine::OnSceneUpdate(Timestep ts)
 	{
-		for (auto element : s_Data->m_EntityInstances)
+		for (auto& element : s_Data->m_EntityInstances)
 		{
-			auto instance = element.second;
+			auto& instance = element.second;
 			instance->InvokeOnUpdate(ts);
 		}
+
+		CleanUpRemovedInstances();
 	}
 
 	void ScriptEngine::OnSceneStop()
@@ -878,6 +898,14 @@ namespace Stimpi
 		}
 	}
 
+	void ScriptEngine::RemoveEntityScriptInstance(uint32_t entityID)
+	{
+		if (s_Data->m_EntityInstances.find(entityID) != s_Data->m_EntityInstances.end())
+		{
+			s_Data->m_EntitiesToRemove.push_back(entityID);
+		}
+	}
+
 	std::string ScriptEngine::GetFieldName(MonoClassField* field)
 	{
 		return mono_field_get_name(field);
@@ -950,7 +978,7 @@ namespace Stimpi
 		MonoMethod* monoMethod = mono_class_get_method_from_name(m_Class, methodName.c_str(), parameterCount);
 		if (monoMethod == nullptr)
 		{
-			ST_CORE_WARN("[ScriptClass] Error finding method {}", methodName);
+			if (SCRIPTENGINE_DBG) ST_CORE_WARN("[ScriptClass] Error finding method {}", methodName);
 		}
 
 		return monoMethod;

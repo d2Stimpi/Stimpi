@@ -130,8 +130,8 @@ namespace Stimpi
 		}
 
 		// Process Event Queues
-		auto& keyEvents = EventQueue<PhysicsEvent>::GetEvents();
-		for (auto& event : keyEvents)
+		auto& physicsEvents = EventQueue<PhysicsEvent>::GetEvents();
+		for (auto event : physicsEvents)
 		{
 			//event->LogEvent();
 			m_LayerStack.OnEvent(event.get());

@@ -19,9 +19,9 @@ namespace Stimpi
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static uint Entity_FindEntityByName(string name);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public extern static object GetScriptInstace(uint entityID);
+        public extern static bool Entity_Remove(uint entityID);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public extern static object CreateScriptInstance(string name);
+        public extern static bool Entity_IsValidEntityID(uint entityID);
 
         /* TagComponent */
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -121,5 +121,11 @@ namespace Stimpi
         public extern static bool Collision_GetImpactVelocity(uint OwnerID, uint TargetID, out Vector2 velocity);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static Contact[] Collision_GetContacts(uint OwnerID, uint TargetID);
+
+        /* Scripting */
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static object GetScriptInstace(uint entityID);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static object CreateScriptInstance(string name);
     }
 }

@@ -407,10 +407,28 @@ namespace Stimpi
 		return {};
 	}
 
-	void Scene::RemoveEntity(Entity entity)
+	bool Scene::RemoveEntity(Entity entity)
 	{
-		m_Registry.destroy(entity.GetHandle());
-		m_Entities.erase(std::remove(std::begin(m_Entities), std::end(m_Entities), entity));
+		bool valid = IsEntityValid(entity);
+		if (valid)
+		{
+			m_Registry.destroy(entity.GetHandle());
+			m_Entities.erase(std::remove(std::begin(m_Entities), std::end(m_Entities), entity));
+		}
+
+		return valid;
+	}
+
+
+	bool Scene::RemoveEntity(entt::entity handle)
+	{
+		Entity entity = Entity{ handle, this };
+		return RemoveEntity(entity);
+	}
+
+	bool Scene::IsEntityValid(Entity entity)
+	{
+		return m_Registry.valid(entity.GetHandle());
 	}
 
 	Entity Scene::CopyEntity(const Entity entity)
@@ -502,12 +520,6 @@ namespace Stimpi
 					group.m_SortingLayerName = Project::GetDefaultSortingLayerName();
 				}
 			});
-	}
-
-
-	void Scene::Initialize2DPhysicsBody(Entity entity)
-	{
-		CreatePhysicsBody(entity);
 	}
 
 	Entity Scene::MousePickEntity(float x, float y)
@@ -691,6 +703,19 @@ namespace Stimpi
 					body->SetFixedRotation(rb2d.m_FixedRotation);
 					rb2d.m_RuntimeBody = body;
 				}
+			}
+		}
+	}
+
+	void Scene::DestroyPhysicsBody(Entity entity)
+	{
+		if (entity.HasComponent<RigidBody2DComponent>())
+		{
+			RigidBody2DComponent& rb2d = entity.GetComponent<RigidBody2DComponent>();
+			if (m_PhysicsWorld)
+			{
+				m_PhysicsWorld->DestroyBody((b2Body*)rb2d.m_RuntimeBody);
+				rb2d.m_RuntimeBody = nullptr;
 			}
 		}
 	}

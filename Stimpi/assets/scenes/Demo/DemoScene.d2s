@@ -30,11 +30,11 @@ Scene:
       - 36
       - 0
       - 256
-      - 144
+      - 256
       - 0
     SpriteComponent:
-      FilePath: ""
-      Enabled: false
+      FilePath: D:/GitHub/Stimpi\assets\textures\viber_image.png
+      Enabled: true
       Color:
         - 0.568627477
         - 0.349981397
@@ -112,3 +112,48 @@ Scene:
     SortingGroupComponent:
       SortingLayerName: Front
       OrderInLayer: 0
+  Entity:
+    TagComponent:
+      Tag: Immovable_1
+    QuadComponent:
+      - 0
+      - 32
+      - 0
+      - 10
+      - 10
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 1
+        - 1
+        - 1
+        - 1
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: true
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    TagComponent:
+      Tag: SpawnPoint
+    QuadComponent:
+      - 80
+      - 60
+      - 0
+      - 0
+      - 0
+      - 0
+    ScriptComponent:
+      ScriptName: Demo.EnemySpawn

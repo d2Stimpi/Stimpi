@@ -18,25 +18,30 @@ namespace Stimpi
 	{
 	public:
 
+		static void Reserve(size_t size)
+		{
+			m_Events.reserve(size);
+		}
+
 		static void PushEvent(std::shared_ptr<TEvent> event)
 		{
-			mEvents.push_back(event);
+			m_Events.push_back(event);
 		}
 
 		static std::vector<std::shared_ptr<TEvent>>& GetEvents()
 		{
-			return mEvents;
+			return m_Events;
 		}
 
 		static void Flush()
 		{
-			mEvents.clear();
+			m_Events.clear();
 		}
 		
 	private:
-		static std::vector<std::shared_ptr<TEvent>> mEvents;
+		static std::vector<std::shared_ptr<TEvent>> m_Events;
 	};
 
 	template <typename TEvent>
-	std::vector<std::shared_ptr<TEvent>> EventQueue<TEvent>::mEvents;
+	std::vector<std::shared_ptr<TEvent>> EventQueue<TEvent>::m_Events;
 }

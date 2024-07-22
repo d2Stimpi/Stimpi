@@ -13,7 +13,7 @@ namespace Stimpi
         internal Entity(uint id)
         {
             ID = id;
-            Console.WriteLine($"Created Entity with id {ID}");
+            //Console.WriteLine($"Created Entity with id {ID}");
         }
 
         protected Entity()
@@ -67,6 +67,15 @@ namespace Stimpi
             return null;
         }
 
+        public Entity FindEntityByID(uint entityID)
+        {
+            bool validEntity = InternalCalls.Entity_IsValidEntityID(entityID);
+            if (validEntity)
+                return new Entity(entityID);
+
+            return null;
+        }
+
         public T As<T>() where T : Entity, new()
         {
             object instance = InternalCalls.GetScriptInstace(ID);
@@ -76,6 +85,7 @@ namespace Stimpi
             return null;
         }
 
+        // TODO: move to EntityManager class
         public static T Create<T>() where T : Entity, new()
         {
             object instance = InternalCalls.CreateScriptInstance(typeof(T).FullName);
@@ -85,7 +95,11 @@ namespace Stimpi
             return null;
         }
 
-        // TODO: remove entity and perform necessary cleanup
+        // TODO: move to EntityManager class
+        public static bool Destroy(uint ID)
+        {
+            return InternalCalls.Entity_Remove(ID);
+        }
 
         public virtual void OnCreate()
         {

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Timer;
 
 using Stimpi;
 
@@ -14,59 +13,47 @@ namespace Demo
         private Entity Owner;
         private QuadComponent Quad;
 
-        public Vector2 StartPos;
-        public Entity TargetEntity; // For target direction of bullet
-        public float Velocity =  55.0f;
-        public float LifeSpan = 3.0f; // in seconds
+        public float Velocity =  100.0f;
+        public float LifeSpan = 2.0f; // in seconds
 
-        /**
-         *  Calculate velocity vector
-         */
-        public void InitializeTarget()
+        public void Initialize(Entity owner, Vector2 target, Vector2 start)
         {
-            if (TargetEntity == null)
-            {
-                Console.WriteLine("Bullet target not set!");
-            }
-            else
-            {
-                var targetPos = TargetEntity.GetComponent<QuadComponent>().Position;
-                Vector2 pos = Quad.Position;
-                Vector2 dir = targetPos - pos;
-                Vector2 vecVec = dir.Unit * Velocity;
-                Physics.SetLinearVelocity(ID, vecVec);
-                Console.WriteLine("Bullet SetLinearVelocity " + vecVec);
-            }
+            Owner = owner;
+            Quad.Position = start;
+
+            Physics.InitializePhysics2DBody(ID);
+
+            Vector2 dir = target - start;
+            Vector2 vecVec = dir.Unit * Velocity;
+            Physics.SetLinearVelocity(ID, vecVec);
         }
 
         public override void OnCreate()
         {
-            Console.WriteLine("Bullet OnCreate() " + ID);
-
-            //TagComponent tag = GetComponent<TagComponent>();
-            //tag.Tag = $"Bullet_{ID}";
             Quad = AddComponent<QuadComponent>();
-            Quad.Position = StartPos;
             Quad.Size = new Vector2(3.0f, 3.0f);
 
             SpriteComponent sprite = AddComponent<SpriteComponent>();
             sprite.Color = Color.Black;
 
+            AddComponent<BoxCollider2DComponent>();
             RigidBody2DComponent rb2d = AddComponent<RigidBody2DComponent>();
             rb2d.Type = BodyType.DYNAMIC;
             rb2d.FixedRotation = true;
-            Physics.InitializePhysics2DBody(ID);
-
-            Console.WriteLine("Bullet OnCreate() end");
         }
 
         public override void OnUpdate(float ts)
         {
-            
+            //Console.WriteLine($"Elapsed: {LifeSpan}");
+            LifeSpan -= ts;
+            if (LifeSpan <= 0)
+                Entity.Destroy(ID);
         }
 
         public override void OnCollisionBegin(Collision collision)
         {
+            //Console.WriteLine($"Hit object ID {collision.OwnerID}");
+            Entity.Destroy(ID);
         }
 
         public override void OnCollisionEnd(Collision collision)

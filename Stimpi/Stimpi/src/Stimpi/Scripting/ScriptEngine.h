@@ -97,6 +97,7 @@ namespace Stimpi
 		static std::shared_ptr<ScriptInstance> CreateScriptInstance(const std::string& className);
 		static std::shared_ptr<ScriptInstance> GetScriptInstance(Entity entity);
 		static MonoObject* GetManagedInstance(uint32_t entityID);
+		static void RemoveEntityScriptInstance(uint32_t entityID);
 
 		// Field functions
 		static std::string GetFieldName(MonoClassField* field);
@@ -127,6 +128,8 @@ namespace Stimpi
 
 		static std::filesystem::path GetCoreScriptPath();
 		static std::filesystem::path GetClientScriptPath();
+
+		static void CleanUpRemovedInstances();
 
 		friend ScriptClass;
 	};

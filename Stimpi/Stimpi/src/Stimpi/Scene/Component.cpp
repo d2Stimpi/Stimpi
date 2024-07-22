@@ -68,6 +68,17 @@ namespace Stimpi
 			AssetManager::Release(sprite.m_TextureHandle);
 	}
 
+	static void OnRigidBody2DConstruct(entt::registry& reg, entt::entity ent)
+	{
+
+	}
+
+	static void OnRigidBody2DDestruct(entt::registry& reg, entt::entity ent)
+	{
+		Entity entity = { ent, s_ActiveScene };
+		s_ActiveScene->DestroyPhysicsBody(entity);
+	}
+
 	void ComponentObserver::InitComponentObservers(entt::registry& reg, Scene* scene)
 	{
 		s_ActiveScene = scene;
@@ -81,6 +92,7 @@ namespace Stimpi
 		// on_destroy
 		reg.on_destroy<CameraComponent>().connect<&OnCameraDestruct>();
 		reg.on_destroy<SpriteComponent>().connect<&OnSpriteDestruct>();
+		reg.on_destroy<RigidBody2DComponent>().connect<&OnRigidBody2DDestruct>();
 	}
 
 	void ComponentObserver::DeinitConstructObservers(entt::registry& reg)
@@ -92,6 +104,7 @@ namespace Stimpi
 
 		// on_destroy
 		reg.on_destroy<CameraComponent>().disconnect<&OnCameraDestruct>();
+		reg.on_destroy<RigidBody2DComponent>().disconnect<&OnRigidBody2DDestruct>();
 	}
 
 }

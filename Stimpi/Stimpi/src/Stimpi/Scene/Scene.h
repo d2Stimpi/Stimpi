@@ -36,7 +36,9 @@ namespace Stimpi
 		Entity CreateEntity(const std::string& name = "");
 		Entity GetEntityByHandle(entt::entity handle);
 		Entity FindentityByName(std::string_view name);
-		void RemoveEntity(Entity entity);
+		bool RemoveEntity(Entity entity);
+		bool RemoveEntity(entt::entity handle);
+		bool IsEntityValid(Entity entity);
 
 		Entity CopyEntity(const Entity entity);
 
@@ -61,7 +63,8 @@ namespace Stimpi
 		void OnSortingLayerRemove(const std::string layerName);
 
 		// Physics
-		void Initialize2DPhysicsBody(Entity entity);
+		void CreatePhysicsBody(Entity entity);
+		void DestroyPhysicsBody(Entity entity);
 
 		// Debugging
 		static void EnableDebugMode(bool enable);
@@ -84,7 +87,6 @@ namespace Stimpi
 
 		// Physics
 		void InitializePhysics();
-		void CreatePhysicsBody(Entity entity);
 		void UpdatePhysicsSimulation(Timestep ts);
 		void DeinitializePhysics();
 		bool ProcessPhysicsEvent(PhysicsEvent* event);

@@ -589,6 +589,10 @@ namespace Stimpi
 
 		ScriptComponent() = default;
 		ScriptComponent(const ScriptComponent&) = default;
+		ScriptComponent(const std::string& scriptName)
+			: m_ScriptName(scriptName)
+		{
+		}
 
 		void Serialize(YAML::Emitter& out)
 		{
