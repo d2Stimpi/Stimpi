@@ -88,6 +88,9 @@ namespace Stimpi
 		static void OnSceneUpdate(Timestep ts);
 		static void OnSceneStop();
 
+		// Sorting instances for custom Update() execution order
+		static void InstanceUpdateOrderSorting();
+
 		// Script component
 		static std::shared_ptr<ScriptInstance> OnScriptComponentAdd(const std::string& className, Entity entity);
 		static void OnScriptComponentRemove(Entity entity);
@@ -145,6 +148,10 @@ namespace Stimpi
 		MonoMethod* GetMethod(const std::string& methodName, int parameterCount);
 		void* InvokeMethod(MonoObject* instance, MonoMethod* method, void** params);
 
+		std::string GetFullName() { return fmt::format("{}.{}", m_Namespace, m_Name); }
+		std::string& GetNamespace() { return m_Namespace; }
+		std::string& GetName() { return m_Name; }
+
 		MonoClassField* GetMonoField(const std::string& fieldName);
 		std::vector<MonoClassField*>& GetAllMonoFields() { return m_Fields; }
 	private:
@@ -178,9 +185,14 @@ namespace Stimpi
 		MonoObject* GetMonoInstance();
 
 		std::shared_ptr<ScriptObject>& GetInstance();
+		std::shared_ptr<ScriptClass>& GetScriptClass();
 
 		std::unordered_map<std::string, std::shared_ptr<ScriptField>>& GetFields();
 		std::shared_ptr<ScriptField> GetFieldByName(const std::string& fieldName);
+
+		// Attributes
+		bool HasScriptOrderAttribute();
+		bool GetScriptOrderAttributeValue(uint32_t* value);
 
 		// Custom method invocation - for non-Entity scripts
 		void* InvokeMethod(std::string methodName, int parameterCount = 0, void** params = nullptr);

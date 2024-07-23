@@ -83,6 +83,9 @@ namespace Stimpi
 		ImGui::InputText(label.c_str(), text.data(), text.length(), ImGuiInputTextFlags_ReadOnly);
 
 		HandlePayloadType(ownerObj, field);
+
+		ImGui::SameLine();
+		ImGui::Text(field->GetName().c_str());
 	}
 
 	std::string ScriptFieldFragment::CallFragmentFunction(ScriptObject* ownerObj, ScriptField* field)

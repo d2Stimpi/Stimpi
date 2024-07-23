@@ -206,6 +206,10 @@ namespace Stimpi
 		// Sprite Color
 		glm::vec4 m_Color = {1.0f, 1.0f, 1.0f, 1.0f };
 
+		// Runtime only use (Scripting)
+		// If true, no rendering of component
+		bool m_Disabled = false;
+
 		SpriteComponent() = default;
 		SpriteComponent(const SpriteComponent&) = default;
 		SpriteComponent(glm::vec4 color)

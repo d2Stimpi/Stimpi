@@ -198,13 +198,39 @@ namespace Stimpi
 				if (ImGui::MenuItem("Field Attributes Test"))
 				{
 					auto scene = SceneManager::Instance()->GetActiveScene();
-					std::shared_ptr<ScriptInstance> scriptInstance = ScriptEngine::GetScriptInstance(scene->FindentityByName("Nero"));
+					/*std::shared_ptr<ScriptInstance> scriptInstance = ScriptEngine::GetScriptInstance(scene->FindentityByName("Nero"));
 					auto& fields = scriptInstance->GetFields();
 					for (auto& f : fields)
 					{
 						auto& field = f.second;
 						ST_CORE_INFO("Field {}, serializable: {}", field->GetName(), field->IsSerializable());
+					}*/
+
+					ScriptEngine::LoadCustomClassesFromCoreAssembly({
+						{ "Stimpi", "AttributeLookup" }
+						});
+					auto scriptClass = ScriptEngine::GetClassByClassIdentifier({ "Stimpi", "AttributeLookup" });
+					if (scriptClass)
+					{
+						auto scriptInstance = ScriptInstance(scriptClass);
+						auto type = ScriptEngine::GetMonoReflectionTypeByName("Demo.DemoPlayer");
+						if (type)
+						{
+							void* params[2];
+							uint32_t value;
+							params[0] = type;
+							params[1] = &value;
+							void* res = scriptInstance.InvokeMethod("Test_GetScriptOrderAttributeValue", 2, params);
+							if (res)
+								ST_INFO("DemoPlayer {} ScriptOrder defined with value {}", *(bool*)res ? "has" : "doesn't have", value);
+						}
 					}
+					else
+					{
+						ST_INFO("Class not found!");
+					}
+
+
 					/*ScriptEngine::LoadCustomClassesFromCoreAssembly({
 						{ "Stimpi", "AttributeLookup" }
 					});

@@ -12,6 +12,12 @@ namespace Stimpi
     {
     }
 
+    [AttributeUsage(AttributeTargets.Class)]
+    public class ScriptOrder : Attribute
+    {
+        public uint Priority;
+    }
+
     public class AttributeLookup
     {
         public static void ListTypeFields(Type type)
@@ -50,6 +56,24 @@ namespace Stimpi
             }
 
             throw new ArgumentException($"Field {fieldName} not found in {type.Name}");
+        }
+
+        public static bool HasScriptOrderAttribute(Type type)
+        {
+            return Attribute.IsDefined(type, typeof(ScriptOrder));
+        }
+
+        public static bool GetScriptOrderAttributeValue(Type type, out uint value)
+        {
+            value = 0;
+            bool hasAttr = Attribute.IsDefined(type, typeof(ScriptOrder));
+            if (hasAttr)
+            {
+                ScriptOrder attr = (ScriptOrder)Attribute.GetCustomAttribute(type, typeof(ScriptOrder));
+                value = attr.Priority;
+            }
+
+            return hasAttr;
         }
     }
 }

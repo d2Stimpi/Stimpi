@@ -46,6 +46,9 @@ namespace Stimpi
         public extern static bool SpriteComponent_GetColor(uint entityID, out Color outColor);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool SpriteComponent_SetColor(uint entityID, ref Color color);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool SpriteComponent_SetDisable(uint entityID, bool disable);
+
 
         /* AnimatedSpriteComponent */
         [MethodImplAttribute(MethodImplOptions.InternalCall)]

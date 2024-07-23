@@ -157,3 +157,123 @@ Scene:
       - 0
     ScriptComponent:
       ScriptName: Demo.EnemySpawn
+      ScriptFields:
+        {}
+  Entity:
+    TagComponent:
+      Tag: UI_Icon_1
+    QuadComponent:
+      - 8
+      - 63
+      - 2
+      - 6
+      - 6
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 0.224144593
+        - 0.862745106
+        - 0.581009448
+        - 1
+    ScriptComponent:
+      ScriptName: Demo.Icon
+      ScriptFields:
+        {}
+  Entity:
+    TagComponent:
+      Tag: UI_SpellBar
+    ScriptComponent:
+      ScriptName: Demo.SpellBar
+      ScriptFields:
+        Field:
+          Type: FIELD_TYPE_CLASS
+          FieldTypeName: Stimpi.Entity
+          Name: IconNorth
+          FieldData:
+            ID: 7
+        Field:
+          Type: FIELD_TYPE_CLASS
+          FieldTypeName: Stimpi.Entity
+          Name: IconWest
+          FieldData:
+            ID: 9
+        Field:
+          Type: FIELD_TYPE_CLASS
+          FieldTypeName: Stimpi.Entity
+          Name: IconEast
+          FieldData:
+            ID: 10
+        Field:
+          Type: FIELD_TYPE_CLASS
+          FieldTypeName: Stimpi.Entity
+          Name: IconSputh
+          FieldData:
+            ID: 11
+  Entity:
+    TagComponent:
+      Tag: UI_Icon_2
+    QuadComponent:
+      - 15
+      - 63
+      - 2
+      - 6
+      - 6
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 0.349024415
+        - 0.857843161
+        - 0.633364201
+        - 1
+    ScriptComponent:
+      ScriptName: Demo.Icon
+      ScriptFields:
+        {}
+  Entity:
+    TagComponent:
+      Tag: UI_Icon_3
+    QuadComponent:
+      - 22
+      - 63
+      - 2
+      - 6
+      - 6
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 0.51131773
+        - 0.84803921
+        - 0.6994856
+        - 1
+    ScriptComponent:
+      ScriptName: Demo.Icon
+      ScriptFields:
+        {}
+  Entity:
+    TagComponent:
+      Tag: UI_Icon_5
+    QuadComponent:
+      - 29
+      - 63
+      - 2
+      - 6
+      - 6
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 0.581987739
+        - 0.84803921
+        - 0.730663478
+        - 1
+    ScriptComponent:
+      ScriptName: Demo.Icon
+      ScriptFields:
+        {}

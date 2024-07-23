@@ -242,16 +242,19 @@ namespace Stimpi
 				if (entity.HasComponent<SpriteComponent>())
 				{
 					auto& sprite = entity.GetComponent<SpriteComponent>();
-					if (sprite.TextureLoaded())
+					if (sprite.m_Disabled == false)
 					{
-						if (sprite.m_Enable)
-							Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite, m_DefaultShader.get());
+						if (sprite.TextureLoaded())
+						{
+							if (sprite.m_Enable)
+								Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite, m_DefaultShader.get());
+							else
+								Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
+						}
 						else
+						{
 							Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
-					}
-					else
-					{
-						Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
+						}
 					}
 				}
 
@@ -293,13 +296,16 @@ namespace Stimpi
 				if (entity.HasComponent<SpriteComponent>())
 				{
 					auto& sprite = entity.GetComponent<SpriteComponent>();
-					if (sprite.TextureLoaded() && sprite.m_Enable)
+					if (sprite.m_Disabled == false)
 					{
-						Renderer2D::Instance()->Submit(circle.m_Position, circle.m_Size, circle.m_Rotation, sprite, m_DefaultShader.get());
-					}
-					else
-					{
-						Renderer2D::Instance()->SubmitCircle(circle.m_Position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
+						if (sprite.TextureLoaded() && sprite.m_Enable)
+						{
+							Renderer2D::Instance()->Submit(circle.m_Position, circle.m_Size, circle.m_Rotation, sprite, m_DefaultShader.get());
+						}
+						else
+						{
+							Renderer2D::Instance()->SubmitCircle(circle.m_Position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
+						}
 					}
 				}
 				else

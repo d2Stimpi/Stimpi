@@ -264,10 +264,16 @@ namespace Stimpi
 		std::vector<std::string> m_ScriptClassNames;
 		std::unordered_map<std::string, std::shared_ptr<ScriptClass>> m_EntityClasses;
 
-		/* Scene data - Class Instances per entity */
+		// Scene data - Class Instances per entity
 		std::shared_ptr<Scene> m_Scene;
 		std::unordered_map<uint32_t, std::shared_ptr<ScriptInstance>> m_EntityInstances;
 		std::vector<uint32_t> m_EntitiesToRemove;
+
+		// Ordered set of Entity Instances
+		// TODO: properly organize Instances by ScriptOrder value
+		// - temp workaround: Only types that define attribute ScriptOrder will end up in priority set
+		std::unordered_map<uint32_t, std::shared_ptr<ScriptInstance>> m_UnorderedEntityInstances;
+		std::vector<std::shared_ptr<ScriptInstance>> m_PriorityEntityInstances;
 
 		// Custom Non-Entity classes
 		std::vector<std::string> m_ClassNames;
@@ -308,6 +314,9 @@ namespace Stimpi
 		s_Data->m_CoreScirptPath = std::filesystem::absolute(ResourceManager::GetScriptsPath()) / s_CoreScriptName;
 		s_Data->m_ClientScirptPath = std::filesystem::absolute(ResourceManager::GetScriptsPath()) / s_ClientScriptName;
 		s_Data->m_AssetsScriptPath = std::filesystem::absolute(ResourceManager::GetAssetsPath()) / "scripts";
+
+		// Reserve space
+		s_Data->m_PriorityEntityInstances.reserve(64);
 
 		InitMono();
 		LoadAssembly();
@@ -741,6 +750,8 @@ namespace Stimpi
 
 	/**
 	 * Remove all script instances marked for removal after Update step
+	 * NOTE: C# destroy entity marks entities for deferred removal,
+	 *	  so we can safely assume all Instances are in Unordered list
 	 */
 	void ScriptEngine::CleanUpRemovedInstances()
 	{
@@ -748,7 +759,8 @@ namespace Stimpi
 		{
 			for (auto entity : s_Data->m_EntitiesToRemove)
 			{
-				s_Data->m_EntityInstances.erase(entity);
+				//s_Data->m_EntityInstances.erase(entity);
+				s_Data->m_UnorderedEntityInstances.erase(entity);
 				s_Data->m_Scene->RemoveEntity((entt::entity)entity);
 			}
 		}
@@ -791,6 +803,9 @@ namespace Stimpi
 
 	void ScriptEngine::OnScenePlay()
 	{
+		// Perform ordering before any other Script invocations
+		InstanceUpdateOrderSorting();
+
 		for (auto& element : s_Data->m_EntityInstances)
 		{
 			auto& instance = element.second;
@@ -800,7 +815,18 @@ namespace Stimpi
 
 	void ScriptEngine::OnSceneUpdate(Timestep ts)
 	{
-		for (auto& element : s_Data->m_EntityInstances)
+		/*for (auto& element : s_Data->m_EntityInstances)
+		{
+			auto& instance = element.second;
+			instance->InvokeOnUpdate(ts);
+		}*/
+
+		// New, somewhat ordered invocation
+		for (auto& instance : s_Data->m_PriorityEntityInstances)
+		{
+			instance->InvokeOnUpdate(ts);
+		}
+		for (auto& element : s_Data->m_UnorderedEntityInstances)
 		{
 			auto& instance = element.second;
 			instance->InvokeOnUpdate(ts);
@@ -817,6 +843,31 @@ namespace Stimpi
 			// TODO: avoid reloading assembly
 			ReloadAssembly();
 			s_Data->m_DeferreAsemblyReload = false;
+		}
+
+		// Clear other Instance collections
+		s_Data->m_UnorderedEntityInstances.clear();
+		s_Data->m_PriorityEntityInstances.clear();
+	}
+
+
+	void ScriptEngine::InstanceUpdateOrderSorting()
+	{
+		// TODO: FIXME: Configurable ordering by cy Class types
+		for (auto& item : s_Data->m_EntityInstances)
+		{
+			auto entity = item.first;
+			auto& instance = item.second;
+			uint32_t order;
+			if (instance->GetScriptOrderAttributeValue(&order))
+			{
+				ST_CORE_INFO("Instace of {} with ScriptOrder {}", instance->GetScriptClass()->GetFullName(), order);
+				s_Data->m_PriorityEntityInstances.emplace_back(instance);
+			}
+			else
+			{
+				s_Data->m_UnorderedEntityInstances[entity] = instance;
+			}
 		}
 	}
 
@@ -836,6 +887,12 @@ namespace Stimpi
 		{
 			s_Data->m_EntityInstances.erase(entity);
 		}
+
+		// Check Instances created form C# scripts in runtime
+		if (s_Data->m_UnorderedEntityInstances.find(entity) != s_Data->m_UnorderedEntityInstances.end())
+		{
+			s_Data->m_UnorderedEntityInstances.erase(entity);
+		}
 	}
 
 	std::shared_ptr<ScriptInstance> ScriptEngine::CreateScriptInstance(const std::string& className, Entity entity)
@@ -848,16 +905,30 @@ namespace Stimpi
 		}
 
 		auto classInstance = std::make_shared<ScriptInstance>(scriptClass, entity);
-		if (classInstance)
-			s_Data->m_EntityInstances[entity] = classInstance;
-
-		// When in running mode, invoke onCreate on the new instance
 		if (s_Data->m_Scene)
 		{
+			// When Scene is STOPPED we are using main m_EntityInstances collection set
+			if (s_Data->m_Scene->GetRuntimeState() == RuntimeState::STOPPED)
+			{
+				if (classInstance)
+					s_Data->m_EntityInstances[entity] = classInstance;
+			}
+
+			// When in running mode, invoke onCreate on the new instance
+			// Temp: Also add instances to m_UnorderedEntityInstances set
 			if (s_Data->m_Scene->GetRuntimeState() != RuntimeState::STOPPED)
 			{
+				if (classInstance)
+					s_Data->m_UnorderedEntityInstances[entity] = classInstance;
+
 				classInstance->InvokeOnCreate();
 			}
+		}
+		else
+		{
+			// We are here when the Scene is under deserialization (loaded)
+			if (classInstance)
+				s_Data->m_EntityInstances[entity] = classInstance;
 		}
 
 		return classInstance;
@@ -881,8 +952,12 @@ namespace Stimpi
 		}
 		else
 		{
-			return nullptr;
+			if (s_Data->m_UnorderedEntityInstances.find(entity) != s_Data->m_UnorderedEntityInstances.end())
+			{
+				return s_Data->m_UnorderedEntityInstances.at(entity);
+			}
 		}
+		return nullptr;
 	}
 
 	MonoObject* ScriptEngine::GetManagedInstance(uint32_t entityID)
@@ -894,13 +969,19 @@ namespace Stimpi
 		}
 		else
 		{
-			return nullptr;
+			if (s_Data->m_UnorderedEntityInstances.find(entityID) != s_Data->m_UnorderedEntityInstances.end())
+			{
+				auto& instance = s_Data->m_UnorderedEntityInstances.at(entityID);
+				return instance->GetMonoInstance();
+			}
 		}
+		return nullptr;
 	}
 
+	// Only called when Scene is not in STOPPED state (from C#)
 	void ScriptEngine::RemoveEntityScriptInstance(uint32_t entityID)
 	{
-		if (s_Data->m_EntityInstances.find(entityID) != s_Data->m_EntityInstances.end())
+		if (s_Data->m_UnorderedEntityInstances.find(entityID) != s_Data->m_UnorderedEntityInstances.end())
 		{
 			s_Data->m_EntitiesToRemove.push_back(entityID);
 		}
@@ -1119,6 +1200,11 @@ namespace Stimpi
 	}
 
 
+	std::shared_ptr<Stimpi::ScriptClass>& ScriptInstance::GetScriptClass()
+	{
+		return m_ScriptClass;
+	}
+
 	std::unordered_map<std::string, std::shared_ptr<Stimpi::ScriptField>>& ScriptInstance::GetFields()
 	{
 		return m_Instance->GetFields();
@@ -1128,6 +1214,44 @@ namespace Stimpi
 	std::shared_ptr<Stimpi::ScriptField> ScriptInstance::GetFieldByName(const std::string& fieldName)
 	{
 		return m_Instance->GetFieldByName(fieldName);
+	}
+
+
+	bool ScriptInstance::HasScriptOrderAttribute()
+	{
+		if (s_Data->m_AttributeLookup)
+		{
+			void* param;
+			param = ScriptEngine::GetMonoReflectionType(m_Instance->GetMonoType());
+			void* res = s_Data->m_AttributeLookup->InvokeMethod(s_HasScriptOrderAttribute, 1, &param);
+			if (res)
+			{
+				return *(bool*)res;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Reading [out]value of 0 means no ScriptOrder attribute defined. Returns false as well.
+	 */
+	bool ScriptInstance::GetScriptOrderAttributeValue(uint32_t* value)
+	{
+		*value = 0;
+		if (s_Data->m_AttributeLookup)
+		{
+			void* params[2];
+			params[0] = ScriptEngine::GetMonoReflectionType(m_Instance->GetMonoType());
+			params[1] = value;
+			void* res = s_Data->m_AttributeLookup->InvokeMethod(s_GetScriptOrderAttributeValue, 2, params);
+			if (res)
+			{
+				return *(bool*)res;
+			}
+		}
+
+		return false;
 	}
 
 	// This causes a small leak, looking up method all the time. Use only for testing stuff
@@ -1274,7 +1398,7 @@ namespace Stimpi
 			void* attrParam[2];
 			attrParam[0] = ScriptEngine::GetMonoReflectionType(m_ParentObject->GetMonoType());
 			attrParam[1] = ScriptEngine::CreateMonoString(m_Name);
-			void* res = s_Data->m_AttributeLookup->InvokeMethod("HasSerializeFieldAttribute", 2, attrParam);
+			void* res = s_Data->m_AttributeLookup->InvokeMethod("s_HasSerializeFieldAttribute", 2, attrParam);
 			if (res)
 			{
 				return *(bool*)res;

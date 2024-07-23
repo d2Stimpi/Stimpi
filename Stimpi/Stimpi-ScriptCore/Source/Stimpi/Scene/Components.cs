@@ -90,6 +90,14 @@ namespace Stimpi
                     Console.WriteLine($"Entity {Entity.ID} does not have SpriteComponent (set color)");
             }
         }
+
+        public bool SetDisabled(bool disabled)
+        {
+            bool hasComponent = InternalCalls.SpriteComponent_SetDisable(Entity.ID, disabled);
+            if (!hasComponent)
+                Console.WriteLine($"Entity {Entity.ID} does not have SpriteComponent (SetDisabled)");
+            return hasComponent;
+        }
     }
 
     public enum AnimationState

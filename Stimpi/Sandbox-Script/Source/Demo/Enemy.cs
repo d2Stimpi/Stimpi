@@ -66,6 +66,7 @@ namespace Demo
                     if (Health <= 0)
                     {
                         SpawnEntity.EnemyDestroyed();
+                        Console.WriteLine($"Destroy entity {ID}");
                         Entity.Destroy(ID);
                     }
                 }

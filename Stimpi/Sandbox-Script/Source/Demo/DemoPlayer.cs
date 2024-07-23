@@ -11,6 +11,7 @@ using Stimpi;
 
 namespace Demo
 {
+    [ScriptOrder(Priority = 1)]
     public class DemoPlayer : Entity
     {
         private QuadComponent Quad;

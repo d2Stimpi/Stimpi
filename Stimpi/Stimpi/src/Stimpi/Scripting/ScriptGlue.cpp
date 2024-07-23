@@ -141,7 +141,6 @@ namespace Stimpi
 		char* nameCStr = mono_string_to_utf8(name);
 		Entity entity = scene->CreateEntity(nameCStr);
 		entity.AddComponent<ScriptComponent>(nameCStr);
-		//auto classInstance = ScriptEngine::CreateScriptInstance(nameCStr, entity);
 		mono_free(nameCStr);
 
 		auto classInstance = ScriptEngine::GetScriptInstance(entity);
@@ -313,6 +312,24 @@ namespace Stimpi
 		{
 			auto& sprite = entity.GetComponent<SpriteComponent>();
 			sprite.m_Color = *color;
+			hasComponent = true;
+		}
+
+		return hasComponent;
+	}
+
+	static bool SpriteComponent_SetDisable(uint32_t entityID, bool disable)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		if (entity.HasComponent<SpriteComponent>())
+		{
+			auto& sprite = entity.GetComponent<SpriteComponent>();
+			sprite.m_Disabled = disable;
 			hasComponent = true;
 		}
 
@@ -891,6 +908,7 @@ namespace Stimpi
 		// SpriteComponent
 		ST_ADD_INTERNAL_CALL(SpriteComponent_GetColor);
 		ST_ADD_INTERNAL_CALL(SpriteComponent_SetColor);
+		ST_ADD_INTERNAL_CALL(SpriteComponent_SetDisable);
 
 		/// AnimatedSpriteComponent
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_IsAnimationSet);
