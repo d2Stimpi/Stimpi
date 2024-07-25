@@ -264,7 +264,9 @@ namespace Stimpi
 					auto& anim = entity.GetComponent<AnimatedSpriteComponent>();
 					if (anim.Loaded())
 					{
-						Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, anim, m_DefaultShader.get());
+						// AnimationSprite is render always when in stopped "Editor" mode
+						if (anim.IsPlaying() || m_RuntimeState == RuntimeState::STOPPED)
+							Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, anim, m_DefaultShader.get());
 					}
 				}
 

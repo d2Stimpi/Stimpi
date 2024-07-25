@@ -52,7 +52,12 @@ namespace Demo
 
         public override void OnCollisionBegin(Collision collision)
         {
-            //Console.WriteLine($"Hit object ID {collision.OwnerID}");
+            //Explosion explosion = Entity.Create<Explosion>();
+            Explosion explosion = EffectsPool.GetObject();
+            Vector2 impact = collision.Contacts[0].Point;
+            explosion.Initialize(impact);
+            explosion.Play();
+
             Entity.Destroy(ID);
         }
 

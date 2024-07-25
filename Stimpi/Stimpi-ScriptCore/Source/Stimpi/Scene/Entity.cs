@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// TODO: Conform to following C# coding style convention:
+// https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/identifier-names
+
 namespace Stimpi
 {
     public class Entity

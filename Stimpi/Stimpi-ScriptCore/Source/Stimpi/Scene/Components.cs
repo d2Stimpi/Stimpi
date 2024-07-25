@@ -146,6 +146,33 @@ namespace Stimpi
                 return (AnimationState)outState;
             }
         }
+
+        public void Play(string animationName)
+        {
+            if (!InternalCalls.AnimatedSpriteComponent_Play(Entity.ID, animationName))
+                Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (Play {animationName})");
+        }
+
+        public void Stop()
+        {
+            if (!InternalCalls.AnimatedSpriteComponent_Stop(Entity.ID))
+                Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (Stop)");
+        }
+
+        public void Pause()
+        {
+            if (!InternalCalls.AnimatedSpriteComponent_Pause(Entity.ID))
+                Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (Pause)");
+        }
+
+        public bool AddAnimation(string assetPath)
+        {
+            bool result = InternalCalls.AnimatedSpriteComponent_AddAnimation(Entity.ID, assetPath);
+            if (!result)
+                Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (AddAnimation)");
+
+            return result;
+        }
     }
 
     public enum BodyType

@@ -471,14 +471,17 @@ namespace Stimpi
 			ImGui::SameLine(0.0f, 30.0f);
 			if (ImGui::Button(">##AnimatedSpriteComponent_Default", ImVec2(0.0f, 20.0f)))
 			{
-				if (component.m_AnimSprite)
+				if (component.m_AnimSprite && component.m_DefaultAnimation)
 				{
 					component.m_AnimSprite->SetAnimation(component.m_DefaultAnimation);
 					component.m_AnimSprite->Start();
 				}
 			}
 			ImGui::SameLine(0.0f, 5.0f);
-			ImGui::Text(component.m_DefaultAnimation->GetName().c_str());
+			std::string defaultAnimLabel = "None";
+			if (component.m_DefaultAnimation)
+				defaultAnimLabel = component.m_DefaultAnimation->GetName();
+			ImGui::Text(defaultAnimLabel.c_str());
 
 			UIPayload::BeginTarget(PAYLOAD_ANIMATION, [&component](void* data, uint32_t size) {
 				std::string strData = std::string((char*)data, size);

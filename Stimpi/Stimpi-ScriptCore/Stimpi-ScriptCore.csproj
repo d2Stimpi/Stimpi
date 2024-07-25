@@ -59,19 +59,20 @@
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Dist|x64' ">
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Source\Stimpi\CustomAttribudes.cs" />
+    <Compile Include="Source\Stimpi\Core\CustomAttribudes.cs" />
+    <Compile Include="Source\Stimpi\Core\ObjectPool.cs" />
     <Compile Include="Source\Stimpi\Input\Input.cs" />
     <Compile Include="Source\InternalCalls.cs" />
     <Compile Include="Source\Stimpi\Input\KeyCode.cs" />
     <Compile Include="Source\Stimpi\CodeGen\ClassBuilder.cs" />
     <Compile Include="Source\Stimpi\CodeGen\Compiler.cs" />
-    <Compile Include="Source\Stimpi\Color.cs" />
+    <Compile Include="Source\Stimpi\Core\Color.cs" />
     <Compile Include="Source\Stimpi\Input\MouseCode.cs" />
     <Compile Include="Source\Stimpi\Physics\Collision.cs" />
     <Compile Include="Source\Stimpi\Physics\Physics.cs" />
     <Compile Include="Source\Stimpi\Scene\Components.cs" />
     <Compile Include="Source\Stimpi\Scene\Entity.cs" />
-    <Compile Include="Source\Stimpi\Vector2.cs" />
+    <Compile Include="Source\Stimpi\Core\Vector2.cs" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

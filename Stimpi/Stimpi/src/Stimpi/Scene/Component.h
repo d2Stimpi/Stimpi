@@ -366,11 +366,15 @@ namespace Stimpi
 		}
 	};
 
+	/**
+	 * TODO: Clean up unused functions, and add some convenience methods 
+	 *	for loading/adding animation from assets
+	 */
 	struct AnimatedSpriteComponent
 	{
 		std::shared_ptr<AnimatedSprite> m_AnimSprite;
 		std::shared_ptr<Animation> m_DefaultAnimation;
-		//std::vector<std::shared_ptr<Animation>> m_Animations;
+
 		std::unordered_map<std::string, std::shared_ptr<Animation>> m_Animations;
 		bool m_AutoPlay = false; // Auto play the default anim on start
 
@@ -385,9 +389,17 @@ namespace Stimpi
 			return m_AnimSprite != nullptr;
 		}
 
-		void SetAnimation(const std::string& filePath)
+		void SetAnimation(const std::string& name)
 		{
-			m_AnimSprite->SetAnimation(filePath);
+			if (m_Animations.find(name) != m_Animations.end())
+			{
+				auto& animation = m_Animations.at(name);
+				m_AnimSprite->SetAnimation(animation);
+			}
+			else
+			{
+				m_AnimSprite->SetAnimation(m_DefaultAnimation);
+			}
 		}
 
 		void SetDefailtAnimation(const std::string& filePath)
@@ -427,6 +439,15 @@ namespace Stimpi
 		{
 			if (m_AnimSprite)
 				m_AnimSprite->Stop();
+		}
+
+		bool IsPlaying()
+		{
+			if (m_AnimSprite)
+				return m_AnimSprite->GetAnimationState() == AnimationState::PAUSED ||
+					m_AnimSprite->GetAnimationState() == AnimationState::RUNNING;
+
+			return false;
 		}
 
 		void SetPlaybackSpeed(float speed)

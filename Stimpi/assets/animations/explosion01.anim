@@ -1,0 +1,75 @@
+Animation:
+  Texture: ../assets/sprite_sheets/explosion01.png
+  Frames:
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 32
+        - 32
+      FramePosition:
+        - 0
+        - 0
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 32
+        - 32
+      FramePosition:
+        - 32
+        - 0
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 32
+        - 32
+      FramePosition:
+        - 64
+        - 0
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 32
+        - 32
+      FramePosition:
+        - 96
+        - 0
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 32
+        - 32
+      FramePosition:
+        - 128
+        - 0
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 32
+        - 32
+      FramePosition:
+        - 160
+        - 0
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 32
+        - 32
+      FramePosition:
+        - 192
+        - 0
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 32
+        - 32
+      FramePosition:
+        - 224
+        - 0
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 32
+        - 32
+      FramePosition:
+        - 256
+        - 0

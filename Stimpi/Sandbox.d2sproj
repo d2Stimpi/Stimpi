@@ -1,11 +1,15 @@
 Project:
   Name: Sandbox
-  StartingScene: StartScene.d2s
+  StartingScene: Demo/DemoScene.d2s
   ProjectDir: D:/GitHub/Stimpi
   AssetsSubDir: assets
   ScriptsSubDir: resources/scripts
   Graphics:
-    RenderingOrderAxis: None
+    RenderingOrderAxis: Z_AXIS
+  Physics:
+    GravityFoce:
+      - 0
+      - 0
   SortingLayers:
     Layer:
       Name: Background

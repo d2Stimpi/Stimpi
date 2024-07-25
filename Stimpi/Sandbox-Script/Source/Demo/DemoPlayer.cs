@@ -93,62 +93,6 @@ namespace Demo
 
                 bullet.Initialize(this, CursorQuad.Position, fireLocation);
             }
-
-            /*if (Input.IsKeyPressed(KeyCode.KEY_D))
-            {
-                Physics.GetLinearVelocity(ID, out Vector2 outVel);
-                Vector2 vel = new Vector2(Velocity, outVel.Y);
-                Physics.SetLinearVelocity(ID, vel);
-            }
-
-            if (Input.IsKeyUp(KeyCode.KEY_D))
-            {
-                Physics.GetLinearVelocity(ID, out Vector2 outVel);
-                Vector2 vel = new Vector2(0.0f, outVel.Y);
-                Physics.SetLinearVelocity(ID, vel);
-            }
-
-            if (Input.IsKeyPressed(KeyCode.KEY_A))
-            {
-                Physics.GetLinearVelocity(ID, out Vector2 outVel);
-                Vector2 vel = new Vector2(-Velocity, outVel.Y);
-                Physics.SetLinearVelocity(ID, vel);
-            }
-
-            if (Input.IsKeyUp(KeyCode.KEY_A))
-            {
-                Physics.GetLinearVelocity(ID, out Vector2 outVel);
-                Vector2 vel = new Vector2(0.0f, outVel.Y);
-                Physics.SetLinearVelocity(ID, vel);
-            }
-
-            if (Input.IsKeyPressed(KeyCode.KEY_W))
-            {
-                Physics.GetLinearVelocity(ID, out Vector2 outVel);
-                Vector2 vel = new Vector2(outVel.X, Velocity);
-                Physics.SetLinearVelocity(ID, vel);
-            }
-
-            if (Input.IsKeyUp(KeyCode.KEY_W))
-            {
-                Physics.GetLinearVelocity(ID, out Vector2 outVel);
-                Vector2 vel = new Vector2(outVel.X, 0.0f);
-                Physics.SetLinearVelocity(ID, vel);
-            }
-
-            if (Input.IsKeyPressed(KeyCode.KEY_S))
-            {
-                Physics.GetLinearVelocity(ID, out Vector2 outVel);
-                Vector2 vel = new Vector2(outVel.X, -Velocity);
-                Physics.SetLinearVelocity(ID, vel);
-            }
-
-            if (Input.IsKeyUp(KeyCode.KEY_S))
-            {
-                Physics.GetLinearVelocity(ID, out Vector2 outVel);
-                Vector2 vel = new Vector2(outVel.X, 0.0f);
-                Physics.SetLinearVelocity(ID, vel);
-            }*/
         }
     }
 }
