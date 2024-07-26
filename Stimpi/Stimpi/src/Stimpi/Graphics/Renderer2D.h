@@ -45,11 +45,11 @@ namespace Stimpi
 		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, Texture* texture, Shader* shader);
 		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, SubTexture* subtexture, Shader* shader);
 		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, Shader* shader, glm::vec2 minUV = { 0.0f, 0.0f }, glm::vec2 maxUV = { 1.0f, 1.0f });
-		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color, Shader* shader, glm::vec2 minUV = { 0.0f, 0.0f }, glm::vec2 maxUV = { 1.0f, 1.0f });
+		void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec4 color, Shader* shader, glm::vec2 minUV = { 0.0f, 0.0f }, glm::vec2 maxUV = { 1.0f, 1.0f });
 
-		void SubmitCircle(glm::vec3 pos, glm::vec2 scale, glm::vec3 color, float thickness, float fade);
-		void SubmitSquare(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color);
-		void SubmitLine(glm::vec3 p0, glm::vec3 p1, glm::vec3 color);
+		void SubmitCircle(glm::vec3 pos, glm::vec2 scale, glm::vec4 color, float thickness, float fade);
+		void SubmitSquare(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec4 color);
+		void SubmitLine(glm::vec3 p0, glm::vec3 p1, glm::vec4 color);
 
 		void SetLineWidth(float width);
 
@@ -77,8 +77,8 @@ namespace Stimpi
 
 		void SetShaderUniforms(Shader* shader);
 
-		void PushQuadVertexData(RenderCommand* cmd, glm::vec4 quad, glm::vec3 color = { 1.0f, 1.0f, 1.0f }, glm::vec2 min = { 0.0f, 0.0f }, glm::vec2 max = { 1.0f, 1.0f });
-		void PushTransformedVertexData(RenderCommand* cmd, glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color = { 1.0f, 1.0f, 1.0f }, glm::vec2 min = { 0.0f, 0.0f }, glm::vec2 max = { 1.0f, 1.0f });
+		void PushQuadVertexData(RenderCommand* cmd, glm::vec4 quad, glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, glm::vec2 min = { 0.0f, 0.0f }, glm::vec2 max = { 1.0f, 1.0f });
+		void PushTransformedVertexData(RenderCommand* cmd, glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, glm::vec2 min = { 0.0f, 0.0f }, glm::vec2 max = { 1.0f, 1.0f });
 		
 		void DrawQuadRenderCmd(std::shared_ptr<RenderCommand>& renderCmd);
 		void DrawCirlceRenderCmd(std::shared_ptr<RenderCommand>& renderCmd);

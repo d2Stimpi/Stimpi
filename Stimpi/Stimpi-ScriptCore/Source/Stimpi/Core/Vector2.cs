@@ -20,10 +20,16 @@ namespace Stimpi
 
         public static Vector2 Zero { get { return new Vector2(0.0f, 0.0f); } }
         public static Vector2 One { get { return new Vector2(1.0f, 1.0f); } }
+        public static Vector2 AxisX { get { return new Vector2(1.0f, 0.0f); } }
+        public static Vector2 AxisY { get { return new Vector2(0.0f, 1.0f); } }
 
         public float Length { get { return (float)Math.Sqrt(X*X + Y*Y); } }
         public Vector2 Unit { get { return new Vector2(X/Length, Y/Length); } }
         public Vector2 Inv { get { return new Vector2(-X, -Y); } }
+
+        public float Dot(Vector2 other) { return X * other.X + other.Y * Y; }
+        public float Cross(Vector2 other) { return (float)Math.Sqrt(X * X + Y * Y) * (float)Math.Sqrt(other.X*other.X + other.Y*other.Y); }
+        public float Angle(Vector2 other) { return (float)Math.Acos(Dot(other) / Cross(other)); }
 
         public override string ToString()
         {

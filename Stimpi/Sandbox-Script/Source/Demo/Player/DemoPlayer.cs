@@ -23,6 +23,10 @@ namespace Demo
 
         public override void OnCreate()
         {
+            // FIXME: This is temporary solution, add OnDestroy to scripts
+            // Clear all instances in ObjectPool(s) on "Scene Start"
+            EffectsPool.Clear();
+
             Quad = GetComponent<QuadComponent>();
             if (Cursor != null)
             {
@@ -79,12 +83,12 @@ namespace Demo
                 Physics.SetLinearVelocity(ID, Vector2.Zero);
             }
 
-            // Test - create a bullet
+            // Spawn a bullet
             if (Input.IsKeyDown(KeyCode.KEY_SPACE))
             {
                 Bullet bullet = Entity.Create<Bullet>();
 
-                float size = Quad.Size.X * 1.25f;
+                float size = bullet.GetSize().X;
                 Vector2 mousePos = Input.GetMousePosition();
                 Vector2 fireLocation = Quad.Position;
 

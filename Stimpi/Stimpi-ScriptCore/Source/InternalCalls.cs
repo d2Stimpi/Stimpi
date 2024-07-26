@@ -70,7 +70,10 @@ namespace Stimpi
         public extern static bool AnimatedSpriteComponent_Pause(uint entityID);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool AnimatedSpriteComponent_AddAnimation(uint entityID, string assetName);
-
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool AnimatedSpriteComponent_GetLooping(uint entityID, out bool looping);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool AnimatedSpriteComponent_SetLooping(uint entityID, bool looping);
 
         /* RigidBody2DComponent */
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -87,6 +90,36 @@ namespace Stimpi
         public extern static bool RigidBody2DComponent_SetTransform(uint entityID, ref Vector2 position, ref float angle);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool RigidBody2DComponent_InitializePhysics2DBody(uint entityID);
+
+        /* BoxCollider2DComponent */
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool BoxCollider2DComponent_GetShape(uint entityID, out int outShape);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool BoxCollider2DComponent_SetShape(uint entityID, int shape);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool BoxCollider2DComponent_GetOffset(uint entityID, out Vector2 outOffset);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool BoxCollider2DComponent_SetOffset(uint entityID, ref Vector2 shape);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool BoxCollider2DComponent_GetSize(uint entityID, out Vector2 outSize);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool BoxCollider2DComponent_SetSize(uint entityID, ref Vector2 size);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool BoxCollider2DComponent_GetDensity(uint entityID, out float outDensity);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool BoxCollider2DComponent_SetDensiry(uint entityID, float density);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool BoxCollider2DComponent_GetFriction(uint entityID, out float outFriction);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool BoxCollider2DComponent_SetFriction(uint entityID, float friction);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool BoxCollider2DComponent_GetRestitution(uint entityID, out float outRestitution);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool BoxCollider2DComponent_SetRestitution(uint entityID, float restitution);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool BoxCollider2DComponent_GetRestitutionThreshold(uint entityID, out float outRestitutionThreshold);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool BoxCollider2DComponent_SetRestitutionThreshold(uint entityID, float restitutionThreshold);
 
         /* CameraComponent */
         [MethodImplAttribute(MethodImplOptions.InternalCall)]

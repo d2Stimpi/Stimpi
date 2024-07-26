@@ -441,6 +441,20 @@ namespace Stimpi
 				m_AnimSprite->Stop();
 		}
 
+		void SetLooping(bool looping)
+		{
+			if (m_AnimSprite)
+				m_AnimSprite->SetLooping(looping);
+		}
+
+		bool GetLooping()
+		{
+			if (m_AnimSprite)
+				return m_AnimSprite->GetLooping();
+
+			return false;
+		}
+
 		bool IsPlaying()
 		{
 			if (m_AnimSprite)

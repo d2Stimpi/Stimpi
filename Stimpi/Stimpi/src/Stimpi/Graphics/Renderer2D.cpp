@@ -30,7 +30,7 @@ namespace Stimpi
 		// Init Quad rendering VAO, VBO
 		m_QuadVAO.reset(VertexArrayObject::CreateVertexArrayObject({
 			{ ShaderDataType::Float3, "a_Position"	},
-			{ ShaderDataType::Float3, "a_Color"		},
+			{ ShaderDataType::Float4, "a_Color"		},
 			{ ShaderDataType::Float2, "a_TexCoord"	}
  		}));
   		m_QuadVAO->BindArray();
@@ -44,7 +44,7 @@ namespace Stimpi
 		// Init Circle rendering VAO, VBO
 		m_CircleVAO.reset(VertexArrayObject::CreateVertexArrayObject({
 			{ ShaderDataType::Float3, "a_Position"	},
-			{ ShaderDataType::Float3, "a_Color"		},
+			{ ShaderDataType::Float4, "a_Color"		},
 			{ ShaderDataType::Float2, "a_TexCoord"	},
 			{ ShaderDataType::Float,  "a_Thickness" },
 			{ ShaderDataType::Float,  "a_Fade"		}
@@ -61,7 +61,7 @@ namespace Stimpi
 		// Init Line rendering VAO, VBO
 		m_LineVAO.reset(VertexArrayObject::CreateVertexArrayObject({
 			{ ShaderDataType::Float3, "a_Position"	},
-			{ ShaderDataType::Float3, "a_Color"		}
+			{ ShaderDataType::Float4, "a_Color"		}
 			}));
 		m_LineVAO->BindArray();
 
@@ -191,7 +191,7 @@ namespace Stimpi
 		// First time call Submit after BeginScene
 		if ((currentCmd->m_Texture == nullptr) && ((currentCmd->m_Shader == nullptr)))
 		{
-			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation, glm::vec3{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 			currentCmd->m_Texture = subtexture->GetTexture();
 			currentCmd->m_Shader = shader;
 
@@ -202,7 +202,7 @@ namespace Stimpi
 			// If shader or texture changed
 			NewCmd();
 			currentCmd = *m_ActiveRenderCmdIter;
-			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation, glm::vec3{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 			currentCmd->m_Texture = subtexture->GetTexture();
 			currentCmd->m_Shader = shader;
 
@@ -211,7 +211,7 @@ namespace Stimpi
 		else
 		{
 			// Batching vertex data
-			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation, glm::vec3{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 		}
 	}
 
@@ -220,7 +220,7 @@ namespace Stimpi
 		Submit(pos, scale, rotation, (Texture*)nullptr, shader);
 	}
 
-	void Renderer2D::Submit(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color, Shader* shader, glm::vec2 minUV/*{ 0.0f, 0.0f }*/, glm::vec2 maxUV/*{ 1.0f, 1.0f }*/)
+	void Renderer2D::Submit(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec4 color, Shader* shader, glm::vec2 minUV/*{ 0.0f, 0.0f }*/, glm::vec2 maxUV/*{ 1.0f, 1.0f }*/)
 	{
 		auto currentCmd = *m_ActiveRenderCmdIter;
 
@@ -243,7 +243,7 @@ namespace Stimpi
 		currentCmd->m_Shader = shader;
 	}
 
-	void Renderer2D::SubmitCircle(glm::vec3 pos, glm::vec2 scale, glm::vec3 color, float thickness, float fade)
+	void Renderer2D::SubmitCircle(glm::vec3 pos, glm::vec2 scale, glm::vec4 color, float thickness, float fade)
 	{
 		auto currentCmd = *m_ActiveRenderCmdIter;
 		glm::vec2 minUV = { -1.0f, -1.0f };
@@ -282,7 +282,7 @@ namespace Stimpi
 		m_RenderAPI->SetLineWidth(width);
 	}
 
-	void Renderer2D::SubmitLine(glm::vec3 p0, glm::vec3 p1, glm::vec3 color)
+	void Renderer2D::SubmitLine(glm::vec3 p0, glm::vec3 p1, glm::vec4 color)
 	{
 		auto currentCmd = *m_ActiveRenderCmdIter;
 
@@ -305,7 +305,7 @@ namespace Stimpi
 		currentCmd->PushLineVertex(p1, color);
 	}
 
-	void Renderer2D::SubmitSquare(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color)
+	void Renderer2D::SubmitSquare(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec4 color)
 	{
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) *
 			glm::rotate(glm::mat4(1.0f), rotation/*glm::radians(rotation)*/, glm::vec3(0.0f, 0.0f, 1.0f)) *
@@ -550,7 +550,7 @@ namespace Stimpi
 
 	}
 
-	void Renderer2D::PushQuadVertexData(RenderCommand* cmd, glm::vec4 quad, glm::vec3 color /*= { 1.0f, 1.0f, 1.0f }*/, glm::vec2 min /*= { 0.0f, 0.0f }*/, glm::vec2 max /*= { 1.0f, 1.0f }*/)
+	void Renderer2D::PushQuadVertexData(RenderCommand* cmd, glm::vec4 quad, glm::vec4 color /*= { 1.0f, 1.0f, 1.0f }*/, glm::vec2 min /*= { 0.0f, 0.0f }*/, glm::vec2 max /*= { 1.0f, 1.0f }*/)
 	{	
 		glm::vec3 position = { quad.x + quad.z / 2.0f, quad.y + quad.w / 2.0f, 0.0f};
 		glm::vec2 size = { quad.z, quad.w };
@@ -558,7 +558,7 @@ namespace Stimpi
 		PushTransformedVertexData(cmd, position, size, 0.0f, color, min, max);
 	}
 
-	void Renderer2D::PushTransformedVertexData(RenderCommand* cmd, glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec3 color /*= { 1.0f, 1.0f, 1.0f }*/, glm::vec2 min /*= { 0.0f, 0.0f }*/, glm::vec2 max /*= { 1.0f, 1.0f }*/)
+	void Renderer2D::PushTransformedVertexData(RenderCommand* cmd, glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec4 color /*= { 1.0f, 1.0f, 1.0f }*/, glm::vec2 min /*= { 0.0f, 0.0f }*/, glm::vec2 max /*= { 1.0f, 1.0f }*/)
 	{
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) *
 			glm::rotate(glm::mat4(1.0f), rotation/*glm::radians(rotation)*/, glm::vec3(0.0f, 0.0f, 1.0f)) *

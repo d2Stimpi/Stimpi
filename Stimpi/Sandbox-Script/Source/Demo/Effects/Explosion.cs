@@ -13,10 +13,6 @@ namespace Demo
         QuadComponent Quad;
         AnimatedSpriteComponent Animation;
 
-        public Explosion()
-        {
-            //Console.WriteLine("Explosion ctor");
-        }
 
         private bool Played = false;
 
@@ -25,6 +21,7 @@ namespace Demo
             Quad.Position = position;
             Random rnd = new Random();
             Quad.Rotation = rnd.Next(0, 3);
+            Played = false;
         }
 
         public void Play()

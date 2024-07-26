@@ -501,7 +501,6 @@ namespace Stimpi
 
 	static bool AnimatedSpriteComponent_AddAnimation(uint32_t entityID, MonoString* assetName)
 	{
-
 		bool hasComponent = false;
 		auto scene = SceneManager::Instance()->GetActiveScene();
 		ST_CORE_ASSERT(!scene);
@@ -521,7 +520,41 @@ namespace Stimpi
 			mono_free(nameCStr);
 		}
 
+		return hasComponent;
+	}
 
+	static bool AnimatedSpriteComponent_GetLooping(uint32_t entityID, bool* looping)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<AnimatedSpriteComponent>();
+		if (hasComponent)
+		{
+			auto& anim = entity.GetComponent<AnimatedSpriteComponent>();
+			*looping = anim.GetLooping();
+		}
+
+		return hasComponent;
+	}
+
+	static bool AnimatedSpriteComponent_SetLooping(uint32_t entityID, bool looping)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<AnimatedSpriteComponent>();
+		if (hasComponent)
+		{
+			auto& anim = entity.GetComponent<AnimatedSpriteComponent>();
+			anim.SetLooping(looping);
+		}
 
 		return hasComponent;
 	}
@@ -709,6 +742,262 @@ namespace Stimpi
 	}
 
 #pragma endregion RigidBody2DComponent
+
+#pragma region BoxCollider2DComponent
+
+	static bool BoxCollider2DComponent_GetShape(uint32_t entityID, int* outShape)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<BoxCollider2DComponent>();
+		if (hasComponent)
+		{
+			auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+			*outShape = (int)bc2d.m_ColliderShape;
+		}
+
+		return hasComponent;
+	}
+
+	static bool BoxCollider2DComponent_SetShape(uint32_t entityID, int shape)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<BoxCollider2DComponent>();
+		if (hasComponent)
+		{
+			auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+			bc2d.m_ColliderShape = (BoxCollider2DComponent::Collider2DShape)shape;
+		}
+
+		return hasComponent;
+	}
+
+	static bool BoxCollider2DComponent_GetOffset(uint32_t entityID, glm::vec2* outOffset)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<BoxCollider2DComponent>();
+		if (hasComponent)
+		{
+			auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+			*outOffset = bc2d.m_Offset;
+		}
+
+		return hasComponent;
+	}
+
+	static bool BoxCollider2DComponent_SetOffset(uint32_t entityID, glm::vec2* offset)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<BoxCollider2DComponent>();
+		if (hasComponent)
+		{
+			auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+			bc2d.m_Offset = *offset;
+		}
+
+		return hasComponent;
+	}
+
+	static bool BoxCollider2DComponent_GetSize(uint32_t entityID, glm::vec2* outSize)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<BoxCollider2DComponent>();
+		if (hasComponent)
+		{
+			auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+			*outSize = bc2d.m_Size;
+		}
+
+		return hasComponent;
+	}
+
+	static bool BoxCollider2DComponent_SetSize(uint32_t entityID, glm::vec2* size)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<BoxCollider2DComponent>();
+		if (hasComponent)
+		{
+			auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+			bc2d.m_Size = *size;
+		}
+
+		return hasComponent;
+	}
+
+	static bool BoxCollider2DComponent_GetDensity(uint32_t entityID, float* outDensity)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<BoxCollider2DComponent>();
+		if (hasComponent)
+		{
+			auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+			*outDensity = bc2d.m_Density;
+		}
+
+		return hasComponent;
+	}
+
+	static bool BoxCollider2DComponent_SetDensity(uint32_t entityID, float density)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<BoxCollider2DComponent>();
+		if (hasComponent)
+		{
+			auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+			bc2d.m_Density = density;
+		}
+
+		return hasComponent;
+	}
+
+	static bool BoxCollider2DComponent_GetFriction(uint32_t entityID, float* outFriction)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<BoxCollider2DComponent>();
+		if (hasComponent)
+		{
+			auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+			*outFriction = bc2d.m_Friction;
+		}
+
+		return hasComponent;
+	}
+
+	static bool BoxCollider2DComponent_SetFriction(uint32_t entityID, float friction)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<BoxCollider2DComponent>();
+		if (hasComponent)
+		{
+			auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+			bc2d.m_Friction = friction;
+		}
+
+		return hasComponent;
+	}
+
+	static bool BoxCollider2DComponent_GetRestitution(uint32_t entityID, float* outRestitution)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<BoxCollider2DComponent>();
+		if (hasComponent)
+		{
+			auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+			*outRestitution = bc2d.m_Restitution;
+		}
+
+		return hasComponent;
+	}
+
+	static bool BoxCollider2DComponent_SetRestitution(uint32_t entityID, float restitution)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<BoxCollider2DComponent>();
+		if (hasComponent)
+		{
+			auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+			bc2d.m_Restitution = restitution;
+		}
+
+		return hasComponent;
+	}
+
+	static bool BoxCollider2DComponent_GetRestitutionThreshold(uint32_t entityID, float* outRestitutionThreshold)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<BoxCollider2DComponent>();
+		if (hasComponent)
+		{
+			auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+			*outRestitutionThreshold = bc2d.m_RestitutionThreshold;
+		}
+
+		return hasComponent;
+	}
+
+	static bool BoxCollider2DComponent_SetRestitutionThreshold(uint32_t entityID, float restitutionThreshold)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<BoxCollider2DComponent>();
+		if (hasComponent)
+		{
+			auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+			bc2d.m_RestitutionThreshold = restitutionThreshold;
+		}
+
+		return hasComponent;
+	}
+
+#pragma endregion BoxCollider2DComponent
 
 #pragma region Pysics
 
@@ -1004,6 +1293,8 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_Pause);
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_Stop);
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_AddAnimation);
+		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_GetLooping);
+		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_SetLooping);
 
 		// RigidBody2DComponent
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_GetRigidBodyType);
@@ -1013,6 +1304,22 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_GetTransform);
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_SetTransform);
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_InitializePhysics2DBody);
+
+		// BoxCollider2DComponent
+		ST_ADD_INTERNAL_CALL(BoxCollider2DComponent_GetShape);
+		ST_ADD_INTERNAL_CALL(BoxCollider2DComponent_SetShape);
+		ST_ADD_INTERNAL_CALL(BoxCollider2DComponent_GetOffset);
+		ST_ADD_INTERNAL_CALL(BoxCollider2DComponent_SetOffset);
+		ST_ADD_INTERNAL_CALL(BoxCollider2DComponent_GetSize);
+		ST_ADD_INTERNAL_CALL(BoxCollider2DComponent_SetSize);
+		ST_ADD_INTERNAL_CALL(BoxCollider2DComponent_GetDensity);
+		ST_ADD_INTERNAL_CALL(BoxCollider2DComponent_SetDensity);
+		ST_ADD_INTERNAL_CALL(BoxCollider2DComponent_GetFriction);
+		ST_ADD_INTERNAL_CALL(BoxCollider2DComponent_SetFriction);
+		ST_ADD_INTERNAL_CALL(BoxCollider2DComponent_GetRestitution);
+		ST_ADD_INTERNAL_CALL(BoxCollider2DComponent_SetRestitution);
+		ST_ADD_INTERNAL_CALL(BoxCollider2DComponent_GetRestitutionThreshold);
+		ST_ADD_INTERNAL_CALL(BoxCollider2DComponent_SetRestitutionThreshold);
 
 		// CameraComponent
 		ST_ADD_INTERNAL_CALL(CameraComponent_GetIsMain);

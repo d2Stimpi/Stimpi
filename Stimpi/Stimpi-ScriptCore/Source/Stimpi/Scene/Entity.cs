@@ -11,6 +11,7 @@ namespace Stimpi
 {
     public class Entity
     {
+        private readonly bool _debug = true;
         public readonly uint ID;
 
         internal Entity(uint id)
@@ -46,7 +47,10 @@ namespace Stimpi
 
             Type componentType = typeof(T);
             if (!InternalCalls.Entity_AddComponent(ID, componentType))
+            {
+                if (_debug) Console.WriteLine($"Failed adding component {componentType.Name} on Entity {ID}");
                 return null;
+            }
 
             T component = new T() { Entity = this };
             return component;

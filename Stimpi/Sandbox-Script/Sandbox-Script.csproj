@@ -61,12 +61,12 @@
   <ItemGroup>
     <Compile Include="Source\Actor.cs" />
     <Compile Include="Source\Ball.cs" />
-    <Compile Include="Source\Demo\Bullet.cs" />
-    <Compile Include="Source\Demo\DemoPlayer.cs" />
+    <Compile Include="Source\Demo\Effects\Bullet.cs" />
+    <Compile Include="Source\Demo\Player\DemoPlayer.cs" />
     <Compile Include="Source\Demo\Effects\EffectsPool.cs" />
     <Compile Include="Source\Demo\Effects\Explosion.cs" />
-    <Compile Include="Source\Demo\Enemy.cs" />
-    <Compile Include="Source\Demo\EnemySpawn.cs" />
+    <Compile Include="Source\Demo\Enemy\Enemy.cs" />
+    <Compile Include="Source\Demo\Enemy\EnemySpawn.cs" />
     <Compile Include="Source\Demo\UI\Icon.cs" />
     <Compile Include="Source\Demo\UI\SpellBar.cs" />
     <Compile Include="Source\PhysicsActor.cs" />

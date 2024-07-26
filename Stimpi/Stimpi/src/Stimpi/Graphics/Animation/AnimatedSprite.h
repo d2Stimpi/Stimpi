@@ -24,6 +24,7 @@ namespace Stimpi
 		void Update(Timestep ts);
 		void SetCurrentFrame(uint32_t frame);
 		void SetLooping(bool looping) { m_Looping = looping; }
+		bool GetLooping() { return m_Looping; }
 
 		void SetPlaybackSpeed(float speed) { m_PlaybackSpeed = speed; }
 		float GetPlaybackSpeed() { return m_PlaybackSpeed; }

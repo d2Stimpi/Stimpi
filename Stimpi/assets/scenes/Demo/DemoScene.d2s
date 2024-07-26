@@ -27,13 +27,13 @@ Scene:
       Tag: GroundArea
     QuadComponent:
       - 64
-      - 36
+      - 64.4883575
       - 0
       - 256
       - 256
       - 0
     SpriteComponent:
-      FilePath: D:/GitHub/Stimpi\assets\textures\viber_image.png
+      FilePath: D:/GitHub/Stimpi\assets\textures\Level1.png
       Enabled: true
       Color:
         - 0.568627477
@@ -279,7 +279,7 @@ Scene:
         {}
   Entity:
     TagComponent:
-      Tag: Boom
+      Tag: AnimAssetHolder_tmp
     QuadComponent:
       - 33.0885277
       - 28.794323
@@ -290,5 +290,173 @@ Scene:
     AnimatedSpriteComponent:
       DefaultAnimation: D:/GitHub/Stimpi\assets\animations\explosion01.anim
       Animations:
-        {}
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\fireball01.anim
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\explosion01.anim
       AutoPlay: false
+  Entity:
+    TagComponent:
+      Tag: Wall_1
+    QuadComponent:
+      - 50.9553223
+      - 65.5783157
+      - 0
+      - 56.3546524
+      - 7.03280258
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 1
+        - 1
+        - 1
+        - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    TagComponent:
+      Tag: Wall_2
+    QuadComponent:
+      - 92.0699539
+      - 78.914917
+      - 0
+      - 41.8658829
+      - 7.03280258
+      - 0.75
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 1
+        - 1
+        - 1
+        - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    TagComponent:
+      Tag: Wall_3
+    QuadComponent:
+      - 107.490044
+      - 91.3361435
+      - 0
+      - 14.8769493
+      - 7.03280258
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 1
+        - 1
+        - 1
+        - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    TagComponent:
+      Tag: Wall_4
+    QuadComponent:
+      - 132.300903
+      - 81.6770782
+      - 0
+      - 22.0739937
+      - 7.03280258
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 1
+        - 1
+        - 1
+        - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    TagComponent:
+      Tag: Wall_5
+    QuadComponent:
+      - 118.664444
+      - 86.0331345
+      - 0
+      - 15.0740004
+      - 7.03299999
+      - -0.779999971
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 1
+        - 1
+        - 1
+        - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5

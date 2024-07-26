@@ -51,5 +51,11 @@ namespace Stimpi
                 _counter++;
             }
         }
+
+        public void Clear()
+        {
+            _objectsList.Clear();
+            _counter = 0;
+        }
     }
 }

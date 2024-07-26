@@ -16,7 +16,7 @@ namespace Stimpi
 	struct VertexData
 	{
 		glm::vec3 m_Position = glm::vec3(0.0f);
-		glm::vec3 m_Color = glm::vec3(0.0f);
+		glm::vec4 m_Color = glm::vec4(0.0f);
 		glm::vec2 m_TexCoord = glm::vec2(0.0f);
 
 		float* operator&() { return &m_Position[0]; }
@@ -25,7 +25,7 @@ namespace Stimpi
 	struct CircleVertexData
 	{
 		glm::vec3 m_Position = glm::vec3(0.0f);
-		glm::vec3 m_Color = glm::vec3(0.0f);
+		glm::vec4 m_Color = glm::vec4(0.0f);
 		glm::vec2 m_TexCoord = glm::vec2(0.0f);
 		float m_Thickness = 0.0f;
 		float m_Fade = 0.0f;
@@ -36,7 +36,7 @@ namespace Stimpi
 	struct LineVertexData
 	{
 		glm::vec3 m_Position = glm::vec3(0.0f);
-		glm::vec3 m_Color = glm::vec3(0.0f);
+		glm::vec4 m_Color = glm::vec4(0.0f);
 
 		float* operator&() { return &m_Position[0]; }
 	};
@@ -69,7 +69,7 @@ namespace Stimpi
 		float* CircleData() { return &(m_CircleVertexData[0]); }
 		float* LineData() { return &(m_LineVertexData[0]); }
 
-		void PushQuadVertex(glm::vec3 position, glm::vec3 color, glm::vec2 textureCoord)
+		void PushQuadVertex(glm::vec3 position, glm::vec4 color, glm::vec2 textureCoord)
 		{
 			ST_CORE_ASSERT((m_Type != RenderCommandType::NONE && m_Type != RenderCommandType::QUAD));
 
@@ -86,7 +86,7 @@ namespace Stimpi
 			m_VertexCount++;
 		}
 
-		void PushCircleVertex(glm::vec3 position, glm::vec3 color, glm::vec2 textureCoord, float thickness, float fade)
+		void PushCircleVertex(glm::vec3 position, glm::vec4 color, glm::vec2 textureCoord, float thickness, float fade)
 		{
 			ST_CORE_ASSERT((m_Type != RenderCommandType::NONE && m_Type != RenderCommandType::CIRLCE));
 
@@ -105,7 +105,7 @@ namespace Stimpi
 			m_VertexCount++;
 		}
 
-		void PushLineVertex(glm::vec3 position, glm::vec3 color)
+		void PushLineVertex(glm::vec3 position, glm::vec4 color)
 		{
 			ST_CORE_ASSERT((m_Type != RenderCommandType::NONE && m_Type != RenderCommandType::LINE));
 

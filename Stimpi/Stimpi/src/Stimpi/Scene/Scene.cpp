@@ -276,7 +276,7 @@ namespace Stimpi
 					if (entity.HasComponent<BoxCollider2DComponent>())
 					{
 						auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
-						glm::vec3 outlineColor(0.80f, 0.3f, 0.2f);
+						glm::vec4 outlineColor(0.80f, 0.3f, 0.2f, 1.0f);
 						glm::vec3 outlinePos(quad.Center() + bc2d.m_Offset, 0.0f);
 						glm::vec2 outlineSize(bc2d.m_Size.x * quad.m_Size.x * 2.0f, bc2d.m_Size.y * quad.m_Size.y * 2.0f);
 
@@ -321,7 +321,7 @@ namespace Stimpi
 					if (entity.HasComponent<BoxCollider2DComponent>())
 					{
 						auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
-						glm::vec3 outlineColor(0.80f, 0.3f, 0.2f);
+						glm::vec4 outlineColor(0.80f, 0.3f, 0.2f, 1.0f);
 						glm::vec3 outlinePos(circle.Center() + bc2d.m_Offset, 0.0f);
 						glm::vec2 outlineSize(bc2d.m_Size.x * circle.m_Size.x * 2.0f, bc2d.m_Size.y * circle.m_Size.y * 2.0f);
 

@@ -147,6 +147,22 @@ namespace Stimpi
             }
         }
 
+        public bool Looping
+        {
+            get
+            {
+                if (!InternalCalls.AnimatedSpriteComponent_GetLooping(Entity.ID, out bool looping))
+                    Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (get Looping)");
+
+                return looping;
+            }
+            set
+            {
+                if (!InternalCalls.AnimatedSpriteComponent_SetLooping(Entity.ID, value))
+                    Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (set Looping)");
+            }
+        }
+
         public void Play(string animationName)
         {
             if (!InternalCalls.AnimatedSpriteComponent_Play(Entity.ID, animationName))
@@ -230,9 +246,125 @@ namespace Stimpi
         }
     }
 
+    public enum Collider2DShape
+    {
+        BOX = 0,
+        CIRCLE
+    }
+
     public class BoxCollider2DComponent : Component
     {
+        public Collider2DShape Shape
+        {
+            get
+            {
+                if (!InternalCalls.BoxCollider2DComponent_GetShape(Entity.ID, out int outShape))
+                    Console.WriteLine($"Entity {Entity.ID} does not have BoxCollider2DComponent (get BoxCollider2DShape)");
 
+                return (Collider2DShape)outShape;
+            }
+            set
+            {
+                if (!InternalCalls.BoxCollider2DComponent_SetShape(Entity.ID, (int)value))
+                    Console.WriteLine($"Entity {Entity.ID} does not have BoxCollider2DComponent (set BoxCollider2DShape)");
+            }
+        }
+
+        public Vector2 Offset
+        {
+            get
+            {
+                if (!InternalCalls.BoxCollider2DComponent_GetOffset(Entity.ID, out Vector2 outOffset))
+                    Console.WriteLine($"Entity {Entity.ID} does not have BoxCollider2DComponent (get Offset)");
+
+                return outOffset;
+            }
+            set
+            {
+                if (!InternalCalls.BoxCollider2DComponent_SetOffset(Entity.ID, ref value))
+                    Console.WriteLine($"Entity {Entity.ID} does not have BoxCollider2DComponent (set Offset)");
+            }
+        }
+
+        public Vector2 Size
+        {
+            get
+            {
+                if (!InternalCalls.BoxCollider2DComponent_GetSize(Entity.ID, out Vector2 outSize))
+                    Console.WriteLine($"Entity {Entity.ID} does not have BoxCollider2DComponent (get Size)");
+
+                return outSize;
+            }
+            set
+            {
+                if (!InternalCalls.BoxCollider2DComponent_SetSize(Entity.ID, ref value))
+                    Console.WriteLine($"Entity {Entity.ID} does not have BoxCollider2DComponent (set Size)");
+            }
+        }
+
+        public float Density
+        {
+            get
+            {
+                if (!InternalCalls.BoxCollider2DComponent_GetDensity(Entity.ID, out float outDensity))
+                    Console.WriteLine($"Entity {Entity.ID} does not have BoxCollider2DComponent (get Density)");
+
+                return outDensity;
+            }
+            set
+            {
+                if (!InternalCalls.BoxCollider2DComponent_SetDensiry(Entity.ID, value))
+                    Console.WriteLine($"Entity {Entity.ID} does not have BoxCollider2DComponent (set Density)");
+            }
+        }
+
+        public float Friction
+        {
+            get
+            {
+                if (!InternalCalls.BoxCollider2DComponent_GetFriction(Entity.ID, out float outFriction))
+                    Console.WriteLine($"Entity {Entity.ID} does not have BoxCollider2DComponent (get Friction)");
+
+                return outFriction;
+            }
+            set
+            {
+                if (!InternalCalls.BoxCollider2DComponent_SetFriction(Entity.ID, value))
+                    Console.WriteLine($"Entity {Entity.ID} does not have BoxCollider2DComponent (set Friction)");
+            }
+        }
+
+        public float Restitution
+        {
+            get
+            {
+                if (!InternalCalls.BoxCollider2DComponent_GetRestitution(Entity.ID, out float outRestitution))
+                    Console.WriteLine($"Entity {Entity.ID} does not have BoxCollider2DComponent (get Restitution)");
+
+                return outRestitution;
+            }
+            set
+            {
+                if (!InternalCalls.BoxCollider2DComponent_SetRestitution(Entity.ID, value))
+                    Console.WriteLine($"Entity {Entity.ID} does not have BoxCollider2DComponent (set Restitution)");
+            }
+        }
+
+        public float RestitutionThreshold
+        {
+            get
+            {
+                if (!InternalCalls.BoxCollider2DComponent_GetRestitutionThreshold(Entity.ID, out float outRestitutionThreshold))
+                    Console.WriteLine($"Entity {Entity.ID} does not have BoxCollider2DComponent (get RestitutionThreshold)");
+
+                return outRestitutionThreshold;
+            }
+            set
+            {
+                if (!InternalCalls.BoxCollider2DComponent_SetRestitutionThreshold(Entity.ID, value))
+                    Console.WriteLine($"Entity {Entity.ID} does not have BoxCollider2DComponent (set RestitutionThreshold)");
+            }
+        }
     }
 
     public class CameraComponent : Component

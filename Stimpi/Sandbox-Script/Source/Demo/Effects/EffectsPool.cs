@@ -6,11 +6,14 @@ using System.Threading.Tasks;
 
 using Stimpi;
 
+// TODO: Manage non-Entity classes, especially static ones in Mono ScriptEngine.
+//       When Scene restarts, ObjectPool data is not explicitly deleted from Mono runtime
+
 namespace Demo
 {
     public static class EffectsPool
     {
-        private static bool _debug = false;
+        private static readonly bool _debug = true;
         private static ObjectPool<Explosion> s_explosionPool = new ObjectPool<Explosion>(10, EffectsPool.CreateExplosionObject);
 
         // Pool object create method
@@ -32,10 +35,12 @@ namespace Demo
 
         public static void ReleaseObject(Explosion explosion)
         {
-            // Reset object state
-
-
             s_explosionPool.ReleaseObject(explosion);
+        }
+
+        public static void Clear()
+        {
+            s_explosionPool.Clear();
         }
     }
 }
