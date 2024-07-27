@@ -13,7 +13,7 @@ namespace Demo
 {
     public static class EffectsPool
     {
-        private static readonly bool _debug = true;
+        private static readonly bool s_debug = true;
         private static ObjectPool<Explosion> s_explosionPool = new ObjectPool<Explosion>(10, EffectsPool.CreateExplosionObject);
 
         // Pool object create method
@@ -23,13 +23,13 @@ namespace Demo
             if (explosion == null)
                 Console.WriteLine("Failed to create new Explosion object");
 
-            if (_debug) Console.WriteLine("New Explosion object created");
+            if (s_debug) Console.WriteLine("New Explosion object created");
             return explosion;
         }
 
         public static Explosion GetObject()
         {
-            if (_debug) Console.WriteLine($"EffectsPool size {s_explosionPool.GetCount()}");
+            if (s_debug) Console.WriteLine($"EffectsPool size {s_explosionPool.GetCount()}");
             return s_explosionPool.GetObject();
         }
 

@@ -232,6 +232,22 @@ namespace Stimpi
             }
         }
 
+        public bool Enabled
+        {
+            get
+            {
+                if (!InternalCalls.RigidBody2DComponent_IsDisabled(Entity.ID, out bool outEnabled))
+                    Console.WriteLine($"Entity {Entity.ID} does not have RigidBody2DComponent (get Enabled)");
+
+                return outEnabled;
+            }
+            set
+            {
+                if (!InternalCalls.RigidBody2DComponent_SetDisabled(Entity.ID, value))
+                    Console.WriteLine($"Entity {Entity.ID} does not have RigidBody2DComponent (set Enabled)");
+            }
+        }
+
         public bool GetTransform(out Vector2 position, out float angle)
         {
             bool retVal = InternalCalls.RigidBody2DComponent_GetTransform(Entity.ID, out Vector2 pos, out float ang);

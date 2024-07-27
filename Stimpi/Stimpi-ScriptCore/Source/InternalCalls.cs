@@ -90,6 +90,11 @@ namespace Stimpi
         public extern static bool RigidBody2DComponent_SetTransform(uint entityID, ref Vector2 position, ref float angle);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool RigidBody2DComponent_InitializePhysics2DBody(uint entityID);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool RigidBody2DComponent_SetDisabled(uint entityID, bool enabled);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool RigidBody2DComponent_IsDisabled(uint entityID, out bool enabled);
+
 
         /* BoxCollider2DComponent */
         [MethodImplAttribute(MethodImplOptions.InternalCall)]

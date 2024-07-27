@@ -284,8 +284,8 @@ Scene:
       - 33.0885277
       - 28.794323
       - 2
-      - 12
-      - 12
+      - 6
+      - 6
       - 0
     AnimatedSpriteComponent:
       DefaultAnimation: D:/GitHub/Stimpi\assets\animations\explosion01.anim
@@ -294,6 +294,10 @@ Scene:
           AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\fireball01.anim
         Animation:
           AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\explosion01.anim
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\lightning_proj_start.anim
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\lightning_proj_loop.anim
       AutoPlay: false
   Entity:
     TagComponent:

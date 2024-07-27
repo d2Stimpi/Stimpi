@@ -58,7 +58,7 @@ namespace Demo
             Entity other = FindEntityByID(collision.OtherID);
             if (other != null)
             {
-                Bullet bullet = other.As<Bullet>();
+                Projectile bullet = other.As<Projectile>();
                 if (bullet != null) // If this is actually a Bullet type
                 {
                     Health -= 50;

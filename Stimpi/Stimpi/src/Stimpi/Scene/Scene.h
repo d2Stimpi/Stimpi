@@ -65,6 +65,7 @@ namespace Stimpi
 		// Physics
 		void CreatePhysicsBody(Entity entity);
 		void DestroyPhysicsBody(Entity entity);
+		void SetPhysicsEntityState(Entity entity, bool enabled);
 
 		// Debugging
 		static void EnableDebugMode(bool enable);
@@ -90,6 +91,7 @@ namespace Stimpi
 		void UpdatePhysicsSimulation(Timestep ts);
 		void DeinitializePhysics();
 		bool ProcessPhysicsEvent(PhysicsEvent* event);
+		void UpdatePyhsicsEntityState();
 
 		// Debug
 		void OnDebugUpdate(Timestep ts);
@@ -110,6 +112,7 @@ namespace Stimpi
 		// Physics
 		b2World* m_PhysicsWorld = nullptr;
 		std::shared_ptr <ContactListener> m_ContactListener;
+		std::unordered_map<uint32_t, bool> m_PhysicsStateToBeChanged;
 
 		friend class Entity;
 		friend class SceneSerializer;

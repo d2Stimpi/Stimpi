@@ -25,9 +25,9 @@ namespace Demo
     public class SpellBar : Entity
     {
         // Convenience access to Icons
-        private uint IconsCount = 4;
-        private Icon[] Icons = new Icon[4];
-        private uint ElementCount = 0;
+        private uint _iconsCount = 4;
+        private Icon[] _icons = new Icon[4];
+        private uint _elementCount = 0;
 
         // Exposed to Editor for placing on screen
         public Entity IconNorth;
@@ -35,10 +35,13 @@ namespace Demo
         public Entity IconEast;
         public Entity IconSputh;
 
+        // Key stroke tracking
+        private string _keysRegisterString = "";
+        private KeyCode _lastKeyPressed = KeyCode.KEY_UNKNOWN;
 
         public void UpdateIconsVisibility(uint visibleCount)
         {
-            foreach (var icon in Icons)
+            foreach (var icon in _icons)
             {
                 if (visibleCount > 0)
                 {
@@ -55,21 +58,21 @@ namespace Demo
         public override void OnCreate()
         {
             if (IconNorth != null)
-                Icons[0] = IconNorth.As<Icon>();
+                _icons[0] = IconNorth.As<Icon>();
 
             if (IconWest != null)
-                Icons[1] = IconWest.As<Icon>();
+                _icons[1] = IconWest.As<Icon>();
 
             if (IconEast != null)
-                Icons[2] = IconEast.As<Icon>();
+                _icons[2] = IconEast.As<Icon>();
 
             if (IconSputh != null)
-                Icons[3] = IconSputh.As<Icon>();
+                _icons[3] = IconSputh.As<Icon>();
 
-            Console.WriteLine($"North Icon: {Icons[0]}");
-            Console.WriteLine($"West Icon: {Icons[1]}");
-            Console.WriteLine($"East Icon: {Icons[2]}");
-            Console.WriteLine($"South Icon: {Icons[3]}");
+            Console.WriteLine($"North Icon: {_icons[0]}");
+            Console.WriteLine($"West Icon: {_icons[1]}");
+            Console.WriteLine($"East Icon: {_icons[2]}");
+            Console.WriteLine($"South Icon: {_icons[3]}");
         }
 
         public override void OnUpdate(float ts)
@@ -79,29 +82,68 @@ namespace Demo
                 Input.IsKeyDown(KeyCode.KEY_E) ||
                 Input.IsKeyDown(KeyCode.KEY_R))
             {
-                if (ElementCount < IconsCount)
+                if (_elementCount < _iconsCount)
                 { 
-                    ElementCount++;
+                    _elementCount++;
 
                     // Set element color (later texture)
                     if (Input.IsKeyDown(KeyCode.KEY_Q))
-                        Icons[ElementCount - 1].SetColor(KeyToColorDict.Values[KeyCode.KEY_Q]);
+                    {
+                        _lastKeyPressed = KeyCode.KEY_Q;
+                        _icons[_elementCount - 1].SetColor(KeyToColorDict.Values[KeyCode.KEY_Q]);
+                        RegisterKeyPress('Q');
+                    }
                     if (Input.IsKeyDown(KeyCode.KEY_W))
-                        Icons[ElementCount - 1].SetColor(KeyToColorDict.Values[KeyCode.KEY_W]);
+                    {
+                        _lastKeyPressed = KeyCode.KEY_W;
+                        _icons[_elementCount - 1].SetColor(KeyToColorDict.Values[KeyCode.KEY_W]);
+                        RegisterKeyPress('W');
+                    }
                     if (Input.IsKeyDown(KeyCode.KEY_E))
-                        Icons[ElementCount - 1].SetColor(KeyToColorDict.Values[KeyCode.KEY_E]);
+                    {
+                        _lastKeyPressed = KeyCode.KEY_E;
+                        _icons[_elementCount - 1].SetColor(KeyToColorDict.Values[KeyCode.KEY_E]);
+                        RegisterKeyPress('E');
+                    }
                     if (Input.IsKeyDown(KeyCode.KEY_R))
-                        Icons[ElementCount - 1].SetColor(KeyToColorDict.Values[KeyCode.KEY_R]);
+                    {
+                        _lastKeyPressed = KeyCode.KEY_R;
+                        _icons[_elementCount - 1].SetColor(KeyToColorDict.Values[KeyCode.KEY_R]);
+                        RegisterKeyPress('R');
+                    }
                 }
 
-                UpdateIconsVisibility(ElementCount);
+                UpdateIconsVisibility(_elementCount);
             }
 
-            if (Input.IsKeyDown(KeyCode.KEY_SPACE))
+            /*if (Input.IsKeyDown(KeyCode.KEY_SPACE))
             {
-                ElementCount = 0;
-                UpdateIconsVisibility(ElementCount);
-            }
+                _elementCount = 0;
+                UpdateIconsVisibility(_elementCount);
+
+                ConsumeRegiseredKeyPattern();
+            }*/
+        }
+
+        /* Private methods */
+
+        private void RegisterKeyPress(Char keyChr)
+        {
+            _keysRegisterString += keyChr;
+        }
+
+        public string ConsumeRegiseredKeyPattern()
+        {
+            string ret = _keysRegisterString;
+            Console.WriteLine("Registered key pattern str: " + _keysRegisterString);
+
+            _elementCount = 0;
+            UpdateIconsVisibility(_elementCount);
+
+            // Clear and prepare for new key pattern
+            _keysRegisterString = "";
+
+            return ret;
         }
     }
 }

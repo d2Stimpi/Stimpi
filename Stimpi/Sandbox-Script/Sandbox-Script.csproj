@@ -61,7 +61,8 @@
   <ItemGroup>
     <Compile Include="Source\Actor.cs" />
     <Compile Include="Source\Ball.cs" />
-    <Compile Include="Source\Demo\Effects\Bullet.cs" />
+    <Compile Include="Source\Demo\Effects\Projectile.cs" />
+    <Compile Include="Source\Demo\Effects\ProjectileFactory.cs" />
     <Compile Include="Source\Demo\Player\DemoPlayer.cs" />
     <Compile Include="Source\Demo\Effects\EffectsPool.cs" />
     <Compile Include="Source\Demo\Effects\Explosion.cs" />

@@ -1,0 +1,43 @@
+Animation:
+  Texture: ../assets/sprite_sheets/lightningproj01.png
+  Frames:
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 32
+      FramePosition:
+        - 192
+        - 0
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 32
+      FramePosition:
+        - 256
+        - 0
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 32
+      FramePosition:
+        - 320
+        - 0
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 32
+      FramePosition:
+        - 384
+        - 0
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 32
+      FramePosition:
+        - 448
+        - 0

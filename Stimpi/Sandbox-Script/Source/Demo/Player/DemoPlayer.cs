@@ -21,11 +21,14 @@ namespace Demo
         public Entity Cursor;
         private QuadComponent CursorQuad;
 
+        private SpellBar _spellBar;
+
         public override void OnCreate()
         {
             // FIXME: This is temporary solution, add OnDestroy to scripts
             // Clear all instances in ObjectPool(s) on "Scene Start"
             EffectsPool.Clear();
+            ProjectileFactory.Clear();
 
             Quad = GetComponent<QuadComponent>();
             if (Cursor != null)
@@ -36,6 +39,20 @@ namespace Demo
 
         public override void OnUpdate(float ts)
         {
+            // Grab spellBar ref, after all onCreates are done
+            if (_spellBar == null)
+            {
+                var entity = FindEntityByName("UI_SpellBar");
+                if (entity != null)
+                {
+                    _spellBar = entity.As<SpellBar>();
+                    if (_spellBar == null)
+                        Console.WriteLine("_spellBar failed to be found");
+                    else
+                        Console.WriteLine("_spellBar found");
+                }
+            }
+
             // Tracking "dummy" object - just to show where the target actually is (cursor pos)
             if (CursorQuad != null)
             {
@@ -73,6 +90,7 @@ namespace Demo
 
                 Vector2 dir = mousePos - pos;
                 Vector2 vecVec = dir.Unit * Velocity;
+                //Console.WriteLine($"SetVelocity - Player: {vecVec}");
                 if (Input.IsMousePressed(MouseCode.MOUSE_BUTTON_LEFT))
                     Physics.SetLinearVelocity(ID, vecVec);
                 else
@@ -86,16 +104,43 @@ namespace Demo
             // Spawn a bullet
             if (Input.IsKeyDown(KeyCode.KEY_SPACE))
             {
-                Bullet bullet = Entity.Create<Bullet>();
+                if (_spellBar != null)
+                {
+                    ProjectileType projType = ProjectileType.FIRE_BALL;
+                    Vector2 projSize = new Vector2(6.0f, 6.0f);
+                    string pattern = _spellBar.ConsumeRegiseredKeyPattern();
+                    if (pattern.Length > 0)
+                    {
+                        Vector2 mousePos = Input.GetMousePosition();
 
-                float size = bullet.GetSize().X;
-                Vector2 mousePos = Input.GetMousePosition();
-                Vector2 fireLocation = Quad.Position;
+                        if (pattern.Contains("W"))
+                        {
+                            projType = ProjectileType.LIGHTNING_BOLT;
+                            projSize = new Vector2(12.0f, 6.0f);
+                            ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, mousePos, projSize));
+                            return;
+                        }
 
-                Vector2 dir = mousePos - fireLocation;
-                fireLocation += dir.Unit * size;
+                        if (pattern == "QQQQ")
+                        {
+                            // Ring of fire balls 8 instances
+                            projType = ProjectileType.FIRE_BALL;
+                            Vector2 pos = Quad.Position;
+                            ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, pos + new Vector2(150.0f, 0.0f), projSize));
+                            ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, pos + new Vector2(-150.0f, 0.0f), projSize));
+                            ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, pos + new Vector2(0.0f, 150.0f), projSize));
+                            ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, pos + new Vector2(0.0f, -150.0f), projSize));
+                            ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, pos + new Vector2(150.0f, 150.0f), projSize));
+                            ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, pos + new Vector2(150.0f, -150.0f), projSize));
+                            ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, pos + new Vector2(-150.0f, 150.0f), projSize));
+                            ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, pos + new Vector2(-150.0f, -150.0f), projSize));
+                            return;
+                        }
 
-                bullet.Initialize(this, CursorQuad.Position, fireLocation);
+
+                        ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, mousePos, projSize));
+                    }
+                }
             }
         }
     }

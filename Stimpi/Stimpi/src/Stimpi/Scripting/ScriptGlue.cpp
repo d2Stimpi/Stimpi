@@ -715,10 +715,12 @@ namespace Stimpi
 		hasComponent = entity.HasComponent<RigidBody2DComponent>();
 		if (hasComponent)
 		{
+			//scene->DeferSetTransform(entity, *position);
 			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
 			b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
 			b2Vec2 pos = b2Vec2(position->x, position->y);
-			body->SetTransform(pos, angle);
+			if (body)
+				body->SetTransform(pos, angle);
 		}
 
 		return hasComponent;
@@ -735,7 +737,54 @@ namespace Stimpi
 		hasComponent = entity.HasComponent<RigidBody2DComponent>();
 		if (hasComponent)
 		{
-			scene->CreatePhysicsBody(entity);
+			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+			if (rb2d.m_RuntimeBody == nullptr)
+			{
+				scene->CreatePhysicsBody(entity);
+			}
+		}
+
+		return hasComponent;
+	}
+
+	static bool RigidBody2DComponent_SetDisabled(uint32_t entityID, bool enabled)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<RigidBody2DComponent>();
+		if (hasComponent)
+		{
+			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+			if (rb2d.m_RuntimeBody)
+			{
+				scene->SetPhysicsEntityState(entity, enabled);
+			}
+		}
+
+		return hasComponent;
+	}
+
+	static bool RigidBody2DComponent_IsDisabled(uint32_t entityID, bool* outEnabled)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<RigidBody2DComponent>();
+		if (hasComponent)
+		{
+			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+			if (rb2d.m_RuntimeBody)
+			{
+				b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+				*outEnabled = body->IsEnabled();
+			}
 		}
 
 		return hasComponent;
@@ -1168,6 +1217,10 @@ namespace Stimpi
 				return monoArray;
 			}
 		}
+		else
+		{
+			ST_CORE_WARN("Collision_GetContacts: Collision not found. IDs {} and {}", entityID, otherID);
+		}
 
 		return nullptr;
 	}
@@ -1304,6 +1357,8 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_GetTransform);
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_SetTransform);
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_InitializePhysics2DBody);
+		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_SetDisabled);
+		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_IsDisabled);
 
 		// BoxCollider2DComponent
 		ST_ADD_INTERNAL_CALL(BoxCollider2DComponent_GetShape);

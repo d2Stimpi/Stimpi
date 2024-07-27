@@ -728,8 +728,16 @@ namespace Stimpi
 		}
 	}
 
+	void Scene::SetPhysicsEntityState(Entity entity, bool enabled)
+	{
+		m_PhysicsStateToBeChanged[entity] = enabled;
+	}
+
 	void Scene::UpdatePhysicsSimulation(Timestep ts)
 	{
+		// Before stepping physics world, update Enable state
+		UpdatePyhsicsEntityState();
+
 		const int32_t velocityIterations = 6;
 		const int32_t positionIterations = 2;
 		m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
@@ -813,11 +821,13 @@ namespace Stimpi
 		if (event->GetType() == PhysicsEventType::COLLISION_BEGIN)
 		{
 			// Register current active Collisions
+			ST_CORE_INFO("ProcessEvent:	AddActiveCollision  COLLISION_BEGIN");
 			Physics::AddActiveCollision(new Collision(collisionData));
 		}
 		else if (event->GetType() == PhysicsEventType::COLLISION_END)
 		{
 			// Remove from active Collisions list
+			ST_CORE_INFO("ProcessEvent:	RemoveActiveCollision  COLLISION_END");
 			Physics::RemoveActiveCollision(&collisionData);
 		}
 		else if (event->GetType() == PhysicsEventType::COLLISION_PRESOLVE)
@@ -826,7 +836,6 @@ namespace Stimpi
 		}
 		else if (event->GetType() == PhysicsEventType::COLLISION_POSTSOLVE)
 		{
-			// Remove from active Collisions list
 			Physics::UpdateActiveCollision(&collisionData);
 		}
 
@@ -868,17 +877,37 @@ namespace Stimpi
 		return false;
 	}
 
+
+	void Scene::UpdatePyhsicsEntityState()
+	{
+		for (auto& item : m_PhysicsStateToBeChanged)
+		{
+			Entity entity = { (entt::entity)item.first, this };
+			bool enable = item.second;
+			if (entity.HasComponent<RigidBody2DComponent>())
+			{
+				auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+				if (rb2d.m_RuntimeBody)
+				{
+					b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+					body->SetEnabled(enable);
+				}
+			}
+		}
+
+		m_PhysicsStateToBeChanged.clear();
+	}
+
 	void Scene::OnDebugUpdate(Timestep ts)
 	{
-		auto& activeCollisions = Physics::GetActiveCollisions();
-
 		// Debug render - Collision contact points
-		if (m_RenderCamera)
+		if (Physics::ShowCollisionsContactPointsEnabled())
 		{
-			Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
-		
-			if (Physics::ShowCollisionsContactPointsEnabled())
+			if (m_RenderCamera)
 			{
+				Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
+		
+				auto& activeCollisions = Physics::GetActiveCollisions();
 				for (auto& collision : activeCollisions)
 				{
 					for (Contact& contact : collision->m_Contacts)
@@ -886,9 +915,8 @@ namespace Stimpi
 						Renderer2D::Instance()->SubmitCircle({ contact.m_Point.x, contact.m_Point.y, 0.0f }, { 1.0f, 1.0f }, {}, 1.0f, 0.005f);
 					}
 				}
+				Renderer2D::Instance()->EndScene();
 			}
-
-			Renderer2D::Instance()->EndScene();
 		}
 	}
 
