@@ -55,5 +55,10 @@ namespace Stimpi
         {
             return new Vector2(v1.X * f, v1.Y * f);
         }
+
+        public bool Equal(Vector2 v1)
+        {
+            return (X == v1.X && Y == v1.Y);
+        }
     }
 }

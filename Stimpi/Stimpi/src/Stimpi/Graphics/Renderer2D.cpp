@@ -83,8 +83,8 @@ namespace Stimpi
 		m_CircleShader.reset(Shader::CreateShader("circle.shader"));
 		m_LineShader.reset(Shader::CreateShader("line.shader"));
 		// For local rendering of FBs
-		//m_RenderFrameBufferShader.reset(Shader::CreateShader("framebuffer.shader"));
-		m_RenderFrameBufferShader.reset(Shader::CreateShader("pixelart.shader"));
+		m_RenderFrameBufferShader.reset(Shader::CreateShader("framebuffer.shader"));
+		//m_RenderFrameBufferShader.reset(Shader::CreateShader("pixelart.shader"));
 		m_RenderFrameBufferCmd = std::make_shared<RenderCommand>(m_QuadVAO->VertexSize());
 		m_FramebufferCamera = std::make_shared<OrthoCamera>(0.0f, 1280.0f, 0.0f, 720.0f);
 

@@ -11,17 +11,25 @@ using Stimpi;
 
 namespace Demo
 {
+    enum PlayerFacingDirection { UP = 0, DOWN, LEFT, RIGHT };
+    enum PlayerState { IDLE = 0, WALK }
+
     [ScriptOrder(Priority = 1)]
     public class DemoPlayer : Entity
     {
-        private QuadComponent Quad;
-        public float Velocity = 20.0f;
+        private QuadComponent _quad;
+        private QuadComponent _cursorQuad;
 
-        public Entity Camera;
-        public Entity Cursor;
-        private QuadComponent CursorQuad;
+        private AnimatedSpriteComponent _anim;
+        private PlayerFacingDirection _facingDir = PlayerFacingDirection.DOWN;
+        private PlayerState _playerState = PlayerState.IDLE;
 
         private SpellBar _spellBar;
+
+        public float Velocity = 20.0f;
+        public Entity Camera;
+        public Entity Cursor;
+
 
         public override void OnCreate()
         {
@@ -30,10 +38,19 @@ namespace Demo
             EffectsPool.Clear();
             ProjectileFactory.Clear();
 
-            Quad = GetComponent<QuadComponent>();
+            _quad = GetComponent<QuadComponent>();
             if (Cursor != null)
             {
-                CursorQuad = Cursor.GetComponent<QuadComponent>();
+                _cursorQuad = Cursor.GetComponent<QuadComponent>();
+            }
+
+            _anim = GetComponent<AnimatedSpriteComponent>();
+            if (_anim == null)
+                Console.WriteLine("Player - Animation component not set!");
+            else
+            {
+                _anim.Play("unarmed_idle_front.anim");
+                _anim.Looping = true;
             }
         }
 
@@ -54,13 +71,13 @@ namespace Demo
             }
 
             // Tracking "dummy" object - just to show where the target actually is (cursor pos)
-            if (CursorQuad != null)
+            if (_cursorQuad != null)
             {
                 Vector2 mousePos = Input.GetMousePosition();
-                CursorQuad.Position = mousePos;
+                _cursorQuad.Position = mousePos;
             }
 
-            if (Quad != null)
+            if (_quad != null)
             {
                 HandleMoveInput();
             }
@@ -69,7 +86,7 @@ namespace Demo
             if (Camera != null)
             {
                 var camQuad = Camera.GetComponent<QuadComponent>();
-                camQuad.Position = Quad.Position + new Vector2(-64, -36);
+                camQuad.Position = _quad.Position + new Vector2(-64, -36);
             }
         }
 
@@ -86,19 +103,31 @@ namespace Demo
             if (Input.IsMousePressed(MouseCode.MOUSE_BUTTON_LEFT) || Input.IsMousePressed(MouseCode.MOUSE_BUTTON_RIGHT))
             {
                 Vector2 mousePos = Input.GetMousePosition();
-                Vector2 pos = Quad.Position;
+                Vector2 pos = _quad.Position;
 
                 Vector2 dir = mousePos - pos;
                 Vector2 vecVec = dir.Unit * Velocity;
                 //Console.WriteLine($"SetVelocity - Player: {vecVec}");
                 if (Input.IsMousePressed(MouseCode.MOUSE_BUTTON_LEFT))
+                {
+                    UpdateFacingDir(dir.Unit, false);
                     Physics.SetLinearVelocity(ID, vecVec);
+                }
                 else
+                {
+                    UpdateFacingDir(dir.Unit, true);
                     Physics.SetLinearVelocity(ID, vecVec.Inv);
+                }
+
             }
             else
             {
                 Physics.SetLinearVelocity(ID, Vector2.Zero);
+            }
+
+            if (Input.IsMouseUp(MouseCode.MOUSE_BUTTON_LEFT) || Input.IsMouseUp(MouseCode.MOUSE_BUTTON_RIGHT))
+            {
+                ChangeToIdleAnimation();
             }
 
             // Spawn a bullet
@@ -107,7 +136,7 @@ namespace Demo
                 if (_spellBar != null)
                 {
                     ProjectileType projType = ProjectileType.FIRE_BALL;
-                    Vector2 projSize = new Vector2(6.0f, 6.0f);
+                    Vector2 projSize = new Vector2(9.0f, 9.0f);
                     string pattern = _spellBar.ConsumeRegiseredKeyPattern();
                     if (pattern.Length > 0)
                     {
@@ -116,7 +145,7 @@ namespace Demo
                         if (pattern.Contains("W"))
                         {
                             projType = ProjectileType.LIGHTNING_BOLT;
-                            projSize = new Vector2(12.0f, 6.0f);
+                            projSize = new Vector2(16.0f, 9.0f);
                             ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, mousePos, projSize));
                             return;
                         }
@@ -125,7 +154,7 @@ namespace Demo
                         {
                             // Ring of fire balls 8 instances
                             projType = ProjectileType.FIRE_BALL;
-                            Vector2 pos = Quad.Position;
+                            Vector2 pos = _quad.Position;
                             ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, pos + new Vector2(150.0f, 0.0f), projSize));
                             ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, pos + new Vector2(-150.0f, 0.0f), projSize));
                             ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, pos + new Vector2(0.0f, 150.0f), projSize));
@@ -142,6 +171,65 @@ namespace Demo
                     }
                 }
             }
+        }
+
+        private void UpdateFacingDir(Vector2 dirVec, bool reverse)
+        {
+            float angle = Vector2.AxisX.Angle(dirVec);
+            //Console.WriteLine($"Player angle to X axis: {angle}");
+
+            PlayerFacingDirection prevDir = _facingDir;
+
+            if ( angle <= 0.78f )
+            {
+                if (reverse) _facingDir = PlayerFacingDirection.LEFT; else _facingDir = PlayerFacingDirection.RIGHT; 
+            }
+            else if ( 0.78 < angle && angle <= 2.35f && dirVec.Y > 0 )
+            {
+                if (reverse) _facingDir = PlayerFacingDirection.DOWN; else _facingDir = PlayerFacingDirection.UP;
+            }
+            else if (0.78 < angle && angle <= 2.35f && dirVec.Y <= 0)
+            {
+                if (reverse) _facingDir = PlayerFacingDirection.UP; else _facingDir = PlayerFacingDirection.DOWN;
+            }
+            else
+            {
+                if (reverse) _facingDir = PlayerFacingDirection.RIGHT; else _facingDir = PlayerFacingDirection.LEFT;
+            }
+
+            if (prevDir != _facingDir || _playerState == PlayerState.IDLE)  // Direction changed, change animation
+            {
+                ChangeToMoveAnimation();
+            }
+
+        }
+
+        private void ChangeToMoveAnimation()
+        {
+            switch(_facingDir)
+            {
+                case PlayerFacingDirection.RIGHT:
+                    _anim.Play("unarmed_walk_side_right.anim");
+                    break;
+                case PlayerFacingDirection.UP:
+                    _anim.Play("unarmed_walk_back.anim");
+                    break;
+                case PlayerFacingDirection.DOWN:
+                    _anim.Play("unarmed_walk_front.anim");
+                    break;
+                case PlayerFacingDirection.LEFT:
+                    _anim.Play("unarmed_walk_side_left.anim");
+                    break;
+            }
+            _anim.Looping = true;
+            _playerState = PlayerState.WALK;
+        }
+
+        private void ChangeToIdleAnimation()
+        {
+            _anim.Play("unarmed_idle_front.anim");
+            _anim.Looping = true;
+            _playerState = PlayerState.IDLE;
         }
     }
 }

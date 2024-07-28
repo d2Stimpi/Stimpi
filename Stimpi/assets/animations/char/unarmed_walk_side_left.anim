@@ -1,0 +1,51 @@
+Animation:
+  Texture: ../assets/sprite_sheets/char/Unarmed_Walk_side_left.png
+  Frames:
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 64
+      FramePosition:
+        - 64
+        - 0
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 64
+      FramePosition:
+        - 64
+        - 0
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 64
+      FramePosition:
+        - 128
+        - 0
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 64
+      FramePosition:
+        - 192
+        - 0
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 64
+      FramePosition:
+        - 256
+        - 0
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 64
+      FramePosition:
+        - 320
+        - 0

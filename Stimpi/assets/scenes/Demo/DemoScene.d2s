@@ -50,17 +50,21 @@ Scene:
       - 64
       - 36
       - 0
-      - 5
-      - 5
+      - 24
+      - 24
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 0.406862736
-        - 0.0777825862
-        - 0.0777825862
-        - 1
+    AnimatedSpriteComponent:
+      DefaultAnimation: D:/GitHub/Stimpi\assets\animations\char\unarmed_idle_front.anim
+      Animations:
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\char\unarmed_walk_back.anim
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\char\unarmed_walk_front.anim
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\char\unarmed_walk_side_left.anim
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\char\unarmed_walk_side_right.anim
+      AutoPlay: false
     ScriptComponent:
       ScriptName: Demo.DemoPlayer
       ScriptFields:
@@ -78,15 +82,15 @@ Scene:
             ID: 4
     RigidBody2DComponent:
       Type: Dynamic
-      FixedRotation: false
+      FixedRotation: true
     BoxCollider2DComponent:
       Shape: 0
       Offset:
         - 0
-        - 0
+        - -1
       Size:
-        - 0.5
-        - 0.5
+        - 0.100000001
+        - 0.119999997
       Density: 1
       Friction: 0.5
       Restitution: 0
@@ -149,8 +153,8 @@ Scene:
     TagComponent:
       Tag: SpawnPoint
     QuadComponent:
-      - 80
-      - 60
+      - 99.5955353
+      - 52.9887657
       - 0
       - 0
       - 0
@@ -291,6 +295,10 @@ Scene:
       DefaultAnimation: D:/GitHub/Stimpi\assets\animations\explosion01.anim
       Animations:
         Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\char\sword_attack_front.anim
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\char\unarmed_walk_back.anim
+        Animation:
           AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\fireball01.anim
         Animation:
           AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\explosion01.anim
@@ -298,6 +306,30 @@ Scene:
           AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\lightning_proj_start.anim
         Animation:
           AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\lightning_proj_loop.anim
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\char\sword_attack_back.anim
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\char\sword_attack_side_left.anim
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\char\sword_attack_side_right.anim
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\char\sword_idle_front.anim
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\char\sword_walk_back.anim
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\char\sword_walk_front.anim
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\char\sword_walk_side_left.anim
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\char\sword_walk_side_right.anim
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\char\unarmed_idle_front.anim
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\char\unarmed_walk_front.anim
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\char\unarmed_walk_side_left.anim
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\char\unarmed_walk_side_right.anim
       AutoPlay: false
   Entity:
     TagComponent:

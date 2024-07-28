@@ -8,50 +8,51 @@ using Stimpi;
 
 namespace Demo
 {
+
     public class EnemySpawn : Entity
     {
-        private QuadComponent Quad;
-        private Vector2 SpawnLocation;
+        private QuadComponent _quad;
+        private Vector2 _spawnLocation;
 
         public float SpawnFrequency = 2.0f;     // Spawn unit every SpawnFrequency seconds
-        private float TimeTracker = 0;
+        private float _timeTracker = 0;
 
-        public float MaxEnemyCount = 25;
-        private int EnemyCount = 0;
+        public float MaxEnemyCount = 0;
+        private int _enemyCount = 0;
 
         public override void OnCreate()
         {
-            Quad = GetComponent<QuadComponent>();
-            if (Quad != null)
-                SpawnLocation = Quad.Position;
+            _quad = GetComponent<QuadComponent>();
+            if (_quad != null)
+                _spawnLocation = _quad.Position;
             else
-                SpawnLocation = Vector2.Zero;
+                _spawnLocation = Vector2.Zero;
         }
 
         public override void OnUpdate(float ts)
         {
-            TimeTracker += ts;
-            if (TimeTracker >= SpawnFrequency)
+            _timeTracker += ts;
+            if (_timeTracker >= SpawnFrequency)
             {
-                TimeTracker = 0;
+                _timeTracker = 0;
                 SpawnEnemy();
             }
         }
 
         public void SpawnEnemy()
         {
-            if (EnemyCount < MaxEnemyCount)
+            if (_enemyCount < MaxEnemyCount)
             {
                 Enemy enemy = Entity.Create<Enemy>();
-                enemy.Initialize(this, SpawnLocation);
+                enemy.Initialize(this, _spawnLocation);
 
-                EnemyCount++;
+                _enemyCount++;
             }
         }
 
         public void EnemyDestroyed()
         {
-            EnemyCount--;
+            _enemyCount--;
         }
     }
 }

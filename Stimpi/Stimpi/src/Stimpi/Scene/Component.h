@@ -402,6 +402,12 @@ namespace Stimpi
 			}
 		}
 
+		std::string GetActiveAnimationName()
+		{
+			auto& anim = m_AnimSprite->GetAnimation();
+			return anim->GetName();
+		}
+
 		void SetDefailtAnimation(const std::string& filePath)
 		{
 			auto newAnim = std::make_shared<Animation>();

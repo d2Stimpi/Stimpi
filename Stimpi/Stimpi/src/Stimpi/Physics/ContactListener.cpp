@@ -30,9 +30,8 @@ namespace Stimpi
 		}
 	}
 
-	void ContactListener::InvokeCollisionEventMethod(CollisionEventType type, Collision collision)
+	bool ContactListener::InvokeCollisionEventMethod(CollisionEventType type, Collision collision)
 	{
-
 		Entity owner = { (entt::entity)collision.m_Owner, m_Scene };
 		if (owner.HasComponent<ScriptComponent>())
 		{
@@ -41,7 +40,7 @@ namespace Stimpi
 			{
 				//ST_CORE_INFO("Skipp processing physics event, no Script instance! OwnerID: {}", (uint32_t)owner);
 				//ST_CORE_ASSERT_MSG(!instance, "Processing physics event, but no Script instance! Owner: {}", (uint32_t)owner);
-				return;
+				return true;
 			}
 
 			switch (type)
@@ -53,7 +52,7 @@ namespace Stimpi
 				instance->InvokeOnCollisionEnd(collision);
 				break;
 			case CollisionEventType::COLLISION_PRESOLVE:
-				instance->InvokeOnCollisionPreSolve(collision);
+				return instance->InvokeOnCollisionPreSolve(collision);
 				break;
 			case CollisionEventType::COLLISION_POSTSOLVE:
 				instance->InvokeOnCollisionPostSolve(collision);
@@ -61,6 +60,8 @@ namespace Stimpi
 			}
 		}
 
+		// TODO: check if there is need to do something more onBegin, onEnd, onPostResolve
+		return true;
 	}
 
 	void ContactListener::PopulateCollisionEventData(b2Contact* contact, Collision& collision)
@@ -92,8 +93,11 @@ namespace Stimpi
 		collision.m_ImpactVelocity = { impactVelocity.x, impactVelocity.y };
 	}
 
-	void ContactListener::EmitCollisionEvents(CollisionEventType type, b2Contact* contact)
+	bool ContactListener::EmitCollisionEvents(CollisionEventType type, b2Contact* contact)
 	{
+		bool resultA = true;
+		bool resultB = true;
+
 		b2Body* bodyA = contact->GetFixtureA()->GetBody();
 		b2Body* bodyB = contact->GetFixtureB()->GetBody();
 		b2BodyUserData userDataA = bodyA->GetUserData();
@@ -106,11 +110,7 @@ namespace Stimpi
 
 		Physics::SetActiveCollision(new Collision(collisionA));
 		// Invoke script
-		InvokeCollisionEventMethod(type, collisionA);
-
-		/*auto eventA = std::make_shared<PhysicsEvent>();
-		eventA.reset(PhysicsEvent::CreatePhysicsEvent(type, collisionA));
-		EventQueue<PhysicsEvent>::PushEvent(eventA);*/
+		resultA = (InvokeCollisionEventMethod(type, collisionA));
 
 		Collision collisionB = Collision();
 		collisionB.m_Owner = userDataB.pointer;
@@ -119,13 +119,15 @@ namespace Stimpi
 
 		Physics::SetActiveCollision(new Collision(collisionB));
 		// Invoke script
-		InvokeCollisionEventMethod(type, collisionB);
-
-		/*auto eventB = std::make_shared<PhysicsEvent>();
-		eventB.reset(PhysicsEvent::CreatePhysicsEvent(type, collisionB));
-		EventQueue<PhysicsEvent>::PushEvent(eventB);*/
+		resultB = InvokeCollisionEventMethod(type, collisionB);
 
 		if (CONTACTLISTENER_DBG) ST_CORE_INFO("ContactListener: Event {} - A: {}, B: {}", GetStringCollisionEventType(type), userDataA.pointer, userDataB.pointer);
+		
+		// If either PreProcess returned false, return false
+		if (resultA == false || resultB == false)
+			return false;
+		else
+			return true;
 	}
 
 	void ContactListener::SetContext(Scene* scene)
@@ -145,12 +147,17 @@ namespace Stimpi
 
 	void ContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifold)
 	{
-		EmitCollisionEvents(CollisionEventType::COLLISION_PRESOLVE, contact);
+		bool contactEnabled = true;
+		contactEnabled = EmitCollisionEvents(CollisionEventType::COLLISION_PRESOLVE, contact);
+
+		//ST_CORE_INFO("PreSolve - SetEnabled: {}", contactEnabled);
+		contact->SetEnabled(contactEnabled);
 	}
 
 	void ContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
 	{
 		EmitCollisionEvents(CollisionEventType::COLLISION_POSTSOLVE, contact);
+		//ST_CORE_INFO("PostSolve - IsEnabled: {}", contact->IsEnabled());
 	}
 
 }

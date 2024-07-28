@@ -559,6 +559,32 @@ namespace Stimpi
 		return hasComponent;
 	}
 
+	static bool AnimatedSpriteComponent_IsPlaying(uint32_t entityID, MonoString* animationName, bool* isPlaying)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<AnimatedSpriteComponent>();
+		if (hasComponent)
+		{
+			auto& anim = entity.GetComponent<AnimatedSpriteComponent>();
+			char* nameCStr = mono_string_to_utf8(animationName);
+
+			*isPlaying = false;
+			std::string activeAnimName = anim.GetActiveAnimationName();
+			if (activeAnimName == nameCStr)
+			{
+				*isPlaying = anim.IsPlaying();
+			}
+			mono_free(nameCStr);
+		}
+
+		return hasComponent;
+	}
+
 #pragma endregion AnimatedSpriteComponent
 
 #pragma region Input
@@ -1357,6 +1383,7 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_AddAnimation);
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_GetLooping);
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_SetLooping);
+		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_IsPlaying);
 
 		// RigidBody2DComponent
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_GetRigidBodyType);

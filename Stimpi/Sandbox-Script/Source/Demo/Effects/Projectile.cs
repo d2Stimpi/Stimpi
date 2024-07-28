@@ -18,7 +18,7 @@ namespace Demo
         private float _fileSpan = 0.0f;
         private Vector2 _velocity;
 
-        public float Velocity =  100.0f;
+        public float Velocity = 100.0f;
         public float LifeSpan = 1.0f; // in seconds
 
         public void Initialize(Entity owner, Vector2 target, Vector2 size)
@@ -33,11 +33,10 @@ namespace Demo
             if (ownerQuad != null)
                 ownerPos = ownerQuad.Position;
 
-            //Console.WriteLine($"Bullet's ownerPos: {ownerPos}");
             // Calculate where to spawn Projectile
-            Vector2 firePos = ownerPos + (target - ownerPos).Unit * (size.X / 2 + size.Y / 2);
+            Vector2 firePos = ownerPos + (target - ownerPos).Unit * (size.X / 3 + size.Y / 3);
             // Calculate angle
-            Vector2 dir = target - firePos;
+            Vector2 dir = target - ownerPos;
             Vector2 vecVec = dir.Unit * Velocity;
             Vector2 angleDir = target - ownerPos;
             // Calculate rotation angle between X-Axis and Target vector
@@ -81,7 +80,7 @@ namespace Demo
         public override void OnCreate()
         {
             _quad = AddComponent<QuadComponent>();
-            _quad.Size = new Vector2(6.0f, 6.0f);
+            _quad.Size = new Vector2(9.0f, 9.0f);
 
             _anim = AddComponent<AnimatedSpriteComponent>();
             _anim.AddAnimation("animations\\fireball01.anim");
@@ -116,26 +115,41 @@ namespace Demo
 
         public override void OnCollisionBegin(Collision collision)
         {
+            bool collide = true;
             var other = collision.OtherID;
-            //Console.WriteLine($"Collisiong wiht obj if {collision.OtherID}");
+
+            Entity otherEnt = FindEntityByID(other);
+            string tag = otherEnt.GetComponent<TagComponent>().Tag;
+            Console.WriteLine($"Collided with {tag}");
+            if (/*tag == "Immovable_1" || */tag == "Player")
+                collide = false;
+            
             var obj = InternalCalls.GetScriptInstace(other);
             if (obj != null)
             {
                 var type = obj.GetType();
-                //Console.WriteLine($"Collisiong wiht obj type {type.Name}");
+                Console.WriteLine($"Collision wiht obj type {type.Name}");
             }
+            
+            if (collide)
+            {
+                Explosion explosion = EffectsPool.GetObject();
+                Vector2 impact = collision.Contacts[0].Point;
+                explosion.Initialize(impact);
+                explosion.Play();
 
-            Explosion explosion = EffectsPool.GetObject();
-            Vector2 impact = collision.Contacts[0].Point;
-            explosion.Initialize(impact);
-            explosion.Play();
-
-            //Entity.Destroy(ID);
-            ProjectileFactory.Release(this);
+                //Entity.Destroy(ID);
+                ProjectileFactory.Release(this);
+            }
         }
 
         public override void OnCollisionEnd(Collision collision)
         {
+        }
+
+        public override bool OnCollisionPreSolve(Collision collision)
+        {
+            return false;
         }
     }
 

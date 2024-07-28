@@ -19,9 +19,9 @@ namespace Stimpi
 		void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse);
 
 	private:
-		void EmitCollisionEvents(CollisionEventType type, b2Contact* contact);
+		bool EmitCollisionEvents(CollisionEventType type, b2Contact* contact);
 		void PopulateCollisionEventData(b2Contact* contact, Collision& collision);
-		void InvokeCollisionEventMethod(CollisionEventType type, Collision collision);
+		bool InvokeCollisionEventMethod(CollisionEventType type, Collision collision);
 
 	private:
 		Scene* m_Scene;

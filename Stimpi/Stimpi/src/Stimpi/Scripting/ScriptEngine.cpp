@@ -1060,7 +1060,7 @@ namespace Stimpi
 		MonoMethod* monoMethod = mono_class_get_method_from_name(m_Class, methodName.c_str(), parameterCount);
 		if (monoMethod == nullptr)
 		{
-			if (SCRIPTENGINE_DBG) ST_CORE_WARN("[ScriptClass] Error finding method {}", methodName);
+			if (SCRIPTENGINE_DBG) ST_CORE_WARN("[ScriptClass: {}] Error finding method {}", m_Name,  methodName);
 		}
 
 		return monoMethod;
@@ -1176,11 +1176,18 @@ namespace Stimpi
 			m_ScriptClass->InvokeMethod(m_Instance->GetMonoObject(), m_OnCollisionEnd, &param);
 	}
 
-	void ScriptInstance::InvokeOnCollisionPreSolve(Collision collision)
+	bool ScriptInstance::InvokeOnCollisionPreSolve(Collision collision)
 	{
+		bool result = true;
 		void* param = &collision;
 		if (m_OnCollisionPreSolve)
-			m_ScriptClass->InvokeMethod(m_Instance->GetMonoObject(), m_OnCollisionPreSolve, &param);
+		{
+			void* res = m_ScriptClass->InvokeMethod(m_Instance->GetMonoObject(), m_OnCollisionPreSolve, &param);
+			if (res)
+				result = *(bool*)res;
+		}
+
+		return result;
 	}
 
 	void ScriptInstance::InvokeOnCollisionPostSolve(Collision collision)

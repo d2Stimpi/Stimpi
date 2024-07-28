@@ -7,6 +7,10 @@
 
 #include <glm/glm.hpp>
 
+/**
+ *  TODO: fix drawing animating sprite from a sprite sheet, currently not correctly supported
+ */
+
 namespace Stimpi
 {
 	enum class AnimationState { RUNNING = 0, PAUSED, STOPPED, COMPELETED };	// Stopped - start form 0 frame; COMPELETED - used for maintaning correct UI data

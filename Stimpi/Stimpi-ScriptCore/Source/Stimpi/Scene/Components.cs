@@ -189,6 +189,14 @@ namespace Stimpi
 
             return result;
         }
+
+        public bool IsPlaying(string animationName)
+        {
+            if (!InternalCalls.AnimatedSpriteComponent_IsPlaying(Entity.ID, animationName, out bool isPlaying))
+                Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (AddAnimation)");
+
+            return isPlaying;
+        }
     }
 
     public enum BodyType

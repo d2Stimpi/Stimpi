@@ -10,42 +10,42 @@ namespace Demo
 {
     public class Explosion : Entity
     {
-        QuadComponent Quad;
-        AnimatedSpriteComponent Animation;
+        QuadComponent _quad;
+        AnimatedSpriteComponent _anim;
 
 
-        private bool Played = false;
+        private bool _played = false;
 
         public void Initialize(Vector2 position)
         {
-            Quad.Position = position;
+            _quad.Position = position;
             Random rnd = new Random();
-            Quad.Rotation = rnd.Next(0, 3);
-            Played = false;
+            _quad.Rotation = rnd.Next(0, 3);
+            _played = false;
         }
 
         public void Play()
         {
-            Animation.Play("explosion01.anim");
-            Played = true;
+            _anim.Play("explosion01.anim");
+            _played = true;
         }
 
         public override void OnCreate()
         {
-            Quad = AddComponent<QuadComponent>();
-            Quad.Size = new Vector2(8.0f, 8.0f);
+            _quad = AddComponent<QuadComponent>();
+            _quad.Size = new Vector2(12.0f, 12.0f);
 
-            Animation = AddComponent<AnimatedSpriteComponent>();
-            Animation.AddAnimation("animations\\explosion01.anim");
+            _anim = AddComponent<AnimatedSpriteComponent>();
+            _anim.AddAnimation("animations\\explosion01.anim");
         }
 
         public override void OnUpdate(float ts)
         {
-            if (Played)
+            if (_played)
             {
-                if (Animation.AnimState == AnimationState.COMPELETED)
+                if (_anim.AnimState == AnimationState.COMPELETED)
                 {
-                    Played = false;                    
+                    _played = false;                    
                     EffectsPool.ReleaseObject(this); //Entity.Destroy(ID);
                 }
             }

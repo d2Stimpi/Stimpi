@@ -73,8 +73,8 @@ namespace Stimpi
 		ScriptEngine::ClearScriptInstances();
 
 		m_RuntimeState = RuntimeState::STOPPED;
-		//m_DefaultShader.reset(Shader::CreateShader("..\/assets\/shaders\/shader.shader"));
-		m_DefaultShader.reset(Shader::CreateShader("pixelart.shader"));
+		m_DefaultShader.reset(Shader::CreateShader("shader.shader"));
+		//m_DefaultShader.reset(Shader::CreateShader("pixelart.shader"));
 		m_DefaultSolidColorShader.reset(Shader::CreateShader("solidcolor.shader"));
 
 		// Collision listener for Box2D

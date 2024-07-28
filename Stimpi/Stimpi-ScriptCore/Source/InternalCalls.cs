@@ -74,6 +74,8 @@ namespace Stimpi
         public extern static bool AnimatedSpriteComponent_GetLooping(uint entityID, out bool looping);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool AnimatedSpriteComponent_SetLooping(uint entityID, bool looping);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool AnimatedSpriteComponent_IsPlaying(uint entityID, string animationName, out bool isPlaying);
 
         /* RigidBody2DComponent */
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -94,10 +96,6 @@ namespace Stimpi
         public extern static bool RigidBody2DComponent_SetDisabled(uint entityID, bool enabled);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool RigidBody2DComponent_IsDisabled(uint entityID, out bool enabled);
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public extern static bool RigidBody2DComponent_CollisionSetEnabled(uint entityID, bool enabled);
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public extern static bool RigidBody2DComponent_CollisionIsEnabled(uint entityID, out bool enabled);
 
 
         /* BoxCollider2DComponent */

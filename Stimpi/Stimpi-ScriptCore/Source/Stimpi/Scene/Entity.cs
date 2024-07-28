@@ -115,17 +115,28 @@ namespace Stimpi
 
         public virtual void OnUpdate(float ts)
         {
-            Console.WriteLine($"OnUpdate Entity - time step: {ts}");
+            if (_debug) Console.WriteLine($"OnUpdate Entity - time step: {ts}");
         }
 
         public virtual void OnCollisionBegin(Collision collision)
         {
-            Console.WriteLine($"OnCollision Begin - entities: {ID}, {collision.OtherID}");
+            if (_debug) Console.WriteLine($"OnCollision Begin - entities: {ID}, {collision.OtherID}");
+        }
+
+        public virtual bool OnCollisionPreSolve(Collision collision)
+        {
+            if (_debug) Console.WriteLine($"OnCollision PreSolve - entities: {ID}, {collision.OtherID}");
+            return true;
+        }
+
+        public virtual void OnCollisionPostSolve(Collision collision)
+        {
+            if (_debug) Console.WriteLine($"OnCollision PostSolve - entities: {ID}, {collision.OtherID}");
         }
 
         public virtual void OnCollisionEnd(Collision collision)
         {
-            Console.WriteLine($"OnCollision End - entities: {ID}, {collision.OtherID}");
+            if (_debug) Console.WriteLine($"OnCollision End - entities: {ID}, {collision.OtherID}");
         }
     }
 }

@@ -179,7 +179,7 @@ namespace Stimpi
 		/* Physics methods */
 		void InvokeOnCollisionBegin(Collision collision);
 		void InvokeOnCollisionEnd(Collision collision);
-		void InvokeOnCollisionPreSolve(Collision collision);
+		bool InvokeOnCollisionPreSolve(Collision collision);
 		void InvokeOnCollisionPostSolve(Collision collision);
 
 		MonoObject* GetMonoInstance();
