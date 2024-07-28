@@ -357,6 +357,7 @@ namespace Stimpi
 			}
 		};
 
+		// TODO: fix hot reload of dlls
 		s_Data->m_OnAssetScriptsUpdated = [](SystemShellEvent * event)
 		{
 			if (event->GetType() == SystemShellEventType::SH_UPDATED)

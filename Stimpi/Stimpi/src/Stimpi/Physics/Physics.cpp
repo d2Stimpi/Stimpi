@@ -18,6 +18,9 @@ namespace Stimpi
 	PhysicsDebugConfig s_Data;
 
 	std::vector<std::shared_ptr<Collision>> m_ActiveCollisions;
+	std::shared_ptr<Collision> m_ActiveCollision;	//TODO: consider threading here, and a global Collision ID. 
+													// With the ID we can collect every collision in the frame
+													// and have them all available during full frame duration.
 
 	void Physics::ShowColliderOutline(bool enable)
 	{
@@ -37,6 +40,22 @@ namespace Stimpi
 	bool Physics::ShowCollisionsContactPointsEnabled()
 	{
 		return s_Data.m_ShowDbgCollisionContactPoints;
+	}
+
+
+	void Physics::SetActiveCollision(Collision* collision)
+	{
+		// Either clear the data or replace the data
+		if (collision != nullptr)
+			m_ActiveCollision.reset(collision);
+		else
+			m_ActiveCollision.reset();
+	}
+
+
+	Stimpi::Collision* Physics::GetActiveCollision()
+	{
+		return m_ActiveCollision.get();
 	}
 
 	void Physics::AddActiveCollision(Collision* collision)

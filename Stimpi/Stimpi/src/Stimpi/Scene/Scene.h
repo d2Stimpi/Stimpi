@@ -62,10 +62,12 @@ namespace Stimpi
 		// Component change events
 		void OnSortingLayerRemove(const std::string layerName);
 
+		// TODO: move physics related stuff to Physics class (Wrapper around Box2D)
 		// Physics
 		void CreatePhysicsBody(Entity entity);
 		void DestroyPhysicsBody(Entity entity);
 		void SetPhysicsEntityState(Entity entity, bool enabled);
+		bool IsPhysicsWorldLocked();
 
 		// Debugging
 		static void EnableDebugMode(bool enable);

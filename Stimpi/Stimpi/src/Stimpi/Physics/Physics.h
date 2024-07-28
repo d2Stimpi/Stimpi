@@ -57,6 +57,9 @@ namespace Stimpi
 		static void ShowCollisionsContactPoints(bool enable);
 		static bool ShowCollisionsContactPointsEnabled();
 
+		static void SetActiveCollision(Collision* collision);
+		static Collision* GetActiveCollision();
+
 		static void AddActiveCollision(Collision* collision);
 		static void RemoveActiveCollision(Collision* collision);
 		static void UpdateActiveCollision(Collision* collision);

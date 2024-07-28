@@ -733,6 +733,15 @@ namespace Stimpi
 		m_PhysicsStateToBeChanged[entity] = enabled;
 	}
 
+
+	bool Scene::IsPhysicsWorldLocked()
+	{
+		if (m_PhysicsWorld)
+			return m_PhysicsWorld->IsLocked();
+
+		return false;
+	}
+
 	void Scene::UpdatePhysicsSimulation(Timestep ts)
 	{
 		// Before stepping physics world, update Enable state
@@ -744,6 +753,18 @@ namespace Stimpi
 
 		m_Registry.view<RigidBody2DComponent>().each([=](auto e, RigidBody2DComponent& rb2d)
 			{
+				// Complete deferred body updates
+				if (rb2d.m_ShouldUpdateTransform)
+				{
+					rb2d.m_ShouldUpdateTransform = false;
+					b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+					if (body)
+					{
+						b2Vec2 pos = b2Vec2(rb2d.m_DeferredTransformPos.x, rb2d.m_DeferredTransformPos.y);
+						body->SetTransform(pos, rb2d.m_DeferredTransfomrAngle);
+					}
+				}
+
 				Entity entity = { e, this };
 				if (entity.HasComponent<QuadComponent>())
 				{
@@ -821,13 +842,11 @@ namespace Stimpi
 		if (event->GetType() == PhysicsEventType::COLLISION_BEGIN)
 		{
 			// Register current active Collisions
-			ST_CORE_INFO("ProcessEvent:	AddActiveCollision  COLLISION_BEGIN");
 			Physics::AddActiveCollision(new Collision(collisionData));
 		}
 		else if (event->GetType() == PhysicsEventType::COLLISION_END)
 		{
 			// Remove from active Collisions list
-			ST_CORE_INFO("ProcessEvent:	RemoveActiveCollision  COLLISION_END");
 			Physics::RemoveActiveCollision(&collisionData);
 		}
 		else if (event->GetType() == PhysicsEventType::COLLISION_PRESOLVE)

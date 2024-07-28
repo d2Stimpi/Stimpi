@@ -715,12 +715,20 @@ namespace Stimpi
 		hasComponent = entity.HasComponent<RigidBody2DComponent>();
 		if (hasComponent)
 		{
-			//scene->DeferSetTransform(entity, *position);
 			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
-			b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
-			b2Vec2 pos = b2Vec2(position->x, position->y);
-			if (body)
-				body->SetTransform(pos, angle);
+			if (scene->IsPhysicsWorldLocked())
+			{
+				rb2d.SetTransformDeferred(*position, angle);
+			}
+			else
+			{
+				b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+				if (body)
+				{
+					b2Vec2 pos = b2Vec2(position->x, position->y);
+					body->SetTransform(pos, angle);
+				}
+			}
 		}
 
 		return hasComponent;
@@ -1193,7 +1201,8 @@ namespace Stimpi
 		auto scene = SceneManager::Instance()->GetActiveScene();
 		ST_CORE_ASSERT(!scene);
 
-		Collision* collision = Physics::FindCollision(entityID, otherID);
+		//Collision* collision = Physics::FindCollision(entityID, otherID);
+		Collision* collision = Physics::GetActiveCollision();
 		if (collision)
 		{
 			MonoType* monoType = mono_reflection_type_from_name("Stimpi.Contact", ScriptEngine::GetCoreAssemblyImage());

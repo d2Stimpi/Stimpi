@@ -16,6 +16,7 @@ namespace Demo
         private AnimatedSpriteComponent _anim;
         private bool _enableUpdate = true;
         private float _fileSpan = 0.0f;
+        private Vector2 _velocity;
 
         public float Velocity =  100.0f;
         public float LifeSpan = 1.0f; // in seconds
@@ -54,7 +55,8 @@ namespace Demo
 
             _rb2d.Enabled = true;
             _rb2d.SetTransform(_quad.Position, _quad.Rotation);
-            Physics.SetLinearVelocity(ID, vecVec);
+            _velocity = vecVec;
+            Physics.SetLinearVelocity(ID, _velocity);
 
             Physics.GetLinearVelocity(ID, out Vector2 outVel);
         }
@@ -101,6 +103,7 @@ namespace Demo
         {
             if (_enableUpdate)
             {
+                Physics.SetLinearVelocity(ID, _velocity);
                 _fileSpan -= ts;
                 if (_fileSpan <= 0)
                 {

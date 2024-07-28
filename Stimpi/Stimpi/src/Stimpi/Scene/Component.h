@@ -725,6 +725,9 @@ namespace Stimpi
 
 		// For runtime
 		void* m_RuntimeBody = nullptr;
+		bool m_ShouldUpdateTransform = false;
+		glm::vec2 m_DeferredTransformPos = { 0.0f, 0.0f };
+		float m_DeferredTransfomrAngle = 0.0f;
 
 		RigidBody2DComponent() = default;
 		RigidBody2DComponent(const RigidBody2DComponent&) = default;
@@ -752,6 +755,13 @@ namespace Stimpi
 			ret = BodyType::STATIC;
 
 			return ret;
+		}
+
+		void SetTransformDeferred(glm::vec2 position, float angle)
+		{
+			m_ShouldUpdateTransform = true;
+			m_DeferredTransformPos = position;
+			m_DeferredTransfomrAngle = angle;
 		}
 
 		void Serialize(YAML::Emitter& out)
