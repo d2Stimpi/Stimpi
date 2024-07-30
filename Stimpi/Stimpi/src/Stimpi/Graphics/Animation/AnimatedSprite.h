@@ -9,6 +9,8 @@
 
 /**
  *  TODO: fix drawing animating sprite from a sprite sheet, currently not correctly supported
+ * 
+ *  TODO: add WrapModes: ClampForever, Once, Loop
  */
 
 namespace Stimpi

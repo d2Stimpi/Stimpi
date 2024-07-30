@@ -25,11 +25,12 @@ namespace Demo
         private PlayerState _playerState = PlayerState.IDLE;
 
         private SpellBar _spellBar;
+        private HealthBar _healthBar;
+        public float Health = 100.0f;
 
         public float Velocity = 20.0f;
         public Entity Camera;
         public Entity Cursor;
-
 
         public override void OnCreate()
         {
@@ -56,6 +57,31 @@ namespace Demo
 
         public override void OnUpdate(float ts)
         {
+            // Check game over condition (Health)
+            if (Health <= 0.0f)
+            {
+                _healthBar.SetFillPercentage(Health / 100.0f);
+                Console.WriteLine("Game Over! Go ahead and restart...");
+                RigidBody2DComponent rb2d = GetComponent<RigidBody2DComponent>();
+                rb2d.Enabled = false;
+                return;
+            }
+
+            // Update HealthBar
+            if (_healthBar == null)
+            {
+                // Note - atm we can't create new instances in OnCreate()
+                // Create HealthBar entity and "attach"
+                _healthBar = Entity.Create<HealthBar>();
+                _healthBar.Initialize(this);
+                _healthBar.SetColor(new Color(0.35f, 0.85f, 0.25f, 1.0f));
+            }
+            else
+            {
+                _healthBar.SetFillPercentage(Health / 100.0f);
+                _healthBar.UpdatePosition();
+            }
+
             // Grab spellBar ref, after all onCreates are done
             if (_spellBar == null)
             {
@@ -115,7 +141,7 @@ namespace Demo
                 }
                 else
                 {
-                    UpdateFacingDir(dir.Unit, true);
+                    UpdateFacingDir(dir.Unit, false);
                     Physics.SetLinearVelocity(ID, vecVec.Inv);
                 }
 
@@ -230,6 +256,16 @@ namespace Demo
             _anim.Play("unarmed_idle_front.anim");
             _anim.Looping = true;
             _playerState = PlayerState.IDLE;
+        }
+
+        public static void DamagePlayer(float damage)
+        {
+            Entity playerEntity = Entity.FindByName("Player");
+            DemoPlayer player = playerEntity.As<DemoPlayer>();
+            if (player != null)
+            {
+                player.Health -= damage;
+            }
         }
     }
 }

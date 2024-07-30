@@ -17,7 +17,7 @@ namespace Demo
         public float SpawnFrequency = 2.0f;     // Spawn unit every SpawnFrequency seconds
         private float _timeTracker = 0;
 
-        public float MaxEnemyCount = 0;
+        public float MaxEnemyCount = 2.0f;
         private int _enemyCount = 0;
 
         public override void OnCreate()
