@@ -10,7 +10,7 @@ namespace Demo
 {
     enum EnemyFacingDirection { UP = 0, DOWN, LEFT, RIGHT };
     // Reload is attack cooldown period
-    enum EnemyState { SPAWN_BEGIN = 0, SPAWN, IDLE, WALK, ATTACK, RELOAD };
+    enum EnemyState { SPAWN_BEGIN = 0, SPAWN, IDLE, WALK, ATTACK, RELOAD, SIDE_STEP, DEAD };
 
     public class Enemy : Entity
     {
@@ -24,23 +24,48 @@ namespace Demo
         private EnemyFacingDirection _facingDir = EnemyFacingDirection.DOWN;
         private EnemyState _enemyState = EnemyState.IDLE;
 
+        private HealthBar _healthBar;
+
         // State based timer variables
         private float _spawnTimerElapsed = 0.0f;
         private float _idleTimerElapsed = 0.0f;
         private float _walkTimerElapsed = 0.0f;
         private float _reloadTimerElapsed = 0.0f;
+        private float _sidestepTimerElapsed = 0.0f;
+        private float _deadTimerElapsed = 0.0f;
         public float SpawnTimer = 0.3f;
         public float IdleTimer = 2.0f;
-        public float WalkTimer = 2.0f;
+        public float WalkTimer = 0.0f;
         public float ReloadTimer = 1.0f;
+        public float SideStepdTimer = 0.3f;
+        public float DeadTimer = 2.0f;
 
         private Vector2 _activeVelocity = Vector2.Zero;
+        private Vector2 _prevVelocity = Vector2.Zero;
 
         private float _health = 100.0f;
         public float Velocity = 20.0f;
 
         private float _timeTracker = 0;
         public float ChangeDirFrequency = 1.5f;
+
+        private bool SimpleActionTimer(float ts, ref float timer, float value)
+        {
+            timer += ts;
+            if (timer >= value)
+            {
+                timer = 0;
+                return true;
+            }
+
+            return false;
+        }
+
+        private void SetVelocity(Vector2 velocity)
+        {
+            _prevVelocity = _activeVelocity;
+            _activeVelocity = velocity;
+        }
 
         public void Initialize(EnemySpawn spawn, Vector2 position)
         {
@@ -49,6 +74,8 @@ namespace Demo
 
             Physics.InitializePhysics2DBody(ID);
             _enemyState = EnemyState.SPAWN_BEGIN;
+
+            _healthBar.Initialize(this);
         }        
 
         public override void OnCreate()
@@ -66,6 +93,10 @@ namespace Demo
             _anim.AddAnimation("animations\\char\\sword_attack_front.anim");
             _anim.AddAnimation("animations\\char\\sword_attack_side_left.anim");
             _anim.AddAnimation("animations\\char\\sword_attack_side_right.anim");
+            _anim.AddAnimation("animations\\char\\sword_death_back.anim");
+            _anim.AddAnimation("animations\\char\\sword_death_front.anim");
+            _anim.AddAnimation("animations\\char\\sword_death_side_left.anim");
+            _anim.AddAnimation("animations\\char\\sword_death_side_right.anim");
 
             _bc2d = AddComponent<BoxCollider2DComponent>();
             _bc2d.Size = new Vector2(0.1f, 0.12f);
@@ -75,16 +106,26 @@ namespace Demo
             RigidBody2DComponent rb2d = AddComponent<RigidBody2DComponent>();
             rb2d.Type = BodyType.DYNAMIC;
             rb2d.FixedRotation = true;
+
+            // Create HealthBar entity and "attach"
+            _healthBar = Entity.Create<HealthBar>();
         }
 
         public override void OnUpdate(float ts)
         {
+            _healthBar.UpdatePosition();
             // Maintain correct velocity
             Physics.SetLinearVelocity(ID, _activeVelocity);
 
             UpdateEnemyState(ts);
 
             UpdateActiveAnimation();
+
+            if (_enemyState == EnemyState.DEAD)
+            {
+                if (SimpleActionTimer(ts, ref _deadTimerElapsed, DeadTimer))
+                    DestroyEnemy();
+            }
         }
 
         public override void OnCollisionBegin(Collision collision)
@@ -96,6 +137,10 @@ namespace Demo
                 Console.WriteLine($"Collided with {tag}");
                 if (tag == "Player")
                 {
+                    // Cause damage to Player
+                    if (_enemyState != EnemyState.ATTACK/* && _enemyState != EnemyState.RELOAD*/)
+                        DemoPlayer.DamagePlayer(10.0f);
+
                     _enemyState = EnemyState.ATTACK;
                     ChangeToAttackAnimation();
                 }
@@ -103,13 +148,16 @@ namespace Demo
                 Projectile bullet = other.As<Projectile>();
                 if (bullet != null) // If this is actually a Bullet type
                 {
-                    _health -= 50;
+                    _health -= 25;
+                    _healthBar.SetFillPercentage(_health / 100.0f);
 
                     if (_health <= 0)
                     {
-                        _spawnEntity.EnemyDestroyed();
-                        Console.WriteLine($"Destroy entity {ID}");
-                        Entity.Destroy(ID);
+                        _enemyState = EnemyState.DEAD;
+                        ChangeToDeathAnimation();
+                        //DestroyEnemy();
+                        RigidBody2DComponent rb2d = GetComponent<RigidBody2DComponent>();
+                        rb2d.Enabled = false;
                     }
                 }
             }
@@ -119,32 +167,44 @@ namespace Demo
         {
         }
 
+        // Destroy or (TODO: pooling) disable entity
+        private void DestroyEnemy()
+        {
+            _spawnEntity.EnemyDestroyed();
+            if (_healthBar != null)
+                _healthBar.Destroy();
+            Console.WriteLine($"Destroy entity {ID}");
+            Entity.Destroy(ID);
+        }
+
         private void UpdateActiveAnimation()
         {
             // Only skip checking animation if attacking
             if (_enemyState == EnemyState.ATTACK)
                 return;
 
-            if (_activeVelocity.Equals(Vector2.Zero))
+            if (_enemyState != EnemyState.DEAD)
             {
-                ChangeToIdleAnimation();
-            }
-            else
-            {
-                UpdateFacingDir(_activeVelocity);
-
+                if (_activeVelocity.Equals(Vector2.Zero))
+                {
+                    ChangeToIdleAnimation();
+                }
+                else
+                {
+                    UpdateFacingDir(_activeVelocity);
+                }
             }
         }
 
         private void MoveTowards(Vector2 target)
         {
             Vector2 dir = target - _quad.Position;
-            _activeVelocity = dir.Unit * Velocity;
+            SetVelocity(dir.Unit * Velocity);
         }
 
         private void MoveStop()
         {
-            _activeVelocity = Vector2.Zero;
+            SetVelocity(Vector2.Zero);
         }
 
         private void UpdateMoveDirection(float ts)
@@ -157,7 +217,7 @@ namespace Demo
                 Vector2 playerPos = playerEnt.GetComponent<QuadComponent>().Position;
                 Vector2 dir = playerPos - _quad.Position;
 
-                _activeVelocity = dir.Unit * Velocity;
+                SetVelocity(dir.Unit * Velocity);
                 Console.WriteLine($"Enemy velocity: {_activeVelocity}");
             }
             else
@@ -189,8 +249,9 @@ namespace Demo
                 _facingDir = EnemyFacingDirection.LEFT;
             }
 
-            if (prevDir != _facingDir)  // Direction changed, change animation
+            if (prevDir != _facingDir || _prevVelocity.Equal(Vector2.Zero))  // Direction changed, change animation
             {
+                _prevVelocity = _activeVelocity;
                 ChangeToMoveAnimation();
             }
 
@@ -235,7 +296,29 @@ namespace Demo
             }
             _anim.Looping = false;
 
-            _activeVelocity = Vector2.Zero;
+            SetVelocity(Vector2.Zero);
+        }
+
+        private void ChangeToDeathAnimation()
+        {
+            switch (_facingDir)
+            {
+                case EnemyFacingDirection.RIGHT:
+                    _anim.Play("sword_death_side_right.anim");
+                    break;
+                case EnemyFacingDirection.UP:
+                    _anim.Play("sword_death_back.anim");
+                    break;
+                case EnemyFacingDirection.DOWN:
+                    _anim.Play("sword_death_front.anim");
+                    break;
+                case EnemyFacingDirection.LEFT:
+                    _anim.Play("sword_death_side_left.anim");
+                    break;
+            }
+            _anim.Looping = false;
+
+            SetVelocity(Vector2.Zero);
         }
 
         private void ChangeToIdleAnimation()
@@ -298,6 +381,13 @@ namespace Demo
                         _enemyState = EnemyState.WALK;
                     }
                     break;
+                case EnemyState.SIDE_STEP:
+                    if (SimpleActionTimer(ts, ref _sidestepTimerElapsed, SideStepdTimer))
+                    {
+                        _enemyState = EnemyState.WALK;
+                    }
+                    break;
+
             }
         }
     }

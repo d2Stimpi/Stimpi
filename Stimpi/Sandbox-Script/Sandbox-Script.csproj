@@ -68,6 +68,7 @@
     <Compile Include="Source\Demo\Effects\Explosion.cs" />
     <Compile Include="Source\Demo\Enemy\Enemy.cs" />
     <Compile Include="Source\Demo\Enemy\EnemySpawn.cs" />
+    <Compile Include="Source\Demo\UI\HealthBar.cs" />
     <Compile Include="Source\Demo\UI\Icon.cs" />
     <Compile Include="Source\Demo\UI\SpellBar.cs" />
     <Compile Include="Source\PhysicsActor.cs" />

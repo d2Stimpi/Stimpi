@@ -43,8 +43,8 @@ void OpenGLTestLayer::Update(Stimpi::Timestep ts)
 	s_testureShader->SetUniform("u_Projection", s_bgCamera->GetProjectionMatrix());
 
 	Stimpi::Renderer2D::Instance()->BeginScene(s_bgCamera->GetOrthoCamera());
-	Stimpi::Renderer2D::Instance()->Submit({ 0.0f, 0.0f, canvasWidth, canvasHeight }, s_bgShader.get());
-	Stimpi::Renderer2D::Instance()->Submit({ 0.0f, 0.0f, s_bgCamera->GetViewportWidth(), s_bgCamera->GetViewportHeight() }, s_Texture, s_testureShader.get());
+// 	Stimpi::Renderer2D::Instance()->Submit({ 0.0f, 0.0f, canvasWidth, canvasHeight }, s_bgShader.get());
+// 	Stimpi::Renderer2D::Instance()->Submit({ 0.0f, 0.0f, s_bgCamera->GetViewportWidth(), s_bgCamera->GetViewportHeight() }, s_Texture, s_testureShader.get());
 	Stimpi::Renderer2D::Instance()->EndScene();
 
 	Stimpi::Renderer2D::Instance()->StartFrame();

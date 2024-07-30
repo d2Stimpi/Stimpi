@@ -1,0 +1,59 @@
+Animation:
+  Texture: ../assets/sprite_sheets/char/Sword_Death_front.png
+  Frames:
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 64
+      FramePosition:
+        - 0
+        - 0
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 64
+      FramePosition:
+        - 0
+        - 64
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 64
+      FramePosition:
+        - 0
+        - 128
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 64
+      FramePosition:
+        - 0
+        - 192
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 64
+      FramePosition:
+        - 0
+        - 256
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 64
+      FramePosition:
+        - 0
+        - 320
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 64
+      FramePosition:
+        - 384
+        - 0
