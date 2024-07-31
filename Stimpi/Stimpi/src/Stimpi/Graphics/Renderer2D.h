@@ -86,6 +86,8 @@ namespace Stimpi
 
 		void CheckCapacity();
 		void CheckTextureBatching(Texture* texture);
+		void CheckShaderBatching(Shader* shader);
+		void CheckBatchingByType(RenderCommandType type);
 
 		void ClearRenderCommands();
 

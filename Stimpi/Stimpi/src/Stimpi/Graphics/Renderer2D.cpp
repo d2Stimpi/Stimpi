@@ -222,6 +222,7 @@ namespace Stimpi
 
 	void Renderer2D::Submit(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec4 color, Shader* shader, glm::vec2 minUV/*{ 0.0f, 0.0f }*/, glm::vec2 maxUV/*{ 1.0f, 1.0f }*/)
 	{
+		CheckShaderBatching(shader);
 		auto currentCmd = *m_ActiveRenderCmdIter;
 
 		// Check if some other type was used in active cmd
@@ -245,6 +246,7 @@ namespace Stimpi
 
 	void Renderer2D::SubmitCircle(glm::vec3 pos, glm::vec2 scale, glm::vec4 color, float thickness, float fade)
 	{
+		CheckBatchingByType(RenderCommandType::CIRLCE);
 		auto currentCmd = *m_ActiveRenderCmdIter;
 		glm::vec2 minUV = { -1.0f, -1.0f };
 		glm::vec2 maxUV = { 1.0f, 1.0f };
@@ -284,6 +286,7 @@ namespace Stimpi
 
 	void Renderer2D::SubmitLine(glm::vec3 p0, glm::vec3 p1, glm::vec4 color)
 	{
+		CheckBatchingByType(RenderCommandType::LINE);
 		auto currentCmd = *m_ActiveRenderCmdIter;
 
 		CheckCapacity();
@@ -532,6 +535,36 @@ namespace Stimpi
 		auto found = std::find_if(std::begin(m_RenderCmds), std::end(m_RenderCmds), [&texture](auto elem) -> bool {
 			if (texture != nullptr && elem->m_Texture != nullptr)
 				return texture->GetTextureID() == elem->m_Texture->GetTextureID();
+			else
+				return false;
+			});
+
+		if (found != std::end(m_RenderCmds))
+		{
+			m_ActiveRenderCmdIter = found;
+		}
+	}
+
+	void Renderer2D::CheckShaderBatching(Shader* shader)
+	{
+		auto found = std::find_if(std::begin(m_RenderCmds), std::end(m_RenderCmds), [&shader](auto elem) -> bool {
+			if (shader != nullptr && elem->m_Shader != nullptr && elem->m_Texture == nullptr)
+				return shader == elem->m_Shader;
+			else
+				return false;
+			});
+
+		if (found != std::end(m_RenderCmds))
+		{
+			m_ActiveRenderCmdIter = found;
+		}
+	}
+
+	void Renderer2D::CheckBatchingByType(RenderCommandType type)
+	{
+		auto found = std::find_if(std::begin(m_RenderCmds), std::end(m_RenderCmds), [&type](auto elem) -> bool {
+			if (elem->m_Type == type)
+				return true;
 			else
 				return false;
 			});
