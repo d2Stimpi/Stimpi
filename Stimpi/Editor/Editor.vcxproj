@@ -78,7 +78,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>ENABLE_RUNTIME_MODE_EDITOR;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;..\Stimpi\src;..\GLAD\include;..\vendor\spdlog\include;..\vendor\glm-0.9.9.7\glm;..\vendor\SDL2-2.0.20\include;..\Stimpi\src\Stimpi\Vendor;..\vendor\yaml-cpp\include;..\ImGUI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -171,9 +171,9 @@
     <ClInclude Include="src\Gui\Nodes\Nodes.h" />
     <ClInclude Include="src\Gui\Nodes\Variables\VariableGetNode.h" />
     <ClInclude Include="src\Gui\Nodes\Variables\VariableSetNode.h" />
+    <ClInclude Include="src\Gui\Panels\SceneHierarchyWindow.h" />
     <ClInclude Include="src\Gui\Panels\ScriptFieldFragment.h" />
     <ClInclude Include="src\Gui\PlayPanel.h" />
-    <ClInclude Include="src\Gui\Panels\SceneHierarchyWindow.h" />
     <ClInclude Include="src\Gui\SceneViewWindow.h" />
     <ClInclude Include="src\Gui\SpriteAnimPanel.h" />
     <ClInclude Include="src\Gui\Stats\EditorConfig.h" />
@@ -213,9 +213,9 @@
     <ClCompile Include="src\Gui\Nodes\NodeGraph.cpp" />
     <ClCompile Include="src\Gui\Nodes\Variables\VariableGetNode.cpp" />
     <ClCompile Include="src\Gui\Nodes\Variables\VariableSetNode.cpp" />
+    <ClCompile Include="src\Gui\Panels\SceneHierarchyWindow.cpp" />
     <ClCompile Include="src\Gui\Panels\ScriptFieldFragment.cpp" />
     <ClCompile Include="src\Gui\PlayPanel.cpp" />
-    <ClCompile Include="src\Gui\Panels\SceneHierarchyWindow.cpp" />
     <ClCompile Include="src\Gui\SceneViewWindow.cpp" />
     <ClCompile Include="src\Gui\SpriteAnimPanel.cpp" />
     <ClCompile Include="src\Gui\Stats\EditorConfig.cpp" />

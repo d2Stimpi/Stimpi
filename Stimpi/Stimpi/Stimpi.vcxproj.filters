@@ -7,6 +7,9 @@
     <Filter Include="Stimpi\Core">
       <UniqueIdentifier>{F3AE3502-5F64-AEF7-E858-A8CE540DA5FB}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Stimpi\Debug">
+      <UniqueIdentifier>{71E8F748-5D4B-87ED-06D1-BFA3F2125370}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Stimpi\Graphics">
       <UniqueIdentifier>{5B28DAE3-C7B3-47A8-D0C4-CA9C3CCFA3A8}</UniqueIdentifier>
     </Filter>
@@ -73,6 +76,9 @@
     <ClInclude Include="src\Stimpi\Core\ProjectSerializer.h">
       <Filter>Stimpi\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\Core\Runtime.h">
+      <Filter>Stimpi\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\Stimpi\Core\Time.h">
       <Filter>Stimpi\Core</Filter>
     </ClInclude>
@@ -81,6 +87,12 @@
     </ClInclude>
     <ClInclude Include="src\Stimpi\Core\Window.h">
       <Filter>Stimpi\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Core\WindowManager.h">
+      <Filter>Stimpi\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Debug\Profiler.h">
+      <Filter>Stimpi\Debug</Filter>
     </ClInclude>
     <ClInclude Include="src\Stimpi\Graphics\Animation\AnimatedSprite.h">
       <Filter>Stimpi\Graphics\Animation</Filter>
@@ -172,6 +184,9 @@
     <ClInclude Include="src\Stimpi\Scene\Entity.h">
       <Filter>Stimpi\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\Scene\EntitySorter.h">
+      <Filter>Stimpi\Scene</Filter>
+    </ClInclude>
     <ClInclude Include="src\Stimpi\Scene\ResourceManager.h">
       <Filter>Stimpi\Scene</Filter>
     </ClInclude>
@@ -196,6 +211,12 @@
     <ClInclude Include="src\Stimpi\Scripting\ScriptGlue.h">
       <Filter>Stimpi\Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\Scripting\ScriptGlueTypes.h">
+      <Filter>Stimpi\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Scripting\ScriptSerializer.h">
+      <Filter>Stimpi\Scripting</Filter>
+    </ClInclude>
     <ClInclude Include="src\Stimpi\Utils\FilePath.h">
       <Filter>Stimpi\Utils</Filter>
     </ClInclude>
@@ -215,10 +236,6 @@
       <Filter>Stimpi\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\stpch.h" />
-    <ClInclude Include="src\Stimpi\Scripting\ScriptSerializer.h" />
-    <ClInclude Include="src\Stimpi\Scripting\ScriptGlueTypes.h" />
-    <ClInclude Include="src\Stimpi\Core\WindowManager.h" />
-    <ClInclude Include="src\Stimpi\Core\Runtime.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Core\Application.cpp">
@@ -242,11 +259,20 @@
     <ClCompile Include="src\Stimpi\Core\ProjectSerializer.cpp">
       <Filter>Stimpi\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Core\Runtime.cpp">
+      <Filter>Stimpi\Core</Filter>
+    </ClCompile>
     <ClCompile Include="src\Stimpi\Core\Time.cpp">
       <Filter>Stimpi\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Core\Window.cpp">
       <Filter>Stimpi\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Core\WindowManager.cpp">
+      <Filter>Stimpi\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Debug\Profiler.cpp">
+      <Filter>Stimpi\Debug</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Graphics\Animation\AnimatedSprite.cpp">
       <Filter>Stimpi\Graphics\Animation</Filter>
@@ -338,6 +364,9 @@
     <ClCompile Include="src\Stimpi\Scene\Entity.cpp">
       <Filter>Stimpi\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Scene\EntitySorter.cpp">
+      <Filter>Stimpi\Scene</Filter>
+    </ClCompile>
     <ClCompile Include="src\Stimpi\Scene\ResourceManager.cpp">
       <Filter>Stimpi\Scene</Filter>
     </ClCompile>
@@ -359,6 +388,9 @@
     <ClCompile Include="src\Stimpi\Scripting\ScriptGlue.cpp">
       <Filter>Stimpi\Scripting</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Scripting\ScriptSerializer.cpp">
+      <Filter>Stimpi\Scripting</Filter>
+    </ClCompile>
     <ClCompile Include="src\Stimpi\Utils\FilePath.cpp">
       <Filter>Stimpi\Utils</Filter>
     </ClCompile>
@@ -372,8 +404,5 @@
       <Filter>Stimpi\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
-    <ClCompile Include="src\Stimpi\Scripting\ScriptSerializer.cpp" />
-    <ClCompile Include="src\Stimpi\Core\WindowManager.cpp" />
-    <ClCompile Include="src\Stimpi\Core\Runtime.cpp" />
   </ItemGroup>
 </Project>

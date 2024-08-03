@@ -27,7 +27,6 @@ namespace Stimpi
 
 	void Application::Init()
 	{
-		Stimpi::Log::Init();
 		m_Window.reset(Window::CreateAppWindow());
 		m_Context.CreateContext(m_Window.get());
 

@@ -21,8 +21,7 @@
     <OutputPath>..\resources\scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\resources\scripts\intermediates\Debug\Sandbox-Script\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -34,8 +33,7 @@
     <OutputPath>..\resources\scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\resources\scripts\intermediates\Release\Sandbox-Script\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -47,8 +45,7 @@
     <OutputPath>..\resources\scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\resources\scripts\intermediates\Dist\Sandbox-Script\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -61,13 +58,13 @@
   <ItemGroup>
     <Compile Include="Source\Actor.cs" />
     <Compile Include="Source\Ball.cs" />
-    <Compile Include="Source\Demo\Effects\Projectile.cs" />
-    <Compile Include="Source\Demo\Effects\ProjectileFactory.cs" />
-    <Compile Include="Source\Demo\Player\DemoPlayer.cs" />
     <Compile Include="Source\Demo\Effects\EffectsPool.cs" />
     <Compile Include="Source\Demo\Effects\Explosion.cs" />
+    <Compile Include="Source\Demo\Effects\Projectile.cs" />
+    <Compile Include="Source\Demo\Effects\ProjectileFactory.cs" />
     <Compile Include="Source\Demo\Enemy\Enemy.cs" />
     <Compile Include="Source\Demo\Enemy\EnemySpawn.cs" />
+    <Compile Include="Source\Demo\Player\DemoPlayer.cs" />
     <Compile Include="Source\Demo\UI\HealthBar.cs" />
     <Compile Include="Source\Demo\UI\Icon.cs" />
     <Compile Include="Source\Demo\UI\SpellBar.cs" />
@@ -82,7 +79,6 @@
       <Name>Stimpi-ScriptCore</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

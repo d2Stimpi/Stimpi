@@ -7,3 +7,9 @@
 [submodule "Stimpi/vendor/spdlog"]
 	path = Stimpi/vendor/spdlog
 	url = https://github.com/d2Stimpi/spdlog.git
+[submodule "Stimpi/googletest"]
+	path = Stimpi/googletest
+	url = https://github.com/google/googletest
+[submodule "Stimpi/vendor/googletest"]
+	path = Stimpi/vendor/googletest
+	url = https://github.com/google/googletest

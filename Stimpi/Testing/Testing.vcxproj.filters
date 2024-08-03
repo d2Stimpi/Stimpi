@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Scene">
+      <UniqueIdentifier>{0A06D2B3-7670-862A-BFAE-37D02B58647F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor">
+      <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\googletest">
+      <UniqueIdentifier>{5F6FC487-CB85-C21D-14FD-4D3F805293A5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\googletest\googletest">
+      <UniqueIdentifier>{8B47D75F-7702-C70B-20BA-3F560C54119C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\googletest\googletest\include">
+      <UniqueIdentifier>{FEC94C04-EAB0-0EFC-9301-75197FC78762}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\googletest\googletest\include\gtest">
+      <UniqueIdentifier>{D47A735C-C0E2-392A-294E-4E4015D55016}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\googletest\googletest\include\gtest\internal">
+      <UniqueIdentifier>{A08B16E3-0C9D-BE89-95EE-50C901FF47C3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\googletest\googletest\include\gtest\internal\custom">
+      <UniqueIdentifier>{0A547747-F613-08EC-5F31-F0F64B101BFE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\googletest\googletest\samples">
+      <UniqueIdentifier>{CF1977E8-BB00-39E0-6451-9FFD5017B246}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\googletest\googletest\src">
+      <UniqueIdentifier>{22D31182-0E24-FDC3-3788-EB852338902D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\googletest\googletest\test">
+      <UniqueIdentifier>{FA8E4CC4-66FD-A143-AFE6-5C431B9497DF}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\gtest-assertion-result.h">
+      <Filter>vendor\googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\gtest-death-test.h">
+      <Filter>vendor\googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\gtest-matchers.h">
+      <Filter>vendor\googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\gtest-message.h">
+      <Filter>vendor\googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\gtest-param-test.h">
+      <Filter>vendor\googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\gtest-printers.h">
+      <Filter>vendor\googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\gtest-spi.h">
+      <Filter>vendor\googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\gtest-test-part.h">
+      <Filter>vendor\googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\gtest-typed-test.h">
+      <Filter>vendor\googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\gtest.h">
+      <Filter>vendor\googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\gtest_pred_impl.h">
+      <Filter>vendor\googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\gtest_prod.h">
+      <Filter>vendor\googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\internal\custom\gtest-port.h">
+      <Filter>vendor\googletest\googletest\include\gtest\internal\custom</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\internal\custom\gtest-printers.h">
+      <Filter>vendor\googletest\googletest\include\gtest\internal\custom</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\internal\custom\gtest.h">
+      <Filter>vendor\googletest\googletest\include\gtest\internal\custom</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\internal\gtest-death-test-internal.h">
+      <Filter>vendor\googletest\googletest\include\gtest\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\internal\gtest-filepath.h">
+      <Filter>vendor\googletest\googletest\include\gtest\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\internal\gtest-internal.h">
+      <Filter>vendor\googletest\googletest\include\gtest\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\internal\gtest-param-util.h">
+      <Filter>vendor\googletest\googletest\include\gtest\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\internal\gtest-port-arch.h">
+      <Filter>vendor\googletest\googletest\include\gtest\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\internal\gtest-port.h">
+      <Filter>vendor\googletest\googletest\include\gtest\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\internal\gtest-string.h">
+      <Filter>vendor\googletest\googletest\include\gtest\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\include\gtest\internal\gtest-type-util.h">
+      <Filter>vendor\googletest\googletest\include\gtest\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\samples\prime_tables.h">
+      <Filter>vendor\googletest\googletest\samples</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\samples\sample1.h">
+      <Filter>vendor\googletest\googletest\samples</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\samples\sample2.h">
+      <Filter>vendor\googletest\googletest\samples</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\samples\sample3-inl.h">
+      <Filter>vendor\googletest\googletest\samples</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\samples\sample4.h">
+      <Filter>vendor\googletest\googletest\samples</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\src\gtest-internal-inl.h">
+      <Filter>vendor\googletest\googletest\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\test\googletest-param-test-test.h">
+      <Filter>vendor\googletest\googletest\test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\test\gtest-typed-test_test.h">
+      <Filter>vendor\googletest\googletest\test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vendor\googletest\googletest\test\production.h">
+      <Filter>vendor\googletest\googletest\test</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\EntitySortingTest.h">
+      <Filter>src\Scene</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\vendor\googletest\googletest\src\gtest-all.cc">
+      <Filter>vendor\googletest\googletest\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\EntitySortingTest.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

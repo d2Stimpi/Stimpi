@@ -25,6 +25,9 @@
     <Filter Include="Gui\Nodes\Variables">
       <UniqueIdentifier>{BABBE6DB-261D-C4E9-AF8A-0A9C1BEBFAA8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Gui\Panels">
+      <UniqueIdentifier>{7C45235C-68FD-64A9-D104-3E05BDDBFF99}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Gui\Stats">
       <UniqueIdentifier>{48C71A41-B431-CFB7-FD6F-805D6919AD0C}</UniqueIdentifier>
     </Filter>
@@ -61,6 +64,9 @@
       <Filter>Gui\Config</Filter>
     </ClInclude>
     <ClInclude Include="src\Gui\Config\LayersConfigPanel.h">
+      <Filter>Gui\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Config\PhysicsConfigPanel.h">
       <Filter>Gui\Config</Filter>
     </ClInclude>
     <ClInclude Include="src\Gui\Config\SceneConfigPanel.h">
@@ -126,10 +132,13 @@
     <ClInclude Include="src\Gui\Nodes\Variables\VariableSetNode.h">
       <Filter>Gui\Nodes\Variables</Filter>
     </ClInclude>
-    <ClInclude Include="src\Gui\PlayPanel.h">
-      <Filter>Gui</Filter>
-    </ClInclude>
     <ClInclude Include="src\Gui\Panels\SceneHierarchyWindow.h">
+      <Filter>Gui\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Panels\ScriptFieldFragment.h">
+      <Filter>Gui\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\PlayPanel.h">
       <Filter>Gui</Filter>
     </ClInclude>
     <ClInclude Include="src\Gui\SceneViewWindow.h">
@@ -147,8 +156,6 @@
     <ClInclude Include="src\Gui\Utils\Utils.h">
       <Filter>Gui\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="src\Gui\Panels\ScriptFieldFragment.h" />
-    <ClInclude Include="src\Gui\Config\PhysicsConfigPanel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
@@ -180,6 +187,9 @@
       <Filter>Gui\Config</Filter>
     </ClCompile>
     <ClCompile Include="src\Gui\Config\LayersConfigPanel.cpp">
+      <Filter>Gui\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Config\PhysicsConfigPanel.cpp">
       <Filter>Gui\Config</Filter>
     </ClCompile>
     <ClCompile Include="src\Gui\Config\SceneConfigPanel.cpp">
@@ -242,10 +252,13 @@
     <ClCompile Include="src\Gui\Nodes\Variables\VariableSetNode.cpp">
       <Filter>Gui\Nodes\Variables</Filter>
     </ClCompile>
-    <ClCompile Include="src\Gui\PlayPanel.cpp">
-      <Filter>Gui</Filter>
-    </ClCompile>
     <ClCompile Include="src\Gui\Panels\SceneHierarchyWindow.cpp">
+      <Filter>Gui\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Panels\ScriptFieldFragment.cpp">
+      <Filter>Gui\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\PlayPanel.cpp">
       <Filter>Gui</Filter>
     </ClCompile>
     <ClCompile Include="src\Gui\SceneViewWindow.cpp">
@@ -260,7 +273,5 @@
     <ClCompile Include="src\Gui\Utils\EditorResources.cpp">
       <Filter>Gui\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="src\Gui\Panels\ScriptFieldFragment.cpp" />
-    <ClCompile Include="src\Gui\Config\PhysicsConfigPanel.cpp" />
   </ItemGroup>
 </Project>

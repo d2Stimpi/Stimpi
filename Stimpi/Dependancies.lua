@@ -1,6 +1,8 @@
+VendorDir = {}
+VendorDir["gtest"] = "%{wks.location}/vendor/googletest/googletest"
+
 IncludeDir = {}
 IncludeDir["mono"] = "%{wks.location}/vendor/mono/include"
-
 
 LibraryDir = {}
 LibraryDir["mono"] = "%{wks.location}/vendor/mono/lib/%{cfg.buildcfg}"

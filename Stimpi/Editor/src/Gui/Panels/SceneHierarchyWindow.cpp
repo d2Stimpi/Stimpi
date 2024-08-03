@@ -423,6 +423,7 @@ namespace Stimpi
 					{
 						currentSortingLayer = layer->m_Name;
 						component.m_SortingLayerName = layer->m_Name;
+						m_ActiveScene->UpdateLayerSorting(s_SelectedEntity);
 					}
 
 					if (isSelected)
@@ -439,6 +440,7 @@ namespace Stimpi
 					orderInLayerInput = 0;
 
 				component.m_OrderInLayer = orderInLayerInput;
+				m_ActiveScene->UpdateLayerSorting(s_SelectedEntity);
 			}
 			EditorUtils::SetActiveItemCaptureKeyboard(false);
 			ImGui::Spacing();

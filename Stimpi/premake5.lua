@@ -29,6 +29,10 @@ group "Dependencies"
 	include "Stimpi/vendor/Box2D"
 group ""
 
+group "Tests"
+	include "Testing"
+group ""
+
 group "Scripting"
 	include "Stimpi-ScriptCore"
 	include "Sandbox-Script"

@@ -11,3 +11,5 @@
 #include <thread>
 #include <variant>
 #include <map>
+
+#include "Stimpi/Debug/Profiler.h"

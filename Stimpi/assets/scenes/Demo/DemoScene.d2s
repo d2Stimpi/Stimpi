@@ -287,13 +287,13 @@ Scene:
       DefaultAnimation: D:/GitHub/Stimpi\assets\animations\explosion01.anim
       Animations:
         Animation:
-          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\char\sword_attack_front.anim
-        Animation:
-          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\char\unarmed_walk_back.anim
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\explosion01.anim
         Animation:
           AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\fireball01.anim
         Animation:
-          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\explosion01.anim
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\char\unarmed_walk_back.anim
+        Animation:
+          AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\char\sword_attack_front.anim
         Animation:
           AnimationAssetPath: D:/GitHub/Stimpi\assets\animations\lightning_proj_start.anim
         Animation:
@@ -341,14 +341,6 @@ Scene:
       - 96.0851288
       - 10.9698877
       - 0.5
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -374,14 +366,6 @@ Scene:
       - 19.2141876
       - 18.8979721
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -407,14 +391,6 @@ Scene:
       - 14.8769493
       - 12.4260626
       - -0.75999999
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -440,14 +416,6 @@ Scene:
       - 21.6425323
       - 11.5631428
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -512,14 +480,6 @@ Scene:
       - 21.6425323
       - 11.5631428
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -545,14 +505,6 @@ Scene:
       - 14.8769493
       - 12.4260626
       - -0.75999999
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -578,14 +530,6 @@ Scene:
       - 33.6155586
       - 11.5631428
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -611,14 +555,6 @@ Scene:
       - 14.8769493
       - 12.4260626
       - -0.75999999
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -644,14 +580,6 @@ Scene:
       - 16.4649906
       - 11.5631428
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -677,14 +605,6 @@ Scene:
       - 14.8769493
       - 12.4260626
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -710,14 +630,6 @@ Scene:
       - 12.4650002
       - 200.831482
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -743,14 +655,6 @@ Scene:
       - 14.5892954
       - 12.4260626
       - 0.850000024
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -776,14 +680,6 @@ Scene:
       - 23.2185345
       - 16.7406731
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -809,14 +705,6 @@ Scene:
       - 20.054472
       - 12.4260626
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -842,14 +730,6 @@ Scene:
       - 66.939949
       - 12.4260626
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -875,14 +755,6 @@ Scene:
       - 23.506176
       - 16.7406731
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -908,14 +780,6 @@ Scene:
       - 52.8455505
       - 12.7137032
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -941,14 +805,6 @@ Scene:
       - 15.3443222
       - 49.2081795
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -974,14 +830,6 @@ Scene:
       - 20.3780441
       - 58.520565
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -1007,14 +855,6 @@ Scene:
       - 20.3780441
       - 12.2103271
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -1040,14 +880,6 @@ Scene:
       - 175.12886
       - 12.7137032
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -1073,14 +905,6 @@ Scene:
       - 22.3197021
       - 15.769886
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -1106,14 +930,6 @@ Scene:
       - 14.37362
       - 9.96313858
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -1139,14 +955,6 @@ Scene:
       - 119.811966
       - 9.96313858
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -1172,14 +980,6 @@ Scene:
       - 14.37362
       - 9.96313858
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -1205,14 +1005,6 @@ Scene:
       - 14.37362
       - 15.4642715
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -1238,14 +1030,6 @@ Scene:
       - 14.37362
       - 15.4642715
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -1271,14 +1055,6 @@ Scene:
       - 20.7916069
       - 9.35190582
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -1304,14 +1080,6 @@ Scene:
       - 12.4650002
       - 206.656174
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -1337,14 +1105,6 @@ Scene:
       - 13.2410259
       - 47.8598518
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -1370,14 +1130,6 @@ Scene:
       - 13.2410259
       - 130.916122
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -1403,14 +1155,6 @@ Scene:
       - 29.4747696
       - 33.513752
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -1436,14 +1180,6 @@ Scene:
       - 36.8096085
       - 13.0373096
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -1469,14 +1205,6 @@ Scene:
       - 13.276988
       - 10.8979778
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -1502,14 +1230,6 @@ Scene:
       - 8.38709354
       - 15.7878742
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -1535,14 +1255,6 @@ Scene:
       - 4.41405106
       - 13.3429251
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -1568,14 +1280,6 @@ Scene:
       - 9.35788822
       - 16.111475
       - -0.720000029
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -1601,14 +1305,6 @@ Scene:
       - 18.4545383
       - 9.38786507
       - -0.720000029
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -1634,14 +1330,6 @@ Scene:
       - 13.7084608
       - 10.7721357
       - -0.720000029
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false
@@ -1667,14 +1355,6 @@ Scene:
       - 14.4994764
       - 11.9586544
       - 0
-    SpriteComponent:
-      FilePath: ""
-      Enabled: false
-      Color:
-        - 1
-        - 1
-        - 1
-        - 0
     RigidBody2DComponent:
       Type: Static
       FixedRotation: false

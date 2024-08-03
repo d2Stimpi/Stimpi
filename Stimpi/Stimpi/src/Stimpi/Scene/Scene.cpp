@@ -65,6 +65,8 @@ namespace Stimpi
 
 	Scene::Scene()
 	{
+		ST_PROFILE_FUNCTION();
+
 		// Workaround - Create 0 value Entity and never use it. Fixes check for valid Entity
 		m_Registry.create();
 		ComponentObserver::InitComponentObservers(m_Registry, this);
@@ -126,11 +128,15 @@ namespace Stimpi
 
 	Scene::~Scene()
 	{
+		ST_PROFILE_FUNCTION();
+
 		ComponentObserver::DeinitConstructObservers(m_Registry);
 	}
 
 	void Scene::OnUpdate(Timestep ts)
 	{
+		ST_PROFILE_FUNCTION();
+
 		if (m_RuntimeState == RuntimeState::RUNNING)
 		{
 			// Physics
@@ -159,6 +165,8 @@ namespace Stimpi
 		// Scene Rendering
 		if (m_RenderCamera)
 		{
+			ST_PROFILE_SCOPE("SubmitForRendering");
+
 			GraphicsConfig graphicsConfig = Project::GetGraphicsConfig();
 
 			/** TODO: optimize
@@ -171,12 +179,15 @@ namespace Stimpi
 			auto& sortingLayers = Project::GetSortingLayers();
 			for (auto& layer : sortingLayers)
 			{
+				ST_PROFILE_SCOPE("SortingLayer");
+
 				std::vector<Entity> layerGroup;
 				auto group = m_Registry.group<SortingGroupComponent>();
 				
 				// Filter by layer
 				for (auto e : group)
 				{
+					ST_PROFILE_SCOPE("SortingLayer::Grouping");
 					Entity entity = { e, this };
 					if (entity.GetComponent<SortingGroupComponent>().m_SortingLayerName == layer->m_Name)
 						layerGroup.emplace_back(entity);
@@ -208,22 +219,30 @@ namespace Stimpi
 			// Render entities that don't use SortingGroup component
 			Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
 
-			std::vector<Entity> unordered;
+			/*std::vector<Entity> unordered;
 			for (auto entity : m_Entities)
 			{
-				if (!entity.HasComponent<SortingGroupComponent>())
+				if (!entity.HasComponent<SortingGroupComponent>() && entity.HasComponent<QuadComponent>() &&
+					(entity.HasComponent<SpriteComponent>() || entity.HasComponent<AnimatedSpriteComponent>()))
+				{
 					unordered.emplace_back(entity);
+				}
 			}
 
 			if (graphicsConfig.m_RenderingOrderAxis != RenderingOrderAxis::None)
 			{
+				ST_PROFILE_SCOPE("SortingLayer::AxisSort");
 				std::sort(unordered.begin(), unordered.end(), [&graphicsConfig, this](auto a, auto b)
 					{
 						return CompareByAxis(a, b);
 					});
-			}
+			}*/
 
-			SubmitForRendering(unordered);
+			std::vector<Entity> axisOrdered;
+			for (auto entityID : m_EntitySorter.m_AxisSortedEntites)
+				axisOrdered.push_back({ (entt::entity)entityID, this });
+
+			SubmitForRendering(axisOrdered);
 
 			Renderer2D::Instance()->EndScene();
 		}
@@ -365,8 +384,55 @@ namespace Stimpi
 		return false;
 	}
 
+
+	EntitySorter& Scene::GetEntitySorter()
+	{
+		return m_EntitySorter;
+	}
+
+
+	void Scene::OnSortingAxisChange()
+	{
+		m_EntitySorter.ResetAxisSortedEntites();
+
+		GraphicsConfig graphicsConfig = Project::GetGraphicsConfig();
+		if (graphicsConfig.m_RenderingOrderAxis != RenderingOrderAxis::None)
+		{
+			for (auto entity : m_Entities)
+			{
+				if (!entity.HasComponent<SortingGroupComponent>() && entity.HasComponent<QuadComponent>() &&
+					(entity.HasComponent<SpriteComponent>() || entity.HasComponent<AnimatedSpriteComponent>()))
+				{
+					auto& quad = entity.GetComponent<QuadComponent>();
+					float sortValue = 0.0f;
+					switch (graphicsConfig.m_RenderingOrderAxis)
+					{
+					case RenderingOrderAxis::X_AXIS: sortValue = quad.m_Position.x;	break;
+					case RenderingOrderAxis::Y_AXIS: sortValue = quad.m_Position.y;	break;
+					case RenderingOrderAxis::Z_AXIS: sortValue = quad.m_Position.z;	break;
+					}
+					m_EntitySorter.SortEntityByAxis(entity, sortValue);
+				}
+			}
+		}
+	}
+
+
+	void Scene::UpdateLayerSorting(Entity entity)
+	{
+		if (!entity.HasComponent<SortingGroupComponent>())
+			return;
+
+		SortingGroupComponent group = entity.GetComponent<SortingGroupComponent>();
+
+		m_EntitySorter.RemoveLayerSortedEntity(entity, group.m_SortingLayerName);
+		m_EntitySorter.SortEntityByLayer({ entity, group.m_OrderInLayer }, group.m_SortingLayerName);
+	}
+
 	void Scene::OnSceneStep()
 	{
+		ST_PROFILE_FUNCTION();
+
 		Timestep ts = Time::Instance()->GetFrameTime();
 
 		// Update Scripts
@@ -464,6 +530,8 @@ namespace Stimpi
 
 	void Scene::OnScenePlay()
 	{
+		ST_PROFILE_FUNCTION();
+
 		InitializeScripts();
 		InitializePhysics();
 
@@ -491,6 +559,8 @@ namespace Stimpi
 
 	void Scene::OnSceneStop()
 	{
+		ST_PROFILE_FUNCTION();
+
 		DeinitializeScritps();
 		DeinitializePhysics();
 
@@ -558,6 +628,8 @@ namespace Stimpi
 
 	void Scene::UpdateComponentDependacies(Timestep ts)
 	{
+		ST_PROFILE_FUNCTION();
+
 		m_Registry.view<CameraComponent>().each([this](auto e, CameraComponent camera)
 			{
 				Entity entitiy = { e, this };
@@ -572,6 +644,8 @@ namespace Stimpi
 
 	void Scene::UpdateComponents(Timestep ts)
 	{
+		ST_PROFILE_FUNCTION();
+
 		m_Registry.view<AnimatedSpriteComponent>().each([&ts](auto e, AnimatedSpriteComponent anim)
 			{
 				if (anim.m_AnimSprite)
@@ -585,6 +659,8 @@ namespace Stimpi
 
 	void Scene::InitializeScripts()
 	{
+		ST_PROFILE_FUNCTION();
+
 		// Create NativeScripts
 		m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& ncs)
 			{
@@ -602,6 +678,8 @@ namespace Stimpi
 
 	void Scene::UpdateScripts(Timestep ts)
 	{
+		ST_PROFILE_FUNCTION();
+
 		m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& ncs)
 			{
 				if (ncs.m_Instance)
@@ -615,6 +693,8 @@ namespace Stimpi
 
 	void Scene::DeinitializeScritps()
 	{
+		ST_PROFILE_FUNCTION();
+
 		m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& ncs)
 			{
 				if (ncs.m_Instance)
@@ -631,6 +711,8 @@ namespace Stimpi
 
 	void Scene::InitializePhysics()
 	{
+		ST_PROFILE_FUNCTION();
+
 		glm::vec2 gravityForce = Project::GetPhysicsConfig().m_GravityForce;
 
 		m_PhysicsWorld = new b2World({ gravityForce.x, gravityForce.y });
@@ -744,6 +826,8 @@ namespace Stimpi
 
 	void Scene::UpdatePhysicsSimulation(Timestep ts)
 	{
+		ST_PROFILE_FUNCTION();
+
 		// Before stepping physics world, update Enable state
 		UpdatePyhsicsEntityState();
 
@@ -899,6 +983,8 @@ namespace Stimpi
 
 	void Scene::UpdatePyhsicsEntityState()
 	{
+		ST_PROFILE_FUNCTION();
+
 		for (auto& item : m_PhysicsStateToBeChanged)
 		{
 			Entity entity = { (entt::entity)item.first, this };
@@ -919,6 +1005,8 @@ namespace Stimpi
 
 	void Scene::OnDebugUpdate(Timestep ts)
 	{
+		ST_PROFILE_FUNCTION();
+
 		// Debug render - Collision contact points
 		if (Physics::ShowCollisionsContactPointsEnabled())
 		{

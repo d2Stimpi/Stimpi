@@ -2,6 +2,7 @@
 #include "Gui/Config/GraphicsConfigPanel.h"
 
 #include "Stimpi/Core/Project.h"
+#include "Stimpi/Scene/SceneManager.h"
 
 #include "ImGui/src/imgui.h"
 
@@ -30,8 +31,16 @@ namespace Stimpi
 						{
 							currentOrderingAxis = orderingAxis[i];
 							auto config = Project::GetGraphicsConfig();
-							config.m_RenderingOrderAxis = (RenderingOrderAxis)i;
-							Project::SetGraphicsConfig(config);
+							// Update only on change
+							if (config.m_RenderingOrderAxis != (RenderingOrderAxis)i)
+							{
+								config.m_RenderingOrderAxis = (RenderingOrderAxis)i;
+								Project::SetGraphicsConfig(config);
+								// Notify active scene to re-sort entities
+								auto scene = SceneManager::Instance()->GetActiveScene();
+								if (scene)
+									scene->OnSortingAxisChange();
+							}
 						}
 
 						if (isSelected)
