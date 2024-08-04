@@ -17,6 +17,18 @@ namespace Stimpi
 	public:
 		static void Init();
 
+		static void Disable()
+		{ 
+			s_CoreLogger->set_level(spdlog::level::off);
+			s_ClientLogger->set_level(spdlog::level::off);
+		}
+
+		static void Enable()
+		{
+			s_CoreLogger->set_level(spdlog::level::trace);
+			s_ClientLogger->set_level(spdlog::level::trace);
+		}
+
 		inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
 		inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
 

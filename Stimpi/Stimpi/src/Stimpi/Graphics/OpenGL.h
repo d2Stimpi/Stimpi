@@ -9,7 +9,7 @@
 namespace Stimpi
 {
 
-	class GLContext
+	class ST_API GLContext
 	{
 	public:
 		~GLContext();

@@ -1,6 +1,10 @@
 #pragma once
 
+#include "Stimpi/Scene/Scene.h"
+
 #include <gtest/gtest.h>
+
+using namespace Stimpi;
 
 namespace StimpiTest
 {
@@ -9,5 +13,8 @@ namespace StimpiTest
 	public:
 		void SetUp() override;
 		void TearDown() override;
+
+	protected:
+		Scene* m_Scene;
 	};
 }

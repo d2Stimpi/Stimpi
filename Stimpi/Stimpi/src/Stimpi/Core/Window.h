@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include "Stimpi/Log.h"
+#include "Stimpi/Core/Core.h"
 #include "Stimpi/Core/Event.h"
 
 /* TODO: 
@@ -18,7 +19,7 @@ namespace Stimpi
 		uint32_t m_WindowHeight = 720;
 	};
 
-	class Window
+	class ST_API Window
 	{
 	public:
 		Window(uint32_t width, uint32_t height) : m_Width(width), m_Height(height) {};

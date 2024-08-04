@@ -46,8 +46,13 @@ namespace Stimpi
 	{
 		if (std::find(m_AxisSortedEntites.begin(), m_AxisSortedEntites.end(), entityID) == m_AxisSortedEntites.end())
 		{
+			auto comp = [](float v, auto iter) 
+			{
+				return false; 
+			};
+
 			m_AxisSortedEntites.insert(
-				std::upper_bound(m_AxisSortedEntites.begin(), m_AxisSortedEntites.end(), value),
+				std::upper_bound(m_AxisSortedEntites.begin(), m_AxisSortedEntites.end(), value, comp),
 				entityID
 			);
 		}
@@ -68,6 +73,16 @@ namespace Stimpi
 	void EntitySorter::ResetAxisSortedEntites()
 	{
 
+	}
+
+	std::unordered_map<std::string, Stimpi::EntityLayerGroup>& EntitySorter::GetEntityGroups()
+	{
+		return m_EntityGroups;
+	}
+
+	std::vector<uint32_t>& EntitySorter::GetAxisSortedEntites()
+	{
+		return m_AxisSortedEntites;
 	}
 
 }

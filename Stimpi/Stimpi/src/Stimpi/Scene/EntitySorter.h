@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Stimpi/Core/Core.h"
 #include "Stimpi/Graphics/Graphics.h"
 
 namespace Stimpi
@@ -17,7 +18,7 @@ namespace Stimpi
 		std::vector<EntitySortData> m_Entities;
 	};
 
-	class EntitySorter
+	class ST_API EntitySorter
 	{
 	public:
 
@@ -30,9 +31,11 @@ namespace Stimpi
 		void RemoveAxisSortedEntity(uint32_t entityID);
 		void ResetAxisSortedEntites();
 
+		std::unordered_map<std::string, EntityLayerGroup>& GetEntityGroups();
+		std::vector<uint32_t>& GetAxisSortedEntites();
 	private:
-		std::unordered_map<std::string, EntityLayerGroup> m_EntityGroups;
-		std::vector<uint32_t> m_AxisSortedEntites;
+		std::unordered_map<std::string, EntityLayerGroup> m_EntityGroups = {};
+		std::vector<uint32_t> m_AxisSortedEntites = {};
 
 		friend class Scene;
 	};

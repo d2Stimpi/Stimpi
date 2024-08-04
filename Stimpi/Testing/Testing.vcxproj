@@ -24,7 +24,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
+    <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
@@ -61,14 +61,14 @@
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <OutDir>..\bin\Release-windows-x86_64\Testing\</OutDir>
     <IntDir>..\bin-int\Release-windows-x86_64\Testing\</IntDir>
     <TargetName>Testing</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <OutDir>..\bin\Dist-windows-x86_64\Testing\</OutDir>
     <IntDir>..\bin-int\Dist-windows-x86_64\Testing\</IntDir>
     <TargetName>Testing</TargetName>
@@ -78,13 +78,17 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;..\Stimpi\src;..\vendor\googletest\googletest\include;..\vendor\googletest\googletest;..\vendor\spdlog\include;..\vendor\glm-0.9.9.7\glm;..\vendor\SDL2-2.0.20\include;..\Stimpi\src\Stimpi\Vendor;..\vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AdditionalOptions>/MDd %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;yaml-cppd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\vendor\SDL2-2.0.20\lib\x64;..\vendor\yaml-cpp\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
@@ -93,13 +97,21 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;..\Stimpi\src;..\vendor\googletest\googletest\include;..\vendor\googletest\googletest;..\vendor\spdlog\include;..\vendor\glm-0.9.9.7\glm;..\vendor\SDL2-2.0.20\include;..\Stimpi\src\Stimpi\Vendor;..\vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <Optimization>Disabled</Optimization>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <AdditionalOptions>/MD %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;yaml-cppd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\vendor\SDL2-2.0.20\lib\x64;..\vendor\yaml-cpp\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
@@ -108,13 +120,20 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;..\Stimpi\src;..\vendor\googletest\googletest\include;..\vendor\googletest\googletest;..\vendor\spdlog\include;..\vendor\glm-0.9.9.7\glm;..\vendor\SDL2-2.0.20\include;..\Stimpi\src\Stimpi\Vendor;..\vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <Optimization>Disabled</Optimization>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;yaml-cppd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\vendor\SDL2-2.0.20\lib\x64;..\vendor\yaml-cpp\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
@@ -152,12 +171,14 @@
     <ClInclude Include="..\vendor\googletest\googletest\test\googletest-param-test-test.h" />
     <ClInclude Include="..\vendor\googletest\googletest\test\gtest-typed-test_test.h" />
     <ClInclude Include="..\vendor\googletest\googletest\test\production.h" />
-    <ClInclude Include="src\Scene\EntitySortingTest.h" />
+    <ClInclude Include="src\SceneTest\EntitySortingTest.h" />
+    <ClInclude Include="src\SceneTest\SceneTestUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\vendor\googletest\googletest\src\gtest-all.cc" />
-    <ClCompile Include="src\Scene\EntitySortingTest.cpp" />
+    <ClCompile Include="src\SceneTest\EntitySortingTest.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\SceneTest\SceneTestUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Stimpi\Stimpi.vcxproj">

@@ -97,7 +97,8 @@
     <PostBuildEvent>
       <Command>IF EXIST ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Debug-windows-x86_64\Application &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Debug-windows-x86_64\Application &gt; nul)
 IF EXIST ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Debug-windows-x86_64\Runtime &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Debug-windows-x86_64\Runtime &gt; nul)
-IF EXIST ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Debug-windows-x86_64\Editor &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Debug-windows-x86_64\Editor &gt; nul)</Command>
+IF EXIST ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Debug-windows-x86_64\Editor &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Debug-windows-x86_64\Editor &gt; nul)
+IF EXIST ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Debug-windows-x86_64\Testing &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Debug-windows-x86_64\Testing &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -127,7 +128,8 @@ IF EXIST ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bi
     <PostBuildEvent>
       <Command>IF EXIST ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Release-windows-x86_64\Application &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Release-windows-x86_64\Application &gt; nul)
 IF EXIST ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Release-windows-x86_64\Runtime &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Release-windows-x86_64\Runtime &gt; nul)
-IF EXIST ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Release-windows-x86_64\Editor &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Release-windows-x86_64\Editor &gt; nul)</Command>
+IF EXIST ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Release-windows-x86_64\Editor &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Release-windows-x86_64\Editor &gt; nul)
+IF EXIST ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Release-windows-x86_64\Testing &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Release-windows-x86_64\Testing &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
@@ -156,7 +158,8 @@ IF EXIST ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\
     <PostBuildEvent>
       <Command>IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Dist-windows-x86_64\Application &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Dist-windows-x86_64\Application &gt; nul)
 IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Dist-windows-x86_64\Runtime &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Dist-windows-x86_64\Runtime &gt; nul)
-IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Dist-windows-x86_64\Editor &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Dist-windows-x86_64\Editor &gt; nul)</Command>
+IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Dist-windows-x86_64\Editor &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Dist-windows-x86_64\Editor &gt; nul)
+IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Dist-windows-x86_64\Testing &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll ..\bin\Dist-windows-x86_64\Testing &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
