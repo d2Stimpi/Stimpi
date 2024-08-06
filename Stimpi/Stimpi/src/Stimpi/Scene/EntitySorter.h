@@ -33,6 +33,8 @@ namespace Stimpi
 
 		std::unordered_map<std::string, EntityLayerGroup>& GetEntityGroups();
 		std::vector<uint32_t>& GetAxisSortedEntites();
+
+		void ClearAllSortingData();
 	private:
 		std::unordered_map<std::string, EntityLayerGroup> m_EntityGroups = {};
 		std::vector<uint32_t> m_AxisSortedEntites = {};

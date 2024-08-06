@@ -85,4 +85,15 @@ namespace Stimpi
 		return m_AxisSortedEntites;
 	}
 
+	void EntitySorter::ClearAllSortingData()
+	{
+		for (auto& item : m_EntityGroups)
+		{
+			auto& group = item.second;
+			group.m_Entities.clear();
+		}
+		m_EntityGroups.clear();
+		m_AxisSortedEntites.clear();
+	}
+
 }

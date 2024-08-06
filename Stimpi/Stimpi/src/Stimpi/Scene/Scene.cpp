@@ -179,7 +179,7 @@ namespace Stimpi
 			auto& sortingLayers = Project::GetSortingLayers();
 			for (auto& layer : sortingLayers)
 			{
-				ST_PROFILE_SCOPE("SortingLayer");
+				/*ST_PROFILE_SCOPE("SortingLayer");
 
 				std::vector<Entity> layerGroup;
 				auto group = m_Registry.group<SortingGroupComponent>();
@@ -206,12 +206,24 @@ namespace Stimpi
 
 						return idA < idB;
 					});
+*/
+
+				ST_PROFILE_SCOPE("EntitySorter - Layer");
+
+				auto& entityGroups = m_EntitySorter.GetEntityGroups();
+				auto& entityLayerGroup = entityGroups[layer->m_Name];
 
 				// Pass filtered and sorted entities for rendering
-				if (!layerGroup.empty())
+				//if (!layerGroup.empty())
+				if (!entityLayerGroup.m_Entities.empty())
 				{
+					std::vector<Entity> renderEntities;
+					for (auto item : entityLayerGroup.m_Entities)
+						renderEntities.push_back({ (entt::entity)item.m_EntityID, this });
+
 					Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
-					SubmitForRendering(layerGroup);
+					//SubmitForRendering(layerGroup);
+					SubmitForRendering(renderEntities);
 					Renderer2D::Instance()->EndScene();
 				}
 			}
