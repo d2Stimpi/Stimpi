@@ -168,53 +168,15 @@ namespace Stimpi
 			ST_PROFILE_SCOPE("SubmitForRendering");
 
 			GraphicsConfig graphicsConfig = Project::GetGraphicsConfig();
-
-			/** TODO: optimize
-			 * When in "Editor mode" we can check and sort by layers each frame.
-			 * In "Runtime mode" entities can be sorted once when created and grouped by layer.
-			 * Each time an entity would change the SortingGroup the containers can be updated only then.
-			 * Or just simply do it for both modes :P
-			 */
-
 			auto& sortingLayers = Project::GetSortingLayers();
+			auto& entityGroups = m_EntitySorter.GetEntityGroups();
 			for (auto& layer : sortingLayers)
 			{
-				/*ST_PROFILE_SCOPE("SortingLayer");
-
-				std::vector<Entity> layerGroup;
-				auto group = m_Registry.group<SortingGroupComponent>();
-				
-				// Filter by layer
-				for (auto e : group)
-				{
-					ST_PROFILE_SCOPE("SortingLayer::Grouping");
-					Entity entity = { e, this };
-					if (entity.GetComponent<SortingGroupComponent>().m_SortingLayerName == layer->m_Name)
-						layerGroup.emplace_back(entity);
-				}
-
-				// Order by layer ID
-				std::sort(layerGroup.begin(), layerGroup.end(), [&graphicsConfig, this](auto a, auto b)
-					{
-						auto idA = a.GetComponent<SortingGroupComponent>().m_OrderInLayer;
-						auto idB = b.GetComponent<SortingGroupComponent>().m_OrderInLayer;
-
-						if (idA == idB && graphicsConfig.m_RenderingOrderAxis != RenderingOrderAxis::None)
-						{
-							return CompareByAxis(a, b);
-						}
-
-						return idA < idB;
-					});
-*/
-
 				ST_PROFILE_SCOPE("EntitySorter - Layer");
 
-				auto& entityGroups = m_EntitySorter.GetEntityGroups();
 				auto& entityLayerGroup = entityGroups[layer->m_Name];
 
 				// Pass filtered and sorted entities for rendering
-				//if (!layerGroup.empty())
 				if (!entityLayerGroup.m_Entities.empty())
 				{
 					std::vector<Entity> renderEntities;
@@ -222,43 +184,34 @@ namespace Stimpi
 						renderEntities.push_back({ (entt::entity)item.m_EntityID, this });
 
 					Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
-					//SubmitForRendering(layerGroup);
 					SubmitForRendering(renderEntities);
 					Renderer2D::Instance()->EndScene();
 				}
-			}
 
-			// Render entities that don't use SortingGroup component
-			Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
-
-			/*std::vector<Entity> unordered;
-			for (auto entity : m_Entities)
-			{
-				if (!entity.HasComponent<SortingGroupComponent>() && entity.HasComponent<QuadComponent>() &&
-					(entity.HasComponent<SpriteComponent>() || entity.HasComponent<AnimatedSpriteComponent>()))
+				// Render entities that don't use SortingGroup component as if in Default layer
+				// TODO: make sure Default layer can't be removed or renamed
+				if (layer->m_Name == "Default")
 				{
-					unordered.emplace_back(entity);
+					Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
+
+					std::vector<Entity> axisOrdered;
+					for (auto entityID : m_EntitySorter.m_AxisSortedEntites)
+						axisOrdered.push_back({ (entt::entity)entityID, this });
+
+					SubmitForRendering(axisOrdered);
+
+					Renderer2D::Instance()->EndScene();
 				}
 			}
-
-			if (graphicsConfig.m_RenderingOrderAxis != RenderingOrderAxis::None)
-			{
-				ST_PROFILE_SCOPE("SortingLayer::AxisSort");
-				std::sort(unordered.begin(), unordered.end(), [&graphicsConfig, this](auto a, auto b)
-					{
-						return CompareByAxis(a, b);
-					});
-			}*/
-
-			std::vector<Entity> axisOrdered;
-			for (auto entityID : m_EntitySorter.m_AxisSortedEntites)
-				axisOrdered.push_back({ (entt::entity)entityID, this });
-
-			SubmitForRendering(axisOrdered);
-
-			Renderer2D::Instance()->EndScene();
 		}
 		
+		// Debug render pass
+
+		if (Physics::ShowColliderOutlineEnabled())
+		{
+			RenderDebugData();
+		}
+
 		if (s_Config.m_EnableDebug)
 			OnDebugUpdate(ts);
 	}
@@ -301,27 +254,7 @@ namespace Stimpi
 					}
 				}
 
-				// Draw debug RigidBody Collider outline
-				if (Physics::ShowColliderOutlineEnabled())
-				{
-					if (entity.HasComponent<BoxCollider2DComponent>())
-					{
-						auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
-						glm::vec4 outlineColor(0.80f, 0.3f, 0.2f, 1.0f);
-						glm::vec3 outlinePos(quad.Center() + bc2d.m_Offset, 0.0f);
-						glm::vec2 outlineSize(bc2d.m_Size.x * quad.m_Size.x * 2.0f, bc2d.m_Size.y * quad.m_Size.y * 2.0f);
-
-						if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::BOX)
-						{
-							Renderer2D::Instance()->SubmitSquare(outlinePos, outlineSize, quad.m_Rotation, outlineColor);
-						}
-						else if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::CIRLCE)
-						{
-							glm::vec2 circleOutlineSize(bc2d.m_Size.x * quad.m_Size.x * 2.0f, bc2d.m_Size.x * quad.m_Size.x * 2.0f);
-							Renderer2D::Instance()->SubmitCircle(outlinePos, circleOutlineSize, outlineColor, 0.06f, 0.0f);
-						}
-					}
-				}
+				
 			}
 			else if (entity.HasComponent<CircleComponent>())
 			{
@@ -346,27 +279,7 @@ namespace Stimpi
 					Renderer2D::Instance()->SubmitCircle(circle.m_Position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
 				}
 
-				// Draw debug RigidBody Collider outline
-				if (Physics::ShowColliderOutlineEnabled())
-				{
-					if (entity.HasComponent<BoxCollider2DComponent>())
-					{
-						auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
-						glm::vec4 outlineColor(0.80f, 0.3f, 0.2f, 1.0f);
-						glm::vec3 outlinePos(circle.Center() + bc2d.m_Offset, 0.0f);
-						glm::vec2 outlineSize(bc2d.m_Size.x * circle.m_Size.x * 2.0f, bc2d.m_Size.y * circle.m_Size.y * 2.0f);
-
-						if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::BOX)
-						{
-							Renderer2D::Instance()->SubmitSquare(outlinePos, outlineSize, circle.m_Rotation, outlineColor);
-						}
-						else if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::CIRLCE)
-						{
-							glm::vec2 circleOutlineSize(bc2d.m_Size.x * circle.m_Size.x * 2.0f, bc2d.m_Size.x * circle.m_Size.x * 2.0f);
-							Renderer2D::Instance()->SubmitCircle(outlinePos, circleOutlineSize, outlineColor, 0.06f, 0.0f);
-						}
-					}
-				}
+				
 			}
 		}
 	}
@@ -1037,6 +950,55 @@ namespace Stimpi
 				Renderer2D::Instance()->EndScene();
 			}
 		}
+	}
+
+
+	void Scene::RenderDebugData()
+	{
+		Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
+		
+		m_Registry.view<BoxCollider2DComponent>().each([=](auto e, BoxCollider2DComponent& bc2d)
+			{
+				Entity entity = { e, this };
+				if (entity.HasComponent<QuadComponent>())
+				{
+					auto& quad = entity.GetComponent<QuadComponent>();
+					auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+					glm::vec4 outlineColor(0.80f, 0.3f, 0.2f, 1.0f);
+					glm::vec3 outlinePos(quad.Center() + bc2d.m_Offset, 0.0f);
+					glm::vec2 outlineSize(bc2d.m_Size.x * quad.m_Size.x * 2.0f, bc2d.m_Size.y * quad.m_Size.y * 2.0f);
+
+					if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::BOX)
+					{
+						Renderer2D::Instance()->SubmitSquare(outlinePos, outlineSize, quad.m_Rotation, outlineColor);
+					}
+					else if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::CIRLCE)
+					{
+						glm::vec2 circleOutlineSize(bc2d.m_Size.x * quad.m_Size.x * 2.0f, bc2d.m_Size.x * quad.m_Size.x * 2.0f);
+						Renderer2D::Instance()->SubmitCircle(outlinePos, circleOutlineSize, outlineColor, 0.06f, 0.0f);
+					}
+				}
+				else if (entity.HasComponent<CircleComponent>())
+				{
+					auto& circle = entity.GetComponent<CircleComponent>();
+					auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+					glm::vec4 outlineColor(0.80f, 0.3f, 0.2f, 1.0f);
+					glm::vec3 outlinePos(circle.Center() + bc2d.m_Offset, 0.0f);
+					glm::vec2 outlineSize(bc2d.m_Size.x * circle.m_Size.x * 2.0f, bc2d.m_Size.y * circle.m_Size.y * 2.0f);
+
+					if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::BOX)
+					{
+						Renderer2D::Instance()->SubmitSquare(outlinePos, outlineSize, circle.m_Rotation, outlineColor);
+					}
+					else if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::CIRLCE)
+					{
+						glm::vec2 circleOutlineSize(bc2d.m_Size.x * circle.m_Size.x * 2.0f, bc2d.m_Size.x * circle.m_Size.x * 2.0f);
+						Renderer2D::Instance()->SubmitCircle(outlinePos, circleOutlineSize, outlineColor, 0.06f, 0.0f);
+					}
+				}
+			});
+
+		Renderer2D::Instance()->EndScene();
 	}
 
 }

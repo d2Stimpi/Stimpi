@@ -338,6 +338,50 @@ namespace Stimpi
 
 #pragma endregion SpriteComponent
 
+#pragma region SortingGroupComponent
+
+	static bool SortingGroupComponent_GetSortingLayerName(uint32_t entityID, MonoString** outLayerName)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<SortingGroupComponent>();
+		if (hasComponent)
+		{
+			auto& sortingGroup = entity.GetComponent<SortingGroupComponent>();
+			*outLayerName = mono_string_new(ScriptEngine::GetAppDomain(), sortingGroup.m_SortingLayerName.c_str());
+		}
+
+		return hasComponent;
+	}
+
+	static bool SortingGroupComponent_SetSortingLayerName(uint32_t entityID, MonoString* layerName)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<SortingGroupComponent>();
+		if (hasComponent)
+		{
+			auto& sortingGroup = entity.GetComponent<SortingGroupComponent>();
+			char* nameCStr = mono_string_to_utf8(layerName);
+			sortingGroup.m_SortingLayerName = nameCStr;
+			mono_free(nameCStr);
+			// Trigger sorting update
+			scene->UpdateLayerSorting({ (entt::entity)entityID, scene });
+		}
+
+		return hasComponent;
+	}
+
+#pragma endregion SortingGroupComponent
+
 #pragma region AnimatedSpriteComponent
 
 	static bool AnimatedSpriteComponent_IsAnimationSet(uint32_t entityID, bool* isSet)
@@ -1371,6 +1415,9 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(SpriteComponent_SetColor);
 		ST_ADD_INTERNAL_CALL(SpriteComponent_SetDisable);
 
+		ST_ADD_INTERNAL_CALL(SortingGroupComponent_GetSortingLayerName);
+		ST_ADD_INTERNAL_CALL(SortingGroupComponent_SetSortingLayerName);
+
 		/// AnimatedSpriteComponent
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_IsAnimationSet);
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_AnimStart);
@@ -1446,6 +1493,7 @@ namespace Stimpi
 		RegisterComponent<QuadComponent>();
 		RegisterComponent<CircleComponent>();
 		RegisterComponent<SpriteComponent>();
+		RegisterComponent<SortingGroupComponent>();
 		RegisterComponent<CameraComponent>();
 		RegisterComponent<RigidBody2DComponent>();
 		RegisterComponent<BoxCollider2DComponent>();

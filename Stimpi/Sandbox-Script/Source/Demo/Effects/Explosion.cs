@@ -12,7 +12,7 @@ namespace Demo
     {
         QuadComponent _quad;
         AnimatedSpriteComponent _anim;
-
+        SortingGroupComponent _sortingGroup;
 
         private bool _played = false;
 
@@ -37,6 +37,9 @@ namespace Demo
 
             _anim = AddComponent<AnimatedSpriteComponent>();
             _anim.AddAnimation("animations\\explosion01.anim");
+
+            _sortingGroup = AddComponent<SortingGroupComponent>();
+            _sortingGroup.SortingLayer = "Front";
         }
 
         public override void OnUpdate(float ts)

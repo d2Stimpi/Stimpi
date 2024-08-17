@@ -346,6 +346,8 @@ namespace Stimpi
 			ST_CORE_INFO("ScriptEngine - sh event {}", (int)event->GetType());
 			if (s_Data->m_Scene->GetRuntimeState() == RuntimeState::STOPPED)
 			{
+				// TODO: check double event trigger on copy/paste?
+				// Missing script fields init after reload of dlls (when scene is loaded, fields are populated)
 				if (event->GetType() == SystemShellEventType::SH_UPDATED)
 				{
 					ReloadAssembly();
@@ -357,7 +359,6 @@ namespace Stimpi
 			}
 		};
 
-		// TODO: fix hot reload of dlls
 		s_Data->m_OnAssetScriptsUpdated = [](SystemShellEvent * event)
 		{
 			if (event->GetType() == SystemShellEventType::SH_UPDATED)
@@ -470,6 +471,8 @@ namespace Stimpi
 		Utils::PrintAssemblyTypes(s_Data->m_ClientAssembly);
 		LoadClassesFromAssembly(s_Data->m_CoreAssembly);
 		LoadClassesFromAssembly(s_Data->m_ClientAssembly);
+
+		LoadInternalClasses();
 
 		// Recreate base Entity ScpritClass because CoreAssembly changed
 		s_Data->m_EntityClass = ScriptClass("Stimpi", "Entity", s_Data->m_CoreAssembly);

@@ -49,6 +49,11 @@ namespace Stimpi
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool SpriteComponent_SetDisable(uint entityID, bool disable);
 
+        /* SortingGroupComponent */
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool SortingGroupComponent_GetSortingLayerName(uint entityID, out string outLayerName);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool SortingGroupComponent_SetSortingLayerName(uint entityID, string layerName);
 
         /* AnimatedSpriteComponent */
         [MethodImplAttribute(MethodImplOptions.InternalCall)]

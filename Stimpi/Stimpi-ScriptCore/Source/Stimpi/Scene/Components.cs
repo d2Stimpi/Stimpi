@@ -100,6 +100,25 @@ namespace Stimpi
         }
     }
 
+    public class SortingGroupComponent : Component
+    {
+        public string SortingLayer
+        {
+            get
+            {
+                if (!InternalCalls.SortingGroupComponent_GetSortingLayerName(Entity.ID, out string outLayerName))
+                    Console.WriteLine($"Entity {Entity.ID} does not have SortingGroupComponent (get layerName)");
+
+                return outLayerName;
+            }
+            set
+            {
+                if (!InternalCalls.SortingGroupComponent_SetSortingLayerName(Entity.ID, value))
+                    Console.WriteLine($"Entity {Entity.ID} does not have SortingGroupComponent (set layerName)");
+            }
+        }
+    }
+
     public enum AnimationState
     {
         RUNNING = 0, 

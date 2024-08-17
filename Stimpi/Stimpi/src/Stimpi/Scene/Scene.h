@@ -103,6 +103,7 @@ namespace Stimpi
 
 		// Debug
 		void OnDebugUpdate(Timestep ts);
+		void RenderDebugData();
 
 	private:
 		entt::registry m_Registry;
