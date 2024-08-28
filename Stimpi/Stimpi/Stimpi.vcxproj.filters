@@ -271,9 +271,6 @@
     <ClCompile Include="src\Stimpi\Core\WindowManager.cpp">
       <Filter>Stimpi\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\Stimpi\Debug\Profiler.cpp">
-      <Filter>Stimpi\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="src\Stimpi\Graphics\Animation\AnimatedSprite.cpp">
       <Filter>Stimpi\Graphics\Animation</Filter>
     </ClCompile>

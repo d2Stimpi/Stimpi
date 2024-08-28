@@ -167,7 +167,6 @@ namespace Stimpi
 		{
 			ST_PROFILE_SCOPE("SubmitForRendering");
 
-			GraphicsConfig graphicsConfig = Project::GetGraphicsConfig();
 			auto& sortingLayers = Project::GetSortingLayers();
 			auto& entityGroups = m_EntitySorter.GetEntityGroups();
 			for (auto& layer : sortingLayers)
@@ -529,16 +528,57 @@ namespace Stimpi
 	{
 		Entity picked = {};
 
-		m_Registry.view<QuadComponent>().each([this, &picked, x, y](auto entity, auto& quad)
+		GraphicsConfig graphicsConfig = Project::GetGraphicsConfig();
+		auto& sortingLayers = Project::GetSortingLayers();
+		auto& entityGroups = m_EntitySorter.GetEntityGroups();
+		for (auto& riter = sortingLayers.rbegin(); riter != sortingLayers.rend(); riter++)
+		{
+			auto& layer = *riter;
+			auto& entityLayerGroup = entityGroups[layer->m_Name];
+			if (!entityLayerGroup.m_Entities.empty())
 			{
-				if (quad.m_PickEnabled)
+				// Reverse iterate trough entities and select first "hit"
+				for (auto& reiter = entityLayerGroup.m_Entities.rbegin(); reiter != entityLayerGroup.m_Entities.rend(); reiter++)
 				{
-					if (SceneUtils::IsPointInRotatedSquare({ x, y }, quad.Center(), quad.m_Size, quad.m_Rotation))
+					Entity entity = Entity((entt::entity)reiter->m_EntityID, this);
+					if (entity.HasComponent<QuadComponent>())
 					{
-						picked = Entity(entity, this);
+						QuadComponent quad = entity.GetComponent<QuadComponent>();
+						if (quad.m_PickEnabled && SceneUtils::IsPointInRotatedSquare({ x, y }, quad.Center(), quad.m_Size, quad.m_Rotation))
+						{
+							picked = entity;
+							break;
+						}
 					}
 				}
-			});
+			}
+
+			// Stop if we already found a "hit" in layers
+			if (picked)
+				break;
+
+			// Check Axis sorted Entities
+			if (layer->m_Name == "Default")
+			{
+				for (auto& reiter = m_EntitySorter.m_AxisSortedEntites.rbegin(); reiter != m_EntitySorter.m_AxisSortedEntites.rend(); reiter++)
+				{
+					Entity entity = Entity((entt::entity)*reiter, this);
+					if (entity.HasComponent<QuadComponent>())
+					{
+						QuadComponent quad = entity.GetComponent<QuadComponent>();
+						if (quad.m_PickEnabled && SceneUtils::IsPointInRotatedSquare({ x, y }, quad.Center(), quad.m_Size, quad.m_Rotation))
+						{
+							picked = entity;
+							break;
+						}
+					}
+				}
+			}
+
+			// Stop if we already found a "hit" in Axis sorted Entities
+			if (picked)
+				break;
+		}
 
 		m_Registry.view<CircleComponent>().each([this, &picked, x, y](auto entity, auto& circle)
 			{

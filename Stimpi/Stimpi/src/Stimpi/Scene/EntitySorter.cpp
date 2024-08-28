@@ -72,7 +72,7 @@ namespace Stimpi
 
 	void EntitySorter::ResetAxisSortedEntites()
 	{
-
+		m_AxisSortedEntites.clear();
 	}
 
 	std::unordered_map<std::string, Stimpi::EntityLayerGroup>& EntitySorter::GetEntityGroups()

@@ -242,7 +242,6 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClCompile Include="src\Stimpi\Core\Time.cpp" />
     <ClCompile Include="src\Stimpi\Core\Window.cpp" />
     <ClCompile Include="src\Stimpi\Core\WindowManager.cpp" />
-    <ClCompile Include="src\Stimpi\Debug\Profiler.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\Animation\AnimatedSprite.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\Animation\Animation.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\Animation\AnimationSerializer.cpp" />

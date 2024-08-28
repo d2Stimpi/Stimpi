@@ -203,7 +203,7 @@ namespace Stimpi
 	}
 }
 
-#define ST_PROFILE 1
+//#define ST_PROFILE 1
 
 #if ST_PROFILE
 #define ST_PROFILE_BEGIN_SESSION(name, filepath) ::Stimpi::Instrumentor::Get().BeginSession(name, filepath)
