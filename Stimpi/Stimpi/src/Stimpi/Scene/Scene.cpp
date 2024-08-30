@@ -580,13 +580,34 @@ namespace Stimpi
 				break;
 		}
 
-		m_Registry.view<CircleComponent>().each([this, &picked, x, y](auto entity, auto& circle)
+		m_Registry.view<CircleComponent>().each([this, &picked, x, y](auto e, auto& circle)
 			{
 				if (SceneUtils::IsPointInCircle({ x, y }, circle.Center(), circle.MaxRadius() / 2.0f))
 				{
-					picked = Entity(entity, this);
+					picked = Entity(e, this);
 				}
 			});
+
+		// Collider box only entities will have priority to be selected, acting as always on top as they are rendered last.
+		// This is only if the debug option is enabled and colliders are visible
+		if (Physics::ShowColliderOutlineEnabled())
+		{
+			m_Registry.view<BoxCollider2DComponent, QuadComponent>().each([this, &picked, x, y](auto e, auto& collider, auto& quad)
+			{
+				if (SceneUtils::IsPointInRotatedSquare({ x, y }, quad.Center(), quad.m_Size, quad.m_Rotation))
+				{
+					picked = Entity(e, this);
+				}
+			});
+
+			m_Registry.view<BoxCollider2DComponent, CircleComponent>().each([this, &picked, x, y](auto e, auto& collider, auto& circle)
+			{
+				if (SceneUtils::IsPointInCircle({ x, y }, circle.Center(), circle.MaxRadius() / 2.0f))
+				{
+					picked = Entity(e, this);
+				}
+			});
+		}
 
 		return picked;
 	}

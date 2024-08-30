@@ -1055,6 +1055,7 @@ namespace Stimpi
 
 	MonoObject* ScriptClass::Instantiate()
 	{
+		ST_CORE_ASSERT(!m_Class);
 		return ScriptEngine::InstantiateClass(m_Class);
 	}
 
