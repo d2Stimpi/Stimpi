@@ -172,7 +172,10 @@ namespace Stimpi
 	void EditorLayer::SetDarkThemeStyle()
 	{
 		auto& colors = ImGui::GetStyle().Colors;
-		colors[ImGuiCol_WindowBg] = ImVec4{ 0.1f, 0.105f, 0.11f, 1.0f };
+		colors[ImGuiCol_WindowBg] = ImVec4{ 0.1f, 0.105f, 0.11f, 1.0f };	// 62, 62, 62
+
+		// Check mark
+		// 102, 102, 102
 
 		// Text
 		colors[ImGuiCol_Text] = ImVec4{ 0.885f, 0.885f, 0.885f, 1.0f };
@@ -202,6 +205,9 @@ namespace Stimpi
 		colors[ImGuiCol_TitleBg] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 		colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 		colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+
+		ImGuiIO& io = ImGui::GetIO();
+		io.Fonts->AddFontFromFileTTF("..\/resources\/misc\/fonts\/Roboto-Regular.ttf", 15);
 	}
 
 	void EditorLayer::SetupComponentContext(Scene* scene)
