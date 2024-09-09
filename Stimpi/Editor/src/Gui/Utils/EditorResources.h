@@ -14,7 +14,7 @@
 #define EDITOR_ICON_ANIM	"anim.png"
 #define EDITOR_ICON_CAM		"cam.png"
 #define EDITOR_ICON_SPRITE	"sprite.png"
-#define EDITOR_ICON_CROSS	"gear.png"
+#define EDITOR_ICON_CROSS	"cross.png"
 #define EDITOR_ICON_SEARCH	"search.png"
 
 

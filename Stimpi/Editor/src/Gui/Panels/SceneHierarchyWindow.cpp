@@ -67,32 +67,36 @@ namespace Stimpi
 
 			if (m_ActiveScene)
 			{
-				// Toolbar - search bar
+				// Toolbar Section
+
+				// Add Entity button
+				if (ImGuiEx::IconButton("##SceneHierarchyToolbarButtonPCH", EDITOR_ICON_CROSS))
+				{
+					s_Context.m_SelectedEntity = m_ActiveScene->CreateEntity("NewEntity");
+				}
+				ImGui::SameLine(34.0f);
+				ImGui::SetNextItemWidth(ImGui::GetWindowContentRegionWidth() - 46.0f);
+
+				// Filter Entities
 				ImGuiEx::SearchInput("##SceneHierarchySearchInput", s_Context.m_SearchTextBuffer, sizeof(s_Context.m_SearchTextBuffer), "All");
 
+				// Remove Entity button
+				ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 8);
+				if (ImGui::Button(" - ##RemoveEntity"))
+				{
+					if (s_Context.m_SelectedEntity)
+					{
+						m_ActiveScene->RemoveEntity(s_Context.m_SelectedEntity);
+						s_Context.m_SelectedEntity = {};
+					}
+				}
+				ImGui::Separator();
 
 				// Add Entity pop-up
 				CreateEntityPopup();
 
 				if (ImGui::TreeNodeEx((void*)&m_ActiveScene, node_flags | ImGuiTreeNodeFlags_DefaultOpen, "Scene"))
 				{
-					// Add Entity Button
-					ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 62);
-					if (ImGui::Button(" + ##NewEntity"))
-					{
-						s_Context.m_SelectedEntity = m_ActiveScene->CreateEntity("NewEntity");
-					}
-
-					// Remove Entity Button
-					ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 30);
-					if (ImGui::Button(" - ##RemoveEntity"))
-					{
-						if (s_Context.m_SelectedEntity)
-						{
-							m_ActiveScene->RemoveEntity(s_Context.m_SelectedEntity);
-							s_Context.m_SelectedEntity = {};
-						}
-					}
 
 					static Entity preSelect;
 					for (auto entity : m_ActiveScene->m_Entities)

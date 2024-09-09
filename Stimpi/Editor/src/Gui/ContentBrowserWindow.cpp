@@ -3,7 +3,9 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Core/Project.h"
+
 #include "Gui/Components/UIPayload.h"
+#include "Gui/Components/ImGuiEx.h"
 
 #include "ImGui/src/imgui.h"
 
@@ -16,6 +18,18 @@
 
 namespace Stimpi
 {
+	struct ContentBrowserWindowContext
+	{
+		char m_SearchTextBuffer[64];
+
+		ContentBrowserWindowContext()
+		{
+			memset(m_SearchTextBuffer, 0, sizeof(m_SearchTextBuffer));
+		}
+	};
+
+	ContentBrowserWindowContext s_Context;
+
 	ContentBrowserWindow::ContentBrowserWindow()
 		: m_CurrentDirectory(ResourceManager::GetAssetsPath())
 	{
@@ -35,9 +49,21 @@ namespace Stimpi
 	{
 		if (m_Show)
 		{
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(2.0f, 4.0f));
 			ImGui::Begin("Content Browser", &m_Show);
 			ImGui::PopStyleVar();
+
+			// Toolbar - Buttons and Search bar
+			if (ImGuiEx::IconButton("##ContentBrowserToolbarButtonPCH", EDITOR_ICON_CROSS))
+			{
+
+			}
+			ImGui::SameLine(28.0f);
+			ImGui::SetNextItemWidth(ImGui::GetWindowContentRegionWidth() - 28.0f);
+
+			// TODO: Different search locations option selection (Project, Current Dir, etc.)
+			ImGuiEx::SearchInput("##ContentBrowserToolbarSearchInput", s_Context.m_SearchTextBuffer, sizeof(s_Context.m_SearchTextBuffer));
+			ImGui::Separator();
 			
 			if (ImGui::BeginTable("##ContentBrowserTable", 2, ImGuiTableFlags_Resizable))
 			{
@@ -90,6 +116,7 @@ namespace Stimpi
 	void ContentBrowserWindow::DrawFolderContentBrowser()
 	{
 		ImGui::BeginChild(ImGui::GetID("FileBrowserSection"), ImVec2(0.0f, 0.0f), false);
+
 		if (m_CurrentDirectory != std::filesystem::path(ResourceManager::GetAssetsPath()))
 		{
 			if (ImGui::Button("<-"))
@@ -108,6 +135,11 @@ namespace Stimpi
 			const auto& path = directoryEntry.path();
 			auto relativePath = std::filesystem::relative(path, ResourceManager::GetAssetsPath());
 			std::string filenameStr = relativePath.filename().string();
+
+			// Search filtering
+			std::string filterTagString = s_Context.m_SearchTextBuffer;
+			if (!filterTagString.empty() && filenameStr.find(filterTagString) == std::string::npos)
+				continue;
 
 			ImGuiStyle& style = ImGui::GetStyle();
 			ImVec2 itemSpacing = style.ItemSpacing;

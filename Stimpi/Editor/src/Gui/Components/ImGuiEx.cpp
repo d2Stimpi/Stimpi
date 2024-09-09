@@ -79,28 +79,28 @@ namespace Stimpi
 
 		ImGuiWindow* window = ImGui::GetCurrentWindow();
 
-		ImGui::SetNextItemWidth(ImGui::GetWindowContentRegionWidth());
+		auto& style = ImGui::GetStyle();
+		ImVec2 cursor = ImGui::GetCursorScreenPos();
+
 		ret = ImGui::InputText(strID, buffer, bufferSize, ImGuiInputTextFlags_OffsetInputByIcon);
 		bool isHovered = ImGui::IsItemHovered();
 		bool isActive = ImGui::IsItemActive();
 
-		ImVec2 cursor = ImGui::GetCursorScreenPos();
 		ImVec2 windowSize = ImGui::GetContentRegionAvail();
 
 		Texture* iconTexture = EditorResources::GetIconTexture(EDITOR_ICON_SEARCH);
 		if (iconTexture->Loaded())
 		{
-			ImVec2 icon_pos_min = { cursor.x + 5, cursor.y - s_Style.m_IconOffset - 5 };
+			ImVec2 icon_pos_min = { cursor.x + 5, cursor.y + style.FramePadding.y };
 			ImVec2 icon_pos_max = { icon_pos_min.x + s_Style.m_SmallIconSize.x, icon_pos_min.y + s_Style.m_SmallIconSize.y };
 			window->DrawList->AddImage((void*)(intptr_t)iconTexture->GetTextureID(), icon_pos_min, icon_pos_max, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImGui::ColorConvertFloat4ToU32(ImVec4(0.785f, 0.785f, 0.785f, 1.0f)));
 		}
 
 		if (strlen(buffer) == 0)
 		{
-			auto& style = ImGui::GetStyle();
 			auto color = ImGui::ColorConvertFloat4ToU32(style.Colors[ImGuiCol_TextDisabled]);
 
-			ImVec2 note_text_pos = { cursor.x + style.SmallIconPadding + style.ItemSpacing.x, cursor.y - s_Style.m_IconOffset - 5 };
+			ImVec2 note_text_pos = { cursor.x + style.SmallIconPadding + style.ItemSpacing.x, cursor.y + style.FramePadding.y };
 			if (isHovered)
 				color = ImGui::ColorConvertFloat4ToU32(style.Colors[ImGuiCol_Text]);
 
