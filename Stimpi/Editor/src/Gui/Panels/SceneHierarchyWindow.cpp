@@ -22,7 +22,19 @@
 
 namespace Stimpi
 {
-	Entity s_SelectedEntity = {};
+	struct SceneHierarchyWindowContext
+	{
+		Entity m_SelectedEntity = {};
+
+		char m_SearchTextBuffer[64];
+
+		SceneHierarchyWindowContext()
+		{
+			memset(m_SearchTextBuffer, 0, sizeof(m_SearchTextBuffer));
+		}
+	};
+
+	SceneHierarchyWindowContext s_Context;
 
 	SceneHierarchyWindow::SceneHierarchyWindow()
 	{
@@ -31,7 +43,7 @@ namespace Stimpi
 		OnSceneChangedListener onScneeChanged = [&]() {
 			ST_CORE_INFO("Scene change detected!");
 			m_ActiveScene = SceneManager::Instance()->GetActiveScene();
-			s_SelectedEntity = {};
+			s_Context.m_SelectedEntity = {};
 		};
 		SceneManager::Instance()->RegisterOnSceneChangeListener(onScneeChanged);
 
@@ -55,6 +67,10 @@ namespace Stimpi
 
 			if (m_ActiveScene)
 			{
+				// Toolbar - search bar
+				ImGuiEx::SearchInput("##SceneHierarchySearchInput", s_Context.m_SearchTextBuffer, sizeof(s_Context.m_SearchTextBuffer), "All");
+
+
 				// Add Entity pop-up
 				CreateEntityPopup();
 
@@ -64,49 +80,54 @@ namespace Stimpi
 					ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 62);
 					if (ImGui::Button(" + ##NewEntity"))
 					{
-						s_SelectedEntity = m_ActiveScene->CreateEntity("NewEntity");
+						s_Context.m_SelectedEntity = m_ActiveScene->CreateEntity("NewEntity");
 					}
 
 					// Remove Entity Button
 					ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 30);
 					if (ImGui::Button(" - ##RemoveEntity"))
 					{
-						if (s_SelectedEntity)
+						if (s_Context.m_SelectedEntity)
 						{
-							m_ActiveScene->RemoveEntity(s_SelectedEntity);
-							s_SelectedEntity = {};
+							m_ActiveScene->RemoveEntity(s_Context.m_SelectedEntity);
+							s_Context.m_SelectedEntity = {};
 						}
 					}
 
 					static Entity preSelect;
 					for (auto entity : m_ActiveScene->m_Entities)
 					{
-						ImGui::PushID((uint32_t)entity);
 						auto entityTag = entity.GetComponent<TagComponent>().m_Tag;
-						
-						if (s_SelectedEntity == entity)
-						{
-							EditorUtils::RenderSelection();
-						}
 
-						if (ImGui::TreeNodeEx((void*)&entity, leaf_flags,"%s", entityTag.c_str()))
+						std::string filterTagString = s_Context.m_SearchTextBuffer;
+						if (filterTagString.empty() || entityTag.find(filterTagString) != std::string::npos)
 						{
-							if (ImGui::IsItemClicked() /*&& ImGui::IsMouseReleased(0)*/)
+							ImGui::PushID((uint32_t)entity);
+
+							if (s_Context.m_SelectedEntity == entity)
 							{
-								//s_SelectedEntity = entity;
+								EditorUtils::RenderSelection();
 							}
-						}
-						if (ImGui::IsItemHovered())
-						{
-							if (ImGui::IsMouseDown(0))
-								preSelect = entity;
-							else if (ImGui::IsMouseReleased(0))
-								s_SelectedEntity = preSelect;
-						}
 
-						UIPayload::BeginSource(PAYLOAD_DATA_TYPE_ENTITY, &entity, sizeof(entity), entityTag.c_str());
+							if (ImGui::TreeNodeEx((void*)&entity, leaf_flags, "%s", entityTag.c_str()))
+							{
+								if (ImGui::IsItemClicked() /*&& ImGui::IsMouseReleased(0)*/)
+								{
+									//s_Context.s_SelectedEntity = entity;
+								}
+							}
+							if (ImGui::IsItemHovered())
+							{
+								if (ImGui::IsMouseDown(0))
+									preSelect = entity;
+								else if (ImGui::IsMouseReleased(0))
+									s_Context.m_SelectedEntity = preSelect;
+							}
 
-						ImGui::PopID();
+							UIPayload::BeginSource(PAYLOAD_DATA_TYPE_ENTITY, &entity, sizeof(entity), entityTag.c_str());
+
+							ImGui::PopID();
+						}
 					}
 					ImGui::TreePop();
 				}
@@ -122,19 +143,19 @@ namespace Stimpi
 	void SceneHierarchyWindow::SetPickedEntity(Entity picked)
 	{
 		if (picked)
-			s_SelectedEntity = picked;
+			s_Context.m_SelectedEntity = picked;
 	}
 
 	Stimpi::Entity SceneHierarchyWindow::GetSelectedEntity()
 	{
-		return s_SelectedEntity;
+		return s_Context.m_SelectedEntity;
 	}
 
 	void SceneHierarchyWindow::ComponentInspectorWidget()
 	{
 		if (ImGui::Begin("Component inspector", &m_ShowInspect))
 		{
-			ShowSelectedEntityComponents((bool)s_SelectedEntity);
+			ShowSelectedEntityComponents((bool)s_Context.m_SelectedEntity);
 		}
 		ImGui::End();
 	}
@@ -211,7 +232,7 @@ namespace Stimpi
 			if (ImGui::Selectable("Remove"))
 			{
 				showPoput = false;
-				s_SelectedEntity.RemoveComponent<QuadComponent>();
+				s_Context.m_SelectedEntity.RemoveComponent<QuadComponent>();
 			}
 
 			return showPoput;
@@ -246,7 +267,7 @@ namespace Stimpi
 			if (ImGui::Selectable("Remove"))
 			{
 				showPoput = false;
-				s_SelectedEntity.RemoveComponent<CircleComponent>();
+				s_Context.m_SelectedEntity.RemoveComponent<CircleComponent>();
 			}
 
 			return showPoput;
@@ -281,7 +302,7 @@ namespace Stimpi
 				if (SearchPopup::OnImGuiRender(filterData))
 				{
 					component.m_ScriptName = SearchPopup::GetSelection();
-					ScriptEngine::OnScriptComponentAdd(component.m_ScriptName, s_SelectedEntity);
+					ScriptEngine::OnScriptComponentAdd(component.m_ScriptName, s_Context.m_SelectedEntity);
 					showPopup = false;
 				}
 			}
@@ -293,11 +314,11 @@ namespace Stimpi
 				ImGuiInputTextFlags fieldInputFlags = ImGuiInputTextFlags_EnterReturnsTrue;
 
 				ImGui::Separator();
-				std::shared_ptr<ScriptInstance> scriptInstance = ScriptEngine::GetScriptInstance(s_SelectedEntity);
+				std::shared_ptr<ScriptInstance> scriptInstance = ScriptEngine::GetScriptInstance(s_Context.m_SelectedEntity);
 				if (scriptInstance != nullptr)
 				{
 					auto& fields = scriptInstance->GetFields();
-					auto& tagName = s_SelectedEntity.GetComponent<TagComponent>().m_Tag;
+					auto& tagName = s_Context.m_SelectedEntity.GetComponent<TagComponent>().m_Tag;
 					for (auto& item : fields)
 					{
 						auto& field = item.second;
@@ -337,8 +358,8 @@ namespace Stimpi
 			if (ImGui::Selectable("Remove"))
 			{
 				showPoput = false;
-				ScriptEngine::OnScriptComponentRemove(s_SelectedEntity);
-				s_SelectedEntity.RemoveComponent<ScriptComponent>();
+				ScriptEngine::OnScriptComponentRemove(s_Context.m_SelectedEntity);
+				s_Context.m_SelectedEntity.RemoveComponent<ScriptComponent>();
 			}
 
 			return showPoput;
@@ -393,7 +414,7 @@ namespace Stimpi
 			if (ImGui::Selectable("Remove"))
 			{
 				showPoput = false;
-				s_SelectedEntity.RemoveComponent<SpriteComponent>();
+				s_Context.m_SelectedEntity.RemoveComponent<SpriteComponent>();
 			}
 
 			return showPoput;
@@ -423,7 +444,7 @@ namespace Stimpi
 					{
 						currentSortingLayer = layer->m_Name;
 						component.m_SortingLayerName = layer->m_Name;
-						m_ActiveScene->UpdateLayerSorting(s_SelectedEntity);
+						m_ActiveScene->UpdateLayerSorting(s_Context.m_SelectedEntity);
 					}
 
 					if (isSelected)
@@ -440,7 +461,7 @@ namespace Stimpi
 					orderInLayerInput = 0;
 
 				component.m_OrderInLayer = orderInLayerInput;
-				m_ActiveScene->UpdateLayerSorting(s_SelectedEntity);
+				m_ActiveScene->UpdateLayerSorting(s_Context.m_SelectedEntity);
 			}
 			EditorUtils::SetActiveItemCaptureKeyboard(false);
 			ImGui::Spacing();
@@ -452,7 +473,7 @@ namespace Stimpi
 			if (ImGui::Selectable("Remove"))
 			{
 				showPoput = false;
-				s_SelectedEntity.RemoveComponent<SortingGroupComponent>();
+				s_Context.m_SelectedEntity.RemoveComponent<SortingGroupComponent>();
 			}
 
 			return showPoput;
@@ -619,7 +640,7 @@ namespace Stimpi
 			if (ImGui::Selectable("Remove"))
 			{
 				showPoput = false;
-				s_SelectedEntity.RemoveComponent<AnimatedSpriteComponent>();
+				s_Context.m_SelectedEntity.RemoveComponent<AnimatedSpriteComponent>();
 			}
 
 			return showPoput;
@@ -663,7 +684,7 @@ namespace Stimpi
 			if (ImGui::Selectable("Remove"))
 			{
 				showPoput = false;
-				s_SelectedEntity.RemoveComponent<CameraComponent>();
+				s_Context.m_SelectedEntity.RemoveComponent<CameraComponent>();
 			}
 
 			return showPoput;
@@ -713,7 +734,7 @@ namespace Stimpi
 			if (ImGui::Selectable("Remove"))
 			{
 				showPoput = false;
-				s_SelectedEntity.RemoveComponent<RigidBody2DComponent>();
+				s_Context.m_SelectedEntity.RemoveComponent<RigidBody2DComponent>();
 			}
 
 			return showPoput;
@@ -770,7 +791,7 @@ namespace Stimpi
 			if (ImGui::Selectable("Remove"))
 			{
 				showPoput = false;
-				s_SelectedEntity.RemoveComponent<BoxCollider2DComponent>();
+				s_Context.m_SelectedEntity.RemoveComponent<BoxCollider2DComponent>();
 			}
 
 			return showPoput;
@@ -787,75 +808,75 @@ namespace Stimpi
 		ImGui::PushItemWidth(100.0f);
 		if (ImGui::BeginCombo("##AddComponentWidget", selectedPreview, flags))
 		{
-			if (!s_SelectedEntity.HasComponent<QuadComponent>())
+			if (!s_Context.m_SelectedEntity.HasComponent<QuadComponent>())
 			{
 				if (ImGui::Selectable("Quad##AddComponent"))
 				{
-					s_SelectedEntity.AddComponent<QuadComponent>();
+					s_Context.m_SelectedEntity.AddComponent<QuadComponent>();
 				}
 			}
 
-			if (!s_SelectedEntity.HasComponent<CircleComponent>())
+			if (!s_Context.m_SelectedEntity.HasComponent<CircleComponent>())
 			{
 				if (ImGui::Selectable("Circle##AddComponent"))
 				{
-					s_SelectedEntity.AddComponent<CircleComponent>();
+					s_Context.m_SelectedEntity.AddComponent<CircleComponent>();
 				}
 			}
 
-			if (!s_SelectedEntity.HasComponent<SpriteComponent>())
+			if (!s_Context.m_SelectedEntity.HasComponent<SpriteComponent>())
 			{
 				if (ImGui::Selectable("Sprite##AddComponent"))
 				{
-					s_SelectedEntity.AddComponent<SpriteComponent>();
+					s_Context.m_SelectedEntity.AddComponent<SpriteComponent>();
 				}
 			}
 
-			if (!s_SelectedEntity.HasComponent<SortingGroupComponent>())
+			if (!s_Context.m_SelectedEntity.HasComponent<SortingGroupComponent>())
 			{
 				if (ImGui::Selectable("SortingGroup##AddComponent"))
 				{
-					s_SelectedEntity.AddComponent<SortingGroupComponent>();
+					s_Context.m_SelectedEntity.AddComponent<SortingGroupComponent>();
 				}
 			}
 
-			if (!s_SelectedEntity.HasComponent<AnimatedSpriteComponent>())
+			if (!s_Context.m_SelectedEntity.HasComponent<AnimatedSpriteComponent>())
 			{
 				if (ImGui::Selectable("AnimatedSprite##AddComponent"))
 				{
-					s_SelectedEntity.AddComponent<AnimatedSpriteComponent>();
+					s_Context.m_SelectedEntity.AddComponent<AnimatedSpriteComponent>();
 				}
 			}
 
-			if (!s_SelectedEntity.HasComponent<ScriptComponent>())
+			if (!s_Context.m_SelectedEntity.HasComponent<ScriptComponent>())
 			{
 				if (ImGui::Selectable("Script##AddComponent"))
 				{
-					s_SelectedEntity.AddComponent<ScriptComponent>();
+					s_Context.m_SelectedEntity.AddComponent<ScriptComponent>();
 				}
 			}
 
-			if (!s_SelectedEntity.HasComponent<CameraComponent>())
+			if (!s_Context.m_SelectedEntity.HasComponent<CameraComponent>())
 			{
 				if (ImGui::Selectable("Camera##AddComponent"))
 				{
-					s_SelectedEntity.AddComponent<CameraComponent>(std::make_shared<Camera>(), false);
+					s_Context.m_SelectedEntity.AddComponent<CameraComponent>(std::make_shared<Camera>(), false);
 				}
 			}
 
-			if (!s_SelectedEntity.HasComponent<RigidBody2DComponent>())
+			if (!s_Context.m_SelectedEntity.HasComponent<RigidBody2DComponent>())
 			{
 				if (ImGui::Selectable("RigidBody2D##AddComponent"))
 				{
-					s_SelectedEntity.AddComponent<RigidBody2DComponent>();
+					s_Context.m_SelectedEntity.AddComponent<RigidBody2DComponent>();
 				}
 			}
 
-			if (!s_SelectedEntity.HasComponent<BoxCollider2DComponent>())
+			if (!s_Context.m_SelectedEntity.HasComponent<BoxCollider2DComponent>())
 			{
 				if (ImGui::Selectable("BoxCollider2D##AddComponent"))
 				{
-					s_SelectedEntity.AddComponent<BoxCollider2DComponent>();
+					s_Context.m_SelectedEntity.AddComponent<BoxCollider2DComponent>();
 				}
 			}
 			ImGui::EndCombo();
@@ -867,63 +888,63 @@ namespace Stimpi
 	{
 		if (show)
 		{
-			if (s_SelectedEntity.HasComponent<TagComponent>())
+			if (s_Context.m_SelectedEntity.HasComponent<TagComponent>())
 			{
-				auto& component = s_SelectedEntity.GetComponent<TagComponent>();
+				auto& component = s_Context.m_SelectedEntity.GetComponent<TagComponent>();
 				TagComponentLayout(component);
 			}
 
-			if (s_SelectedEntity.HasComponent<QuadComponent>())
+			if (s_Context.m_SelectedEntity.HasComponent<QuadComponent>())
 			{
-				auto& component = s_SelectedEntity.GetComponent<QuadComponent>();
+				auto& component = s_Context.m_SelectedEntity.GetComponent<QuadComponent>();
 				QuadComponentLayout(component);
 			}
 
-			if (s_SelectedEntity.HasComponent<CircleComponent>())
+			if (s_Context.m_SelectedEntity.HasComponent<CircleComponent>())
 			{
-				auto& component = s_SelectedEntity.GetComponent<CircleComponent>();
+				auto& component = s_Context.m_SelectedEntity.GetComponent<CircleComponent>();
 				CircleComponentLayout(component);
 			}
 
-			if (s_SelectedEntity.HasComponent<SpriteComponent>())
+			if (s_Context.m_SelectedEntity.HasComponent<SpriteComponent>())
 			{
-				auto& component = s_SelectedEntity.GetComponent<SpriteComponent>();
+				auto& component = s_Context.m_SelectedEntity.GetComponent<SpriteComponent>();
 				SpriteComponentLayout(component);
 			}
 
-			if (s_SelectedEntity.HasComponent<SortingGroupComponent>())
+			if (s_Context.m_SelectedEntity.HasComponent<SortingGroupComponent>())
 			{
-				auto& component = s_SelectedEntity.GetComponent<SortingGroupComponent>();
+				auto& component = s_Context.m_SelectedEntity.GetComponent<SortingGroupComponent>();
 				SortingGroupComponentLayout(component);
 			}
 
-			if (s_SelectedEntity.HasComponent<AnimatedSpriteComponent>())
+			if (s_Context.m_SelectedEntity.HasComponent<AnimatedSpriteComponent>())
 			{
-				auto& component = s_SelectedEntity.GetComponent<AnimatedSpriteComponent>();
+				auto& component = s_Context.m_SelectedEntity.GetComponent<AnimatedSpriteComponent>();
 				AnimatedSpriteComponentLayout(component);
 			}
 
-			if (s_SelectedEntity.HasComponent<ScriptComponent>())
+			if (s_Context.m_SelectedEntity.HasComponent<ScriptComponent>())
 			{
-				auto& component = s_SelectedEntity.GetComponent<ScriptComponent>();
+				auto& component = s_Context.m_SelectedEntity.GetComponent<ScriptComponent>();
 				ScriptComponentLayout(component);
 			}
 
-			if (s_SelectedEntity.HasComponent<CameraComponent>())
+			if (s_Context.m_SelectedEntity.HasComponent<CameraComponent>())
 			{
-				auto& component = s_SelectedEntity.GetComponent<CameraComponent>();
+				auto& component = s_Context.m_SelectedEntity.GetComponent<CameraComponent>();
 				CameraComponentLayout(component);
 			}
 
-			if (s_SelectedEntity.HasComponent<RigidBody2DComponent>())
+			if (s_Context.m_SelectedEntity.HasComponent<RigidBody2DComponent>())
 			{
-				auto& component = s_SelectedEntity.GetComponent<RigidBody2DComponent>();
+				auto& component = s_Context.m_SelectedEntity.GetComponent<RigidBody2DComponent>();
 				RigidBody2DComponentLayout(component);
 			}
 
-			if (s_SelectedEntity.HasComponent<BoxCollider2DComponent>())
+			if (s_Context.m_SelectedEntity.HasComponent<BoxCollider2DComponent>())
 			{
-				auto& component = s_SelectedEntity.GetComponent<BoxCollider2DComponent>();
+				auto& component = s_Context.m_SelectedEntity.GetComponent<BoxCollider2DComponent>();
 				BoxCollider2DComponentLayout(component);
 			}
 		}
@@ -944,16 +965,16 @@ namespace Stimpi
 		{
 			if (ImGui::Selectable("Empty Entity"))
 			{
-				s_SelectedEntity = m_ActiveScene->CreateEntity("NewEntity");
+				s_Context.m_SelectedEntity = m_ActiveScene->CreateEntity("NewEntity");
 			}
 
 			if (ImGui::BeginMenu("Scene"))
 			{
 				if (ImGui::MenuItem("Camera"))
 				{
-					s_SelectedEntity = m_ActiveScene->CreateEntity("Camera_Object");
-					s_SelectedEntity.AddComponent<QuadComponent>();
-					s_SelectedEntity.AddComponent<CameraComponent>(std::make_shared<Camera>(), false);
+					s_Context.m_SelectedEntity = m_ActiveScene->CreateEntity("Camera_Object");
+					s_Context.m_SelectedEntity.AddComponent<QuadComponent>();
+					s_Context.m_SelectedEntity.AddComponent<CameraComponent>(std::make_shared<Camera>(), false);
 				}
 
 				ImGui::EndMenu();
@@ -963,15 +984,15 @@ namespace Stimpi
 			{
 				if (ImGui::MenuItem("Sprite"))
 				{
-					s_SelectedEntity = m_ActiveScene->CreateEntity("Sprite_Object");
-					s_SelectedEntity.AddComponent<QuadComponent>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(10.0f, 10.0f), 0.0f);
-					s_SelectedEntity.AddComponent<SpriteComponent>();
+					s_Context.m_SelectedEntity = m_ActiveScene->CreateEntity("Sprite_Object");
+					s_Context.m_SelectedEntity.AddComponent<QuadComponent>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(10.0f, 10.0f), 0.0f);
+					s_Context.m_SelectedEntity.AddComponent<SpriteComponent>();
 				}
 
 				if (ImGui::MenuItem("Circle"))
 				{
-					s_SelectedEntity = m_ActiveScene->CreateEntity("Circle_Object");
-					s_SelectedEntity.AddComponent<CircleComponent>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(10.0f, 10.0f));
+					s_Context.m_SelectedEntity = m_ActiveScene->CreateEntity("Circle_Object");
+					s_Context.m_SelectedEntity.AddComponent<CircleComponent>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(10.0f, 10.0f));
 				}
 
 				ImGui::EndMenu();

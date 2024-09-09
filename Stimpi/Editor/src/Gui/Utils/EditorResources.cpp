@@ -17,6 +17,7 @@ namespace Stimpi
 		s_EditorIcons.m_GearIcon = AssetManager::GetAssetNoRefCount<Texture>(s_Config.m_ResourcePath / EDITOR_ICON_ANIM);
 		s_EditorIcons.m_GearIcon = AssetManager::GetAssetNoRefCount<Texture>(s_Config.m_ResourcePath / EDITOR_ICON_CAM);
 		s_EditorIcons.m_GearIcon = AssetManager::GetAssetNoRefCount<Texture>(s_Config.m_ResourcePath / EDITOR_ICON_SPRITE);
+		s_EditorIcons.m_GearIcon = AssetManager::GetAssetNoRefCount<Texture>(s_Config.m_ResourcePath / EDITOR_ICON_SEARCH);
 	}
 
 	Stimpi::Texture* EditorResources::GetIconTexture(std::string name)

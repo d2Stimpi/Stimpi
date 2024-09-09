@@ -4320,7 +4320,13 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
         g.ActiveIdAllowOverlap = !io.MouseDown[0];
 
         // Edit in progress
-        const float mouse_x = (io.MousePos.x - frame_bb.Min.x - style.FramePadding.x) + state->ScrollX;
+        float mouse_x_phi;
+        if (flags & ImGuiInputTextFlags_OffsetInputByIcon)
+            mouse_x_phi = (io.MousePos.x - frame_bb.Min.x - style.FramePadding.x - style.SmallIconPadding - style.ItemSpacing.x / 2) + state->ScrollX;
+        else
+            mouse_x_phi = (io.MousePos.x - frame_bb.Min.x - style.FramePadding.x) + state->ScrollX;
+
+        const float mouse_x = mouse_x_phi;
         const float mouse_y = (is_multiline ? (io.MousePos.y - draw_window->DC.CursorPos.y) : (g.FontSize * 0.5f));
 
         if (select_all)
@@ -4777,6 +4783,10 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
     const ImVec4 clip_rect(frame_bb.Min.x, frame_bb.Min.y, frame_bb.Min.x + inner_size.x, frame_bb.Min.y + inner_size.y); // Not using frame_bb.Max because we have adjusted size
     ImVec2 draw_pos = is_multiline ? draw_window->DC.CursorPos : frame_bb.Min + style.FramePadding;
     ImVec2 text_size(0.0f, 0.0f);
+
+    // Patch for offsetting the text input position
+    if (flags & ImGuiInputTextFlags_OffsetInputByIcon)
+        draw_pos.x += style.SmallIconPadding + style.ItemSpacing.x / 2;
 
     // Set upper limit of single-line InputTextEx() at 2 million characters strings. The current pathological worst case is a long line
     // without any carriage return, which would makes ImFont::RenderText() reserve too many vertices and probably crash. Avoid it altogether.

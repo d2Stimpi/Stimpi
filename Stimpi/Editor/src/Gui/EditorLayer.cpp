@@ -172,7 +172,7 @@ namespace Stimpi
 	void EditorLayer::SetDarkThemeStyle()
 	{
 		auto& colors = ImGui::GetStyle().Colors;
-		colors[ImGuiCol_WindowBg] = ImVec4{ 0.1f, 0.105f, 0.11f, 1.0f };	// 62, 62, 62
+		colors[ImGuiCol_WindowBg] = ImVec4{ 0.1f, 0.105f, 0.11f, 1.0f };	// 56 56 56
 
 		// Check mark
 		// 102, 102, 102
@@ -181,14 +181,17 @@ namespace Stimpi
 		colors[ImGuiCol_Text] = ImVec4{ 0.885f, 0.885f, 0.885f, 1.0f };
 
 		// Headers
-		colors[ImGuiCol_Header] = ImVec4{ 0.14f, 0.145f, 0.14f, 1.0f };
-		colors[ImGuiCol_HeaderHovered] = ImVec4{ 0.24f, 0.245f, 0.24f, 1.0f };
+		colors[ImGuiCol_Header] = ImVec4{ 0.14f, 0.145f, 0.14f, 1.0f };			// 62 62 62
+		colors[ImGuiCol_HeaderHovered] = ImVec4{ 0.24f, 0.245f, 0.24f, 1.0f };	// 71 71 71
 		colors[ImGuiCol_HeaderActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 
 		// Buttons
-		colors[ImGuiCol_Button] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
+		/*colors[ImGuiCol_Button] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
 		colors[ImGuiCol_ButtonHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
-		colors[ImGuiCol_ButtonActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+		colors[ImGuiCol_ButtonActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };*/
+		colors[ImGuiCol_Button] = ImVec4{ 0.34f, 0.34f, 0.34f, 1.0f };
+		colors[ImGuiCol_ButtonHovered] = ImVec4{ 0.43f, 0.43f, 0.43f, 1.0f };
+		colors[ImGuiCol_ButtonActive] = ImVec4{ 0.40f, 0.40f, 0.40f, 1.0f };
 
 		// FrameBG
 		colors[ImGuiCol_FrameBg] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
@@ -202,12 +205,15 @@ namespace Stimpi
 		colors[ImGuiCol_TabUnfocused] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 		colors[ImGuiCol_TabUnfocusedActive] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
 
-		colors[ImGuiCol_TitleBg] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+		colors[ImGuiCol_TitleBg] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };		// 40 40 40
 		colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 		colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 
 		ImGuiIO& io = ImGui::GetIO();
 		io.Fonts->AddFontFromFileTTF("..\/resources\/misc\/fonts\/Roboto-Regular.ttf", 15);
+
+		ImGuiStyle& style = ImGui::GetStyle();
+		style.FrameRounding = 3.0f;
 	}
 
 	void EditorLayer::SetupComponentContext(Scene* scene)
