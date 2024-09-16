@@ -25,5 +25,8 @@ namespace Stimpi
 
 		// Text trim by size limit
 		static std::string StringTrimByWidth(std::string text, float widthLimit);
+
+		// Window checks
+		static bool IsWindowActiveAndVisible(const char* name);
 	};
 }

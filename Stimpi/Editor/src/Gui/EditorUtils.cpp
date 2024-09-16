@@ -84,4 +84,10 @@ namespace Stimpi
 		return text;
 	}
 
+	bool EditorUtils::IsWindowActiveAndVisible(const char* name)
+	{
+		ImGuiWindow* window = ImGui::FindWindowByName(name);
+		return (window->Active) && (!window->Hidden);
+	}
+
 }

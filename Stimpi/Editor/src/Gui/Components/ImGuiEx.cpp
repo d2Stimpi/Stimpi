@@ -83,6 +83,7 @@ namespace Stimpi
 		ImVec2 cursor = ImGui::GetCursorScreenPos();
 
 		ret = ImGui::InputText(strID, buffer, bufferSize, ImGuiInputTextFlags_OffsetInputByIcon);
+		EditorUtils::SetActiveItemCaptureKeyboard(false);
 		bool isHovered = ImGui::IsItemHovered();
 		bool isActive = ImGui::IsItemActive();
 

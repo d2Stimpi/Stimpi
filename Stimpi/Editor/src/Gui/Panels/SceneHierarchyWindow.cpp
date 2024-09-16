@@ -7,6 +7,8 @@
 #include "Gui/Components/ImGuiEx.h"
 #include "Gui/Panels/ScriptFieldFragment.h"
 
+#include "Stimpi/Core/InputManager.h"
+#include "Stimpi/Core/WindowManager.h"
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Entity.h"
 
@@ -25,6 +27,7 @@ namespace Stimpi
 	struct SceneHierarchyWindowContext
 	{
 		Entity m_SelectedEntity = {};
+		bool m_WindowFocused = false;
 
 		char m_SearchTextBuffer[64];
 
@@ -47,7 +50,36 @@ namespace Stimpi
 		};
 		SceneManager::Instance()->RegisterOnSceneChangeListener(onScneeChanged);
 
+		InputManager::Instance()->AddKeyboardEventHandler(new KeyboardEventHandler([&](KeyboardEvent event) -> bool 
+			{
+				if (EditorUtils::WantCaptureKeyboard() && s_Context.m_WindowFocused)
+				{
+					if (event.GetKeyCode() == ST_KEY_F && event.GetType() == KeyboardEventType::KEY_EVENT_DOWN)
+					{
+						if (m_ActiveScene != nullptr)
+						{
+							Camera* camera = m_ActiveScene->GetRenderCamera();
+							Entity entity = s_Context.m_SelectedEntity;
+
+							if (entity.HasComponent<QuadComponent>())
+							{
+								QuadComponent quad = entity.GetComponent<QuadComponent>();
+								glm::vec2 view = { camera->GetViewportWidth(), camera->GetViewportHeight() };
+								glm::vec3 camPos = camera->GetPosition();
+								float zoom = camera->GetZoomFactor();
+								camPos.x = quad.m_Position.x - view.x / 2.0f * zoom;
+								camPos.y = quad.m_Position.y - view.y / 2.0f * zoom;
+								camera->SetPosition(camPos);
+							}
+						}
+						return true;
+					}
+				}
+				return false;
+			}));
+
 		m_ActiveScene = SceneManager::Instance()->GetActiveScene();
+
 	}
 
 	SceneHierarchyWindow::~SceneHierarchyWindow()
@@ -64,6 +96,8 @@ namespace Stimpi
 			ImGuiTreeNodeFlags leaf_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; 
 
 			ImGui::Begin("Scene Hierarchy", &m_Show);
+
+			s_Context.m_WindowFocused = ImGui::IsWindowFocused();
 
 			if (m_ActiveScene)
 			{
