@@ -48,7 +48,7 @@ namespace Stimpi
 		static void SetGraphicsConfig(const GraphicsConfig& config) { m_ActiveProject.m_GraphicsConfig = config; }
 
 		static std::vector<std::shared_ptr<SortingLayer>>& GetSortingLayers() { return m_ActiveProject.m_SortingLayers; }
-		static std::string GetDefaultSortingLayerName() { return "Default"; }	// TODO: make default layer not removable
+		static std::string GetDefaultSortingLayerName() { return "Default"; }
 	
 		static PhysicsConfig& GetPhysicsConfig() { return m_ActiveProject.m_PhysicsConfig; }
 	private:

@@ -189,7 +189,7 @@ namespace Stimpi
 
 				// Render entities that don't use SortingGroup component as if in Default layer
 				// TODO: make sure Default layer can't be removed or renamed
-				if (layer->m_Name == "Default")
+				if (layer->m_Name == Project::GetDefaultSortingLayerName())
 				{
 					Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
 

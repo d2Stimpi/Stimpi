@@ -8,6 +8,7 @@ namespace Stimpi
 		LayersConfigPanel();
 
 		void OnImGuiRender();
+		void RemoveLayer(const size_t index);
 
 		static void ShowWindow(bool show);
 		static bool IsVisible();

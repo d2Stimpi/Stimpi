@@ -47,8 +47,9 @@ namespace Stimpi
 							strcpy_s(layerNameInputBuff, layer->m_Name.c_str());
 
 						bool selected = s_Context->m_Selected == i + 1;
+						bool textDisabled = layer->m_Name == Project::GetDefaultSortingLayerName();
 						std::string strID = fmt::format("##{}_{}", layer->m_Name, i);
-						if (ImGuiEx::InputSelectable("Layer", strID.c_str(), layerNameInputBuff, sizeof(layerNameInputBuff), selected))
+						if (ImGuiEx::InputSelectable("Layer", strID.c_str(), layerNameInputBuff, sizeof(layerNameInputBuff), selected, textDisabled))
 						{
 							layer->m_Name = std::string(layerNameInputBuff);
 						}
@@ -86,7 +87,7 @@ namespace Stimpi
 								}
 								s_Context->m_Selected = i + 1;
 							}
-							});
+						});
 						
 					}
 
@@ -103,17 +104,16 @@ namespace Stimpi
 					{
 						if (s_Context->m_Selected != 0)
 						{
-							// Notify Scene to update SortingLayerComponents
-							auto scene = SceneManager::Instance()->GetActiveScene();
-							if (scene)
-							{
-								scene->OnSortingLayerRemove(layers[s_Context->m_Selected - 1]->m_Name);
-							}
-							
-							layers.erase(std::next(layers.begin(), s_Context->m_Selected - 1));
-							s_Context->m_Selected = 0;
+							// Prevent removing default layer
+							RemoveLayer(s_Context->m_Selected - 1);
 						}
 					}
+
+					// Payload drop on remove button to delete layer
+					UIPayload::BeginTarget("Payload_Layer", [this, &layers](void* data, uint32_t size) {
+						size_t index = *(int*)data;
+						RemoveLayer(index);
+					});
 
 					// IsItemHovered checks the remove button to avoid clearing selection index
 					if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !itemHovered && !ImGui::IsItemHovered())
@@ -123,6 +123,32 @@ namespace Stimpi
 				}
 				ImGui::End();
 			}
+		}
+	}
+
+
+	void LayersConfigPanel::RemoveLayer(const size_t index)
+	{
+		auto& layers = Project::GetSortingLayers();
+
+		// Prevent removing default layer
+		if (layers[index]->m_Name == Project::GetDefaultSortingLayerName())
+		{
+			ST_CORE_INFO("{} layer is not allowed to be removed (default layer)!", Project::GetDefaultSortingLayerName());
+		}
+		else
+		{
+			// Notify Scene to update SortingLayerComponents
+			auto scene = SceneManager::Instance()->GetActiveScene();
+			if (scene)
+			{
+				scene->OnSortingLayerRemove(layers[index ]->m_Name);
+			}
+
+			layers.erase(std::next(layers.begin(), index));
+
+			// Clear selection after removal
+			s_Context->m_Selected = 0;
 		}
 	}
 

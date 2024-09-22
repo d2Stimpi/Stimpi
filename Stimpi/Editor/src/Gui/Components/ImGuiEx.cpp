@@ -40,7 +40,7 @@ namespace Stimpi
 		}
 	}
 
-	bool ImGuiEx::InputSelectable(const char* label, const char* strID, char* buf, size_t bufSize, bool selected)
+	bool ImGuiEx::InputSelectable(const char* label, const char* strID, char* buf, size_t bufSize, bool selected, bool textDisabled)
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 		bool retVal = false;
@@ -60,9 +60,14 @@ namespace Stimpi
 			ImGui::RenderFrame(bb.Min, bb.Max, col, false, 0.0f);
 		}
 
+		if (textDisabled)
+			ImGui::BeginDisabled();
 		ImGui::Text(label);
 		ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 150);
 		retVal = ImGui::InputText(strID, buf, bufSize, ImGuiInputTextFlags_EnterReturnsTrue);
+		if (textDisabled)
+			ImGui::EndDisabled();
+
 		EditorUtils::SetActiveItemCaptureKeyboard(false);
 
 		// Invisible button is used to enable Drag and Drop, IsItemActive and IsItemHovered on this "item"

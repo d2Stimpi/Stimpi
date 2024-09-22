@@ -51,14 +51,17 @@ namespace Stimpi
 				{
 					ImGui::Text("GC used size %ld", (long)ScriptEngine::GetGCUsedSize());
 					ImGui::Text("GC heap size %ld", (long)ScriptEngine::GetGCHeapSize());
-					/*if (ImGui::Button("GC Collect"))
+					// TODO: fix these actions - atm disabled
+					ImGui::BeginDisabled();
+					if (ImGui::Button("GC Collect"))
 					{
 						ScriptEngine::ForceGCCollect();
-					}*/
+					}
 					if (ImGui::Button("Reload Assembly"))
 					{
 						ScriptEngine::ReloadAssembly();
 					}
+					ImGui::EndDisabled();
 				}
 			}
 			ImGui::End();

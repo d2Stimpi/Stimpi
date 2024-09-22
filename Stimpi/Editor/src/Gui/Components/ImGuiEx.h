@@ -23,7 +23,7 @@ namespace Stimpi
 
 		static bool IconButton(const char* strID, std::string iconName);
 		static void Icon(std::string iconName);
-		static bool InputSelectable(const char* label, const char* strID, char* buf, size_t buf_size, bool selected = false);
+		static bool InputSelectable(const char* label, const char* strID, char* buf, size_t bufSize, bool selected = false, bool textDisabled = false);
 		static bool SearchInput(const char* strID, char* buffer, size_t bufferSize, const char* hintTxt = "Search");
 	};
 }
