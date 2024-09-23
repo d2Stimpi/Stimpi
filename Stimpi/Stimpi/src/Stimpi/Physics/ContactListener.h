@@ -20,7 +20,7 @@ namespace Stimpi
 
 	private:
 		bool EmitCollisionEvents(CollisionEventType type, b2Contact* contact);
-		void PopulateCollisionEventData(b2Contact* contact, Collision& collision);
+		void PopulateCollisionEventData(b2Contact* contact, Collision* collision);
 		bool InvokeCollisionEventMethod(CollisionEventType type, Collision collision);
 
 	private:

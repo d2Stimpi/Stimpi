@@ -900,68 +900,7 @@ namespace Stimpi
 
 	bool Scene::ProcessPhysicsEvent(PhysicsEvent* event)
 	{
-		// Check for correct Scene runtime state first
-		if (m_RuntimeState == RuntimeState::STOPPED)
-		{
-			return false;
-		}
-
-		Collision collisionData = event->GetCollisionData();
-		Entity owner = { (entt::entity)collisionData.m_Owner, this };
-		
-		if (event->GetType() == PhysicsEventType::COLLISION_BEGIN)
-		{
-			// Register current active Collisions
-			Physics::AddActiveCollision(new Collision(collisionData));
-		}
-		else if (event->GetType() == PhysicsEventType::COLLISION_END)
-		{
-			// Remove from active Collisions list
-			Physics::RemoveActiveCollision(&collisionData);
-		}
-		else if (event->GetType() == PhysicsEventType::COLLISION_PRESOLVE)
-		{
-			
-		}
-		else if (event->GetType() == PhysicsEventType::COLLISION_POSTSOLVE)
-		{
-			Physics::UpdateActiveCollision(&collisionData);
-		}
-
-		if (owner.HasComponent<ScriptComponent>())
-		{
-			auto instance = ScriptEngine::GetScriptInstance(owner);
-			if (instance == nullptr)
-			{
-				//ST_CORE_INFO("Skipp processing physics event, no Script instance! OwnerID: {}", (uint32_t)owner);
-				//ST_CORE_ASSERT_MSG(!instance, "Processing physics event, but no Script instance! Owner: {}", (uint32_t)owner);
-				return true;
-			}
-
-			if (event->GetType() == PhysicsEventType::COLLISION_BEGIN)
-			{
-				instance->InvokeOnCollisionBegin(event->GetCollisionData());
-				return true;
-			}
-
-			if (event->GetType() == PhysicsEventType::COLLISION_END)
-			{
-				instance->InvokeOnCollisionEnd(event->GetCollisionData());
-				return true;
-			}
-
-			if (event->GetType() == PhysicsEventType::COLLISION_PRESOLVE)
-			{
-				instance->InvokeOnCollisionPreSolve(event->GetCollisionData());
-				return true;
-			}
-
-			if (event->GetType() == PhysicsEventType::COLLISION_POSTSOLVE)
-			{
-				instance->InvokeOnCollisionPostSolve(event->GetCollisionData());
-				return true;
-			}
-		}
+		ST_CORE_WARN("ProcessPhysicsEvent not currently used! Collision is handled in place.");
 
 		return false;
 	}

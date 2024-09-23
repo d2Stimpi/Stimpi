@@ -64,7 +64,7 @@ namespace Stimpi
 		return true;
 	}
 
-	void ContactListener::PopulateCollisionEventData(b2Contact* contact, Collision& collision)
+	void ContactListener::PopulateCollisionEventData(b2Contact* contact, Collision* collision)
 	{
 		b2Body* bodyA = contact->GetFixtureA()->GetBody();
 		b2Body* bodyB = contact->GetFixtureB()->GetBody();
@@ -83,14 +83,14 @@ namespace Stimpi
 			b2Vec2 impactVelocity = vel1 - vel2;
 			ct.m_ImpactVelocity = { impactVelocity.x, impactVelocity.y };
 
-			collision.m_Contacts.push_back(ct);
+			collision->m_Contacts.push_back(ct);
 			if (CONTACTLISTENER_DBG) ST_CORE_INFO("ContactListener: contact point {}", ct.m_Point);
 		}
 
 		b2Vec2 vel1 = bodyA->GetLinearVelocityFromLocalPoint(worldManifold.points[0]);	// TODO: what about [1] point?
 		b2Vec2 vel2 = bodyB->GetLinearVelocityFromLocalPoint(worldManifold.points[0]);
 		b2Vec2 impactVelocity = vel1 - vel2;
-		collision.m_ImpactVelocity = { impactVelocity.x, impactVelocity.y };
+		collision->m_ImpactVelocity = { impactVelocity.x, impactVelocity.y };
 	}
 
 	bool ContactListener::EmitCollisionEvents(CollisionEventType type, b2Contact* contact)
@@ -103,23 +103,28 @@ namespace Stimpi
 		b2BodyUserData userDataA = bodyA->GetUserData();
 		b2BodyUserData userDataB = bodyB->GetUserData();
 
-		Collision collisionA = Collision();
-		collisionA.m_Owner = userDataA.pointer;
-		collisionA.m_ColliderEntityID = userDataB.pointer;
-		PopulateCollisionEventData(contact, collisionA);
+		//Collision collisionA = Collision();
+		std::shared_ptr<Collision> collisionA = std::make_shared<Collision>();
+		collisionA->m_Owner = userDataA.pointer;
+		collisionA->m_ColliderEntityID = userDataB.pointer;
+		PopulateCollisionEventData(contact, collisionA.get());
 
-		Physics::SetActiveCollision(new Collision(collisionA));
+		// For debug contact draw
+		//Physics::AddActiveCollision(new Collision(collisionA));
+
+		Physics::SetActiveCollision(collisionA);
 		// Invoke script
-		resultA = (InvokeCollisionEventMethod(type, collisionA));
+		resultA = (InvokeCollisionEventMethod(type, *collisionA));
 
-		Collision collisionB = Collision();
-		collisionB.m_Owner = userDataB.pointer;
-		collisionB.m_ColliderEntityID = userDataA.pointer;
-		PopulateCollisionEventData(contact, collisionB);
+		//Collision collisionB = Collision();
+		std::shared_ptr<Collision> collisionB = std::make_shared<Collision>();
+		collisionB->m_Owner = userDataB.pointer;
+		collisionB->m_ColliderEntityID = userDataA.pointer;
+		PopulateCollisionEventData(contact, collisionB.get());
 
-		Physics::SetActiveCollision(new Collision(collisionB));
+		Physics::SetActiveCollision(collisionB);
 		// Invoke script
-		resultB = InvokeCollisionEventMethod(type, collisionB);
+		resultB = InvokeCollisionEventMethod(type, *collisionB);
 
 		if (CONTACTLISTENER_DBG) ST_CORE_INFO("ContactListener: Event {} - A: {}, B: {}", GetStringCollisionEventType(type), userDataA.pointer, userDataB.pointer);
 		

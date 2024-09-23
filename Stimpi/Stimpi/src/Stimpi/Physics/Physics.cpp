@@ -43,11 +43,11 @@ namespace Stimpi
 	}
 
 
-	void Physics::SetActiveCollision(Collision* collision)
+	void Physics::SetActiveCollision(std::shared_ptr<Collision> collision)
 	{
 		// Either clear the data or replace the data
 		if (collision != nullptr)
-			m_ActiveCollision.reset(collision);
+			m_ActiveCollision = collision;
 		else
 			m_ActiveCollision.reset();
 	}

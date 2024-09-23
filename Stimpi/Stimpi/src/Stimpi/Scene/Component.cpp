@@ -13,7 +13,8 @@ namespace Stimpi
 		{
 			auto& sorter = s_ActiveScene->GetEntitySorter();
 			// Sort only if we have something to render in the entity
-			if (entity.HasComponent<QuadComponent>() && (entity.HasComponent<SpriteComponent>() || entity.HasComponent<AnimatedSpriteComponent>()))
+			if (entity.HasComponent<QuadComponent>()
+				&& (entity.HasComponent<SpriteComponent>() || entity.HasComponent<AnimatedSpriteComponent>()))
 			{
 				auto& quad = entity.GetComponent<QuadComponent>();
 				float sortValue = 0.0f;
@@ -22,6 +23,18 @@ namespace Stimpi
 				case RenderingOrderAxis::X_AXIS: sortValue = quad.m_Position.x;	break;
 				case RenderingOrderAxis::Y_AXIS: sortValue = quad.m_Position.y;	break;
 				case RenderingOrderAxis::Z_AXIS: sortValue = quad.m_Position.z;	break;
+				}
+				sorter.SortEntityByAxis(entity, sortValue);
+			}
+			else if (entity.HasComponent<CircleComponent>())
+			{
+				auto& circle = entity.GetComponent<CircleComponent>();
+				float sortValue = 0.0f;
+				switch (graphicsConfig.m_RenderingOrderAxis)
+				{
+				case RenderingOrderAxis::X_AXIS: sortValue = circle.m_Position.x;	break;
+				case RenderingOrderAxis::Y_AXIS: sortValue = circle.m_Position.y;	break;
+				case RenderingOrderAxis::Z_AXIS: sortValue = circle.m_Position.z;	break;
 				}
 				sorter.SortEntityByAxis(entity, sortValue);
 			}
@@ -47,6 +60,22 @@ namespace Stimpi
 	}
 
 	static void OnQuadDestruct(entt::registry& reg, entt::entity ent)
+	{
+		Entity entity = { ent, s_ActiveScene };
+
+		if (!entity.HasComponent<SortingGroupComponent>())
+			CheckAndSortEntityByAxis(entity);
+	}
+
+	static void OnCircleConstruct(entt::registry& reg, entt::entity ent)
+	{
+		Entity entity = { ent, s_ActiveScene };
+
+		if (!entity.HasComponent<SortingGroupComponent>())
+			CheckAndSortEntityByAxis(entity);
+	}
+
+	static void OnCircleDestruct(entt::registry& reg, entt::entity ent)
 	{
 		Entity entity = { ent, s_ActiveScene };
 
@@ -176,6 +205,7 @@ namespace Stimpi
 
 		// on_construct
 		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(QuadComponent, OnQuadConstruct);
+		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(CircleComponent, OnCircleConstruct);
 		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(CameraComponent, OnCameraConstruct);
 		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(ScriptComponent, OnScriptConstruct);
 		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(SpriteComponent, OnSpriteConstruct);
@@ -184,6 +214,7 @@ namespace Stimpi
 
 		// on_destroy
 		ENTT_REGISTER_COMPONENT_ON_DESTROY(QuadComponent, OnQuadDestruct);
+		ENTT_REGISTER_COMPONENT_ON_DESTROY(CircleComponent, OnCircleDestruct);
 		ENTT_REGISTER_COMPONENT_ON_DESTROY(CameraComponent, OnCameraDestruct);
 		ENTT_REGISTER_COMPONENT_ON_DESTROY(SpriteComponent, OnSpriteDestruct);
 		ENTT_REGISTER_COMPONENT_ON_DESTROY(AnimatedSpriteComponent, OnAnimatedSpriteDestruct);
@@ -195,6 +226,7 @@ namespace Stimpi
 	{
 		// on_construct
 		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(QuadComponent, OnQuadConstruct);
+		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(CircleComponent, OnCircleConstruct);
 		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(CameraComponent, OnCameraConstruct);
 		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(ScriptComponent, OnScriptConstruct);
 		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(SpriteComponent, OnSpriteConstruct);
@@ -203,6 +235,7 @@ namespace Stimpi
 
 		// on_destroy
 		ENTT_REMOVE_COMPONENT_ON_DESTROY(QuadComponent, OnQuadDestruct);
+		ENTT_REMOVE_COMPONENT_ON_DESTROY(CircleComponent, OnCircleDestruct);
 		ENTT_REMOVE_COMPONENT_ON_DESTROY(CameraComponent, OnCameraDestruct);
 		ENTT_REMOVE_COMPONENT_ON_DESTROY(SpriteComponent, OnSpriteDestruct);
 		ENTT_REMOVE_COMPONENT_ON_DESTROY(AnimatedSpriteComponent, OnAnimatedSpriteDestruct);

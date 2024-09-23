@@ -105,14 +105,14 @@ namespace Sandbox
             {
                 if (log) Console.WriteLine("Contacts is null");
             }
-
-            Vector2 f = new Vector2(0.0f, jumpForce);
-            Physics.ApplyImpulseCenter(ID, f, false);
         }
 
         public override void OnCollisionEnd(Collision collision)
         {
             base.OnCollisionEnd(collision);
+
+            Vector2 f = new Vector2(0.0f, jumpForce);
+            Physics.ApplyImpulseCenter(ID, f, false);
         }
     }
 }
