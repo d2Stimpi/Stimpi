@@ -60,12 +60,15 @@ namespace Stimpi
 		static void SetActiveCollision(std::shared_ptr<Collision> collision);
 		static Collision* GetActiveCollision();
 
-		static void AddActiveCollision(Collision* collision);
+		static void AddActiveCollision(std::shared_ptr<Collision> collision);
 		static void RemoveActiveCollision(Collision* collision);
 		static void UpdateActiveCollision(Collision* collision);
 		static void ClearActiveCollisions();
 		static std::vector<std::shared_ptr<Collision>>& GetActiveCollisions();
 
 		static Collision* FindCollision(uint32_t ownerID, uint32_t otherID);
+
+		// Stats
+		static size_t GetActiveCollisionsCount();
 	};
 }

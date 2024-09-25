@@ -103,20 +103,30 @@ namespace Stimpi
 		b2BodyUserData userDataA = bodyA->GetUserData();
 		b2BodyUserData userDataB = bodyB->GetUserData();
 
-		//Collision collisionA = Collision();
 		std::shared_ptr<Collision> collisionA = std::make_shared<Collision>();
 		collisionA->m_Owner = userDataA.pointer;
 		collisionA->m_ColliderEntityID = userDataB.pointer;
 		PopulateCollisionEventData(contact, collisionA.get());
 
 		// For debug contact draw
-		//Physics::AddActiveCollision(new Collision(collisionA));
+		if (type == CollisionEventType::COLLISION_BEGIN)
+		{
+			Physics::AddActiveCollision(collisionA);
+		}
+		else if (type == CollisionEventType::COLLISION_POSTSOLVE || type == CollisionEventType::COLLISION_PRESOLVE)
+		{
+			Physics::UpdateActiveCollision(collisionA.get());
+		}
+		else if (type == CollisionEventType::COLLISION_END)
+		{
+			Physics::RemoveActiveCollision(collisionA.get());
+		}
+
 
 		Physics::SetActiveCollision(collisionA);
 		// Invoke script
 		resultA = (InvokeCollisionEventMethod(type, *collisionA));
 
-		//Collision collisionB = Collision();
 		std::shared_ptr<Collision> collisionB = std::make_shared<Collision>();
 		collisionB->m_Owner = userDataB.pointer;
 		collisionB->m_ColliderEntityID = userDataA.pointer;

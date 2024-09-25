@@ -944,7 +944,7 @@ namespace Stimpi
 				{
 					for (Contact& contact : collision->m_Contacts)
 					{
-						Renderer2D::Instance()->SubmitCircle({ contact.m_Point.x, contact.m_Point.y, 0.0f }, { 1.0f, 1.0f }, {}, 1.0f, 0.005f);
+						Renderer2D::Instance()->SubmitCircle({ contact.m_Point.x, contact.m_Point.y, 0.0f }, { 1.0f, 1.0f }, {0.8f, 0.8f, 0.2f, 1.0f}, 1.0f, 0.005f);
 					}
 				}
 				Renderer2D::Instance()->EndScene();

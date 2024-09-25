@@ -63,6 +63,12 @@ namespace Stimpi
 					}
 					ImGui::EndDisabled();
 				}
+
+				ImGui::Separator();
+				if (ImGui::CollapsingHeader("Physics##Global Stats", ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					ImGui::Text("Active collisions %d", Physics::GetActiveCollisionsCount());
+				}
 			}
 			ImGui::End();
 		}

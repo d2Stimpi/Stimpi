@@ -58,13 +58,11 @@ namespace Stimpi
 		return m_ActiveCollision.get();
 	}
 
-	void Physics::AddActiveCollision(Collision* collision)
+	void Physics::AddActiveCollision(std::shared_ptr<Collision> collision)
 	{
 		if (collision != nullptr)
 		{
-			std::shared_ptr<Collision> data;
-			data.reset(collision);
-			m_ActiveCollisions.push_back(data);
+			m_ActiveCollisions.push_back(collision);
 		}
 	}
 
@@ -117,6 +115,12 @@ namespace Stimpi
 				return collision.get();
 			}
 		}
+	}
+
+
+	size_t Physics::GetActiveCollisionsCount()
+	{
+		return m_ActiveCollisions.size();
 	}
 
 }
