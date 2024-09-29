@@ -6,24 +6,51 @@
 
 #include "ImGui/src/imgui_internal.h"
 
+// TODO: combine Toolbar and ImGuiEx styles
+
 namespace Stimpi
 {
 	ImGuiExStyle s_Style;
+	std::vector<ImGuiExStyle> s_StyleStack;
 
 	ImGuiExStyle& ImGuiEx::GetStyle()
 	{
 		return s_Style;
 	}
 
-	bool ImGuiEx::IconButton(const char* strID, std::string iconName)
+	// TODO: assert check for Push/Pop pair consistency
+	void ImGuiEx::PushStyle(ImGuiExStyle style)
+	{
+		s_StyleStack.push_back(s_Style);
+		s_Style = style;
+	}
+
+	void ImGuiEx::PopStyle()
+	{
+		if (s_StyleStack.size() > 0)
+		{
+			s_Style = s_StyleStack.back();
+			s_StyleStack.pop_back();
+		}
+	}
+
+	bool ImGuiEx::IconButton(const char* strID, std::string iconName, ImVec2 size)
 	{
 		bool retVal = false;
+		auto& style = ImGui::GetStyle();
+
+		ImVec2 cursor = ImGui::GetCursorScreenPos();
+
+		retVal = ImGui::Button(strID, size);
+
 		Texture* iconTexture = EditorResources::GetIconTexture(iconName);
 		if (iconTexture->Loaded())
 		{
-			ImVec2 uv_min = ImVec2(0.0f, 1.0f);
-			ImVec2 uv_max = ImVec2(1.0f, 0.0f);
-			retVal = ImGui::ImageButton(strID, (void*)(intptr_t)iconTexture->GetTextureID(), s_Style.m_IconButtonSize, uv_min, uv_max);
+			ImGuiWindow* window = ImGui::GetCurrentWindow();
+
+			ImVec2 icon_pos_min = { cursor.x + size.x / 2.0f - s_Style.m_SmallIconSize.x / 2.0f, cursor.y + style.FramePadding.y };
+			ImVec2 icon_pos_max = { icon_pos_min.x + s_Style.m_SmallIconSize.x, icon_pos_min.y + s_Style.m_SmallIconSize.y };
+			window->DrawList->AddImage((void*)(intptr_t)iconTexture->GetTextureID(), icon_pos_min, icon_pos_max, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImGui::ColorConvertFloat4ToU32(ImVec4(0.785f, 0.785f, 0.785f, 1.0f)));
 		}
 
 		return retVal;

@@ -16,7 +16,13 @@
 #define EDITOR_ICON_SPRITE	"sprite.png"
 #define EDITOR_ICON_CROSS	"cross.png"
 #define EDITOR_ICON_SEARCH	"search.png"
+#define EDITOR_ICON_HAND	"hand.png"
+#define EDITOR_ICON_MOVE	"move.png"
 
+
+// Default style initializer values
+constexpr ImVec2 s_DefaultIconButtonSize = { 23.0f, 21.0f };
+constexpr ImVec2 s_DefaultSmallIconSize = { 16.0f, 16.0f };
 
 namespace Stimpi
 {

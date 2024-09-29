@@ -5,6 +5,7 @@ Scene:
     QuadComponent:
       - 0
       - 0
+      - 0
       - 120
       - 10
       - 0
@@ -40,6 +41,7 @@ Scene:
       - 0
       - 0
       - 0
+      - 0
     CameraComponent:
       Position:
         - 0
@@ -59,6 +61,7 @@ Scene:
     QuadComponent:
       - 68.1890869
       - 28.858181
+      - 0
       - 19.3090858
       - 3
       - 0
@@ -91,6 +94,7 @@ Scene:
     QuadComponent:
       - 32.1163559
       - 46.5454407
+      - 0
       - 19.3090858
       - 3
       - 0
@@ -124,7 +128,7 @@ Scene:
       Position:
         - 13.9636421
         - 17.9200001
-        - 0.0
+        - 0
       Size:
         - 6
         - 6
@@ -138,6 +142,8 @@ Scene:
       Fade: 0.00499999989
     ScriptComponent:
       ScriptName: Stimpi.Ball
+      ScriptFields:
+        {}
     RigidBody2DComponent:
       Type: Dynamic
       FixedRotation: false

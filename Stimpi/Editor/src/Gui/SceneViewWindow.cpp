@@ -11,9 +11,11 @@
 #include "Stimpi/Scene/Utils/SceneUtils.h"
 
 #include "Gui/Components/UIPayload.h"
+#include "Gui/Components/Toolbar.h"
 #include "Gui/Panels/SceneHierarchyWindow.h"
 #include "Gui/Gizmo2D.h"
 #include "Gui/EditorUtils.h"
+#include "Gui/Utils/Utils.h"
 
 #include <cmath>
 
@@ -58,9 +60,31 @@ namespace Stimpi
 		auto camera = scene->GetRenderCamera();
 		ST_CORE_ASSERT(!camera);
 
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 2.0f));
 		ImGui::Begin("Scene View", &m_Show, m_Flags);
 		ImGui::PopStyleVar();
+
+		auto& toolbarStyle = Toolbar::GetStyle();
+		toolbarStyle.m_Height = 22.0f;
+
+		Toolbar::PushStyle(toolbarStyle);
+		Toolbar::Begin("SceneViewToolbar");
+		{
+			if (Toolbar::ToolbarIconButton("##Hand_SceneViewToolbar", EDITOR_ICON_HAND, 30.0f))
+			{
+				ST_CORE_INFO("Btn1 button pressed");
+			}
+			Toolbar::Separator();
+
+			if (Toolbar::ToolbarIconButton("##Move_SceneViewToolbar", EDITOR_ICON_MOVE, 30.0f))
+			{
+				ST_CORE_INFO("Btn2 button pressed");
+			}
+			Toolbar::Separator();
+		}
+		Toolbar::End();
+		Toolbar::PopStyle();
+
 		ImGui::BeginChild("##DropTarget-SceneView");	// Used to be able to catch drag-drop item on whole window
 
 		ImVec2 pos = ImGui::GetCursorScreenPos();

@@ -9,8 +9,8 @@ namespace Stimpi
 {
 	struct ImGuiExStyle
 	{
-		ImVec2 m_IconButtonSize = { 15.0f, 15.0f };
-		ImVec2 m_SmallIconSize = { 16.0f, 16.0f };
+		ImVec2 m_IconButtonSize = s_DefaultIconButtonSize;
+		ImVec2 m_SmallIconSize = s_DefaultSmallIconSize;
 		float m_IconOffset = 17.0f;	// Button width + 4
 
 		ImGuiExStyle() = default;
@@ -20,8 +20,10 @@ namespace Stimpi
 	{
 	public:
 		static ImGuiExStyle& GetStyle();
+		static void PushStyle(ImGuiExStyle style);
+		static void PopStyle();
 
-		static bool IconButton(const char* strID, std::string iconName);
+		static bool IconButton(const char* strID, std::string iconName, ImVec2 size = s_DefaultIconButtonSize);
 		static void Icon(std::string iconName);
 		static bool InputSelectable(const char* label, const char* strID, char* buf, size_t bufSize, bool selected = false, bool textDisabled = false);
 		static bool SearchInput(const char* strID, char* buffer, size_t bufferSize, const char* hintTxt = "Search");

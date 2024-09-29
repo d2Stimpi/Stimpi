@@ -2,20 +2,11 @@
 #include "Gui/Components/Toolbar.h"
 
 #include "Stimpi/Log.h"
-#include "Gui/Components/ImGuiEx.h"
 
 #include "ImGui/src/imgui_internal.h"
 
 namespace Stimpi
 {
-	struct ToolbarStyle
-	{
-		float m_Height = 35.0f;
-		float m_SeparatorWidth = 2.0f;
-	};
-
-	static ToolbarStyle s_Style;
-
 	struct ToolbarData
 	{
 		std::string m_Name;
@@ -31,8 +22,10 @@ namespace Stimpi
 		std::vector<std::shared_ptr<ToolbarData>> m_Toolbars;
 
 		ToolbarData* m_CurrentToolbar = nullptr;
-
 		ImDrawList* m_DrawList = nullptr;
+
+		std::vector<ToolbarStyle> m_StyleStack;
+		ToolbarStyle m_CurrentStyle;
 	};
 
 	static ToolbarContext s_Context;
@@ -91,7 +84,7 @@ namespace Stimpi
 		s_Context.m_CurrentToolbar->m_RegionWidth = windowSize.x;
 
 		ImVec2 min = cursorPos;
-		ImVec2 max = {min.x + windowSize.x, min.y + s_Style.m_Height}; // TODO: style it!
+		ImVec2 max = {min.x + windowSize.x, min.y + s_Context.m_CurrentStyle.m_Height}; // TODO: style it!
 
 		s_Context.m_DrawList->AddRectFilled(min, max, ImGui::GetColorU32(ImGui::GetStyleColorVec4(ImGuiCol_FrameBg)));
 
@@ -100,7 +93,7 @@ namespace Stimpi
 		s_Context.m_CurrentToolbar->m_IsHovered = ImGui::IsItemHovered(); // Hovered
 		s_Context.m_CurrentToolbar->m_IsActive = ImGui::IsItemActive();   // Held*/
 
-		ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + s_Style.m_Height + 3 });
+		ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + s_Context.m_CurrentStyle.m_Height + 3 });
 	}
 
 	bool Toolbar::ToolbarButton(const char* name)
@@ -111,7 +104,24 @@ namespace Stimpi
 		ImVec2 cursor = ImGui::GetCursorScreenPos();
 
 		ImGui::SetCursorScreenPos(s_Context.m_CurrentToolbar->m_Pos);
-		ret = ImGui::Button(name, { 0.0f, s_Style.m_Height });
+		ret = ImGui::Button(name, { 0.0f, s_Context.m_CurrentStyle.m_Height });
+		ImVec2 btnSize = ImGui::GetItemRectSize();
+
+		ImGui::SetCursorScreenPos(cursor);
+		// Updated local cursor position
+		s_Context.m_CurrentToolbar->m_Pos.x += btnSize.x;
+		return ret;
+	}
+
+	bool Toolbar::ToolbarIconButton(const char* name, const char* iconName, float width)
+	{
+		IM_ASSERT_USER_ERROR(s_Context.m_CurrentToolbar != nullptr, "Toolbar Begin() not called!");
+
+		bool ret = false;
+		ImVec2 cursor = ImGui::GetCursorScreenPos();
+
+		ImGui::SetCursorScreenPos(s_Context.m_CurrentToolbar->m_Pos);
+		ret = ImGuiEx::IconButton(name, iconName, { width, s_Context.m_CurrentStyle.m_Height });
 		ImVec2 btnSize = ImGui::GetItemRectSize();
 
 		ImGui::SetCursorScreenPos(cursor);
@@ -123,12 +133,33 @@ namespace Stimpi
 	void Toolbar::Separator()
 	{
 		ImVec2 min = s_Context.m_CurrentToolbar->m_Pos;
-		ImVec2 max = { min.x + s_Style.m_SeparatorWidth, min.y + s_Style.m_Height };
+		ImVec2 max = { min.x + s_Context.m_CurrentStyle.m_SeparatorWidth, min.y + s_Context.m_CurrentStyle.m_Height };
 
 		s_Context.m_DrawList->AddRectFilled(min, max, ImGui::GetColorU32(ImGui::GetStyleColorVec4(ImGuiCol_WindowBg)));
 
 		// Updated local cursor position
-		s_Context.m_CurrentToolbar->m_Pos.x += s_Style.m_SeparatorWidth;
+		s_Context.m_CurrentToolbar->m_Pos.x += s_Context.m_CurrentStyle.m_SeparatorWidth;
+	}
+
+	Stimpi::ToolbarStyle Toolbar::GetStyle()
+	{
+		return s_Context.m_CurrentStyle;
+	}
+
+	// TODO: assert check for Push/Pop pair consistency
+	void Toolbar::PushStyle(ToolbarStyle style)
+	{
+		s_Context.m_StyleStack.push_back(s_Context.m_CurrentStyle);
+		s_Context.m_CurrentStyle = style;
+	}
+
+	void Toolbar::PopStyle()
+	{
+		if (s_Context.m_StyleStack.size() > 0)
+		{
+			s_Context.m_CurrentStyle = s_Context.m_StyleStack.back();
+			s_Context.m_StyleStack.pop_back();
+		}
 	}
 
 }

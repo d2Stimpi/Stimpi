@@ -95,7 +95,9 @@ namespace Stimpi
 			// ImGuiTreeNodeFlags_NoTreePushOnOpen - does not require ImGui::TreePop() call
 			ImGuiTreeNodeFlags leaf_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; 
 
-			ImGui::Begin("Scene Hierarchy", &m_Show);
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4.0f, 4.0f));
+			ImGui::Begin("Scene Hierarchy", &m_Show); 
+			ImGui::PopStyleVar();
 
 			s_Context.m_WindowFocused = ImGui::IsWindowFocused();
 
@@ -108,14 +110,14 @@ namespace Stimpi
 				{
 					s_Context.m_SelectedEntity = m_ActiveScene->CreateEntity("NewEntity");
 				}
-				ImGui::SameLine(34.0f);
+				ImGui::SameLine(30.0f);
 				ImGui::SetNextItemWidth(ImGui::GetWindowContentRegionWidth() - 46.0f);
 
 				// Filter Entities
 				ImGuiEx::SearchInput("##SceneHierarchySearchInput", s_Context.m_SearchTextBuffer, sizeof(s_Context.m_SearchTextBuffer), "All");
 
 				// Remove Entity button
-				ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 8);
+				ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 12);
 				if (ImGui::Button(" - ##RemoveEntity"))
 				{
 					if (s_Context.m_SelectedEntity)
