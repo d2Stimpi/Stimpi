@@ -18,6 +18,7 @@
 #define EDITOR_ICON_SEARCH	"search.png"
 #define EDITOR_ICON_HAND	"hand.png"
 #define EDITOR_ICON_MOVE	"move.png"
+#define EDITOR_ICON_SCALE	"scale.png"
 
 
 // Default style initializer values

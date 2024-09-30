@@ -56,6 +56,39 @@ namespace Stimpi
 		return retVal;
 	}
 
+	bool ImGuiEx::ToggleIconButton(const char* strID, std::string iconName, bool active, ImVec2 size /*= s_DefaultIconButtonSize*/)
+	{
+		bool retVal = false;
+		auto& style = ImGui::GetStyle();
+
+		ImVec2 cursor = ImGui::GetCursorScreenPos();
+		
+		// active color 66 150 250
+		if (active)
+		{
+			ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(34, 110, 190, 255));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, IM_COL32(26, 100, 190, 255));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, IM_COL32(66, 150, 250, 255));
+		}
+		retVal = ImGui::Button(strID, size);
+		if (active)
+		{ 
+			ImGui::PopStyleColor(3);
+		}
+
+		Texture* iconTexture = EditorResources::GetIconTexture(iconName);
+		if (iconTexture->Loaded())
+		{
+			ImGuiWindow* window = ImGui::GetCurrentWindow();
+
+			ImVec2 icon_pos_min = { cursor.x + size.x / 2.0f - s_Style.m_SmallIconSize.x / 2.0f, cursor.y + style.FramePadding.y };
+			ImVec2 icon_pos_max = { icon_pos_min.x + s_Style.m_SmallIconSize.x, icon_pos_min.y + s_Style.m_SmallIconSize.y };
+			window->DrawList->AddImage((void*)(intptr_t)iconTexture->GetTextureID(), icon_pos_min, icon_pos_max, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImGui::ColorConvertFloat4ToU32(ImVec4(0.785f, 0.785f, 0.785f, 1.0f)));
+		}
+
+		return retVal;
+	}
+
 	void ImGuiEx::Icon(std::string iconName)
 	{
 		Texture* iconTexture = EditorResources::GetIconTexture(iconName);

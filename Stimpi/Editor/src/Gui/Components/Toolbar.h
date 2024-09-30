@@ -20,6 +20,7 @@ namespace Stimpi
 
 		static bool ToolbarButton(const char* name);
 		static bool ToolbarIconButton(const char* name, const char* iconName, float width = s_DefaultIconButtonSize.x);
+		static bool ToolbarToggleIconButton(const char* name, const char* iconName, bool active, float width = s_DefaultIconButtonSize.x);
 		static void Separator();
 
 		static ToolbarStyle GetStyle();

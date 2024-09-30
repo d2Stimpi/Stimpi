@@ -208,7 +208,7 @@ namespace Stimpi
 		ImGui::SetCursorPos(cursorPos);
 		static bool showSettings = false;
 
-		std::string btnID = name.append("##IconButton");
+		std::string btnID = name.append("_IconButton");
 		if (ImGuiEx::IconButton(btnID.c_str(), EDITOR_ICON_GEAR))
 		{
 			showSettings = true;
@@ -278,7 +278,7 @@ namespace Stimpi
 			return showPoput;
 		};
 
-		SettingsPopupButton(cursor, "Quad##ComponentPopup", popupContentQuad);
+		SettingsPopupButton(cursor, "##QuadComponentPopup", popupContentQuad);
 	}
 
 	void SceneHierarchyWindow::CircleComponentLayout(CircleComponent& component)
@@ -313,7 +313,7 @@ namespace Stimpi
 			return showPoput;
 		};
 
-		SettingsPopupButton(cursor, "Circle##ComponentPopup", popupContentCircle);
+		SettingsPopupButton(cursor, "##CircleComponentPopup", popupContentCircle);
 	}
 
 	void SceneHierarchyWindow::ScriptComponentLayout(ScriptComponent& component)
@@ -405,7 +405,7 @@ namespace Stimpi
 			return showPoput;
 		};
 
-		SettingsPopupButton(cursor, "Script##ComponentPopup", popupContentScript);
+		SettingsPopupButton(cursor, "##ScriptComponentPopup", popupContentScript);
 	}
 
 	void SceneHierarchyWindow::SpriteComponentLayout(SpriteComponent& component)
@@ -460,7 +460,7 @@ namespace Stimpi
 			return showPoput;
 		};
 
-		SettingsPopupButton(cursor, "Sprite##ComponentPopup", popupContentSprite);
+		SettingsPopupButton(cursor, "##SpriteComponentPopup", popupContentSprite);
 	}
 
 
@@ -519,7 +519,7 @@ namespace Stimpi
 			return showPoput;
 		};
 
-		SettingsPopupButton(cursor, "SortingGroup##ComponentPopup", popupContentSortingGroup);
+		SettingsPopupButton(cursor, "##SortingGroupComponentPopup", popupContentSortingGroup);
 	}
 
 	void SceneHierarchyWindow::AnimatedSpriteComponentLayout(AnimatedSpriteComponent& component)
@@ -686,7 +686,7 @@ namespace Stimpi
 			return showPoput;
 		};
 
-		SettingsPopupButton(cursor, "AnimatedSprite##ComponentPopup", popupContentAnimatedSprite);
+		SettingsPopupButton(cursor, "##AnimatedSpriteComponentPopup", popupContentAnimatedSprite);
 	}
 
 	void SceneHierarchyWindow::CameraComponentLayout(CameraComponent& component)
@@ -730,7 +730,7 @@ namespace Stimpi
 			return showPoput;
 		};
 
-		SettingsPopupButton(cursor, "Camera##ComponentPopup", popupContentCamera);
+		SettingsPopupButton(cursor, "##CameraComponentPopup", popupContentCamera);
 	}
 
 	void SceneHierarchyWindow::RigidBody2DComponentLayout(RigidBody2DComponent& component)
@@ -780,7 +780,7 @@ namespace Stimpi
 			return showPoput;
 		};
 
-		SettingsPopupButton(cursor, "RigidBody2D##ComponentPopup", popupContentRigidBody2D);
+		SettingsPopupButton(cursor, "##RigidBody2DComponentPopup", popupContentRigidBody2D);
 	}
 
 	void SceneHierarchyWindow::BoxCollider2DComponentLayout(BoxCollider2DComponent& component)
@@ -837,7 +837,7 @@ namespace Stimpi
 			return showPoput;
 		};
 
-		SettingsPopupButton(cursor, "BoxCollider##ComponentPopup", popupContentBoxCollider);
+		SettingsPopupButton(cursor, "##BoxColliderComponentPopup", popupContentBoxCollider);
 	}
 
 	void SceneHierarchyWindow::AddComponentLayout()

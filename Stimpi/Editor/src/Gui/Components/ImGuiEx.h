@@ -24,6 +24,7 @@ namespace Stimpi
 		static void PopStyle();
 
 		static bool IconButton(const char* strID, std::string iconName, ImVec2 size = s_DefaultIconButtonSize);
+		static bool ToggleIconButton(const char* strID, std::string iconName, bool active, ImVec2 size = s_DefaultIconButtonSize);
 		static void Icon(std::string iconName);
 		static bool InputSelectable(const char* label, const char* strID, char* buf, size_t bufSize, bool selected = false, bool textDisabled = false);
 		static bool SearchInput(const char* strID, char* buffer, size_t bufferSize, const char* hintTxt = "Search");

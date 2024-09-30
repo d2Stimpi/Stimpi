@@ -60,6 +60,9 @@ namespace Stimpi
 		auto camera = scene->GetRenderCamera();
 		ST_CORE_ASSERT(!camera);
 
+		// Gizmo control action selection
+		static GizmoAction action = GizmoAction::NONE;
+
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 2.0f));
 		ImGui::Begin("Scene View", &m_Show, m_Flags);
 		ImGui::PopStyleVar();
@@ -70,15 +73,21 @@ namespace Stimpi
 		Toolbar::PushStyle(toolbarStyle);
 		Toolbar::Begin("SceneViewToolbar");
 		{
-			if (Toolbar::ToolbarIconButton("##Hand_SceneViewToolbar", EDITOR_ICON_HAND, 30.0f))
+			if (Toolbar::ToolbarToggleIconButton("##Free_SceneViewToolbar", EDITOR_ICON_HAND, action == GizmoAction::NONE, 30.0f))
 			{
-				ST_CORE_INFO("Btn1 button pressed");
+				action = GizmoAction::NONE;
 			}
 			Toolbar::Separator();
 
-			if (Toolbar::ToolbarIconButton("##Move_SceneViewToolbar", EDITOR_ICON_MOVE, 30.0f))
+			if (Toolbar::ToolbarToggleIconButton("##Translate_SceneViewToolbar", EDITOR_ICON_MOVE, action == GizmoAction::TRANSLATE, 30.0f))
 			{
-				ST_CORE_INFO("Btn2 button pressed");
+				action = GizmoAction::TRANSLATE;
+			}
+			Toolbar::Separator();
+
+			if (Toolbar::ToolbarToggleIconButton("##Scale_SceneViewToolbar", EDITOR_ICON_SCALE, action == GizmoAction::SCALE, 30.0f))
+			{
+				action = GizmoAction::SCALE;
 			}
 			Toolbar::Separator();
 		}
@@ -146,7 +155,6 @@ namespace Stimpi
 		auto selectedEntity = SceneHierarchyWindow::GetSelectedEntity();
 		if (selectedEntity && scene->GetRuntimeState() != RuntimeState::RUNNING)
 		{
-			static GizmoAction action = GizmoAction::NONE;
 			if (EditorUtils::WantCaptureKeyboard())
 			{
 				if (InputManager::Instance()->IsKeyDown(ST_KEY_Q))

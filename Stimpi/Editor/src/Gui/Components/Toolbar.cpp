@@ -130,6 +130,23 @@ namespace Stimpi
 		return ret;
 	}
 
+	bool Toolbar::ToolbarToggleIconButton(const char* name, const char* iconName, bool active, float width /*= s_DefaultIconButtonSize.x*/)
+	{
+		IM_ASSERT_USER_ERROR(s_Context.m_CurrentToolbar != nullptr, "Toolbar Begin() not called!");
+
+		bool ret = false;
+		ImVec2 cursor = ImGui::GetCursorScreenPos();
+
+		ImGui::SetCursorScreenPos(s_Context.m_CurrentToolbar->m_Pos);
+		ret = ImGuiEx::ToggleIconButton(name, iconName, active, { width, s_Context.m_CurrentStyle.m_Height });
+		ImVec2 btnSize = ImGui::GetItemRectSize();
+
+		ImGui::SetCursorScreenPos(cursor);
+		// Updated local cursor position
+		s_Context.m_CurrentToolbar->m_Pos.x += btnSize.x;
+		return ret;
+	}
+
 	void Toolbar::Separator()
 	{
 		ImVec2 min = s_Context.m_CurrentToolbar->m_Pos;
