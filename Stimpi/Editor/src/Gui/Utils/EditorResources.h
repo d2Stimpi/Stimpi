@@ -22,7 +22,7 @@
 
 
 // Default style initializer values
-constexpr ImVec2 s_DefaultIconButtonSize = { 23.0f, 21.0f };
+constexpr ImVec2 s_DefaultIconButtonSize = { 22.0f, 21.0f };
 constexpr ImVec2 s_DefaultSmallIconSize = { 16.0f, 16.0f };
 
 namespace Stimpi

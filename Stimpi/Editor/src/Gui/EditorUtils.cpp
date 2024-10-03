@@ -19,6 +19,18 @@ namespace Stimpi
 		if (ImGui::IsItemActive()) io.WantCaptureKeyboard = capture;
 	}
 
+	bool EditorUtils::WantCaptureMouse()
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		return io.WantCaptureMouse;
+	}
+
+	void EditorUtils::SetActiveItemCaptureMouse(bool capture)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		if (ImGui::IsItemActive()) io.WantCaptureMouse = capture;
+	}
+
 	void EditorUtils::RenderSelection()
 	{
 		ImVec2 pos = ImGui::GetCursorScreenPos();

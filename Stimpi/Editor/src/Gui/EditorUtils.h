@@ -12,6 +12,10 @@ namespace Stimpi
 		static bool WantCaptureKeyboard();
 		static void SetActiveItemCaptureKeyboard(bool capture);
 
+		// Mouse capture helpers
+		static bool WantCaptureMouse();
+		static void SetActiveItemCaptureMouse(bool capture);
+
 		// Selection render helper
 		static void RenderSelection();
 

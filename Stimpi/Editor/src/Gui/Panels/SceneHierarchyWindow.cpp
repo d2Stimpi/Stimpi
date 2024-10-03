@@ -103,12 +103,11 @@ namespace Stimpi
 
 			if (m_ActiveScene)
 			{
-				// Toolbar Section
-
 				// Add Entity button
 				if (ImGuiEx::IconButton("##SceneHierarchyToolbarButtonPCH", EDITOR_ICON_CROSS))
 				{
-					s_Context.m_SelectedEntity = m_ActiveScene->CreateEntity("NewEntity");
+					//s_Context.m_SelectedEntity = m_ActiveScene->CreateEntity("NewEntity");
+					ImGui::OpenPopup("CreateEntityPopup");
 				}
 				ImGui::SameLine(30.0f);
 				ImGui::SetNextItemWidth(ImGui::GetWindowContentRegionWidth() - 46.0f);
@@ -204,7 +203,7 @@ namespace Stimpi
 	{
 		// Save cursor position
 		ImVec2 temp = ImGui::GetCursorPos();
-		cursorPos.x += ImGui::GetWindowContentRegionWidth() - ImGuiEx::GetStyle().m_IconOffset;
+		cursorPos.x += ImGui::GetWindowContentRegionWidth() - ImGuiEx::GetStyle().m_IconOffset - 2;
 		ImGui::SetCursorPos(cursorPos);
 		static bool showSettings = false;
 
@@ -996,10 +995,11 @@ namespace Stimpi
 
 	void SceneHierarchyWindow::CreateEntityPopup()
 	{
-		if (ImGui::IsWindowHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+		// For now keep this disabled and use "+" button instead
+		/*if (ImGui::IsWindowHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
 		{
 			ImGui::OpenPopup("CreateEntityPopup");
-		}
+		}*/
 
 		if (ImGui::BeginPopup("CreateEntityPopup"))
 		{

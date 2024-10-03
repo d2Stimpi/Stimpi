@@ -153,6 +153,7 @@ namespace Stimpi
 		bool isActive = ImGui::IsItemActive();
 
 		ImVec2 windowSize = ImGui::GetContentRegionAvail();
+		ImVec2 inputRectSize = ImGui::GetItemRectSize();
 
 		Texture* iconTexture = EditorResources::GetIconTexture(EDITOR_ICON_SEARCH);
 		if (iconTexture->Loaded())
@@ -172,6 +173,44 @@ namespace Stimpi
 
 			if (!isActive)
 				window->DrawList->AddText(note_text_pos, color, hintTxt);
+		}
+
+		// Clear text button
+		if (strlen(buffer) != 0)
+		{
+			// For button behavior
+			static bool held = false;
+			bool released = false;
+
+			ImGuiContext& g = *GImGui;
+			ImVec2 center = ImVec2(cursor.x + inputRectSize.x - s_Style.m_SmallIconSize.x + 3.0f, cursor.y + inputRectSize.y / 2.0f);
+			float radius = inputRectSize.y / 2.0f - 2.0f;
+			bool hovered = ImGui::IsMouseHoveringRect(ImVec2(center.x - radius, center.y - radius), ImVec2(center.x + radius, center.y + radius));
+
+			if (hovered)
+			{
+				held = ImGui::IsMouseDown(ImGuiMouseButton_Left);
+				if (held)
+				{
+					ImGui::ClearActiveID();	// We have to lose active state (focus) to be able to clear buffer data
+				}
+				released = ImGui::IsMouseReleased(ImGuiMouseButton_Left);
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Arrow);
+				ImU32 col = ImGui::GetColorU32(ImGuiCol_ButtonActive);
+				window->DrawList->AddCircleFilled(center, ImMax(2.0f, g.FontSize * 0.5f + 1.0f), col);
+			}
+
+			ImU32 cross_col = ImGui::GetColorU32(ImGuiCol_Text);
+			float cross_extent = g.FontSize * 0.5f * 0.7071f - 1.0f;
+			center = ImVec2(center.x - 0.5f, center.y - 0.5f);
+			window->DrawList->AddLine(ImVec2(center.x + cross_extent, center.y + cross_extent), ImVec2(center.x - cross_extent, center.y - cross_extent), cross_col, 1.0f);
+			window->DrawList->AddLine(ImVec2(center.x + cross_extent, center.y - cross_extent), ImVec2(center.x - cross_extent, center.y + cross_extent), cross_col, 1.0f);
+
+			// Button press and release action
+			if ((held && ImGui::IsMouseReleased(ImGuiMouseButton_Left)) || released)
+			{
+				memset(buffer, 0, bufferSize);
+			}
 		}
 
 		return ret;
