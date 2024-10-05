@@ -72,11 +72,11 @@ namespace Stimpi
 		static void ReloadAssembly();
 		static void ReloadAssetAssembly(const std::filesystem::path& assetPath);
 
-		static bool HasScriptClass(const std::string& className);
+		static bool HasScriptClass(const std::string& className);	// Not used
 		static std::shared_ptr<ScriptClass> GetScriptClassByName(const std::string& className);
 		static std::shared_ptr<ScriptClass> GetClassByName(const std::string& className);
 		static std::shared_ptr<ScriptClass> GetClassByClassIdentifier(const ClassIdentifier& identifier);
-		static std::unordered_map<std::string, std::shared_ptr<ScriptClass>> GetEntityClasses();
+		static std::unordered_map<std::string, std::shared_ptr<ScriptClass>> GetEntityClasses();	// Not used
 
 		static MonoImage* GetCoreAssemblyImage();
 		static MonoDomain* GetAppDomain();
@@ -103,7 +103,7 @@ namespace Stimpi
 		static void RemoveEntityScriptInstance(uint32_t entityID);
 
 		// Field functions
-		static std::string GetFieldName(MonoClassField* field);
+		static std::string GetFieldName(MonoClassField* field);	// Not used
 
 		// UI Stuff
 		static std::vector<std::string>& GetScriptClassNames();

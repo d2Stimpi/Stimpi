@@ -244,7 +244,7 @@
     <ClCompile Include="src\Stimpi\Core\Event.cpp">
       <Filter>Stimpi\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\Stimpi\Core\Graphics.cpp">
+    <ClCompile Include="src\Stimpi\Graphics\Graphics.cpp">
       <Filter>Stimpi\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Core\InputManager.cpp">

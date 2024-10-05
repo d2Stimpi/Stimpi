@@ -325,7 +325,6 @@ namespace Stimpi
 			static char scriptName[64];
 			strcpy(scriptName, component.m_ScriptName.c_str());
 
-			bool scriptClassExists = ScriptEngine::HasScriptClass(component.m_ScriptName);
 			static bool showPopup = false;
 			ImGui::Spacing();
 			ImGui::InputText("##ScriptComponentPreview", scriptName, sizeof(scriptName), ImGuiInputTextFlags_ReadOnly);
