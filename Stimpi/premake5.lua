@@ -4,6 +4,7 @@ workspace "Stimpi"
 	architecture "x64"
 
 	outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+	corelibpath = "../bin/" .. outputdir .. "/%{wks.name}/%{wks.name}.dll"
 
 	startproject "Editor"
 

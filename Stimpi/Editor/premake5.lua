@@ -48,6 +48,13 @@ project "Editor"
 		cppdialect "C++17"
 		staticruntime "Off"
 		systemversion "latest"
+
+		postbuildcommands
+		{
+			("{COPY} %{corelibpath} ../bin/" .. outputdir .. "/%{prj.name}"),
+			("{COPY} %{Library.sdl2} ../bin/" .. outputdir .. "/%{prj.name}"),
+			("{COPY} %{Library.yaml} ../bin/" .. outputdir .. "/%{prj.name}")
+		}
 	
 	filter "configurations:Debug"
 		defines "DEBUG"
