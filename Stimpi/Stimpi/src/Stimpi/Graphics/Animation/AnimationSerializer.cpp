@@ -4,6 +4,7 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Utils/FilePath.h"
 #include "Stimpi/Scene/ResourceManager.h"
+#include "Stimpi/Core/Project.h"
 
 #include <yaml-cpp/yaml.h>
 
@@ -74,7 +75,7 @@ namespace Stimpi
 
 			if (animation["Texture"])
 			{
-				FilePath assetPath(animation["Texture"].as<std::string>());
+				FilePath assetPath(Project::GetAssestsDir() / animation["Texture"].as<std::string>());
 				m_Animation->m_SubTexture = std::make_shared<SubTexture>(assetPath, glm::vec2{ 0.0f, 0.0f }, glm::vec2{ 0.0f, 0.0f });;
 			}
 

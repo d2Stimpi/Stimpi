@@ -21,6 +21,8 @@ namespace Stimpi
 		std::string GetFileExtension() { return m_FilePath.extension().string(); }
 		std::string GetFileNameStem() { return m_FilePath.stem().string(); }
 
+		std::filesystem::path GetRelativePath(const std::filesystem::path& basePath);
+
 		std::string string() { return m_FilePath.string(); }
 
 		bool Exists() { return std::filesystem::exists(m_FilePath); }

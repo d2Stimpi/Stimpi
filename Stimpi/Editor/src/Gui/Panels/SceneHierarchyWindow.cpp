@@ -413,7 +413,7 @@ namespace Stimpi
 
 		if (ImGui::CollapsingHeaderIcon("Sprite##ComponentName", EditorResources::GetIconTextureID(EDITOR_ICON_SPRITE), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 		{
-			std::filesystem::path texturePath = component.m_FilePath.c_str();
+			std::filesystem::path texturePath = component.m_FilePath;
 
 			ImGui::Spacing();
 			ImGui::ColorEdit4("Color##SpriteColor", glm::value_ptr(component.m_Color));

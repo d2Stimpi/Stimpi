@@ -28,4 +28,10 @@ namespace Stimpi
 	{
 	}
 
+	// Return relative path to provided "basePath"
+	std::filesystem::path FilePath::GetRelativePath(const std::filesystem::path& basePath)
+	{
+		return std::filesystem::relative(m_FilePath, basePath);
+	}
+
 }

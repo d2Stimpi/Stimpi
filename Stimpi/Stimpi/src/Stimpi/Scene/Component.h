@@ -199,7 +199,7 @@ namespace Stimpi
 	struct SpriteComponent
 	{
 		// Sprite Texture
-		std::string m_FilePath = "";
+		FilePath m_FilePath = "";
 		AssetHandle m_TextureHandle = {};
 		bool m_Enable = false; // Will override color use
 
@@ -217,7 +217,7 @@ namespace Stimpi
 		SpriteComponent(const std::string& filePath)
 			: m_FilePath(filePath), m_Enable(true)
 		{
-			if (!m_FilePath.empty())
+			if (m_FilePath.Exists())
 			{
 				m_TextureHandle = AssetManager::GetAsset<Texture>(filePath);
 			}
@@ -276,7 +276,7 @@ namespace Stimpi
 		{
 			out << YAML::Key << "SpriteComponent";
 			out << YAML::BeginMap;
-				out << YAML::Key << "FilePath" << YAML::Value << m_FilePath;
+				out << YAML::Key << "FilePath" << YAML::Value << m_FilePath.GetRelativePath(Project::GetAssestsDir()).string();
 
 				out << YAML::Key << "Enabled" << YAML::Value << m_Enable;
 
@@ -294,8 +294,10 @@ namespace Stimpi
 		{
 			if (node["FilePath"])
 			{
-				m_FilePath = node["FilePath"].as<std::string>();
-				if (!m_FilePath.empty())
+				if (!node["FilePath"].as<std::string>().empty())
+					m_FilePath = Project::GetAssestsDir() / node["FilePath"].as<std::string>();
+
+				if (m_FilePath.Exists())
 				{
 					m_TextureHandle = AssetManager::GetAsset<Texture>(m_FilePath);
 				}
@@ -507,7 +509,7 @@ namespace Stimpi
 			{
 				if (m_DefaultAnimation)
 				{
-					out << YAML::Key << "DefaultAnimation" << YAML::Value << m_DefaultAnimation->GetAssetFilePath().GetPath().string();
+					out << YAML::Key << "DefaultAnimation" << YAML::Value << m_DefaultAnimation->GetAssetFilePath().GetRelativePath(Project::GetAssestsDir()).string();
 				}
 				out << YAML::Key << "Animations";
 				out << YAML::BeginMap;
@@ -517,7 +519,7 @@ namespace Stimpi
 						out << YAML::Key << "Animation";
 						out << YAML::BeginMap;
 						{
-							out << YAML::Key << "AnimationAssetPath" << YAML::Value << anim.second->GetAssetFilePath().GetPath().string();
+							out << YAML::Key << "AnimationAssetPath" << YAML::Value << anim.second->GetAssetFilePath().GetRelativePath(Project::GetAssestsDir()).string();
 						}
 						out << YAML::EndMap;
 					}
@@ -535,7 +537,8 @@ namespace Stimpi
 
 			if (node["DefaultAnimation"])
 			{
-				SetDefailtAnimation(node["DefaultAnimation"].as<std::string>());
+				FilePath defaultAnimPath = Project::GetAssestsDir() / node["DefaultAnimation"].as<std::string>();
+				SetDefailtAnimation(defaultAnimPath);
 				m_AnimSprite->SetAnimation(m_DefaultAnimation);
 			}
 			if (node["Animations"])
@@ -546,7 +549,8 @@ namespace Stimpi
 					YAML::Node anim = it->second;
 					if (anim["AnimationAssetPath"])
 					{
-						AddAnimation(anim["AnimationAssetPath"].as<std::string>());
+						FilePath animPath = Project::GetAssestsDir() / anim["AnimationAssetPath"].as<std::string>();
+						AddAnimation(animPath);
 					}
 				}
 			}
