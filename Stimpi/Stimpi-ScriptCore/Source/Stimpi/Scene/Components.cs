@@ -127,6 +127,13 @@ namespace Stimpi
         COMPELETED
     }
 
+    public enum AnimationWrapMode
+    { 
+        ONCE = 0,
+        LOOPING,
+        CLAMP
+    }
+
     public class AnimatedSpriteComponent : Component
     {
         public bool IsAnimationSet()
@@ -163,6 +170,22 @@ namespace Stimpi
                     Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (get Anim state)");
 
                 return (AnimationState)outState;
+            }
+        }
+
+        public AnimationWrapMode WrapMode
+        {
+            get
+            {
+                if (!InternalCalls.AnimatedSpriteComponent_GetWrapMode(Entity.ID, out int outState))
+                    Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (get Wrap mode)");
+
+                return (AnimationWrapMode)outState;
+            }
+            set
+            {
+                if (!InternalCalls.AnimatedSpriteComponent_SetWrapMode(Entity.ID, (int)value))
+                    Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (set Wrap mode)");
             }
         }
 

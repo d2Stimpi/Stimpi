@@ -14,11 +14,14 @@ namespace Demo
 
     public class Enemy : Entity
     {
+        private bool _enableUpdate = true;
+
         private Random _rnd = new Random();
         private EnemySpawn _spawnEntity;
 
         private QuadComponent _quad;
         private BoxCollider2DComponent _bc2d;
+        private RigidBody2DComponent _rb2d;
 
         private AnimatedSpriteComponent _anim;
         private EnemyFacingDirection _facingDir = EnemyFacingDirection.DOWN;
@@ -43,10 +46,10 @@ namespace Demo
         private Vector2 _activeVelocity = Vector2.Zero;
         private Vector2 _prevVelocity = Vector2.Zero;
 
+        private float _aggroDistance = 50.0f;
         private float _health = 100.0f;
         public float Velocity = 20.0f;
 
-        private float _timeTracker = 0;
         public float ChangeDirFrequency = 1.5f;
 
         private bool SimpleActionTimer(float ts, ref float timer, float value)
@@ -69,14 +72,28 @@ namespace Demo
 
         public void Initialize(EnemySpawn spawn, Vector2 position)
         {
+            _enableUpdate = true;
             _spawnEntity = spawn;
             _quad.Position = position;
 
             Physics.InitializePhysics2DBody(ID);
             _enemyState = EnemyState.SPAWN_BEGIN;
 
+            _rb2d.Enabled = true;
+            _rb2d.SetTransform(_quad.Position, _quad.Rotation);
+
             _healthBar.Initialize(this);
-        }        
+            _health = 100;
+        }
+
+        public void Invalidate(Vector2 position)
+        {
+            _rb2d.Enabled = false;
+            _rb2d.SetTransform(position, 0);
+            _anim.Stop();
+            _healthBar.UpdatePosition();
+            _enableUpdate = false;
+        }
 
         public override void OnCreate()
         {
@@ -103,9 +120,9 @@ namespace Demo
             _bc2d.Offset = new Vector2(0.0f, -1.0f);
             _bc2d.Shape = Collider2DShape.BOX;
 
-            RigidBody2DComponent rb2d = AddComponent<RigidBody2DComponent>();
-            rb2d.Type = BodyType.DYNAMIC;
-            rb2d.FixedRotation = true;
+            _rb2d = AddComponent<RigidBody2DComponent>();
+            _rb2d.Type = BodyType.DYNAMIC;
+            _rb2d.FixedRotation = true;
 
             // Create HealthBar entity and "attach"
             _healthBar = Entity.Create<HealthBar>();
@@ -113,19 +130,27 @@ namespace Demo
 
         public override void OnUpdate(float ts)
         {
-            _healthBar.UpdatePosition();
-            // Maintain correct velocity
-            Physics.SetLinearVelocity(ID, _activeVelocity);
-
-            UpdateEnemyState(ts);
-
-            UpdateActiveAnimation();
-
-            if (_enemyState == EnemyState.DEAD)
+            //Console.WriteLine($"ID:{ID} Enter OnUpdate");
+            if (_enableUpdate)
             {
-                if (SimpleActionTimer(ts, ref _deadTimerElapsed, DeadTimer))
-                    DestroyEnemy();
+                if (_healthBar != null)
+                    _healthBar.UpdatePosition();
+                else
+                    Console.WriteLine($"Enemy {ID} - helthBar == null");
+                // Maintain correct velocity
+                Physics.SetLinearVelocity(ID, _activeVelocity);
+
+                UpdateEnemyState(ts);
+
+                UpdateActiveAnimation();
+
+                if (_enemyState == EnemyState.DEAD)
+                {
+                    if (SimpleActionTimer(ts, ref _deadTimerElapsed, DeadTimer))
+                        DestroyEnemy();
+                }
             }
+            //Console.WriteLine("Exit OnUpdate");
         }
 
         public override void OnCollisionBegin(Collision collision)
@@ -145,8 +170,8 @@ namespace Demo
                     ChangeToAttackAnimation();
                 }
 
-                Projectile bullet = other.As<Projectile>();
-                if (bullet != null) // If this is actually a Bullet type
+                Projectile projectile = other.As<Projectile>();
+                if (projectile != null) // If this is actually a Projectile type
                 {
                     _health -= 25;
                     _healthBar.SetFillPercentage(_health / 100.0f);
@@ -155,9 +180,14 @@ namespace Demo
                     {
                         _enemyState = EnemyState.DEAD;
                         ChangeToDeathAnimation();
-                        //DestroyEnemy();
-                        RigidBody2DComponent rb2d = GetComponent<RigidBody2DComponent>();
-                        rb2d.Enabled = false;
+                        _rb2d = GetComponent<RigidBody2DComponent>();
+                        _rb2d.Enabled = false;
+                    }
+                    else
+                    {
+                        // If enemy is hit while idle, make it chase player
+                        if (_enemyState == EnemyState.IDLE)
+                            _enemyState = EnemyState.WALK;
                     }
                 }
             }
@@ -170,11 +200,9 @@ namespace Demo
         // Destroy or (TODO: pooling) disable entity
         private void DestroyEnemy()
         {
-            _spawnEntity.EnemyDestroyed();
-            if (_healthBar != null)
-                _healthBar.Destroy();
-            Console.WriteLine($"Destroy entity {ID}");
-            Entity.Destroy(ID);
+            _spawnEntity.EnemyKilled();
+            Invalidate(new Vector2(-2000.0f, -2000.0f));
+            EnemyPool.ReleaseObject(this);
         }
 
         private void UpdateActiveAnimation()
@@ -317,6 +345,7 @@ namespace Demo
                     break;
             }
             _anim.Looping = false;
+            _anim.WrapMode = AnimationWrapMode.CLAMP;
 
             SetVelocity(Vector2.Zero);
         }
@@ -351,10 +380,15 @@ namespace Demo
                     {
                         MoveStop();
                         _spawnTimerElapsed = 0.0f;
-                        _enemyState = EnemyState.WALK;
+                        _enemyState = EnemyState.IDLE;
                     }
                     break;
                 case EnemyState.IDLE:
+                    // Check for player proximity and get "alerted" and chase player
+                    if (_quad.Position.Distance(DemoPlayer.GetPosition()) <= _aggroDistance)
+                    {
+                        _enemyState = EnemyState.WALK;
+                    }
                     break;
                 case EnemyState.WALK:
                     _walkTimerElapsed += ts;

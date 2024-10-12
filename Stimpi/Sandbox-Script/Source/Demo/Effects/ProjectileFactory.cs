@@ -10,7 +10,7 @@ namespace Demo
 {
     public enum ProjectileType
     { 
-        FIRE_BALL = 0,
+        FIREBALL = 0,
         LIGHTNING_BOLT
     }
 
@@ -62,7 +62,7 @@ namespace Demo
 
             switch(type)
             {
-                case ProjectileType.FIRE_BALL:
+                case ProjectileType.FIREBALL:
                     projectile.SetAndPlayAnimation("fireball01.anim", true);
                     break;
                 case ProjectileType.LIGHTNING_BOLT:

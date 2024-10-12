@@ -31,6 +31,8 @@ namespace Stimpi
         public float Cross(Vector2 other) { return (float)Math.Sqrt(X * X + Y * Y) * (float)Math.Sqrt(other.X*other.X + other.Y*other.Y); }
         public float Angle(Vector2 other) { return (float)Math.Acos(Dot(other) / Cross(other)); }
 
+        public float Distance(Vector2 other) { return (float)Math.Sqrt((other.X - X) * (other.X - X) + (other.Y - Y) * (other.Y - Y)); }
+
         public override string ToString()
         {
             return $"vec2 [{X}, {Y}]";

@@ -9,6 +9,8 @@ using Stimpi;
 // TODO - script internal calls
 // Get Window size or Camera view box
 
+// TODO: consider - Circle of size(150,150) color(167,95,95,255) thickness 0.25 fade 0.888 - follow player to indicate low life
+
 namespace Demo
 {
     enum PlayerFacingDirection { UP = 0, DOWN, LEFT, RIGHT };
@@ -38,6 +40,7 @@ namespace Demo
             // Clear all instances in ObjectPool(s) on "Scene Start"
             EffectsPool.Clear();
             ProjectileFactory.Clear();
+            EnemyPool.Clear();
 
             _quad = GetComponent<QuadComponent>();
             if (Cursor != null)
@@ -161,7 +164,7 @@ namespace Demo
             {
                 if (_spellBar != null)
                 {
-                    ProjectileType projType = ProjectileType.FIRE_BALL;
+                    ProjectileType projType = ProjectileType.FIREBALL;
                     Vector2 projSize = new Vector2(9.0f, 9.0f);
                     string pattern = _spellBar.ConsumeRegiseredKeyPattern();
                     if (pattern.Length > 0)
@@ -179,7 +182,7 @@ namespace Demo
                         if (pattern == "QQQQ")
                         {
                             // Ring of fire balls 8 instances
-                            projType = ProjectileType.FIRE_BALL;
+                            projType = ProjectileType.FIREBALL;
                             Vector2 pos = _quad.Position;
                             ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, pos + new Vector2(150.0f, 0.0f), projSize));
                             ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, pos + new Vector2(-150.0f, 0.0f), projSize));
@@ -206,11 +209,11 @@ namespace Demo
 
             PlayerFacingDirection prevDir = _facingDir;
 
-            if ( angle <= 0.78f )
+            if (angle <= 0.78f)
             {
-                if (reverse) _facingDir = PlayerFacingDirection.LEFT; else _facingDir = PlayerFacingDirection.RIGHT; 
+                if (reverse) _facingDir = PlayerFacingDirection.LEFT; else _facingDir = PlayerFacingDirection.RIGHT;
             }
-            else if ( 0.78 < angle && angle <= 2.35f && dirVec.Y > 0 )
+            else if (0.78 < angle && angle <= 2.35f && dirVec.Y > 0)
             {
                 if (reverse) _facingDir = PlayerFacingDirection.DOWN; else _facingDir = PlayerFacingDirection.UP;
             }
@@ -232,7 +235,7 @@ namespace Demo
 
         private void ChangeToMoveAnimation()
         {
-            switch(_facingDir)
+            switch (_facingDir)
             {
                 case PlayerFacingDirection.RIGHT:
                     _anim.Play("unarmed_walk_side_right.anim");
@@ -266,6 +269,18 @@ namespace Demo
             {
                 player.Health -= damage;
             }
+        }
+
+        public static Vector2 GetPosition()
+        {
+            Entity playerEntity = Entity.FindByName("Player");
+            DemoPlayer player = playerEntity.As<DemoPlayer>();
+            if (player != null)
+            {
+                return player._quad.Position;
+            }
+
+            return new Vector2(-9999.0f, -9999.0f);
         }
     }
 }

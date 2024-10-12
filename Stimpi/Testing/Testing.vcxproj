@@ -173,12 +173,14 @@
     <ClInclude Include="..\vendor\googletest\googletest\test\production.h" />
     <ClInclude Include="src\SceneTest\EntitySortingTest.h" />
     <ClInclude Include="src\SceneTest\SceneTestUtils.h" />
+    <ClInclude Include="src\Scripting\ScriptInternalCallsTest.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\vendor\googletest\googletest\src\gtest-all.cc" />
     <ClCompile Include="src\SceneTest\EntitySortingTest.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\SceneTest\SceneTestUtils.cpp" />
+    <ClCompile Include="src\Scripting\ScriptInternalCallsTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Stimpi\Stimpi.vcxproj">

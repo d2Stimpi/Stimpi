@@ -21,10 +21,13 @@ namespace Stimpi
 		auto& attached = var->m_AttachedToPins;
 
 		// Remove the link to variable->m_AttachedToPins since multiple nodes can link to single variable (duplicate var nodes)
-		attached.erase(std::find_if(attached.begin(), attached.end(), [&rem](auto pin)
+		if (!attached.empty())
 		{
-			return pin->m_ID == rem->m_ID;
-		}));
+			attached.erase(std::find_if(attached.begin(), attached.end(), [&rem](auto pin)
+			{
+				return pin->m_ID == rem->m_ID;
+			}));
+		}
 	}
 
 	std::string VariableSetNode::GetValueName(Node* node)

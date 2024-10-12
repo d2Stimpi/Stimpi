@@ -629,6 +629,44 @@ namespace Stimpi
 		return hasComponent;
 	}
 
+	static bool AnimatedSpriteComponent_GetWrapMode(uint32_t entityID, int* outWrapeMode)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<AnimatedSpriteComponent>();
+		if (hasComponent)
+		{
+			auto& anim = entity.GetComponent<AnimatedSpriteComponent>();
+			if (anim.IsAnimationSet())
+				*outWrapeMode = (int)anim.m_AnimSprite->GetWrapMode();
+		}
+
+		return hasComponent;
+	}
+
+	static bool AnimatedSpriteComponent_SetWrapMode(uint32_t entityID, int wrapeMode)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<AnimatedSpriteComponent>();
+		if (hasComponent)
+		{
+			auto& anim = entity.GetComponent<AnimatedSpriteComponent>();
+			if (anim.IsAnimationSet())
+				anim.m_AnimSprite->SetWrapMode((AnimationWrapMode)wrapeMode);
+		}
+
+		return hasComponent;
+	}
+
 #pragma endregion AnimatedSpriteComponent
 
 #pragma region Input
@@ -1431,6 +1469,8 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_GetLooping);
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_SetLooping);
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_IsPlaying);
+		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_GetWrapMode);
+		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_SetWrapMode);
 
 		// RigidBody2DComponent
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_GetRigidBodyType);

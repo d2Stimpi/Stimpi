@@ -16,6 +16,7 @@
 namespace Stimpi
 {
 	enum class AnimationState { RUNNING = 0, PAUSED, STOPPED, COMPELETED };	// Stopped - start form 0 frame; COMPELETED - used for maintaning correct UI data
+	enum class AnimationWrapMode { ONCE = 0, LOOPING, CLAMP };	// Clamp - show last frame when animation is complete
 
 	class ST_API AnimatedSprite
 	{
@@ -29,8 +30,8 @@ namespace Stimpi
 		
 		void Update(Timestep ts);
 		void SetCurrentFrame(uint32_t frame);
-		void SetLooping(bool looping) { m_Looping = looping; }
-		bool GetLooping() { return m_Looping; }
+		void SetLooping(bool looping) { looping ? m_WrapMode = AnimationWrapMode::LOOPING : m_WrapMode = AnimationWrapMode::ONCE; }
+		bool GetLooping() { return m_WrapMode == AnimationWrapMode::LOOPING; }
 
 		void SetPlaybackSpeed(float speed) { m_PlaybackSpeed = speed; }
 		float GetPlaybackSpeed() { return m_PlaybackSpeed; }
@@ -40,6 +41,8 @@ namespace Stimpi
 		void Pause() { m_State = AnimationState::PAUSED; }
 
 		AnimationState GetAnimationState() { return m_State; }
+		AnimationWrapMode GetWrapMode() { return m_WrapMode; }
+		void SetWrapMode(AnimationWrapMode wrapMode) { m_WrapMode = wrapMode; }
 
 		bool Loaded();
 		SubTexture* GetSubTexture() { return m_Animation->GetSubTexture(); }
@@ -47,15 +50,15 @@ namespace Stimpi
 	private:
 		std::shared_ptr<Animation> m_Animation;
 		AnimationState m_State = AnimationState::STOPPED;
-		bool m_Looping = false;
+		AnimationWrapMode m_WrapMode = AnimationWrapMode::ONCE;
 		float m_PlaybackSpeed = 1.0f;
 
 		// data determined from used Animation
-		uint32_t m_FramesCount;
+		uint32_t m_FramesCount = 0;
 
 		// time and frame tracking data
 		float m_TimeElapsed = 0.0f;
-		float m_FrameTime = 0.0f;
+		float m_FrameDuration = 0.0f;
 		uint32_t m_CurrentFrame = 0;
 
 	};

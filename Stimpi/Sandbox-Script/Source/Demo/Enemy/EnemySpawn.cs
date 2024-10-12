@@ -43,14 +43,15 @@ namespace Demo
         {
             if (_enemyCount < MaxEnemyCount)
             {
-                Enemy enemy = Entity.Create<Enemy>();
+                //Enemy enemy = Entity.Create<Enemy>();
+                Enemy enemy = EnemyPool.GetObject();
                 enemy.Initialize(this, _spawnLocation);
 
                 _enemyCount++;
             }
         }
 
-        public void EnemyDestroyed()
+        public void EnemyKilled()
         {
             _enemyCount--;
         }

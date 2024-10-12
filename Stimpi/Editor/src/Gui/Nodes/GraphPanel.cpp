@@ -298,7 +298,7 @@ namespace Stimpi
 				}
 				ImGui::Separator();
 
-				AddItemPopupButton(cursor, "AddNewVariable", []()
+				AddItemPopupButton(cursor, "##AddNewVariable", []()
 					{
 						auto graph = s_Context->m_ActiveGraph;
 						if (graph)
@@ -904,11 +904,11 @@ namespace Stimpi
 	{
 		// Save cursor position
 		ImVec2 temp = ImGui::GetCursorPos();
-		cursorPos.x += ImGui::GetWindowContentRegionWidth() - ImGuiEx::GetStyle().m_IconOffset;
+		cursorPos.x += ImGui::GetWindowContentRegionWidth() - ImGuiEx::GetStyle().m_IconOffset * 1.4f;
 		ImGui::SetCursorPos(cursorPos);
 		static bool showSettings = false;
 
-		std::string btnID = name.append("##IconButton");
+		std::string btnID = name.append("_IconButton");
 		if (ImGuiEx::IconButton(btnID.c_str(), EDITOR_ICON_CROSS))
 		{
 			onClickAction();

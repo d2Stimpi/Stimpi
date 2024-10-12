@@ -39,22 +39,25 @@ namespace Stimpi
 		if (m_State == AnimationState::RUNNING)
 		{
 			m_TimeElapsed += ts;
-			m_FrameTime = m_Animation->GetFrames().at(m_CurrentFrame).m_Duration;
+			m_FrameDuration = m_Animation->GetFrames().at(m_CurrentFrame).m_Duration;
 			// Apply playback speed factor
-			m_FrameTime = m_FrameTime / m_PlaybackSpeed;
+			m_FrameDuration = m_FrameDuration / m_PlaybackSpeed;
 
-			if (m_TimeElapsed >= m_FrameTime)
+			if (m_TimeElapsed >= m_FrameDuration)
 			{
 				m_CurrentFrame++;
 
 				// Reset time track, and keep the "change"
-				m_TimeElapsed -= m_FrameTime;
-				if ((m_CurrentFrame == m_FramesCount - 1) && (!m_Looping))
+				m_TimeElapsed -= m_FrameDuration;
+				if ((m_CurrentFrame == m_FramesCount - 1) && m_WrapMode == AnimationWrapMode::ONCE)
 				{
 					m_State = AnimationState::COMPELETED;
 				}
 
-				m_CurrentFrame %= m_FramesCount - 1;
+				if (m_WrapMode == AnimationWrapMode::LOOPING)
+					m_CurrentFrame %= m_FramesCount - 1;
+				else if (m_WrapMode == AnimationWrapMode::CLAMP)
+					m_CurrentFrame = m_Animation->GetFrames().size() - 1;
 			}
 
 			//ST_CORE_INFO("Elapsed {}, FrameTime {}", m_TimeElapsed, m_FrameTime);
