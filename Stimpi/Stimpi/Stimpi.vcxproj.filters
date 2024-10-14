@@ -244,9 +244,6 @@
     <ClCompile Include="src\Stimpi\Core\Event.cpp">
       <Filter>Stimpi\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\Stimpi\Graphics\Graphics.cpp">
-      <Filter>Stimpi\Core</Filter>
-    </ClCompile>
     <ClCompile Include="src\Stimpi\Core\InputManager.cpp">
       <Filter>Stimpi\Core</Filter>
     </ClCompile>
@@ -287,6 +284,9 @@
       <Filter>Stimpi\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Graphics\FrameBuffer.cpp">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\Graphics.cpp">
       <Filter>Stimpi\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Graphics\OpenGL.cpp">

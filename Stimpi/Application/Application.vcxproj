@@ -92,6 +92,11 @@
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;yaml-cppd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\vendor\SDL2-2.0.20\lib\x64;..\vendor\yaml-cpp\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>IF EXIST ..\bin\Debug-windows-x86_64\$(SolutionName)\$(SolutionName).dll\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\$(SolutionName)\$(SolutionName).dll ..\bin\Debug-windows-x86_64\$(ProjectName) &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\$(SolutionName)\$(SolutionName).dll ..\bin\Debug-windows-x86_64\$(ProjectName) &gt; nul)
+IF EXIST $(SolutionDir)\vendor\SDL2-2.0.20\lib\x64\SDL2.dll\ (xcopy /Q /E /Y /I $(SolutionDir)\vendor\SDL2-2.0.20\lib\x64\SDL2.dll ..\bin\Debug-windows-x86_64\$(ProjectName) &gt; nul) ELSE (xcopy /Q /Y /I $(SolutionDir)\vendor\SDL2-2.0.20\lib\x64\SDL2.dll ..\bin\Debug-windows-x86_64\$(ProjectName) &gt; nul)
+IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll ..\bin\Debug-windows-x86_64\$(ProjectName) &gt; nul) ELSE (xcopy /Q /Y /I $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll ..\bin\Debug-windows-x86_64\$(ProjectName) &gt; nul)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -115,6 +120,11 @@
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;yaml-cppd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\vendor\SDL2-2.0.20\lib\x64;..\vendor\yaml-cpp\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>IF EXIST ..\bin\Release-windows-x86_64\$(SolutionName)\$(SolutionName).dll\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\$(SolutionName)\$(SolutionName).dll ..\bin\Release-windows-x86_64\$(ProjectName) &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\$(SolutionName)\$(SolutionName).dll ..\bin\Release-windows-x86_64\$(ProjectName) &gt; nul)
+IF EXIST $(SolutionDir)\vendor\SDL2-2.0.20\lib\x64\SDL2.dll\ (xcopy /Q /E /Y /I $(SolutionDir)\vendor\SDL2-2.0.20\lib\x64\SDL2.dll ..\bin\Release-windows-x86_64\$(ProjectName) &gt; nul) ELSE (xcopy /Q /Y /I $(SolutionDir)\vendor\SDL2-2.0.20\lib\x64\SDL2.dll ..\bin\Release-windows-x86_64\$(ProjectName) &gt; nul)
+IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll ..\bin\Release-windows-x86_64\$(ProjectName) &gt; nul) ELSE (xcopy /Q /Y /I $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll ..\bin\Release-windows-x86_64\$(ProjectName) &gt; nul)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
     <ClCompile>
@@ -137,6 +147,11 @@
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;yaml-cppd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\vendor\SDL2-2.0.20\lib\x64;..\vendor\yaml-cpp\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>IF EXIST ..\bin\Dist-windows-x86_64\$(SolutionName)\$(SolutionName).dll\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\$(SolutionName)\$(SolutionName).dll ..\bin\Dist-windows-x86_64\$(ProjectName) &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\$(SolutionName)\$(SolutionName).dll ..\bin\Dist-windows-x86_64\$(ProjectName) &gt; nul)
+IF EXIST $(SolutionDir)\vendor\SDL2-2.0.20\lib\x64\SDL2.dll\ (xcopy /Q /E /Y /I $(SolutionDir)\vendor\SDL2-2.0.20\lib\x64\SDL2.dll ..\bin\Dist-windows-x86_64\$(ProjectName) &gt; nul) ELSE (xcopy /Q /Y /I $(SolutionDir)\vendor\SDL2-2.0.20\lib\x64\SDL2.dll ..\bin\Dist-windows-x86_64\$(ProjectName) &gt; nul)
+IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll ..\bin\Dist-windows-x86_64\$(ProjectName) &gt; nul) ELSE (xcopy /Q /Y /I $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll ..\bin\Dist-windows-x86_64\$(ProjectName) &gt; nul)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\OpenGLTestLayer.h" />

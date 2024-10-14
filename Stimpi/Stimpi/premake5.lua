@@ -54,6 +54,14 @@ project "Stimpi"
 		staticruntime "Off"
 		systemversion "latest"
 	
+		postbuildcommands
+		{
+			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Application"),
+			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Runtime"),
+			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Editor"),
+			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Testing")
+		}
+
 	filter "configurations:Debug"
 		defines "DEBUG"
 		symbols "On"

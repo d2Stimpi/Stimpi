@@ -233,7 +233,6 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Core\Application.cpp" />
     <ClCompile Include="src\Stimpi\Core\Event.cpp" />
-    <ClCompile Include="src\Stimpi\Graphics\Graphics.cpp" />
     <ClCompile Include="src\Stimpi\Core\InputManager.cpp" />
     <ClCompile Include="src\Stimpi\Core\Layer.cpp" />
     <ClCompile Include="src\Stimpi\Core\Project.cpp" />
@@ -248,6 +247,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClCompile Include="src\Stimpi\Graphics\Animation\Sprite.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\BufferObject.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\FrameBuffer.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\Graphics.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\OpenGL.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\OrthoCamera.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\RenderAPI.cpp" />

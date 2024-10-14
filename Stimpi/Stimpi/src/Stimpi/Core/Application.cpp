@@ -125,6 +125,9 @@ namespace Stimpi
 				});
 
 				m_LayerStack.OnEvent(event);
+				// Manually delete the processed event
+				delete event;
+				event = nullptr;
 			}
 		}
 
