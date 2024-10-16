@@ -121,7 +121,7 @@ namespace Demo
             Entity otherEnt = FindEntityByID(other);
             string tag = otherEnt.GetComponent<TagComponent>().Tag;
             Console.WriteLine($"Collided with {tag}");
-            if (/*tag == "Immovable_1" || */tag == "Player")
+            if (/*tag == "Immovable_1" || */tag == "Player" || tag == "Demo.Projectile")
                 collide = false;
             
             var obj = InternalCalls.GetScriptInstace(other);

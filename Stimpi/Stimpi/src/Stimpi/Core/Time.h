@@ -42,4 +42,14 @@ namespace Stimpi
 		std::chrono::high_resolution_clock::time_point m_PrecedingFrameClock;
 		std::chrono::duration<float, std::milli> m_FloatDuration;
 	};
+
+	class ST_API Clock
+	{
+	public:
+		static void Begin();
+		static long long Stop();
+
+	private:
+		static std::chrono::time_point<std::chrono::steady_clock> m_StartTimepoint;
+	};
 }

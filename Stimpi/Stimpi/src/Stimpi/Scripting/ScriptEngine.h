@@ -117,6 +117,8 @@ namespace Stimpi
 		static uint64_t GetGCUsedSize();
 		static uint64_t GetGCHeapSize();
 		static void ForceGCCollect();
+		static uint32_t GetGCHandleCount();
+		static long long GetScriptsExecutioTime();
 
 	private:
 		static void InitMono();
@@ -218,6 +220,7 @@ namespace Stimpi
 	public:
 		ScriptObject(MonoObject* obj);
 		ScriptObject(std::string typeName);
+		~ScriptObject();
 
 		MonoObject* GetMonoObject() { return m_MonoObject; }
 		MonoType* GetMonoType() { return m_MonoType; }
@@ -232,6 +235,7 @@ namespace Stimpi
 		void PopulateFieldsData();
 
 		MonoObject* m_MonoObject;
+		uint32_t m_GCHandle;
 		MonoType* m_MonoType;
 		std::unordered_map<std::string, std::shared_ptr<ScriptField>> m_Fields;
 	};

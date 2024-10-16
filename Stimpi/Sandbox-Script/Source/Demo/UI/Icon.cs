@@ -26,6 +26,7 @@ namespace Demo
 
         public void Enable()
         {
+            Sprite = GetComponent<SpriteComponent>();
             if (Sprite != null)
             {
                 Sprite.SetDisabled(false);
@@ -34,6 +35,7 @@ namespace Demo
 
         public void SetColor(Color color)
         {
+            Sprite = GetComponent<SpriteComponent>();
             if (Sprite != null)
             {
                 Sprite.Color = color;
@@ -53,9 +55,21 @@ namespace Demo
 
         public override void OnUpdate(float ts)
         {
+            if (ID == 0)
+            {
+                Console.WriteLine("Icon got busted?!");
+                return;
+            }
+
+            Camera = FindEntityByName("MainCamera");
+            Quad = GetComponent<QuadComponent>();
             if (Camera != null && Quad != null)
             {
-                Quad.Position = Camera.GetComponent<QuadComponent>().Position + IconPosition;
+                QuadComponent camQuad = Camera.GetComponent<QuadComponent>();
+                if (camQuad != null)
+                    Quad.Position = camQuad.Position + IconPosition;
+                else
+                    Console.WriteLine("Camera got busted?!");
             }
         }
 

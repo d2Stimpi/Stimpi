@@ -56,6 +56,16 @@ namespace Demo
                 _anim.Play("unarmed_idle_front.anim");
                 _anim.Looping = true;
             }
+
+            // Grab spellBar ref, after all onCreates are done
+            if (_spellBar == null)
+            {
+                var entity = FindEntityByName("UI_SpellBar");
+                if (entity != null)
+                {
+                    _spellBar = entity.As<SpellBar>();
+                }
+            }
         }
 
         public override void OnUpdate(float ts)
@@ -63,7 +73,8 @@ namespace Demo
             // Check game over condition (Health)
             if (Health <= 0.0f)
             {
-                _healthBar.SetFillPercentage(Health / 100.0f);
+                if (_healthBar != null)
+                    _healthBar.SetFillPercentage(Health / 100.0f);
                 Console.WriteLine("Game Over! Go ahead and restart...");
                 RigidBody2DComponent rb2d = GetComponent<RigidBody2DComponent>();
                 rb2d.Enabled = false;
@@ -85,23 +96,11 @@ namespace Demo
                 _healthBar.UpdatePosition();
             }
 
-            // Grab spellBar ref, after all onCreates are done
-            if (_spellBar == null)
-            {
-                var entity = FindEntityByName("UI_SpellBar");
-                if (entity != null)
-                {
-                    _spellBar = entity.As<SpellBar>();
-                    if (_spellBar == null)
-                        Console.WriteLine("_spellBar failed to be found");
-                    else
-                        Console.WriteLine("_spellBar found");
-                }
-            }
-
             // Tracking "dummy" object - just to show where the target actually is (cursor pos)
-            if (_cursorQuad != null)
+            Cursor = FindEntityByName("Cursor");
+            if (Cursor != null)
             {
+                _cursorQuad = Cursor.GetComponent<QuadComponent>();
                 Vector2 mousePos = Input.GetMousePosition();
                 _cursorQuad.Position = mousePos;
             }
@@ -110,7 +109,7 @@ namespace Demo
             {
                 HandleMoveInput();
             }
-
+            
             // Updated attached camera to player object
             if (Camera != null)
             {
@@ -274,10 +273,13 @@ namespace Demo
         public static Vector2 GetPosition()
         {
             Entity playerEntity = Entity.FindByName("Player");
-            DemoPlayer player = playerEntity.As<DemoPlayer>();
-            if (player != null)
+            if (playerEntity != null)
             {
-                return player._quad.Position;
+                DemoPlayer player = playerEntity.As<DemoPlayer>();
+                if (player != null)
+                {
+                    return player._quad.Position;
+                }
             }
 
             return new Vector2(-9999.0f, -9999.0f);

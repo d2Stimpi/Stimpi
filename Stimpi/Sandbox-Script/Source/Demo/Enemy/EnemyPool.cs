@@ -8,7 +8,7 @@ using Stimpi;
 
 namespace Demo
 {
-    public sealed class EnemyPool
+    public static class EnemyPool
     {
         private static readonly bool s_debug = true;
         private static ObjectPool<Enemy> s_EnemyPool = new ObjectPool<Enemy>(20, EnemyPool.CreateEnemyObject);

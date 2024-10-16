@@ -23,19 +23,30 @@ namespace Stimpi
             if (Input.IsKeyPressed(KeyCode.KEY_D))
             {
                 Vector2 impulse = new Vector2(move, 0.0f);
-                Physics.ApplyImpulseCenter(ID, impulse, false);
+                Physics.SetLinearVelocity(ID, impulse);
             }
 
             if (Input.IsKeyPressed(KeyCode.KEY_A))
             {
                 Vector2 impulse = new Vector2(-move, 0.0f);
-                Physics.ApplyImpulseCenter(ID, impulse, false);
+                Physics.SetLinearVelocity(ID, impulse);
             }
 
             if (Input.IsKeyPressed(KeyCode.KEY_SPACE))
             {
                 Vector2 impulse = new Vector2(0.0f, jump);
-                Physics.ApplyImpulseCenter(ID, impulse, false);
+                Physics.SetLinearVelocity(ID, impulse);
+            }
+
+            var Camera = FindEntityByName("MainCamera");
+            var Quad = GetComponent<QuadComponent>();
+            if (Camera != null && Quad != null)
+            {
+                QuadComponent camQuad = Camera.GetComponent<QuadComponent>();
+                if (camQuad != null)
+                    camQuad.Position = Quad.Position + new Vector2(-64, -36);
+                else
+                    Console.WriteLine("Camera got busted?!");
             }
         }
 

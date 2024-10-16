@@ -31,6 +31,8 @@ namespace Stimpi
 				{
 					ImGui::Text("Application FPS %.1f", Time::Instance()->GetActiveFPS());
 					ImGui::Text("Average %.1f ms/frame", 1000.0f / Time::Instance()->GetActiveFPS());
+					ImGui::Separator();
+					ImGui::Text("Scripts time %.3f ms", (float)ScriptEngine::GetScriptsExecutioTime() / 1000.0f);
 				}
 
 				ImGui::Separator();
@@ -51,8 +53,9 @@ namespace Stimpi
 				{
 					ImGui::Text("GC used size %ld", (long)ScriptEngine::GetGCUsedSize());
 					ImGui::Text("GC heap size %ld", (long)ScriptEngine::GetGCHeapSize());
+					ImGui::Text("GC handles %d", ScriptEngine::GetGCHandleCount());
 					// TODO: fix these actions - atm disabled
-					ImGui::BeginDisabled();
+					//ImGui::BeginDisabled();
 					if (ImGui::Button("GC Collect"))
 					{
 						ScriptEngine::ForceGCCollect();
@@ -61,7 +64,7 @@ namespace Stimpi
 					{
 						ScriptEngine::ReloadAssembly();
 					}
-					ImGui::EndDisabled();
+					//ImGui::EndDisabled();
 				}
 
 				ImGui::Separator();

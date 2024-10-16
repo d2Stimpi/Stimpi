@@ -3,6 +3,7 @@
 
 #include "Stimpi/Log.h"
 #include "Stimpi/Core/Event.h"
+#include "Stimpi/Core/Time.h"
 #include "Stimpi/Utils/SystemUtils.h"
 #include "Stimpi/Utils/FileWatcher.h"
 
@@ -18,6 +19,7 @@
 #include "mono/metadata/assembly.h"
 #include "mono/metadata/attrdefs.h"
 #include "mono/metadata/mono-gc.h"
+#include "mono/metadata/mono-config.h"
 
 /** TODO: fix issues:
  *  - Component adds a Script -> Script needs to be instantiated and so. Atm it won't be "active" before scene is reloaded
@@ -293,12 +295,30 @@ namespace Stimpi
 
 		// CustomAttributes.cs class instance
 		std::shared_ptr<ScriptInstance> m_AttributeLookup;
+
+		// Statistics
+		long long m_ScirptsExecutionElapsedTime = 0.0f;
 	};
 
 	static ScriptEngineData* s_Data;
 	static std::string s_CoreScriptName = "Stimpi-ScriptCore.dll";
 
 	static std::string s_ClientScriptName = "Sandbox-Script.dll";
+
+	static uint32_t s_GCHandleCount = 0;
+
+	static uint32_t GetGCHandle(MonoObject* obj, bool pinned)
+	{
+		s_GCHandleCount++;
+		return mono_gchandle_new(obj, pinned);
+	}
+
+	static void FreeGCHandle(uint32_t handle)
+	{
+		s_GCHandleCount--;
+		mono_gchandle_free(handle);
+	}
+
 
 	void ScriptEngine::Init()
 	{
@@ -674,6 +694,10 @@ namespace Stimpi
 		return s_Data->m_EntityClasses;
 	}
 
+
+
+
+
 	void ScriptEngine::InitMono()
 	{
 		mono_set_assemblies_path(MONO_LIB_PATH);
@@ -819,11 +843,7 @@ namespace Stimpi
 
 	void ScriptEngine::OnSceneUpdate(Timestep ts)
 	{
-		/*for (auto& element : s_Data->m_EntityInstances)
-		{
-			auto& instance = element.second;
-			instance->InvokeOnUpdate(ts);
-		}*/
+		Clock::Begin();
 
 		// New, somewhat ordered invocation
 		for (auto& instance : s_Data->m_PriorityEntityInstances)
@@ -837,6 +857,8 @@ namespace Stimpi
 		}
 
 		CleanUpRemovedInstances();
+
+		s_Data->m_ScirptsExecutionElapsedTime = Clock::Stop();
 	}
 
 	void ScriptEngine::OnSceneStop()
@@ -1040,6 +1062,16 @@ namespace Stimpi
 	void ScriptEngine::ForceGCCollect()
 	{
 		mono_gc_collect(mono_gc_max_generation());
+	}
+
+	uint32_t ScriptEngine::GetGCHandleCount()
+	{
+		return s_GCHandleCount;
+	}
+
+	long long ScriptEngine::GetScriptsExecutioTime()
+	{
+		return s_Data->m_ScirptsExecutionElapsedTime;
 	}
 
 	/* ======== ScriptClass ======== */
@@ -1280,25 +1312,33 @@ namespace Stimpi
 	/* ======== ScriptObject ======== */
 
 	ScriptObject::ScriptObject(MonoObject* obj)
-		: m_MonoObject(obj)
+		: m_MonoObject(obj), m_GCHandle(0)
 	{
 		MonoClass* klass = mono_object_get_class(m_MonoObject);
 		m_MonoType = mono_class_get_type(klass);
+		m_GCHandle = GetGCHandle(m_MonoObject, true);
 
 		PopulateFieldsData();
 	}
 
 
 	ScriptObject::ScriptObject(std::string typeName)
-		: m_MonoObject(nullptr)
+		: m_MonoObject(nullptr), m_GCHandle(0)
 	{
 		MonoType* monoType = mono_reflection_type_from_name((char*)typeName.c_str(), s_Data->m_CoreAssemblyImage);
 		if (monoType)
 		{
 			m_MonoObject = mono_object_new(ScriptEngine::GetAppDomain(), mono_class_from_mono_type(monoType));
+			m_GCHandle = GetGCHandle(m_MonoObject, true);
 			mono_runtime_object_init(m_MonoObject);
 			PopulateFieldsData();
 		}
+	}
+
+	ScriptObject::~ScriptObject()
+	{
+		if (m_GCHandle != 0)
+			FreeGCHandle(m_GCHandle);
 	}
 
 	void ScriptObject::GetFieldValue(const std::string& fieldName, void* data)
@@ -1386,7 +1426,9 @@ namespace Stimpi
 		uint32_t dataType = mono_type_get_type(monoType);
 		m_Type = Utils::GetFieldTypeFromMonoType(dataType);
 		m_Name = mono_field_get_name(monoField);
-		m_FieldTypeName = mono_type_get_name(monoType);
+		char* tmpCStr = mono_type_get_name(monoType);
+		m_FieldTypeName = std::string(tmpCStr);
+		mono_free(tmpCStr);
 
 		size_t pos = m_FieldTypeName.find_last_of('.');
 		m_FieldTypeShortName = m_FieldTypeName.substr(pos + 1);

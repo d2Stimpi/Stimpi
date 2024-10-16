@@ -82,6 +82,13 @@ namespace Demo
             _rb2d.Enabled = true;
             _rb2d.SetTransform(_quad.Position, _quad.Rotation);
 
+
+            if (_healthBar == null)
+            {
+                // Create HealthBar entity and "attach"
+                _healthBar = Entity.Create<HealthBar>();
+            }
+
             _healthBar.Initialize(this);
             _health = 100;
         }
@@ -123,20 +130,14 @@ namespace Demo
             _rb2d = AddComponent<RigidBody2DComponent>();
             _rb2d.Type = BodyType.DYNAMIC;
             _rb2d.FixedRotation = true;
-
-            // Create HealthBar entity and "attach"
-            _healthBar = Entity.Create<HealthBar>();
         }
 
         public override void OnUpdate(float ts)
         {
-            //Console.WriteLine($"ID:{ID} Enter OnUpdate");
             if (_enableUpdate)
             {
                 if (_healthBar != null)
                     _healthBar.UpdatePosition();
-                else
-                    Console.WriteLine($"Enemy {ID} - helthBar == null");
                 // Maintain correct velocity
                 Physics.SetLinearVelocity(ID, _activeVelocity);
 
@@ -150,7 +151,6 @@ namespace Demo
                         DestroyEnemy();
                 }
             }
-            //Console.WriteLine("Exit OnUpdate");
         }
 
         public override void OnCollisionBegin(Collision collision)
@@ -385,9 +385,14 @@ namespace Demo
                     break;
                 case EnemyState.IDLE:
                     // Check for player proximity and get "alerted" and chase player
-                    if (_quad.Position.Distance(DemoPlayer.GetPosition()) <= _aggroDistance)
+                    Entity playerEnt = FindEntityByName("Player");
+                    if (playerEnt != null)
                     {
-                        _enemyState = EnemyState.WALK;
+                        Vector2 playerPos = playerEnt.GetComponent<QuadComponent>().Position;
+                        if (_quad.Position.Distance(playerPos) <= _aggroDistance)
+                        {
+                            _enemyState = EnemyState.WALK;
+                        }
                     }
                     break;
                 case EnemyState.WALK:
