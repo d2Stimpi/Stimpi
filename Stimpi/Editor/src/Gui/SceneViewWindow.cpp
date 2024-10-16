@@ -105,6 +105,12 @@ namespace Stimpi
 		m_Hovered = ImGui::IsWindowHovered();
 		m_Focused = ImGui::IsWindowFocused();
 
+		if (scene->GetRuntimeState() == RuntimeState::RUNNING)
+		{
+			if (!m_Hovered)	InputManager::Instance()->SetCaptureMouse(false);
+			if (!m_Focused) InputManager::Instance()->SetCaptureKeyboard(false);
+		}
+
 		m_WindowSize = winSize;
 		m_WindowPosition = pos;
 		// Limit mouse position to screen

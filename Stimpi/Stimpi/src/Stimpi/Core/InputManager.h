@@ -33,8 +33,8 @@ namespace Stimpi
 		using MouseOnEventFucntion = std::function<bool(MouseEvent e)>;
 
 	public:
-		MouseEvnetHandler(MouseOnEventFucntion onEvent) : m_OnEvent(onEvent) {};
-		bool OnMouseEvent(MouseEvent e) { if (m_OnEvent != nullptr) { return m_OnEvent(e); } };
+		MouseEvnetHandler(MouseOnEventFucntion onEvent) : m_OnEvent(onEvent) {}
+		bool OnMouseEvent(MouseEvent e) { if (m_OnEvent != nullptr) { return m_OnEvent(e); } }
 	private:
 		MouseOnEventFucntion m_OnEvent;
 	};
@@ -42,7 +42,7 @@ namespace Stimpi
 	class ST_API InputManager
 	{
 	public:
-		static InputManager* Instance();
+		static InputManager* Instance();	// TODO: consistency - make static class or singleton
 
 		void AddKeyboardEventHandler(KeyboardEventHandler* handler);
 		void AddMouseEventHandler(MouseEvnetHandler* handler);
@@ -68,13 +68,22 @@ namespace Stimpi
 
 		void ClearEvents();
 
+		void SetCaptureMouse(bool capture) { m_CaptureMouse = capture; }
+		void SetCaptureKeyboard(bool capture) { m_CaptureKeyboard = capture; }
+		bool WantCaptureMouse() { return m_CaptureMouse; }
+		bool WantCaptureKeyboard() { return m_CaptureKeyboard; }
+
 	private:
-		std::vector<KeyboardEventHandler*> m_keyboardEventHandlers;
+		std::vector<KeyboardEventHandler*> m_KeyboardEventHandlers;
 		std::vector<KeyboardEvent> m_KeyboardEvents; // TODO: decide if really needed
 
-		std::vector<MouseEvnetHandler*> m_mouseEventHandlers;
+		std::vector<MouseEvnetHandler*> m_MouseEventHandlers;
 		std::vector<MouseEvent> m_MouseEvents;
 
 		glm::vec2 m_MouseCursorPosition;
+
+		// Disable/Enable input handling on per frame basis
+		bool m_CaptureMouse = true;
+		bool m_CaptureKeyboard = true;
 	};
 }

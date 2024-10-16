@@ -157,10 +157,10 @@ namespace Stimpi
 		UpdateComponentDependacies(ts);
 
 		/* When not in Running state, use Editor sourced camera */
-		if (m_RuntimeState == RuntimeState::STOPPED)
+		/*if (m_RuntimeState != RuntimeState::RUNNING)
 		{
 			m_RenderCamera = m_SceneCamera;
-		}
+		}*/
 
 		// Scene Rendering
 		if (m_RenderCamera)
@@ -473,11 +473,20 @@ namespace Stimpi
 
 	void Scene::OnScenePause()
 	{
+		m_RenderCamera = m_SceneCamera;
 		m_RuntimeState = RuntimeState::PAUSED;
 	}
 
 	void Scene::OnSceneResume()
 	{
+		m_Registry.view<CameraComponent>().each([=](auto entity, auto& ncs)
+		{
+			if (ncs.m_IsMain)
+			{
+				m_RenderCamera = ncs.m_Camera.get();
+			}
+		});
+
 		m_RuntimeState = RuntimeState::RUNNING;
 	}
 

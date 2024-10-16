@@ -20,7 +20,7 @@ namespace Stimpi
 	{
 		if (handler != nullptr)
 		{
-			m_keyboardEventHandlers.push_back(handler);
+			m_KeyboardEventHandlers.push_back(handler);
 		}
 	}
 
@@ -28,7 +28,7 @@ namespace Stimpi
 	{
 		if (handler != nullptr)
 		{
-			m_mouseEventHandlers.push_back(handler);
+			m_MouseEventHandlers.push_back(handler);
 		}
 	}
 
@@ -36,7 +36,7 @@ namespace Stimpi
 	{
 		if (handler != nullptr)
 		{
-			m_keyboardEventHandlers.erase(std::remove(m_keyboardEventHandlers.begin(), m_keyboardEventHandlers.end(), handler));
+			m_KeyboardEventHandlers.erase(std::remove(m_KeyboardEventHandlers.begin(), m_KeyboardEventHandlers.end(), handler));
 		}
 	}
 
@@ -44,8 +44,8 @@ namespace Stimpi
 	{
 		if (handler != nullptr)
 		{
-			if (m_mouseEventHandlers.size() > 0)
-				m_mouseEventHandlers.erase(std::remove(m_mouseEventHandlers.begin(), m_mouseEventHandlers.end(), handler));
+			if (m_MouseEventHandlers.size() > 0)
+				m_MouseEventHandlers.erase(std::remove(m_MouseEventHandlers.begin(), m_MouseEventHandlers.end(), handler));
 		}
 	}
 
@@ -53,7 +53,7 @@ namespace Stimpi
 	{
 		bool handled = false;
 
-		for (auto handler : m_keyboardEventHandlers)
+		for (auto handler : m_KeyboardEventHandlers)
 		{
 			handled = handler->OnKeyboardEvent(event);
 			if (handled == true)
@@ -67,7 +67,7 @@ namespace Stimpi
 	{
 		bool handled = false;
 
-		for (auto handler : m_mouseEventHandlers)
+		for (auto handler : m_MouseEventHandlers)
 		{
 			handled = handler->OnMouseEvent(event);
 			if (handled == true)
@@ -79,38 +79,37 @@ namespace Stimpi
 
 	bool InputManager::IsKeyDown(uint32_t keycode)
 	{
-		return s_KeyStatesInstant[keycode] == KeyboardEventType::KEY_EVENT_DOWN;
+		return InputManager::Instance()->WantCaptureKeyboard() && s_KeyStatesInstant[keycode] == KeyboardEventType::KEY_EVENT_DOWN;
 	}
 
 	bool InputManager::IsKeyPressed(uint32_t keycode)
 	{
-		return s_KeyStates[keycode] == KeyboardEventType::KEY_EVENT_DOWN;
+		return InputManager::Instance()->WantCaptureKeyboard() && s_KeyStates[keycode] == KeyboardEventType::KEY_EVENT_DOWN;
 	}
 
 	bool InputManager::IsKeyUp(uint32_t keycode)
 	{
-		return s_KeyStatesInstant[keycode] == KeyboardEventType::KEY_EVENT_UP;
+		return InputManager::Instance()->WantCaptureKeyboard() && s_KeyStatesInstant[keycode] == KeyboardEventType::KEY_EVENT_UP;
 	}
 
 	bool InputManager::IsMouseButtonDown(uint8_t mbt)
 	{
-		return s_MouseButtonStatesInstant[mbt] == MouseEventType::MOUSE_EVENT_BUTTONDOWN;
+		return InputManager::Instance()->WantCaptureMouse() && s_MouseButtonStatesInstant[mbt] == MouseEventType::MOUSE_EVENT_BUTTONDOWN;
 	}
 
 	bool InputManager::IsMouseButtonPressed(uint8_t mbt)
 	{
-		return s_MouseButtonStates[mbt] == MouseEventType::MOUSE_EVENT_BUTTONDOWN;
+		return InputManager::Instance()->WantCaptureMouse() && s_MouseButtonStates[mbt] == MouseEventType::MOUSE_EVENT_BUTTONDOWN;
 	}
 
 	bool InputManager::IsMouseButtonUp(uint8_t mbt)
 	{
-		return s_MouseButtonStatesInstant[mbt] == MouseEventType::MOUSE_EVENT_BUTTONUP;
+		return InputManager::Instance()->WantCaptureMouse() && s_MouseButtonStatesInstant[mbt] == MouseEventType::MOUSE_EVENT_BUTTONUP;
 	}
 
 	glm::vec2 InputManager::GetMousePosition()
 	{
 		return WindowManager::Instance()->GetMouseWindowPostition();
-		//return m_MouseCursorPosition;
 	}
 
 	void InputManager::AddEvent(KeyboardEvent event)
@@ -165,5 +164,8 @@ namespace Stimpi
 
 		m_KeyboardEvents.clear();
 		m_MouseEvents.clear();
+
+		m_CaptureMouse = true;
+		m_CaptureKeyboard = true;
 	}
 }

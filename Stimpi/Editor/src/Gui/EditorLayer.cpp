@@ -263,7 +263,7 @@ namespace Stimpi
 		m_PhysicsConfigPanel.OnImGuiRender();
 
 		// Camera movement update - only when in Stopped state
-		if (m_Scene->GetRuntimeState() == RuntimeState::STOPPED)
+		if (m_Scene->GetRuntimeState() != RuntimeState::RUNNING)
 		{
 			m_CameraController->SetMouseControllesActive(m_SceneViewWindow.IsHovered());
 

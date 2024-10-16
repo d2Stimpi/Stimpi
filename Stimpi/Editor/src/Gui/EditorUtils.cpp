@@ -13,6 +13,12 @@ namespace Stimpi
 		return io.WantCaptureKeyboard;
 	}
 
+	void EditorUtils::SetCaptureKeyboard(bool capture)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.WantCaptureKeyboard = capture;
+	}
+
 	void EditorUtils::SetActiveItemCaptureKeyboard(bool capture)
 	{
 		ImGuiIO& io = ImGui::GetIO();
@@ -23,6 +29,12 @@ namespace Stimpi
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		return io.WantCaptureMouse;
+	}
+
+	void EditorUtils::SetCaptureMouse(bool capture)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.WantCaptureMouse = capture;
 	}
 
 	void EditorUtils::SetActiveItemCaptureMouse(bool capture)
