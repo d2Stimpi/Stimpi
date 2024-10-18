@@ -15,6 +15,9 @@ namespace Stimpi
 		Entity(Scene* scene) : m_Scene(scene) {}
 		Entity(entt::entity handle, Scene* scene);
 		Entity(const Entity& other) = default;
+		
+		Entity(Entity&& other) : m_Handle(std::move(other.m_Handle)), m_Scene(std::move(other.m_Scene)) { other.m_Scene = nullptr; }
+		Entity operator=(const Entity& other) { m_Handle = other.m_Handle; m_Scene = other.m_Scene; return *this; }
 
 		void Serialize(YAML::Emitter& out);
 

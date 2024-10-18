@@ -16,27 +16,11 @@ namespace Stimpi
 			if (entity.HasComponent<QuadComponent>()
 				&& (entity.HasComponent<SpriteComponent>() || entity.HasComponent<AnimatedSpriteComponent>()))
 			{
-				auto& quad = entity.GetComponent<QuadComponent>();
-				float sortValue = 0.0f;
-				switch (graphicsConfig.m_RenderingOrderAxis)
-				{
-				case RenderingOrderAxis::X_AXIS: sortValue = quad.m_Position.x;	break;
-				case RenderingOrderAxis::Y_AXIS: sortValue = quad.m_Position.y;	break;
-				case RenderingOrderAxis::Z_AXIS: sortValue = quad.m_Position.z;	break;
-				}
-				sorter.SortEntityByAxis(entity, sortValue);
+				sorter.SortQuadEntityByAxis(entity, graphicsConfig.m_RenderingOrderAxis);
 			}
 			else if (entity.HasComponent<CircleComponent>())
 			{
-				auto& circle = entity.GetComponent<CircleComponent>();
-				float sortValue = 0.0f;
-				switch (graphicsConfig.m_RenderingOrderAxis)
-				{
-				case RenderingOrderAxis::X_AXIS: sortValue = circle.m_Position.x;	break;
-				case RenderingOrderAxis::Y_AXIS: sortValue = circle.m_Position.y;	break;
-				case RenderingOrderAxis::Z_AXIS: sortValue = circle.m_Position.z;	break;
-				}
-				sorter.SortEntityByAxis(entity, sortValue);
+				sorter.SortCircleEntityByAxis(entity, graphicsConfig.m_RenderingOrderAxis);
 			}
 			else
 			{

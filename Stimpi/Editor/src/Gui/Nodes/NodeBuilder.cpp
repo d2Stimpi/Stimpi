@@ -20,7 +20,7 @@ namespace Stimpi
 			{"SetPosition", []() { return SetPositionNode::CreateNode(); }}
 		};
 
-		for (auto key : s_NodeBuilderFunctions)
+		for (auto& key : s_NodeBuilderFunctions)
 		{
 			s_NodeTypeList.push_back(key.first);
 		}
@@ -38,8 +38,8 @@ namespace Stimpi
 			{
 				std::string setNodeName = std::string("Set_").append(var->m_Name);
 				std::string getNodeName = std::string("Get_").append(var->m_Name);
-				combinedList.push_back(setNodeName);
-				combinedList.push_back(getNodeName);
+				combinedList.emplace_back(std::move(setNodeName));
+				combinedList.emplace_back(std::move(getNodeName));
 			}
 		}
 

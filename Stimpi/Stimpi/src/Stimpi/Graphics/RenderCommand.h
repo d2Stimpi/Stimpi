@@ -19,6 +19,9 @@ namespace Stimpi
 		glm::vec4 m_Color = glm::vec4(0.0f);
 		glm::vec2 m_TexCoord = glm::vec2(0.0f);
 
+		VertexData(glm::vec3 position, glm::vec4 color, glm::vec2 texCoord)
+			: m_Position(position), m_Color(color), m_TexCoord(texCoord) {}
+
 		float* operator&() { return &m_Position[0]; }
 	};
 
@@ -30,6 +33,9 @@ namespace Stimpi
 		float m_Thickness = 0.0f;
 		float m_Fade = 0.0f;
 
+		CircleVertexData(glm::vec3 position, glm::vec4 color, glm::vec2 texCoord, float thickness, float fade)
+			: m_Position(position), m_Color(color), m_TexCoord(texCoord), m_Thickness(thickness), m_Fade(fade) {}
+
 		float* operator&() { return &m_Position[0]; }
 	};
 
@@ -37,6 +43,9 @@ namespace Stimpi
 	{
 		glm::vec3 m_Position = glm::vec3(0.0f);
 		glm::vec4 m_Color = glm::vec4(0.0f);
+
+		LineVertexData(glm::vec3 position, glm::vec4 color)
+			: m_Position(position), m_Color(color) {}
 
 		float* operator&() { return &m_Position[0]; }
 	};
@@ -76,13 +85,7 @@ namespace Stimpi
 			if (m_Type == RenderCommandType::NONE)
 				m_Type = RenderCommandType::QUAD;
 
-			VertexData vertex;
-
-			vertex.m_Position = position;
-			vertex.m_Color = color;
-			vertex.m_TexCoord = textureCoord;
-
-			m_VertexData.push_back(vertex);
+			m_VertexData.emplace_back(position, color, textureCoord);
 			m_VertexCount++;
 		}
 
@@ -93,15 +96,7 @@ namespace Stimpi
 			if (m_Type == RenderCommandType::NONE)
 				m_Type = RenderCommandType::CIRLCE;
 
-			CircleVertexData vertex;
-
-			vertex.m_Position = position;
-			vertex.m_Color = color;
-			vertex.m_TexCoord = textureCoord;
-			vertex.m_Thickness = thickness;
-			vertex.m_Fade = fade;
-
-			m_CircleVertexData.push_back(vertex);
+			m_CircleVertexData.emplace_back(position, color, textureCoord, thickness, fade);
 			m_VertexCount++;
 		}
 
@@ -112,12 +107,7 @@ namespace Stimpi
 			if (m_Type == RenderCommandType::NONE)
 				m_Type = RenderCommandType::LINE;
 
-			LineVertexData vertex;
-
-			vertex.m_Position = position;
-			vertex.m_Color = color;
-
-			m_LineVertexData.push_back(vertex);
+			m_LineVertexData.emplace_back(position, color);
 			m_VertexCount++;
 		}
 

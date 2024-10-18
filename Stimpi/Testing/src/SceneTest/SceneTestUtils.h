@@ -28,7 +28,7 @@ namespace StimpiTest
 
 		EntityComponentList(std::initializer_list<ComponentType> list)
 		{
-			for (auto type : list)
+			for (auto& type : list)
 			{
 				m_ComponentList.push_back(type);
 			}

@@ -42,7 +42,7 @@ namespace Stimpi
 
 		ClassLoadingDetails(std::initializer_list<ClassIdentifier> list)
 		{
-			for (auto item : list)
+			for (auto& item : list)
 			{
 				m_ClassIdentifiers.push_back(item);
 			}

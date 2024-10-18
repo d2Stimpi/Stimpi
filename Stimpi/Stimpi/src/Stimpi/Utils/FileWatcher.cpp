@@ -19,8 +19,7 @@ namespace Stimpi
 		{
 			ShellUtils::ChangeNotifyRegister(watchPath.string().c_str(), &handle);
 
-			FileWatcherEntry entry = { watcher, handle, watchPath };
-			s_Data.m_WatcherEntries.push_back(entry);
+			s_Data.m_WatcherEntries.emplace_back(watcher, handle, watchPath);
 		}
 	}
 

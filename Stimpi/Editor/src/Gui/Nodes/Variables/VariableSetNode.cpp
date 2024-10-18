@@ -57,28 +57,28 @@ namespace Stimpi
 		outFlowPin->m_Type = Pin::Type::FLOW_OUT;
 		outFlowPin->m_ID = graph->GeneratePinID();
 		outFlowPin->m_ParentNode = newNode;
-		newNode->m_OutPins.emplace_back(outFlowPin);
+		newNode->m_OutPins.push_back(outFlowPin);
 
 		std::shared_ptr<Pin> outPin = std::make_shared<Pin>();
 		outPin->m_Type = Pin::Type::OUTPUT;
 		outPin->m_ID = graph->GeneratePinID();
 		outPin->m_ParentNode = newNode;
 		outPin->m_Variable = var;
-		newNode->m_OutPins.emplace_back(outPin);
+		newNode->m_OutPins.push_back(outPin);
 		outPin->m_Variable->m_AttachedToPins.push_back(outPin);
 
 		std::shared_ptr<Pin> inFlowPin = std::make_shared<Pin>();
 		inFlowPin->m_Type = Pin::Type::FLOW_IN;
 		inFlowPin->m_ID = graph->GeneratePinID();
 		inFlowPin->m_ParentNode = newNode;
-		newNode->m_InPins.emplace_back(inFlowPin);
+		newNode->m_InPins.push_back(inFlowPin);
 
 		std::shared_ptr<Pin> inPin = std::make_shared<Pin>();
 		inPin->m_Type = Pin::Type::INPUT;
 		inPin->m_ID = graph->GeneratePinID();
 		inPin->m_ParentNode = newNode;
 		inPin->m_Variable = var;
-		newNode->m_InPins.emplace_back(inPin);
+		newNode->m_InPins.push_back(inPin);
 		inPin->m_Variable->m_AttachedToPins.push_back(inPin);
 
 		return newNode;

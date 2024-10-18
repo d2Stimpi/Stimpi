@@ -130,6 +130,8 @@ namespace Stimpi
 				// Add Entity pop-up
 				CreateEntityPopup();
 
+				ImGui::BeginChild("##SceneHierarcyTree");
+
 				if (ImGui::TreeNodeEx((void*)&m_ActiveScene, node_flags | ImGuiTreeNodeFlags_DefaultOpen, "Scene"))
 				{
 
@@ -148,13 +150,7 @@ namespace Stimpi
 								EditorUtils::RenderSelection();
 							}
 
-							if (ImGui::TreeNodeEx((void*)&entity, leaf_flags, "%s", entityTag.c_str()))
-							{
-								if (ImGui::IsItemClicked() /*&& ImGui::IsMouseReleased(0)*/)
-								{
-									//s_Context.s_SelectedEntity = entity;
-								}
-							}
+							ImGui::TreeNodeEx((void*)&entity, leaf_flags, "%s", entityTag.c_str());
 							if (ImGui::IsItemHovered())
 							{
 								if (ImGui::IsMouseDown(0))
@@ -170,6 +166,8 @@ namespace Stimpi
 					}
 					ImGui::TreePop();
 				}
+
+				ImGui::EndChild();
 			}
 
 			// Sub-window: Showing stats for each component

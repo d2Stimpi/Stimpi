@@ -180,7 +180,7 @@ namespace Stimpi
 				{
 					std::vector<Entity> renderEntities;
 					for (auto item : entityLayerGroup.m_Entities)
-						renderEntities.push_back({ (entt::entity)item.m_EntityID, this });
+						renderEntities.emplace_back((entt::entity)item.m_EntityID, this);
 
 					Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
 					SubmitForRendering(renderEntities);
@@ -193,9 +193,11 @@ namespace Stimpi
 				{
 					Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
 
+					OnSortingAxisChange();
+
 					std::vector<Entity> axisOrdered;
 					for (auto entityID : m_EntitySorter.m_AxisSortedEntites)
-						axisOrdered.push_back({ (entt::entity)entityID, this });
+						axisOrdered.emplace_back((entt::entity)entityID, this);
 
 					SubmitForRendering(axisOrdered);
 
@@ -283,32 +285,6 @@ namespace Stimpi
 		}
 	}
 
-	bool Scene::CompareByAxis(Entity a, Entity b)
-	{
-		if ((a.HasComponent<QuadComponent>() || a.HasComponent<CircleComponent>()) &&
-			(b.HasComponent<QuadComponent>() || b.HasComponent<CircleComponent>()))
-		{
-			glm::vec3 posA = a.HasComponent<QuadComponent>() ? a.GetComponent<QuadComponent>().m_Position :
-				a.GetComponent<CircleComponent>().m_Position;
-			glm::vec3 posB = b.HasComponent<QuadComponent>() ? b.GetComponent<QuadComponent>().m_Position :
-				b.GetComponent<CircleComponent>().m_Position;
-
-			auto graphicsConfig = Project::GetGraphicsConfig();
-			if (graphicsConfig.m_RenderingOrderAxis == RenderingOrderAxis::X_AXIS)
-				return posA.x < posB.x;
-			if (graphicsConfig.m_RenderingOrderAxis == RenderingOrderAxis::Y_AXIS)
-				return posA.y < posB.y;
-			if (graphicsConfig.m_RenderingOrderAxis == RenderingOrderAxis::Z_AXIS)
-				return posA.z < posB.z;
-
-			// Default sorting
-			return posA.z < posB.z;
-		}
-
-		return false;
-	}
-
-
 	EntitySorter& Scene::GetEntitySorter()
 	{
 		return m_EntitySorter;
@@ -327,15 +303,11 @@ namespace Stimpi
 				if (!entity.HasComponent<SortingGroupComponent>() && entity.HasComponent<QuadComponent>() &&
 					(entity.HasComponent<SpriteComponent>() || entity.HasComponent<AnimatedSpriteComponent>()))
 				{
-					auto& quad = entity.GetComponent<QuadComponent>();
-					float sortValue = 0.0f;
-					switch (graphicsConfig.m_RenderingOrderAxis)
-					{
-					case RenderingOrderAxis::X_AXIS: sortValue = quad.m_Position.x;	break;
-					case RenderingOrderAxis::Y_AXIS: sortValue = quad.m_Position.y;	break;
-					case RenderingOrderAxis::Z_AXIS: sortValue = quad.m_Position.z;	break;
-					}
-					m_EntitySorter.SortEntityByAxis(entity, sortValue);
+					m_EntitySorter.SortQuadEntityByAxis(entity, graphicsConfig.m_RenderingOrderAxis);
+				}
+				else if (entity.HasComponent<CircleComponent>())
+				{
+					m_EntitySorter.SortCircleEntityByAxis(entity, graphicsConfig.m_RenderingOrderAxis);
 				}
 			}
 		}

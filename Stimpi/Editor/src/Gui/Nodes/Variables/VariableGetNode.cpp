@@ -56,7 +56,7 @@ namespace Stimpi
 		pin->m_Type = Pin::Type::OUTPUT;
 		pin->m_Variable = var;
 		
-		newNode->m_OutPins.emplace_back(pin);
+		newNode->m_OutPins.push_back(pin);
 		if (newNode->m_Type == Node::NodeType::Variable)
 		{
 			pin->m_Variable->m_AttachedToPins.push_back(pin);

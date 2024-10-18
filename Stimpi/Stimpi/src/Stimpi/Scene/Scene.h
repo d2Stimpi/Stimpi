@@ -87,7 +87,6 @@ namespace Stimpi
 
 		// Rendering and sorting
 		void SubmitForRendering(std::vector<Entity>& entities);
-		bool CompareByAxis(Entity a, Entity b);
 
 		// Scripting
 		void InitializeScripts();

@@ -26,8 +26,9 @@ namespace Stimpi
 		void SortEntityByLayer(EntitySortData data, const std::string& layerName);
 		void RemoveLayerSortedEntity(uint32_t entityID, const std::string& layerName);
 		void SortingLayerRemoved(const std::string& layerName);
-
-		void SortEntityByAxis(uint32_t entityID, float value);
+		
+		void SortQuadEntityByAxis(uint32_t entityID, RenderingOrderAxis axis);
+		void SortCircleEntityByAxis(uint32_t entityID, RenderingOrderAxis axis);
 		void RemoveAxisSortedEntity(uint32_t entityID);
 		void ResetAxisSortedEntites();
 
