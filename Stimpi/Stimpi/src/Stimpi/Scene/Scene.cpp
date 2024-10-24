@@ -351,9 +351,10 @@ namespace Stimpi
 		});
 	}
 
-	Entity Scene::CreateEntity(const std::string& name)
+	Entity Scene::CreateEntity(const std::string& name, const uint64_t& uuid)
 	{
 		Entity entity = { m_Registry.create(), this };
+		entity.AddComponent<UUIDComponent>(uuid == 0 ? UUID() : UUID(uuid));
 		entity.AddComponent<TagComponent>(name.empty() ? "Entity" : name);
 
 		m_Entities.push_back(entity);

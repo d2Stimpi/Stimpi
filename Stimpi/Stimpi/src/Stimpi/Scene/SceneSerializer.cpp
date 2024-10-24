@@ -46,9 +46,18 @@ namespace Stimpi
 		{
 			YAML::Node entityNode = it->second;
 			Entity entity;	// TODO: move Entity deserialization code to Entity class
-			if (entityNode["TagComponent"])
+			if (entityNode["TagComponent"])	// TODO: Some other validate method? Use UUID?
 			{
-				entity = m_Scene->CreateEntity(entityNode["TagComponent"]["Tag"].as<std::string>());
+				UUID uuid;
+				std::string tag = entityNode["TagComponent"]["Tag"].as<std::string>();
+				// Temp for compatibility
+				if (entityNode["UUIDComponent"])
+				{
+					uuid = entityNode["UUIDComponent"]["UUID"].as<uint64_t>();
+				}
+
+				entity = m_Scene->CreateEntity(tag, uuid);
+
 				if (entityNode["QuadComponent"])
 				{
 					entity.AddComponent<QuadComponent>(QuadComponent(entityNode["QuadComponent"]));

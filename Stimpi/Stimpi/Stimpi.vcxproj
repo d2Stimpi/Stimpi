@@ -178,6 +178,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Core\Runtime.h" />
     <ClInclude Include="src\Stimpi\Core\Time.h" />
     <ClInclude Include="src\Stimpi\Core\Timestep.h" />
+    <ClInclude Include="src\Stimpi\Core\UUID.h" />
     <ClInclude Include="src\Stimpi\Core\Window.h" />
     <ClInclude Include="src\Stimpi\Core\WindowManager.h" />
     <ClInclude Include="src\Stimpi\Debug\Profiler.h" />
@@ -239,6 +240,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClCompile Include="src\Stimpi\Core\ProjectSerializer.cpp" />
     <ClCompile Include="src\Stimpi\Core\Runtime.cpp" />
     <ClCompile Include="src\Stimpi\Core\Time.cpp" />
+    <ClCompile Include="src\Stimpi\Core\UUID.cpp" />
     <ClCompile Include="src\Stimpi\Core\Window.cpp" />
     <ClCompile Include="src\Stimpi\Core\WindowManager.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\Animation\AnimatedSprite.cpp" />

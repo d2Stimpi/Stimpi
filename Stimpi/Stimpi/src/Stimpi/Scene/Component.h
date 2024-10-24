@@ -2,6 +2,7 @@
 
 #include "Stimpi/Core/Core.h"
 #include "Stimpi/Core/Project.h"
+#include "Stimpi/Core/UUID.h"
 #include "Stimpi/Graphics/Texture.h"
 #include "Stimpi/Graphics/Shader.h"
 #include "Stimpi/Graphics/Animation/AnimatedSprite.h"
@@ -30,6 +31,26 @@ namespace Stimpi
 	public:
 		static void InitComponentObservers(entt::registry& reg, Scene* scene);
 		static void DeinitConstructObservers(entt::registry& reg);
+	};
+
+	struct UUIDComponent
+	{
+		UUID m_UUID;
+
+		UUIDComponent() = default;
+		UUIDComponent(const UUIDComponent&) = default;
+		UUIDComponent(const UUID uuid)
+			: m_UUID(uuid) {}
+
+		void Serialize(YAML::Emitter& out)
+		{
+			out << YAML::Key << "UUIDComponent";
+			out << YAML::BeginMap;
+				out << YAML::Key << "UUID" << YAML::Value << m_UUID;
+			out << YAML::EndMap;
+		}
+
+		//De-serialize done in Scene - Every entity will have UUIDComponent
 	};
 
 	struct TagComponent

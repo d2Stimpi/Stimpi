@@ -34,7 +34,7 @@ namespace Stimpi
 		void OnSceneStep();
 		void OnEvent(Event* event);
 
-		Entity CreateEntity(const std::string& name = "");
+		Entity CreateEntity(const std::string& name = "", const uint64_t& uuid = 0);
 		Entity GetEntityByHandle(entt::entity handle);
 		Entity FindentityByName(std::string_view name);
 		bool RemoveEntity(Entity entity);

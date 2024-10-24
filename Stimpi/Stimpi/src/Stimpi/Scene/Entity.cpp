@@ -3,6 +3,12 @@
 
 #include "Stimpi/Scene/Component.h"
 
+#define SERIALIZE_COMPONENT(ComponentName)					\
+		if (HasComponent<ComponentName>())					\
+		{													\
+			GetComponent<ComponentName>().Serialize(out);	\
+		}
+
 namespace Stimpi
 {
 	Entity::Entity(entt::entity handle, Scene* scene)
@@ -14,55 +20,19 @@ namespace Stimpi
 	void Entity::Serialize(YAML::Emitter& out)
 	{
 		out << YAML::BeginMap;
-		if (HasComponent<TagComponent>())
-		{
-			GetComponent<TagComponent>().Serialize(out);
-		}
 
-		if (HasComponent<QuadComponent>())
-		{
-			GetComponent<QuadComponent>().Serialize(out);
-		}
+		SERIALIZE_COMPONENT(UUIDComponent);
+		SERIALIZE_COMPONENT(TagComponent);
+		SERIALIZE_COMPONENT(QuadComponent);
+		SERIALIZE_COMPONENT(CircleComponent);
+		SERIALIZE_COMPONENT(SpriteComponent);
+		SERIALIZE_COMPONENT(SortingGroupComponent);
+		SERIALIZE_COMPONENT(AnimatedSpriteComponent);
+		SERIALIZE_COMPONENT(ScriptComponent);
+		SERIALIZE_COMPONENT(CameraComponent);
+		SERIALIZE_COMPONENT(RigidBody2DComponent);
+		SERIALIZE_COMPONENT(BoxCollider2DComponent);
 
-		if (HasComponent<CircleComponent>())
-		{
-			GetComponent<CircleComponent>().Serialize(out);
-		}
-
-		if (HasComponent<SpriteComponent>())
-		{
-			GetComponent<SpriteComponent>().Serialize(out);
-		}
-
-		if (HasComponent<SortingGroupComponent>())
-		{
-			GetComponent<SortingGroupComponent>().Serialize(out);
-		}
-
-		if (HasComponent<AnimatedSpriteComponent>())
-		{
-			GetComponent<AnimatedSpriteComponent>().Serialize(out);
-		}
-
-		if (HasComponent<ScriptComponent>())
-		{
-			GetComponent<ScriptComponent>().Serialize(out);
-		}
-
-		if (HasComponent<CameraComponent>())
-		{
-			GetComponent<CameraComponent>().Serialize(out);
-		}
-
-		if (HasComponent<RigidBody2DComponent>())
-		{
-			GetComponent<RigidBody2DComponent>().Serialize(out);
-		}
-
-		if (HasComponent<BoxCollider2DComponent>())
-		{
-			GetComponent<BoxCollider2DComponent>().Serialize(out);
-		}
 		out << YAML::EndMap;
 	}
 }
