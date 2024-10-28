@@ -24,6 +24,7 @@ namespace Stimpi
 		void ComponentInspectorWidget();
 
 		void SettingsPopupButton(ImVec2 cursorPos, std::string name, std::function<bool()> popupContent);
+		void TreeNode();
 		
 		// Inspect UI layout parts
 		void TagComponentLayout(TagComponent& component);

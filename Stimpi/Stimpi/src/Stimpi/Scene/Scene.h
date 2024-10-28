@@ -4,6 +4,7 @@
 
 #include "Stimpi/Core/Event.h"
 #include "Stimpi/Core/Timestep.h"
+#include "Stimpi/Core/UUID.h"
 
 #include "Stimpi/Graphics/Shader.h"
 #include "Stimpi/Graphics/SubTexture.h"
@@ -107,6 +108,7 @@ namespace Stimpi
 	private:
 		entt::registry m_Registry;
 		std::vector<Entity> m_Entities;
+		std::unordered_map<UUID, Entity> m_EntityUUIDMap;
 		RuntimeState m_RuntimeState;
 
 		std::string m_Name = "Scene";
@@ -125,6 +127,7 @@ namespace Stimpi
 		EntitySorter m_EntitySorter;
 
 		friend class Entity;
+		friend class EntityHierarchy;
 		friend class SceneSerializer;
 		friend class SceneHierarchyWindow;
 		friend class SceneViewWindow;

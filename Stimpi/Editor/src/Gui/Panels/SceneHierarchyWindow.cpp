@@ -11,7 +11,7 @@
 #include "Stimpi/Core/WindowManager.h"
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Entity.h"
-
+#include "Stimpi/Scene/EntityHierarchy.h"
 #include "Stimpi/Utils/PlatformUtils.h"
 
 #include "Stimpi/Scripting/ScriptEngine.h"
@@ -27,6 +27,7 @@ namespace Stimpi
 	struct SceneHierarchyWindowContext
 	{
 		Entity m_SelectedEntity = {};
+
 		bool m_WindowFocused = false;
 
 		char m_SearchTextBuffer[64];
@@ -106,7 +107,6 @@ namespace Stimpi
 				// Add Entity button
 				if (ImGuiEx::IconButton("##SceneHierarchyToolbarButtonPCH", EDITOR_ICON_CROSS))
 				{
-					//s_Context.m_SelectedEntity = m_ActiveScene->CreateEntity("NewEntity");
 					ImGui::OpenPopup("CreateEntityPopup");
 				}
 				ImGui::SameLine(30.0f);
@@ -136,32 +136,129 @@ namespace Stimpi
 				{
 
 					static Entity preSelect;
-					for (auto entity : m_ActiveScene->m_Entities)
+					for (auto& entity : m_ActiveScene->m_Entities)
 					{
-						auto entityTag = entity.GetComponent<TagComponent>().m_Tag;
+						auto& entityTag = entity.GetComponent<TagComponent>().m_Tag;
 
 						std::string filterTagString = s_Context.m_SearchTextBuffer;
 						if (filterTagString.empty() || entityTag.find(filterTagString) != std::string::npos)
 						{
-							ImGui::PushID((uint32_t)entity);
 
 							if (s_Context.m_SelectedEntity == entity)
 							{
-								EditorUtils::RenderSelection();
+								// Check if child node, if not - draw selection here
+								if (s_Context.m_SelectedEntity.HasComponent<HierarchyComponent>() &&
+									s_Context.m_SelectedEntity.GetComponent<HierarchyComponent>().m_Parent == 0)
+								{
+									EditorUtils::RenderSelection();
+								}
 							}
 
-							ImGui::TreeNodeEx((void*)&entity, leaf_flags, "%s", entityTag.c_str());
-							if (ImGui::IsItemHovered())
+							if (entity.HasComponent<HierarchyComponent>())
 							{
-								if (ImGui::IsMouseDown(0))
-									preSelect = entity;
-								else if (ImGui::IsMouseReleased(0))
-									s_Context.m_SelectedEntity = preSelect;
+								HierarchyComponent& component = entity.GetComponent<HierarchyComponent>();
+								// Root node does not have a parent and has children
+								if (component.m_Parent == 0 && !component.m_Children.empty())
+								{
+									ImGui::PushID((uint32_t)entity);
+
+									if (ImGui::TreeNodeEx((void*)&entity, node_flags | ImGuiTreeNodeFlags_DefaultOpen, "%s", entityTag.c_str()))
+									{
+										if (ImGui::IsItemHovered())
+										{
+											if (ImGui::IsMouseDown(0))
+												preSelect = entity;
+											else if (ImGui::IsMouseReleased(0))
+												s_Context.m_SelectedEntity = preSelect;
+										}
+
+										UIPayload::BeginTarget(PAYLOAD_DATA_TYPE_ENTITY, [&entity, &entityTag](void* data, uint32_t size)
+											{
+												Entity child = *(Entity*)data;
+												UUID dropUUID = child.GetComponent<UUIDComponent>().m_UUID;
+												ST_CORE_INFO("Dropped entity: {} - {} on {}", (uint32_t)child, (uint64_t)dropUUID, entityTag.c_str());
+
+												EntityHierarchy::AddChild(entity, child);
+											});
+
+										UIPayload::BeginSource(PAYLOAD_DATA_TYPE_ENTITY, &entity, sizeof(entity), entityTag.c_str());
+
+										// Children nodes
+										for (auto& child : component.m_Children)
+										{
+											auto& childEntity = m_ActiveScene->m_EntityUUIDMap[child];
+											auto& childEntityTag = childEntity.GetComponent<TagComponent>().m_Tag;
+
+											ImGui::PushID((uint32_t)child);
+
+											if (s_Context.m_SelectedEntity == childEntity)
+											{
+												EditorUtils::RenderSelection();
+											}
+
+											if (ImGui::TreeNodeEx((void*)&childEntity, leaf_flags, "%s", childEntityTag.c_str()))
+											{
+												if (ImGui::IsItemHovered())
+												{
+													if (ImGui::IsMouseDown(0))
+														preSelect = childEntity;
+													else if (ImGui::IsMouseReleased(0))
+														s_Context.m_SelectedEntity = preSelect;
+												}
+
+												UIPayload::BeginTarget(PAYLOAD_DATA_TYPE_ENTITY, [&childEntity, &childEntityTag](void* data, uint32_t size)
+													{
+														Entity child = *(Entity*)data;
+														UUID dropUUID = child.GetComponent<UUIDComponent>().m_UUID;
+														ST_CORE_INFO("Dropped entity: {} - {} on {}", (uint32_t)child, (uint64_t)dropUUID, childEntityTag.c_str());
+
+														EntityHierarchy::AddChild(childEntity, child);
+													});
+
+												UIPayload::BeginSource(PAYLOAD_DATA_TYPE_ENTITY, &childEntity, sizeof(childEntity), childEntityTag.c_str());
+											}
+
+											ImGui::PopID();
+										}
+										ImGui::TreePop();
+									}
+
+									ImGui::PopID();
+								}
+
+								// Component cleanup
+								if (component.m_Parent == 0 && component.m_Children.empty())
+									entity.RemoveComponent<HierarchyComponent>();
+							}
+							else
+							{
+								ImGui::PushID((uint32_t)entity);
+
+								if (ImGui::TreeNodeEx((void*)&entity, leaf_flags, "%s", entityTag.c_str()))
+								{ 
+									if (ImGui::IsItemHovered())
+									{
+										if (ImGui::IsMouseDown(0))
+											preSelect = entity;
+										else if (ImGui::IsMouseReleased(0))
+											s_Context.m_SelectedEntity = preSelect;
+									}
+
+									UIPayload::BeginTarget(PAYLOAD_DATA_TYPE_ENTITY, [&entity, &entityTag](void* data, uint32_t size)
+										{
+											Entity child = *(Entity*)data;
+											UUID dropUUID = child.GetComponent<UUIDComponent>().m_UUID;
+											ST_CORE_INFO("Dropped entity: {} - {} on {}", (uint32_t)child, (uint64_t)dropUUID, entityTag.c_str());
+
+											EntityHierarchy::AddChild(entity, child);
+										});
+
+									UIPayload::BeginSource(PAYLOAD_DATA_TYPE_ENTITY, &entity, sizeof(entity), entityTag.c_str());
+								}
+
+								ImGui::PopID();
 							}
 
-							UIPayload::BeginSource(PAYLOAD_DATA_TYPE_ENTITY, &entity, sizeof(entity), entityTag.c_str());
-
-							ImGui::PopID();
 						}
 					}
 					ImGui::TreePop();

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Stimpi/Core/UUID.h"
 #include "Stimpi/Scene/Scene.h"
 #include "Stimpi/Log.h"
 

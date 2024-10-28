@@ -23,6 +23,7 @@ namespace Stimpi
 
 		SERIALIZE_COMPONENT(UUIDComponent);
 		SERIALIZE_COMPONENT(TagComponent);
+		SERIALIZE_COMPONENT(HierarchyComponent);
 		SERIALIZE_COMPONENT(QuadComponent);
 		SERIALIZE_COMPONENT(CircleComponent);
 		SERIALIZE_COMPONENT(SpriteComponent);
@@ -35,4 +36,5 @@ namespace Stimpi
 
 		out << YAML::EndMap;
 	}
+
 }

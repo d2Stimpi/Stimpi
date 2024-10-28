@@ -4,6 +4,7 @@
 #include "Stimpi/Log.h"
 
 #include "Stimpi/Scene/Entity.h"
+#include "Stimpi/Scene/EntityHierarchy.h"
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Scene/Utils/SceneUtils.h"
@@ -354,10 +355,12 @@ namespace Stimpi
 	Entity Scene::CreateEntity(const std::string& name, const uint64_t& uuid)
 	{
 		Entity entity = { m_Registry.create(), this };
-		entity.AddComponent<UUIDComponent>(uuid == 0 ? UUID() : UUID(uuid));
+		UUID entityUUID = uuid == 0 ? UUID() : UUID(uuid);
+		entity.AddComponent<UUIDComponent>(entityUUID);
 		entity.AddComponent<TagComponent>(name.empty() ? "Entity" : name);
 
 		m_Entities.push_back(entity);
+		m_EntityUUIDMap[entityUUID] = entity;
 		return entity;
 	}
 
@@ -383,6 +386,7 @@ namespace Stimpi
 		bool valid = IsEntityValid(entity);
 		if (valid)
 		{
+			m_EntityUUIDMap.erase(entity.GetComponent<UUIDComponent>().m_UUID);
 			m_Registry.destroy(entity.GetHandle());
 			m_Entities.erase(std::remove(std::begin(m_Entities), std::end(m_Entities), entity));
 		}
@@ -415,6 +419,11 @@ namespace Stimpi
 			}
 		}
 
+		// Generate a new UUID for the copy Entity
+		UUID newUUID;
+		newEntity.GetComponent<UUIDComponent>().m_UUID = newUUID;
+
+		m_EntityUUIDMap[newUUID] = newEntity;
 		m_Entities.push_back(newEntity);
 		return newEntity;
 	}

@@ -24,6 +24,8 @@
  *  - [ImGui - SceneConfigWindow] Extend inspect window widgets 
  */
 
+// TODO: restructure - parent struct Component, Serialize/Deserialize method implmentation in separate file
+
 namespace Stimpi
 {
 	class ComponentObserver
@@ -31,6 +33,12 @@ namespace Stimpi
 	public:
 		static void InitComponentObservers(entt::registry& reg, Scene* scene);
 		static void DeinitConstructObservers(entt::registry& reg);
+	};
+
+	// Internal
+	struct ParentComponent
+	{
+		
 	};
 
 	struct UUIDComponent
@@ -51,6 +59,50 @@ namespace Stimpi
 		}
 
 		//De-serialize done in Scene - Every entity will have UUIDComponent
+	};
+
+	struct HierarchyComponent
+	{
+		UUID m_Parent = UUID(0);
+		std::vector<UUID> m_Children;
+
+		HierarchyComponent() = default;
+		HierarchyComponent(const HierarchyComponent&) = default;
+		HierarchyComponent(UUID parent)
+			: m_Parent(parent), m_Children() {}
+
+		void Serialize(YAML::Emitter& out)
+		{
+			out << YAML::Key << "HierarchyComponent";
+			out << YAML::BeginMap;
+				out << YAML::Key << "Parent" << YAML::Value << m_Parent;
+				out << YAML::Key << "Children" << YAML::Value;
+				out << YAML::BeginSeq;
+				for (auto& uuid : m_Children)
+				{
+					out << uuid;
+				}
+				out << YAML::EndSeq;
+			out << YAML::EndMap;
+		}
+
+		//De-serialize constructor
+		HierarchyComponent(const YAML::Node& node)
+		{
+			if (node["Parent"])
+			{
+				m_Parent = node["Parent"].as<uint64_t>();
+			}
+			if (node["Children"])
+			{
+				const YAML::Node& children = node["Children"];
+				for (YAML::const_iterator it = children.begin(); it != children.end(); it++)
+				{
+					const YAML::Node& child = *it;
+					m_Children.emplace_back(child.as<uint64_t>());
+				}
+			}
+		}
 	};
 
 	struct TagComponent

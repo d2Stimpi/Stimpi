@@ -58,6 +58,10 @@ namespace Stimpi
 
 				entity = m_Scene->CreateEntity(tag, uuid);
 
+				if (entityNode["HierarchyComponent"])
+				{
+					entity.AddComponent<HierarchyComponent>(HierarchyComponent(entityNode["HierarchyComponent"]));
+				}
 				if (entityNode["QuadComponent"])
 				{
 					entity.AddComponent<QuadComponent>(QuadComponent(entityNode["QuadComponent"]));
