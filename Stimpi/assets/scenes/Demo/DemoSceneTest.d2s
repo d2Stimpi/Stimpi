@@ -1,0 +1,1503 @@
+Scene:
+  Entity:
+    UUIDComponent:
+      UUID: 1595186486704501327
+    TagComponent:
+      Tag: MainCamera
+    QuadComponent:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    CameraComponent:
+      Position:
+        - 0
+        - 0
+        - 0
+      Rotation: 0
+      Zoom: 1
+      ViewQuad:
+        - 0
+        - 128
+        - 0
+        - 72
+      IsMain: true
+  Entity:
+    UUIDComponent:
+      UUID: 13168175272405689116
+    TagComponent:
+      Tag: GroundArea
+    QuadComponent:
+      - -108
+      - -150.492004
+      - 0
+      - 656
+      - 608
+      - 0
+    SpriteComponent:
+      FilePath: textures\Level_01_004.png
+      Enabled: true
+      Color:
+        - 0.568627477
+        - 0.349981397
+        - 0.214629009
+        - 1
+    SortingGroupComponent:
+      SortingLayerName: Background
+      OrderInLayer: 0
+  Entity:
+    UUIDComponent:
+      UUID: 17428536547676656400
+    TagComponent:
+      Tag: Player
+    QuadComponent:
+      - 64
+      - 36
+      - 0
+      - 24
+      - 24
+      - 0
+    AnimatedSpriteComponent:
+      DefaultAnimation: animations\char\unarmed_idle_front.anim
+      Animations:
+        Animation:
+          AnimationAssetPath: animations\char\unarmed_walk_back.anim
+        Animation:
+          AnimationAssetPath: animations\char\unarmed_walk_front.anim
+        Animation:
+          AnimationAssetPath: animations\char\unarmed_walk_side_left.anim
+        Animation:
+          AnimationAssetPath: animations\char\unarmed_walk_side_right.anim
+      AutoPlay: false
+    ScriptComponent:
+      ScriptName: Demo.DemoPlayer
+      ScriptFields:
+        Field:
+          Type: FIELD_TYPE_CLASS
+          FieldTypeName: Stimpi.Entity
+          Name: Cursor
+          FieldData:
+            ID: 4
+        Field:
+          Type: FIELD_TYPE_CLASS
+          FieldTypeName: Stimpi.Entity
+          Name: Camera
+          FieldData:
+            ID: 1
+    RigidBody2DComponent:
+      Type: Dynamic
+      FixedRotation: true
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - -1
+      Size:
+        - 0.100000001
+        - 0.119999997
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 15306403925150790506
+    TagComponent:
+      Tag: Cursor
+    QuadComponent:
+      - -66.9730835
+      - 108.687462
+      - 0
+      - 2
+      - 2
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 1
+        - 1
+        - 1
+        - 1
+    SortingGroupComponent:
+      SortingLayerName: Front
+      OrderInLayer: 0
+  Entity:
+    UUIDComponent:
+      UUID: 15070095180143952046
+    TagComponent:
+      Tag: Immovable_1
+    QuadComponent:
+      - 7.51460838
+      - 16.8090019
+      - 0
+      - 10
+      - 16
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: true
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 15707916036979404708
+    TagComponent:
+      Tag: SpawnPoint_1
+    QuadComponent:
+      - 114.031616
+      - 47.5415688
+      - 0
+      - 0
+      - 0
+      - 0
+    ScriptComponent:
+      ScriptName: Demo.EnemySpawn
+      ScriptFields:
+        {}
+  Entity:
+    UUIDComponent:
+      UUID: 4365098979523029398
+    TagComponent:
+      Tag: UI_Icon_1
+    HierarchyComponent:
+      Parent: 11398863413707888483
+      Children:
+        []
+    QuadComponent:
+      - 8
+      - 63
+      - 2
+      - 6
+      - 6
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 0.224144593
+        - 0.862745106
+        - 0.581009448
+        - 1
+    ScriptComponent:
+      ScriptName: Demo.Icon
+      ScriptFields:
+        {}
+  Entity:
+    UUIDComponent:
+      UUID: 11398863413707888483
+    TagComponent:
+      Tag: UI_SpellBar
+    HierarchyComponent:
+      Parent: 0
+      Children:
+        - 4365098979523029398
+        - 623925547620880920
+        - 10990707576416153182
+        - 2603841573528070287
+    ScriptComponent:
+      ScriptName: Demo.SpellBar
+      ScriptFields:
+        Field:
+          Type: FIELD_TYPE_CLASS
+          FieldTypeName: Stimpi.Entity
+          Name: IconNorth
+          FieldData:
+            ID: 7
+        Field:
+          Type: FIELD_TYPE_CLASS
+          FieldTypeName: Stimpi.Entity
+          Name: IconWest
+          FieldData:
+            ID: 9
+        Field:
+          Type: FIELD_TYPE_CLASS
+          FieldTypeName: Stimpi.Entity
+          Name: IconEast
+          FieldData:
+            ID: 10
+        Field:
+          Type: FIELD_TYPE_CLASS
+          FieldTypeName: Stimpi.Entity
+          Name: IconSputh
+          FieldData:
+            ID: 11
+  Entity:
+    UUIDComponent:
+      UUID: 623925547620880920
+    TagComponent:
+      Tag: UI_Icon_2
+    HierarchyComponent:
+      Parent: 11398863413707888483
+      Children:
+        []
+    QuadComponent:
+      - 15
+      - 63
+      - 2
+      - 6
+      - 6
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 0.349024415
+        - 0.857843161
+        - 0.633364201
+        - 1
+    ScriptComponent:
+      ScriptName: Demo.Icon
+      ScriptFields:
+        {}
+  Entity:
+    UUIDComponent:
+      UUID: 10990707576416153182
+    TagComponent:
+      Tag: UI_Icon_3
+    HierarchyComponent:
+      Parent: 11398863413707888483
+      Children:
+        []
+    QuadComponent:
+      - 22
+      - 63
+      - 2
+      - 6
+      - 6
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 0.51131773
+        - 0.84803921
+        - 0.6994856
+        - 1
+    ScriptComponent:
+      ScriptName: Demo.Icon
+      ScriptFields:
+        {}
+  Entity:
+    UUIDComponent:
+      UUID: 2603841573528070287
+    TagComponent:
+      Tag: UI_Icon_5
+    HierarchyComponent:
+      Parent: 11398863413707888483
+      Children:
+        []
+    QuadComponent:
+      - 29
+      - 63
+      - 2
+      - 6
+      - 6
+      - 0
+    SpriteComponent:
+      FilePath: ""
+      Enabled: false
+      Color:
+        - 0.581987739
+        - 0.84803921
+        - 0.730663478
+        - 1
+    ScriptComponent:
+      ScriptName: Demo.Icon
+      ScriptFields:
+        {}
+  Entity:
+    UUIDComponent:
+      UUID: 7194962738885059861
+    TagComponent:
+      Tag: AnimAssetHolder_tmp
+    QuadComponent:
+      - 33.0885277
+      - 28.794323
+      - 2
+      - 6
+      - 6
+      - 0
+    AnimatedSpriteComponent:
+      DefaultAnimation: animations\explosion01.anim
+      Animations:
+        Animation:
+          AnimationAssetPath: animations\explosion01.anim
+        Animation:
+          AnimationAssetPath: animations\fireball01.anim
+        Animation:
+          AnimationAssetPath: animations\char\unarmed_walk_back.anim
+        Animation:
+          AnimationAssetPath: animations\char\sword_attack_front.anim
+        Animation:
+          AnimationAssetPath: animations\lightning_proj_start.anim
+        Animation:
+          AnimationAssetPath: animations\lightning_proj_loop.anim
+        Animation:
+          AnimationAssetPath: animations\char\sword_attack_back.anim
+        Animation:
+          AnimationAssetPath: animations\char\sword_attack_side_left.anim
+        Animation:
+          AnimationAssetPath: animations\char\sword_attack_side_right.anim
+        Animation:
+          AnimationAssetPath: animations\char\sword_death_side_left.anim
+        Animation:
+          AnimationAssetPath: animations\char\sword_idle_front.anim
+        Animation:
+          AnimationAssetPath: animations\char\sword_walk_back.anim
+        Animation:
+          AnimationAssetPath: animations\char\sword_walk_front.anim
+        Animation:
+          AnimationAssetPath: animations\char\sword_walk_side_left.anim
+        Animation:
+          AnimationAssetPath: animations\char\sword_walk_side_right.anim
+        Animation:
+          AnimationAssetPath: animations\char\unarmed_idle_front.anim
+        Animation:
+          AnimationAssetPath: animations\char\unarmed_walk_front.anim
+        Animation:
+          AnimationAssetPath: animations\char\unarmed_walk_side_left.anim
+        Animation:
+          AnimationAssetPath: animations\char\unarmed_walk_side_right.anim
+        Animation:
+          AnimationAssetPath: animations\char\sword_death_back.anim
+        Animation:
+          AnimationAssetPath: animations\char\sword_death_front.anim
+        Animation:
+          AnimationAssetPath: animations\char\sword_death_side_right.anim
+      AutoPlay: false
+  Entity:
+    UUIDComponent:
+      UUID: 5428336203843535826
+    TagComponent:
+      Tag: Wall_1
+    QuadComponent:
+      - -5.38625956
+      - 115.924332
+      - 0
+      - 96.0851288
+      - 10.9698877
+      - 0.5
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 11391833562671974031
+    TagComponent:
+      Tag: Wall_2
+    QuadComponent:
+      - 107.89019
+      - 112.263191
+      - 0
+      - 19.2141876
+      - 18.8979721
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 17796203192932791259
+    TagComponent:
+      Tag: Wall_3
+    QuadComponent:
+      - 59.2742844
+      - 134.104706
+      - 0
+      - 14.8769493
+      - 12.4260626
+      - -0.75999999
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 14035338037788816152
+    TagComponent:
+      Tag: Wall_4
+    QuadComponent:
+      - 45.0738983
+      - 140.355698
+      - 0
+      - 21.6425323
+      - 11.5631428
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 16822472207931154507
+    TagComponent:
+      Tag: Immovable_2
+    QuadComponent:
+      - 119.922935
+      - 16.6398487
+      - 0
+      - 10
+      - 16
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 11780935259457289952
+    TagComponent:
+      Tag: SpawnPoint_2
+    QuadComponent:
+      - 2.0315218
+      - 43.946064
+      - 0
+      - 0
+      - 0
+      - 0
+    ScriptComponent:
+      ScriptName: Demo.EnemySpawn
+      ScriptFields:
+        {}
+  Entity:
+    UUIDComponent:
+      UUID: 5956645057725389322
+    TagComponent:
+      Tag: Wall_5
+    QuadComponent:
+      - 75.1682587
+      - 139.061325
+      - 0
+      - 21.6425323
+      - 11.5631428
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 13334126048349302620
+    TagComponent:
+      Tag: Wall_6
+    QuadComponent:
+      - 91.3102188
+      - 134.751892
+      - 0
+      - 14.8769493
+      - 12.4260626
+      - -0.75999999
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 4751380545333588712
+    TagComponent:
+      Tag: Wall_7
+    QuadComponent:
+      - 116.426674
+      - 140.355698
+      - 0
+      - 33.6155586
+      - 11.5631428
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 17311970569114593742
+    TagComponent:
+      Tag: Wall_8
+    QuadComponent:
+      - 139.202377
+      - 134.751892
+      - 0
+      - 14.8769493
+      - 12.4260626
+      - -0.75999999
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 6041724177753988982
+    TagComponent:
+      Tag: Wall_9
+    QuadComponent:
+      - 152.184067
+      - 139.708511
+      - 0
+      - 16.4649906
+      - 11.5631428
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 11980569904561122145
+    TagComponent:
+      Tag: Wall_10
+    QuadComponent:
+      - 166.707947
+      - 133.133926
+      - 0
+      - 14.8769493
+      - 12.4260626
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 15741695848172351050
+    TagComponent:
+      Tag: Wall_11
+    QuadComponent:
+      - 180.28299
+      - 25.1378498
+      - 0
+      - 12.4650002
+      - 200.831482
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 11234384177186941011
+    TagComponent:
+      Tag: Wall_12
+    QuadComponent:
+      - 176.361725
+      - -287.863983
+      - 0
+      - 14.5892954
+      - 12.4260626
+      - 0.850000024
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 5648240593332105328
+    TagComponent:
+      Tag: Wall_13
+    QuadComponent:
+      - 144.721359
+      - -282.255005
+      - 0
+      - 23.2185345
+      - 16.7406731
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 1293657154268563493
+    TagComponent:
+      Tag: Wall_14
+    QuadComponent:
+      - 164.424698
+      - -293.904358
+      - 0
+      - 20.054472
+      - 12.4260626
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 6753085312228002437
+    TagComponent:
+      Tag: Wall_15
+    QuadComponent:
+      - 100.712372
+      - -295.054871
+      - 0
+      - 66.939949
+      - 12.4260626
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 4942529912456480143
+    TagComponent:
+      Tag: Wall_16
+    QuadComponent:
+      - 56.559494
+      - -281.679688
+      - 0
+      - 23.506176
+      - 16.7406731
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 542304088176369139
+    TagComponent:
+      Tag: Wall_17
+    QuadComponent:
+      - 20.8920803
+      - -294.623383
+      - 0
+      - 52.8455505
+      - 12.7137032
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 5696016949636138216
+    TagComponent:
+      Tag: Wall_18
+    QuadComponent:
+      - -11.9529276
+      - -265.050262
+      - 0
+      - 15.3443222
+      - 49.2081795
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 13180662013892683459
+    TagComponent:
+      Tag: Wall_19
+    QuadComponent:
+      - -47.4406548
+      - -262.407806
+      - 0
+      - 20.3780441
+      - 58.520565
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 16663191797470696698
+    TagComponent:
+      Tag: Wall_20
+    QuadComponent:
+      - -29.5709457
+      - -267.944946
+      - 0
+      - 20.3780441
+      - 12.2103271
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 940338948098101086
+    TagComponent:
+      Tag: Wall_21
+    QuadComponent:
+      - -145.706131
+      - -294.623383
+      - 0
+      - 175.12886
+      - 12.7137032
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 5674884370579436254
+    TagComponent:
+      Tag: Wall_22
+    QuadComponent:
+      - -134.955017
+      - -280.816742
+      - 0
+      - 22.3197021
+      - 15.769886
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 16026306640200154315
+    TagComponent:
+      Tag: Wall_23
+    QuadComponent:
+      - -211.053955
+      - -284.026001
+      - 0
+      - 14.37362
+      - 9.96313858
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 15907548827078496420
+    TagComponent:
+      Tag: Wall_24
+    QuadComponent:
+      - -312.672119
+      - -300.529602
+      - 0
+      - 119.811966
+      - 9.96313858
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 7146418769835974752
+    TagComponent:
+      Tag: Wall_25
+    QuadComponent:
+      - -282.568756
+      - -293.194855
+      - 0
+      - 14.37362
+      - 9.96313858
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 10152745073154222431
+    TagComponent:
+      Tag: Wall_26
+    QuadComponent:
+      - -307.018341
+      - -288.30484
+      - 0
+      - 14.37362
+      - 15.4642715
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 10951715895157551887
+    TagComponent:
+      Tag: Wall_27
+    QuadComponent:
+      - -260.258575
+      - -288.30481
+      - 0
+      - 14.37362
+      - 15.4642715
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 8394266457129611702
+    TagComponent:
+      Tag: Wall_28
+    QuadComponent:
+      - -336.204956
+      - -291.666809
+      - 0
+      - 20.7916069
+      - 9.35190582
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 1047162769359271270
+    TagComponent:
+      Tag: Wall_29
+    QuadComponent:
+      - 180.283005
+      - -177.109467
+      - 0
+      - 12.4650002
+      - 206.656174
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 18424490443428174237
+    TagComponent:
+      Tag: Wall_30
+    QuadComponent:
+      - -379.620941
+      - -275.810272
+      - 0
+      - 13.2410259
+      - 47.8598518
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 13708392117700547162
+    TagComponent:
+      Tag: Wall_31
+    QuadComponent:
+      - -380.375977
+      - -165.949432
+      - 0
+      - 13.2410259
+      - 130.916122
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 4290242392190911883
+    TagComponent:
+      Tag: Wall_32
+    QuadComponent:
+      - -363.575867
+      - -247.873199
+      - 0
+      - 29.4747696
+      - 33.513752
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 17301693141178892892
+    TagComponent:
+      Tag: Wall_32
+    QuadComponent:
+      - -357.391541
+      - -90.9740295
+      - 0
+      - 36.8096085
+      - 13.0373096
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 332806112234250496
+    TagComponent:
+      Tag: Wall_32
+    QuadComponent:
+      - -356.016266
+      - -102.740334
+      - 0
+      - 13.276988
+      - 10.8979778
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 6079712590829811323
+    TagComponent:
+      Tag: Wall_32
+    QuadComponent:
+      - -334.317444
+      - -130.857285
+      - 0
+      - 8.38709354
+      - 15.7878742
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 17877696127801810808
+    TagComponent:
+      Tag: Wall_32
+    QuadComponent:
+      - -317.355713
+      - -131.108978
+      - 0
+      - 4.41405106
+      - 13.3429251
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 18072732880293400456
+    TagComponent:
+      Tag: Wall_32
+    QuadComponent:
+      - -310.533203
+      - -122.60556
+      - 0
+      - 9.35788822
+      - 16.111475
+      - -0.720000029
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 11748313341756137883
+    TagComponent:
+      Tag: Wall_32
+    QuadComponent:
+      - -297.679199
+      - -129.131439
+      - 0
+      - 18.4545383
+      - 9.38786507
+      - -0.720000029
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 9817145816272801771
+    TagComponent:
+      Tag: Wall_32
+    QuadComponent:
+      - -275.728516
+      - -139.118011
+      - 0
+      - 13.7084608
+      - 10.7721357
+      - -0.720000029
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  Entity:
+    UUIDComponent:
+      UUID: 14342938462239633196
+    TagComponent:
+      Tag: Wall_32
+    QuadComponent:
+      - -288.58252
+      - -131.998871
+      - 0
+      - 14.4994764
+      - 11.9586544
+      - 0
+    RigidBody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - 0
+      Size:
+        - 0.5
+        - 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5

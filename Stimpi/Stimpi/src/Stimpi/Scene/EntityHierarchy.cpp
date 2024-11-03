@@ -21,25 +21,22 @@ namespace Stimpi
 
 		HierarchyComponent& parentComponent = parent.GetComponent<HierarchyComponent>();
 		HierarchyComponent& childComponent = child.GetComponent<HierarchyComponent>();
-		
-		// If not already added
-		/*if (std::find(parentComponent.m_Children.begin(), parentComponent.m_Children.end(), childUUID) == parentComponent.m_Children.end())
-		{
-			parentComponent.m_Children.push_back(childUUID);
-		}*/
 
-		if (childComponent.m_Parent != parentUUID)
+		// Prevent adding if already the same parent, prevent adding
+		if (childComponent.m_Parent != parentUUID && parentComponent.m_Parent != childUUID)
 		{
-			if (childComponent.m_Parent)
-			{
-				auto scene = SceneManager::Instance()->GetActiveScene();
-				Entity& prePrent = scene->m_EntityUUIDMap[childComponent.m_Parent];
-
-				RemoveChild(prePrent, child);
-			}
+			UUID prevParentUUID = childComponent.m_Parent;
 
 			parentComponent.m_Children.push_back(childUUID);
 			childComponent.m_Parent = parentUUID;
+
+			if (prevParentUUID)
+			{
+				auto scene = SceneManager::Instance()->GetActiveScene();
+				Entity& prePrent = scene->m_EntityUUIDMap[prevParentUUID];
+
+				RemoveChild(prePrent, child);
+			}
 		}
 
 	}
@@ -54,11 +51,9 @@ namespace Stimpi
 			HierarchyComponent& childComponent = child.GetComponent<HierarchyComponent>();
 
 			parentComponent.m_Children.erase(std::find(parentComponent.m_Children.begin(), parentComponent.m_Children.end(), childUUID));
-			
-			childComponent.m_Parent = UUID(0);
 
 			// Remove component if all child entities were removed
-			if (parentComponent.m_Children.empty())
+			if (parentComponent.m_Children.empty() && parentComponent.m_Parent == 0)
 				parent.RemoveComponent<HierarchyComponent>();
 		}
 	}
