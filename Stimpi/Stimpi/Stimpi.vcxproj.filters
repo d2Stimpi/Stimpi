@@ -238,6 +238,7 @@
     <ClInclude Include="src\stpch.h" />
     <ClInclude Include="src\Stimpi\Core\UUID.h" />
     <ClInclude Include="src\Stimpi\Scene\EntityHierarchy.h" />
+    <ClInclude Include="src\Stimpi\Scene\Assets\AssetHandle.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Core\Application.cpp">

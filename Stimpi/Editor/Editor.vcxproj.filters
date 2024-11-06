@@ -156,6 +156,8 @@
     <ClInclude Include="src\Gui\Utils\Utils.h">
       <Filter>Gui\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\Gui\Cmd\Command.h" />
+    <ClInclude Include="src\Gui\Cmd\CommandStack.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
@@ -273,5 +275,6 @@
     <ClCompile Include="src\Gui\Utils\EditorResources.cpp">
       <Filter>Gui\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="src\Gui\Cmd\CommandStack.cpp" />
   </ItemGroup>
 </Project>

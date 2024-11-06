@@ -1,5 +1,6 @@
 #include "stpch.h"
 #include "Stimpi/Graphics/SubTexture.h"
+#include "Stimpi/Scene/Assets/AssetManager.h"
 
 namespace Stimpi
 {
@@ -77,5 +78,10 @@ namespace Stimpi
 
 		m_UVmin = glm::vec2(indexCol * m_SubWidth / textureWidth, indexRow * m_SubHeight / textureHeight);
 		m_UVmax = glm::vec2((indexCol + 1) * m_SubWidth / textureWidth, (indexRow + 1) * m_SubHeight / textureHeight);
+	}
+
+	Texture* SubTexture::GetTexture()
+	{
+		return AssetManager::GetAsset(m_TextureHandle).As<Texture>();
 	}
 }

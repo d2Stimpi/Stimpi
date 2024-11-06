@@ -207,6 +207,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Platform\OpenGLShader.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLTexture.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLVertexArrayObject.h" />
+    <ClInclude Include="src\Stimpi\Scene\Assets\AssetHandle.h" />
     <ClInclude Include="src\Stimpi\Scene\Assets\AssetManager.h" />
     <ClInclude Include="src\Stimpi\Scene\Camera.h" />
     <ClInclude Include="src\Stimpi\Scene\CameraController.h" />

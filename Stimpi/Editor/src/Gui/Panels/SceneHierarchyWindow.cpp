@@ -211,7 +211,7 @@ namespace Stimpi
 		}
 	}
 
-	void SceneHierarchyWindow::DrawTreeNode(Entity& entity)
+	void SceneHierarchyWindow::DrawTreeNode(Entity& entity, bool leafNode)
 	{
 		ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen;
 		ImGuiTreeNodeFlags leaf_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
@@ -222,12 +222,6 @@ namespace Stimpi
 		bool isLeafNode = !entity.HasComponent<HierarchyComponent>() ||
 			(entity.HasComponent<HierarchyComponent>() && entity.GetComponent<HierarchyComponent>().m_Children.empty());
 
-		if (entity.HasComponent<HierarchyComponent>())
-		{
-			auto& comp = entity.GetComponent<HierarchyComponent>();
-			comp = entity.GetComponent<HierarchyComponent>();
-		}
-
 		// Selection render
 		if (s_Context.m_SelectedEntity == entity)
 		{
@@ -235,61 +229,41 @@ namespace Stimpi
 		}
 
 		if (isLeafNode)
+			node_flags = leaf_flags;
+
+		if (ImGui::TreeNodeEx((void*)&entity, node_flags, "%s", entityTag.c_str()))
 		{
-			if (ImGui::TreeNodeEx((void*)&entity, leaf_flags, "%s", entityTag.c_str()))
+			if (s_Context.m_SelectedEntity == entity)
+				s_Context.m_HoveredSelectedEntity = ImGui::IsItemHovered();
+
+			if (ImGui::IsItemHovered())
 			{
-				if (s_Context.m_SelectedEntity == entity)
-					s_Context.m_HoveredSelectedEntity = ImGui::IsItemHovered();
-
-				if (ImGui::IsItemHovered())
-				{
-					if (ImGui::IsMouseDown(ImGuiMouseButton_Left)/* || ImGui::IsMouseDown(ImGuiMouseButton_Right)*/)
-						s_Context.m_PreSelect = entity;
-					else if (ImGui::IsMouseReleased(ImGuiMouseButton_Left)/* || ImGui::IsMouseReleased(ImGuiMouseButton_Right)*/)
-						s_Context.m_SelectedEntity = s_Context.m_PreSelect;
-				}
-
-				UIPayload::BeginTarget(PAYLOAD_DATA_TYPE_ENTITY, [&entity, &entityTag](void* data, uint32_t size)
-					{
-						Entity child = *(Entity*)data;
-						UUID dropUUID = child.GetComponent<UUIDComponent>().m_UUID;
-						ST_CORE_INFO("Dropped entity: {} - {} on {}", (uint32_t)child, (uint64_t)dropUUID, entityTag.c_str());
-
-						EntityHierarchy::AddChild(entity, child);
-					});
-
-				UIPayload::BeginSource(PAYLOAD_DATA_TYPE_ENTITY, &entity, sizeof(entity), entityTag.c_str());
+				if (ImGui::IsMouseDown(ImGuiMouseButton_Left)/* || ImGui::IsMouseDown(ImGuiMouseButton_Right)*/)
+					s_Context.m_PreSelect = entity;
+				else if (ImGui::IsMouseReleased(ImGuiMouseButton_Left)/* || ImGui::IsMouseReleased(ImGuiMouseButton_Right)*/)
+					s_Context.m_SelectedEntity = s_Context.m_PreSelect;
 			}
-		}
-		else
-		{
-			if (ImGui::TreeNodeEx((void*)&entity, node_flags, "%s", entityTag.c_str()))
-			{
-				if (ImGui::IsItemHovered())
+
+			UIPayload::BeginTarget(PAYLOAD_DATA_TYPE_ENTITY, [&entity, &entityTag](void* data, uint32_t size)
 				{
-					if (ImGui::IsMouseDown(ImGuiMouseButton_Left)/* || ImGui::IsMouseDown(ImGuiMouseButton_Right)*/)
-						s_Context.m_PreSelect = entity;
-					else if (ImGui::IsMouseReleased(ImGuiMouseButton_Left)/* || ImGui::IsMouseReleased(ImGuiMouseButton_Right)*/)
-						s_Context.m_SelectedEntity = s_Context.m_PreSelect;
-				}
+					Entity child = *(Entity*)data;
+					UUID dropUUID = child.GetComponent<UUIDComponent>().m_UUID;
+					ST_CORE_INFO("Dropped entity: {} - {} on {}", (uint32_t)child, (uint64_t)dropUUID, entityTag.c_str());
 
-				UIPayload::BeginTarget(PAYLOAD_DATA_TYPE_ENTITY, [&entity, &entityTag](void* data, uint32_t size)
-					{
-						Entity child = *(Entity*)data;
-						UUID dropUUID = child.GetComponent<UUIDComponent>().m_UUID;
-						ST_CORE_INFO("Dropped entity: {} - {} on {}", (uint32_t)child, (uint64_t)dropUUID, entityTag.c_str());
+					EntityHierarchy::AddChild(entity, child);
+				});
 
-						EntityHierarchy::AddChild(entity, child);
-					});
+			UIPayload::BeginSource(PAYLOAD_DATA_TYPE_ENTITY, &entity, sizeof(entity), entityTag.c_str());
 
-				UIPayload::BeginSource(PAYLOAD_DATA_TYPE_ENTITY, &entity, sizeof(entity), entityTag.c_str());
-
+			if (!isLeafNode)
+			{
 				for (auto& child : entity.GetComponent<HierarchyComponent>().m_Children)
 				{
 					auto& childEntity = m_ActiveScene->m_EntityUUIDMap[child];
 					DrawTreeNode(childEntity);
 				}
 
+				// We only need to TreePop normal nodes
 				ImGui::TreePop();
 			}
 		}
@@ -327,7 +301,12 @@ namespace Stimpi
 		if (ImGui::CollapsingHeaderIcon("Quad##ComponentName", EditorResources::GetIconTextureID(EDITOR_ICON_CUBE), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 		{
 			ImGui::Spacing();
-			ImGui::DragFloat3("Position##Quad", glm::value_ptr(component.m_Position));
+			if (ImGui::DragFloat3("Position##Quad", glm::value_ptr(component.m_Position)))
+			{
+				ST_CORE_INFO("Position: {}", component.m_Position);
+				//Command cmd = Command::Translate(entity, posVec);
+				//CommandStack::Add(cmd);
+			}
 			ImGui::DragFloat2("Size##Quad", glm::value_ptr(component.m_Size));
 			ImGui::PushItemWidth(80.0f);
 			ImGui::DragFloat("Rotation", &component.m_Rotation, 0.01);

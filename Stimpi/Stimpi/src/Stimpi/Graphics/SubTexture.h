@@ -2,7 +2,8 @@
 
 #include "Stimpi/Core/Core.h"
 #include "Stimpi/Graphics/Texture.h"
-#include "Stimpi/Scene/Assets/AssetManager.h"
+#include "Stimpi/Utils/FilePath.h"
+#include "Stimpi/Scene/Assets/AssetHandle.h"
 
 #include "stpch.h"
 #include <glm/glm.hpp>
@@ -29,7 +30,7 @@ namespace Stimpi
 		glm::vec2 GetUVMin() { return m_UVmin; }
 		glm::vec2 GetUVMax() { return m_UVmax; }
 
-		Texture* GetTexture() { return AssetManager::GetAsset(m_TextureHandle).As<Texture>(); }
+		Texture* GetTexture();
 		unsigned int GetTextureID() { return GetTexture()->GetTextureID(); }
 
 		AssetHandle GetAssetHandle() { return m_TextureHandle; }

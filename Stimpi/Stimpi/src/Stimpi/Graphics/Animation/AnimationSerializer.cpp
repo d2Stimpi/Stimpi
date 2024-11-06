@@ -4,6 +4,7 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Utils/FilePath.h"
 #include "Stimpi/Scene/ResourceManager.h"
+#include "Stimpi/Scene/Assets/AssetManager.h"
 #include "Stimpi/Core/Project.h"
 
 #include <yaml-cpp/yaml.h>

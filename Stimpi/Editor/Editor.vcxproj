@@ -154,6 +154,8 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Gui\Cmd\Command.h" />
+    <ClInclude Include="src\Gui\Cmd\CommandStack.h" />
     <ClInclude Include="src\Gui\CodeGen\ClassBuilder.h" />
     <ClInclude Include="src\Gui\CodeGen\CodeWriter.h" />
     <ClInclude Include="src\Gui\Components\ImGuiEx.h" />
@@ -197,6 +199,7 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
+    <ClCompile Include="src\Gui\Cmd\CommandStack.cpp" />
     <ClCompile Include="src\Gui\CodeGen\ClassBuilder.cpp" />
     <ClCompile Include="src\Gui\CodeGen\CodeWriter.cpp" />
     <ClCompile Include="src\Gui\Components\ImGuiEx.cpp" />
