@@ -158,6 +158,8 @@
     </ClInclude>
     <ClInclude Include="src\Gui\Cmd\Command.h" />
     <ClInclude Include="src\Gui\Cmd\CommandStack.h" />
+    <ClInclude Include="src\Gui\Cmd\Commands.h" />
+    <ClInclude Include="src\Gui\Components\Input.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
@@ -276,5 +278,7 @@
       <Filter>Gui\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\Gui\Cmd\CommandStack.cpp" />
+    <ClCompile Include="src\Gui\Cmd\Commands.cpp" />
+    <ClCompile Include="src\Gui\Components\Input.cpp" />
   </ItemGroup>
 </Project>

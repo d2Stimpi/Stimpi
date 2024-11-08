@@ -155,10 +155,12 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Gui\Cmd\Command.h" />
+    <ClInclude Include="src\Gui\Cmd\Commands.h" />
     <ClInclude Include="src\Gui\Cmd\CommandStack.h" />
     <ClInclude Include="src\Gui\CodeGen\ClassBuilder.h" />
     <ClInclude Include="src\Gui\CodeGen\CodeWriter.h" />
     <ClInclude Include="src\Gui\Components\ImGuiEx.h" />
+    <ClInclude Include="src\Gui\Components\Input.h" />
     <ClInclude Include="src\Gui\Components\SearchPopup.h" />
     <ClInclude Include="src\Gui\Components\SearchPopupWindow.h" />
     <ClInclude Include="src\Gui\Components\Thumbnail.h" />
@@ -199,10 +201,12 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
+    <ClCompile Include="src\Gui\Cmd\Commands.cpp" />
     <ClCompile Include="src\Gui\Cmd\CommandStack.cpp" />
     <ClCompile Include="src\Gui\CodeGen\ClassBuilder.cpp" />
     <ClCompile Include="src\Gui\CodeGen\CodeWriter.cpp" />
     <ClCompile Include="src\Gui\Components\ImGuiEx.cpp" />
+    <ClCompile Include="src\Gui\Components\Input.cpp" />
     <ClCompile Include="src\Gui\Components\SearchPopup.cpp" />
     <ClCompile Include="src\Gui\Components\SearchPopupWindow.cpp" />
     <ClCompile Include="src\Gui\Components\Thumbnail.cpp" />

@@ -3,9 +3,11 @@
 
 #include "Gui/Components/UIPayload.h"
 #include "Gui/Components/SearchPopup.h"
+#include "Gui/Components/Input.h"
 #include "Gui/EditorUtils.h"
 #include "Gui/Components/ImGuiEx.h"
 #include "Gui/Panels/ScriptFieldFragment.h"
+#include "Gui/Cmd/CommandStack.h"
 
 #include "Stimpi/Core/InputManager.h"
 #include "Stimpi/Core/WindowManager.h"
@@ -298,15 +300,18 @@ namespace Stimpi
 		ImGui::Separator();
 		ImVec2 cursor = ImGui::GetCursorPos();	// To render SettingsPopupButton on the same line as Collapsing header
 
+		QuadComponent prevComponent = component;
 		if (ImGui::CollapsingHeaderIcon("Quad##ComponentName", EditorResources::GetIconTextureID(EDITOR_ICON_CUBE), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 		{
 			ImGui::Spacing();
-			if (ImGui::DragFloat3("Position##Quad", glm::value_ptr(component.m_Position)))
-			{
+			UI::Input::DragFloat3("Position##Quad", component.m_Position);
+			//if (ImGui::DragFloat3("Position##Quad", glm::value_ptr(component.m_Position)))
+			/*{
 				ST_CORE_INFO("Position: {}", component.m_Position);
-				//Command cmd = Command::Translate(entity, posVec);
-				//CommandStack::Add(cmd);
-			}
+				glm::vec3 posDiff = prevComponent.m_Position - component.m_Position;
+				Command* cmd = TranslateCommand::Create(s_Context.m_SelectedEntity, posDiff);
+				CommandStack::Push(cmd);
+			}*/
 			ImGui::DragFloat2("Size##Quad", glm::value_ptr(component.m_Size));
 			ImGui::PushItemWidth(80.0f);
 			ImGui::DragFloat("Rotation", &component.m_Rotation, 0.01);
