@@ -23,6 +23,8 @@ project "Testing"
 	{
 		"../%{prj.name}/src",
 		"../Stimpi/src",
+
+		"../Editor/src",
 		
 		"%{VendorDir.gtest}/include",
 		"%{VendorDir.gtest}",

@@ -147,6 +147,7 @@
     <ClInclude Include="src\Scripting\ScriptInternalCallsTest.h">
       <Filter>src\Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="src\CmdStackTest.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\vendor\googletest\googletest\src\gtest-all.cc">
@@ -164,5 +165,6 @@
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\CmdStackTest.cpp" />
   </ItemGroup>
 </Project>

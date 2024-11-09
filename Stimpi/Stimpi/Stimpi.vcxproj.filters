@@ -85,6 +85,9 @@
     <ClInclude Include="src\Stimpi\Core\Timestep.h">
       <Filter>Stimpi\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\Core\UUID.h">
+      <Filter>Stimpi\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\Stimpi\Core\Window.h">
       <Filter>Stimpi\Core</Filter>
     </ClInclude>
@@ -169,6 +172,9 @@
     <ClInclude Include="src\Stimpi\Platform\OpenGLVertexArrayObject.h">
       <Filter>Stimpi\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\Scene\Assets\AssetHandle.h">
+      <Filter>Stimpi\Scene\Assets</Filter>
+    </ClInclude>
     <ClInclude Include="src\Stimpi\Scene\Assets\AssetManager.h">
       <Filter>Stimpi\Scene\Assets</Filter>
     </ClInclude>
@@ -182,6 +188,9 @@
       <Filter>Stimpi\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Stimpi\Scene\Entity.h">
+      <Filter>Stimpi\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Scene\EntityHierarchy.h">
       <Filter>Stimpi\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Stimpi\Scene\EntitySorter.h">
@@ -236,9 +245,9 @@
       <Filter>Stimpi\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\stpch.h" />
-    <ClInclude Include="src\Stimpi\Core\UUID.h" />
-    <ClInclude Include="src\Stimpi\Scene\EntityHierarchy.h" />
-    <ClInclude Include="src\Stimpi\Scene\Assets\AssetHandle.h" />
+    <ClInclude Include="src\Stimpi\Cmd\Command.h" />
+    <ClInclude Include="src\Stimpi\Cmd\Commands.h" />
+    <ClInclude Include="src\Stimpi\Cmd\CommandStack.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Core\Application.cpp">
@@ -263,6 +272,9 @@
       <Filter>Stimpi\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Core\Time.cpp">
+      <Filter>Stimpi\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Core\UUID.cpp">
       <Filter>Stimpi\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Core\Window.cpp">
@@ -364,6 +376,9 @@
     <ClCompile Include="src\Stimpi\Scene\Entity.cpp">
       <Filter>Stimpi\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Scene\EntityHierarchy.cpp">
+      <Filter>Stimpi\Scene</Filter>
+    </ClCompile>
     <ClCompile Include="src\Stimpi\Scene\EntitySorter.cpp">
       <Filter>Stimpi\Scene</Filter>
     </ClCompile>
@@ -404,7 +419,7 @@
       <Filter>Stimpi\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
-    <ClCompile Include="src\Stimpi\Core\UUID.cpp" />
-    <ClCompile Include="src\Stimpi\Scene\EntityHierarchy.cpp" />
+    <ClCompile Include="src\Stimpi\Cmd\Commands.cpp" />
+    <ClCompile Include="src\Stimpi\Cmd\CommandStack.cpp" />
   </ItemGroup>
 </Project>

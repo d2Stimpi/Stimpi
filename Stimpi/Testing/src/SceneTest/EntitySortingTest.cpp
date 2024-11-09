@@ -1,8 +1,9 @@
 #include "SceneTest/EntitySortingTest.h"
 
-
 #include "SceneTest/SceneTestUtils.h"
+
 #include "Stimpi/Scene/Component.h"
+#include "Stimpi/Scene/SceneManager.h"
 
 namespace StimpiTest
 {
@@ -31,8 +32,8 @@ namespace StimpiTest
 
 	void EntitySortingTest::SetUp()
 	{
-
-		m_Scene = new Scene();
+		SceneManager::Instance()->NewScene();
+		m_Scene = SceneManager::Instance()->GetActiveScene();
 		EntityFactory::SetContext(m_Scene);
 
 		// Clear all sorting data before running a Test fixture
@@ -42,8 +43,8 @@ namespace StimpiTest
 
 	void EntitySortingTest::TearDown()
 	{
-		delete m_Scene;
-		m_Scene = nullptr;
+		/*delete m_Scene;
+		m_Scene = nullptr;*/
 	}
 
 	Entity EntitySortingTest::AddSortingGroupEntity(const std::string& layerName, uint32_t order)

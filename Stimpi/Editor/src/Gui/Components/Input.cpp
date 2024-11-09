@@ -19,7 +19,7 @@ namespace Stimpi
 			input_variant m_Temp;
 		};
 
-		InputContext s_Context;
+		static InputContext s_Context;
 
 		bool Input::DragFloat3(const char* label, glm::vec3& vec)
 		{
