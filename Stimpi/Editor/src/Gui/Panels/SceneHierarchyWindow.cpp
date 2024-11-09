@@ -7,10 +7,10 @@
 #include "Gui/EditorUtils.h"
 #include "Gui/Components/ImGuiEx.h"
 #include "Gui/Panels/ScriptFieldFragment.h"
-#include "Gui/Cmd/CommandStack.h"
 
 #include "Stimpi/Core/InputManager.h"
 #include "Stimpi/Core/WindowManager.h"
+#include "Stimpi/Cmd/CommandStack.h"
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Entity.h"
 #include "Stimpi/Scene/EntityManager.h"

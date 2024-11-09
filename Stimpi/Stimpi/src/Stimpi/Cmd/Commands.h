@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Gui/Cmd/Command.h"
+#include "Stimpi/Cmd/Command.h"
 
 namespace Stimpi
 {
-	class TranslateCommand : public Command
+	class ST_API TranslateCommand : public Command
 	{
 	public:
 		TranslateCommand(Entity entity, glm::vec3 value)

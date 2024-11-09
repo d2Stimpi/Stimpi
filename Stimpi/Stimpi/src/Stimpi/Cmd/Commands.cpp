@@ -1,5 +1,5 @@
 #include "stpch.h"
-#include "Gui/Cmd/Commands.h"
+#include "Stimpi/Cmd/Commands.h"
 
 #include "Stimpi/Scene/Component.h"
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Stimpi/Core/Core.h"
 #include "Stimpi/Scene/Entity.h"
 
 #include <glm/glm.hpp>
@@ -8,7 +9,7 @@ namespace Stimpi
 {
 	enum class CommandType { TRANSLATE, SCALE, ROTATE };
 
-	class Command
+	class ST_API Command
 	{
 	public:
 		Command(CommandType type) : m_Type(type) {}

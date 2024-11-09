@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;..\Stimpi\src;..\vendor\googletest\googletest\include;..\vendor\googletest\googletest;..\vendor\spdlog\include;..\vendor\glm-0.9.9.7\glm;..\vendor\SDL2-2.0.20\include;..\Stimpi\src\Stimpi\Vendor;..\vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\Stimpi\src;..\Editor\src;..\vendor\googletest\googletest\include;..\vendor\googletest\googletest;..\vendor\spdlog\include;..\vendor\glm-0.9.9.7\glm;..\vendor\SDL2-2.0.20\include;..\Stimpi\src\Stimpi\Vendor;..\vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -103,7 +103,7 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;..\Stimpi\src;..\vendor\googletest\googletest\include;..\vendor\googletest\googletest;..\vendor\spdlog\include;..\vendor\glm-0.9.9.7\glm;..\vendor\SDL2-2.0.20\include;..\Stimpi\src\Stimpi\Vendor;..\vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\Stimpi\src;..\Editor\src;..\vendor\googletest\googletest\include;..\vendor\googletest\googletest;..\vendor\spdlog\include;..\vendor\glm-0.9.9.7\glm;..\vendor\SDL2-2.0.20\include;..\Stimpi\src\Stimpi\Vendor;..\vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -131,7 +131,7 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;..\Stimpi\src;..\vendor\googletest\googletest\include;..\vendor\googletest\googletest;..\vendor\spdlog\include;..\vendor\glm-0.9.9.7\glm;..\vendor\SDL2-2.0.20\include;..\Stimpi\src\Stimpi\Vendor;..\vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\Stimpi\src;..\Editor\src;..\vendor\googletest\googletest\include;..\vendor\googletest\googletest;..\vendor\spdlog\include;..\vendor\glm-0.9.9.7\glm;..\vendor\SDL2-2.0.20\include;..\Stimpi\src\Stimpi\Vendor;..\vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -186,12 +186,14 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
     <ClInclude Include="..\vendor\googletest\googletest\test\googletest-param-test-test.h" />
     <ClInclude Include="..\vendor\googletest\googletest\test\gtest-typed-test_test.h" />
     <ClInclude Include="..\vendor\googletest\googletest\test\production.h" />
+    <ClInclude Include="src\CmdStackTest.h" />
     <ClInclude Include="src\SceneTest\EntitySortingTest.h" />
     <ClInclude Include="src\SceneTest\SceneTestUtils.h" />
     <ClInclude Include="src\Scripting\ScriptInternalCallsTest.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\vendor\googletest\googletest\src\gtest-all.cc" />
+    <ClCompile Include="src\CmdStackTest.cpp" />
     <ClCompile Include="src\SceneTest\EntitySortingTest.cpp" />
     <ClCompile Include="src\SceneTest\SceneTestUtils.cpp" />
     <ClCompile Include="src\Scripting\ScriptInternalCallsTest.cpp" />
