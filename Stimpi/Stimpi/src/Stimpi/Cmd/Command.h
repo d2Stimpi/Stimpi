@@ -7,14 +7,15 @@
 
 namespace Stimpi
 {
-	enum class CommandType { TRANSLATE, SCALE, ROTATE };
+	enum class CommandType { NONE, TRANSLATE, SCALE, ROTATE };
 
 	class ST_API Command
 	{
 	public:
 		Command(CommandType type) : m_Type(type) {}
 
-		virtual void Execute() = 0;
+		virtual void Undo() = 0;
+		virtual void Redo() = 0;
 
 		CommandType GetType() { return m_Type; }
 
