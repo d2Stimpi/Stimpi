@@ -41,6 +41,9 @@ namespace Stimpi
 
 		void ShowSelectedEntityComponents(bool show);
 
+		bool FilterSubEntity(Entity parent);
+		void GroupFilteredEntities();
+
 		void CreateEntityPopup();
 		void SelectedEntityPopup();
 	private:

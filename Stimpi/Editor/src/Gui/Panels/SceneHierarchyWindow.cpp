@@ -35,6 +35,7 @@ namespace Stimpi
 		bool m_WindowFocused = false;
 
 		char m_SearchTextBuffer[64];
+		std::vector<Entity> m_FilteredEntites;
 
 		SceneHierarchyWindowContext()
 		{
@@ -117,7 +118,10 @@ namespace Stimpi
 				ImGui::SetNextItemWidth(ImGui::GetWindowContentRegionWidth() - 46.0f);
 
 				// Filter Entities
-				ImGuiEx::SearchInput("##SceneHierarchySearchInput", s_Context.m_SearchTextBuffer, sizeof(s_Context.m_SearchTextBuffer), "All");
+				if (ImGuiEx::SearchInput("##SceneHierarchySearchInput", s_Context.m_SearchTextBuffer, sizeof(s_Context.m_SearchTextBuffer), "All"))
+				{
+					GroupFilteredEntities();
+				}
 
 				// Remove Entity button
 				ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 12);
@@ -138,7 +142,9 @@ namespace Stimpi
 
 				if (ImGui::TreeNodeEx((void*)&m_ActiveScene, node_flags | ImGuiTreeNodeFlags_DefaultOpen, "Scene"))
 				{
-					for (auto& entity : m_ActiveScene->m_Entities)
+					std::vector<Entity>& entities = strlen(s_Context.m_SearchTextBuffer) > 0 ? s_Context.m_FilteredEntites : m_ActiveScene->m_Entities;
+
+					for (auto& entity : entities)
 					{
 						if (entity.HasComponent<HierarchyComponent>() && entity.GetComponent<HierarchyComponent>().m_Parent != 0)
 						{
@@ -1043,6 +1049,53 @@ namespace Stimpi
 		else
 		{
 			ImGui::Text("Nothing selected");
+		}
+	}
+
+	bool SceneHierarchyWindow::FilterSubEntity(Entity parent)
+	{
+		if (parent.HasComponent<HierarchyComponent>())
+		{
+			HierarchyComponent& comp = parent.GetComponent<HierarchyComponent>();
+			for (auto& child : comp.m_Children)
+			{
+				Entity childEntiy = m_ActiveScene->m_EntityUUIDMap[child];
+				if (FilterSubEntity(childEntiy))
+					return true;
+
+				std::string& childTag = childEntiy.GetComponent<TagComponent>().m_Tag;
+				if (childTag.find(s_Context.m_SearchTextBuffer) != std::string::npos)
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	void SceneHierarchyWindow::GroupFilteredEntities()
+	{
+		s_Context.m_FilteredEntites.clear();
+
+		if (strlen(s_Context.m_SearchTextBuffer) > 0)
+		{
+			for (auto& entity : m_ActiveScene->m_Entities)
+			{
+				std::string& tag = entity.GetComponent<TagComponent>().m_Tag;
+				if (tag.find(s_Context.m_SearchTextBuffer) != std::string::npos)
+				{
+					s_Context.m_FilteredEntites.push_back(entity);
+				}
+				else
+				{
+					// Check if entity children are filtered
+					if (FilterSubEntity(entity))
+					{
+						s_Context.m_FilteredEntites.push_back(entity);
+					}
+				}
+			}
 		}
 	}
 
