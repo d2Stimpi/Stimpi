@@ -22,7 +22,8 @@ namespace Stimpi
 	void EditorUtils::SetActiveItemCaptureKeyboard(bool capture)
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		if (ImGui::IsItemActive()) io.WantCaptureKeyboard = capture;
+		if (ImGui::IsItemActive()) 
+			io.WantCaptureKeyboard = capture;
 	}
 
 	bool EditorUtils::WantCaptureMouse()

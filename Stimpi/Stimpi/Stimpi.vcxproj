@@ -26,19 +26,19 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -86,7 +86,6 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <AdditionalOptions>/MDd %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -117,7 +116,6 @@ IF EXIST ..\bin\Debug-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bi
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <AdditionalOptions>/MD %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -148,7 +146,6 @@ IF EXIST ..\bin\Release-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -168,8 +165,8 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
   <ItemGroup>
     <ClInclude Include="src\Stimpi.h" />
     <ClInclude Include="src\Stimpi\Cmd\Command.h" />
-    <ClInclude Include="src\Stimpi\Cmd\Commands.h" />
     <ClInclude Include="src\Stimpi\Cmd\CommandStack.h" />
+    <ClInclude Include="src\Stimpi\Cmd\Commands.h" />
     <ClInclude Include="src\Stimpi\Core\Application.h" />
     <ClInclude Include="src\Stimpi\Core\Core.h" />
     <ClInclude Include="src\Stimpi\Core\EntryPoint.h" />
@@ -240,8 +237,8 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\stpch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Stimpi\Cmd\Commands.cpp" />
     <ClCompile Include="src\Stimpi\Cmd\CommandStack.cpp" />
+    <ClCompile Include="src\Stimpi\Cmd\Commands.cpp" />
     <ClCompile Include="src\Stimpi\Core\Application.cpp" />
     <ClCompile Include="src\Stimpi\Core\Event.cpp" />
     <ClCompile Include="src\Stimpi\Core\InputManager.cpp" />

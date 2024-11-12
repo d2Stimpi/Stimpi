@@ -8,7 +8,8 @@ namespace Stimpi
 	{
 	public:
 		static void Push(Command* cmd);
-		static Command* Pop();
+		static Command* LastCmd();	// For Undo walking the stack
+		static Command* PrevCmd();	// For Redo walking the stack
 
 		// For testing
 		static uint32_t Count();

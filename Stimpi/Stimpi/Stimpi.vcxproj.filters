@@ -4,6 +4,9 @@
     <Filter Include="Stimpi">
       <UniqueIdentifier>{BBBDE9D1-A75F-14A8-901A-28FC7C5B9BF8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Stimpi\Cmd">
+      <UniqueIdentifier>{7E14D307-6ACC-1455-D3D3-EDB0BFAAAF45}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Stimpi\Core">
       <UniqueIdentifier>{F3AE3502-5F64-AEF7-E858-A8CE540DA5FB}</UniqueIdentifier>
     </Filter>
@@ -43,6 +46,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi.h" />
+    <ClInclude Include="src\Stimpi\Cmd\Command.h">
+      <Filter>Stimpi\Cmd</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Cmd\CommandStack.h">
+      <Filter>Stimpi\Cmd</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Cmd\Commands.h">
+      <Filter>Stimpi\Cmd</Filter>
+    </ClInclude>
     <ClInclude Include="src\Stimpi\Core\Application.h">
       <Filter>Stimpi\Core</Filter>
     </ClInclude>
@@ -245,11 +257,14 @@
       <Filter>Stimpi\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\stpch.h" />
-    <ClInclude Include="src\Stimpi\Cmd\Command.h" />
-    <ClInclude Include="src\Stimpi\Cmd\Commands.h" />
-    <ClInclude Include="src\Stimpi\Cmd\CommandStack.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Stimpi\Cmd\CommandStack.cpp">
+      <Filter>Stimpi\Cmd</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Cmd\Commands.cpp">
+      <Filter>Stimpi\Cmd</Filter>
+    </ClCompile>
     <ClCompile Include="src\Stimpi\Core\Application.cpp">
       <Filter>Stimpi\Core</Filter>
     </ClCompile>
@@ -419,7 +434,5 @@
       <Filter>Stimpi\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
-    <ClCompile Include="src\Stimpi\Cmd\Commands.cpp" />
-    <ClCompile Include="src\Stimpi\Cmd\CommandStack.cpp" />
   </ItemGroup>
 </Project>
