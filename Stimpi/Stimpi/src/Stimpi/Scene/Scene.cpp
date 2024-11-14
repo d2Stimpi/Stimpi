@@ -18,6 +18,7 @@
 #include "Stimpi/Core/InputManager.h"
 #include "Stimpi/Core/Project.h"
 #include "Stimpi/Core/Time.h"
+#include "Stimpi/Debug/Statistics.h"
 
 #include "Stimpi/Scripting/ScriptEngine.h"
 
@@ -166,7 +167,10 @@ namespace Stimpi
 		// Scene Rendering
 		if (m_RenderCamera)
 		{
+			auto quadGroup = m_Registry.group<QuadComponent>();
+
 			ST_PROFILE_SCOPE("SubmitForRendering");
+			Clock::Begin();
 
 			auto& sortingLayers = Project::GetSortingLayers();
 			auto& entityGroups = m_EntitySorter.GetEntityGroups();
@@ -180,7 +184,7 @@ namespace Stimpi
 				if (!entityLayerGroup.m_Entities.empty())
 				{
 					std::vector<Entity> renderEntities;
-					for (auto item : entityLayerGroup.m_Entities)
+					for (auto& item : entityLayerGroup.m_Entities)
 						renderEntities.emplace_back((entt::entity)item.m_EntityID, this);
 
 					Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
@@ -194,8 +198,6 @@ namespace Stimpi
 				{
 					Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
 
-					OnSortingAxisChange();
-
 					std::vector<Entity> axisOrdered;
 					for (auto entityID : m_EntitySorter.m_AxisSortedEntites)
 						axisOrdered.emplace_back((entt::entity)entityID, this);
@@ -205,6 +207,8 @@ namespace Stimpi
 					Renderer2D::Instance()->EndScene();
 				}
 			}
+
+			Statistics::SetRenderingTime(Clock::Stop());
 		}
 		
 		// Debug render pass
@@ -220,7 +224,7 @@ namespace Stimpi
 
 	void Scene::SubmitForRendering(std::vector<Entity>& entities)
 	{
-		for (auto entity : entities)
+		for (auto& entity : entities)
 		{
 			if (entity.HasComponent<QuadComponent>())
 			{
@@ -758,6 +762,8 @@ namespace Stimpi
 					fixtureDef.restitution = bc2d.m_Restitution;
 					fixtureDef.restitutionThreshold = bc2d.m_RestitutionThreshold;
 
+					//fixtureDef.filter.groupIndex = -1;
+
 					bodyDef.position.Set(center.x, center.y);
 					b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);
 					body->SetFixedRotation(rb2d.m_FixedRotation);
@@ -804,6 +810,7 @@ namespace Stimpi
 	void Scene::UpdatePhysicsSimulation(Timestep ts)
 	{
 		ST_PROFILE_FUNCTION();
+		Clock::Begin();
 
 		// Before stepping physics world, update Enable state
 		UpdatePyhsicsEntityState();
@@ -881,6 +888,8 @@ namespace Stimpi
 					}
 				}
 			});
+
+		Statistics::SetPhysicsSimTime(Clock::Stop());
 	}
 
 	void Scene::DeinitializePhysics()

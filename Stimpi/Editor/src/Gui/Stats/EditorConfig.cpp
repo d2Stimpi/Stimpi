@@ -2,6 +2,7 @@
 #include "Gui/Stats/EditorConfig.h"
 
 #include "Stimpi/Core/Time.h"
+#include "Stimpi/Debug/Statistics.h"
 #include "Stimpi/Graphics/Renderer2D.h"
 #include "Stimpi/Scene/Assets/AssetManager.h"
 #include "Stimpi/Scripting/ScriptEngine.h"
@@ -29,10 +30,15 @@ namespace Stimpi
 			{
 				if (ImGui::CollapsingHeader("FPS##Global Stats", ImGuiTreeNodeFlags_DefaultOpen))
 				{
+					FrameTimeSplit& frameTimeSplit = Statistics::GetFrameTimeSplitData();
+
 					ImGui::Text("Application FPS %.1f", Time::Instance()->GetActiveFPS());
 					ImGui::Text("Average %.1f ms/frame", 1000.0f / Time::Instance()->GetActiveFPS());
 					ImGui::Separator();
-					ImGui::Text("Scripts time %.3f ms", (float)ScriptEngine::GetScriptsExecutioTime() / 1000.0f);
+					ImGui::Text("Idling    %.3f ms, frame: %.3f", (float)frameTimeSplit.m_IdleTimeAvg / 1000.0f, (float)frameTimeSplit.m_IdleTime / 1000.0f);
+					ImGui::Text("Rendering %.3f ms, frame: %.3f", (float)frameTimeSplit.m_RenderingTimeAvg / 1000.0f, (float)frameTimeSplit.m_RenderingTime / 1000.0f);
+					ImGui::Text("Physics   %.3f ms, frame: %.3f", (float)frameTimeSplit.m_PhysicsSimTimeAvg / 1000.0f, (float)frameTimeSplit.m_PhysicsSimTime / 1000.0f);
+					ImGui::Text("Scripting %.3f ms, frame: %.3f", (float)frameTimeSplit.m_ScriptingTimeAvg / 1000.0f, (float)frameTimeSplit.m_ScriptingTime / 1000.0f);
 				}
 
 				ImGui::Separator();

@@ -4,6 +4,7 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Core/Event.h"
 #include "Stimpi/Core/Time.h"
+#include "Stimpi/Debug/Statistics.h"
 #include "Stimpi/Utils/SystemUtils.h"
 #include "Stimpi/Utils/FileWatcher.h"
 
@@ -295,9 +296,6 @@ namespace Stimpi
 
 		// CustomAttributes.cs class instance
 		std::shared_ptr<ScriptInstance> m_AttributeLookup;
-
-		// Statistics
-		long long m_ScirptsExecutionElapsedTime = 0.0f;
 	};
 
 	static ScriptEngineData* s_Data;
@@ -858,7 +856,7 @@ namespace Stimpi
 
 		CleanUpRemovedInstances();
 
-		s_Data->m_ScirptsExecutionElapsedTime = Clock::Stop();
+		Statistics::SetScriptingTime(Clock::Stop());
 	}
 
 	void ScriptEngine::OnSceneStop()
@@ -1067,11 +1065,6 @@ namespace Stimpi
 	uint32_t ScriptEngine::GetGCHandleCount()
 	{
 		return s_GCHandleCount;
-	}
-
-	long long ScriptEngine::GetScriptsExecutioTime()
-	{
-		return s_Data->m_ScirptsExecutionElapsedTime;
 	}
 
 	/* ======== ScriptClass ======== */

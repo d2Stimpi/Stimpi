@@ -118,7 +118,6 @@ namespace Stimpi
 		static uint64_t GetGCHeapSize();
 		static void ForceGCCollect();
 		static uint32_t GetGCHandleCount();
-		static long long GetScriptsExecutioTime();
 
 	private:
 		static void InitMono();

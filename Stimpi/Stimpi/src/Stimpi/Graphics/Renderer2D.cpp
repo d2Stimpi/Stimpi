@@ -174,13 +174,13 @@ namespace Stimpi
 			return;
 
 		CheckTextureBatching(subtexture->GetTexture());
-		auto currentCmd = *m_ActiveRenderCmdIter;
+		auto currentCmd = (*m_ActiveRenderCmdIter).get();
 
 		// Check if some other type was used in active cmd
 		if (currentCmd->m_Type != RenderCommandType::QUAD && currentCmd->m_Type != RenderCommandType::NONE)
 		{
 			NewCmd();
-			currentCmd = *m_ActiveRenderCmdIter;
+			currentCmd = (*m_ActiveRenderCmdIter).get();
 			currentCmd->m_Texture = subtexture->GetTexture();
 			currentCmd->m_Shader = shader;
 
@@ -191,7 +191,7 @@ namespace Stimpi
 		// First time call Submit after BeginScene
 		if ((currentCmd->m_Texture == nullptr) && ((currentCmd->m_Shader == nullptr)))
 		{
-			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+			PushTransformedVertexData(currentCmd, pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 			currentCmd->m_Texture = subtexture->GetTexture();
 			currentCmd->m_Shader = shader;
 
@@ -201,8 +201,8 @@ namespace Stimpi
 		{
 			// If shader or texture changed
 			NewCmd();
-			currentCmd = *m_ActiveRenderCmdIter;
-			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+			currentCmd = (*m_ActiveRenderCmdIter).get();
+			PushTransformedVertexData(currentCmd, pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 			currentCmd->m_Texture = subtexture->GetTexture();
 			currentCmd->m_Shader = shader;
 
@@ -211,7 +211,7 @@ namespace Stimpi
 		else
 		{
 			// Batching vertex data
-			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+			PushTransformedVertexData(currentCmd, pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 		}
 	}
 

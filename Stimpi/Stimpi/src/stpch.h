@@ -7,6 +7,7 @@
 #include <memory>
 #include <functional>
 #include <vector>
+#include <array>
 #include <chrono>
 #include <thread>
 #include <variant>

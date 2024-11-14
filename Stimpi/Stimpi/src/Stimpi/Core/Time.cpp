@@ -1,6 +1,8 @@
 #include "stpch.h"
 #include "Stimpi/Core/Time.h"
 
+#include "Stimpi/Debug/Statistics.h"
+
 namespace Stimpi
 {
 	Time::Time()
@@ -39,7 +41,9 @@ namespace Stimpi
 
 		if (remFrameTime.count() > 0)
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(std::chrono::duration_cast<std::chrono::milliseconds>(remFrameTime).count()));
+			auto idleTime = std::chrono::duration_cast<std::chrono::milliseconds>(remFrameTime).count();
+			std::this_thread::sleep_for(std::chrono::milliseconds(idleTime));
+			Statistics::SetIdleTime(idleTime*1000);
 		}
 	}
 
