@@ -16,4 +16,19 @@ namespace Stimpi
 	{
 		m_ActiveProject = ProjectSerializer::Deserialize(projectFilePath);
 	}
+
+	void Project::UpdateDefaultSortingLayerIndex()
+	{
+		std::string& defaultName = Project::GetDefaultSortingLayerName();
+
+		for (auto& layer : m_ActiveProject.m_SortingLayers)
+		{
+			if (layer->m_Name == defaultName)
+			{
+				m_ActiveProject.m_DefaultLayerIndex = layer->m_LayerIndex;
+				break;
+			}
+		}
+	}
+
 }

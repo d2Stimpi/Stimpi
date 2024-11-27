@@ -4,6 +4,9 @@
     <Filter Include="Gui">
       <UniqueIdentifier>{6AF0870B-D6F9-877C-5F75-9E7CCB7D937C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Gui\Cmd">
+      <UniqueIdentifier>{AD069975-19E6-1711-22FE-A2E78E5C7E72}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Gui\CodeGen">
       <UniqueIdentifier>{2E84C917-9A39-420D-232E-3CE48FE23811}</UniqueIdentifier>
     </Filter>
@@ -36,6 +39,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Gui\Cmd\Command.h">
+      <Filter>Gui\Cmd</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Cmd\CommandStack.h">
+      <Filter>Gui\Cmd</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Cmd\Commands.h">
+      <Filter>Gui\Cmd</Filter>
+    </ClInclude>
     <ClInclude Include="src\Gui\CodeGen\ClassBuilder.h">
       <Filter>Gui\CodeGen</Filter>
     </ClInclude>
@@ -43,6 +55,9 @@
       <Filter>Gui\CodeGen</Filter>
     </ClInclude>
     <ClInclude Include="src\Gui\Components\ImGuiEx.h">
+      <Filter>Gui\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Components\Input.h">
       <Filter>Gui\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Gui\Components\SearchPopup.h">
@@ -156,13 +171,15 @@
     <ClInclude Include="src\Gui\Utils\Utils.h">
       <Filter>Gui\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="src\Gui\Cmd\Command.h" />
-    <ClInclude Include="src\Gui\Cmd\CommandStack.h" />
-    <ClInclude Include="src\Gui\Cmd\Commands.h" />
-    <ClInclude Include="src\Gui\Components\Input.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
+    <ClCompile Include="src\Gui\Cmd\CommandStack.cpp">
+      <Filter>Gui\Cmd</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Cmd\Commands.cpp">
+      <Filter>Gui\Cmd</Filter>
+    </ClCompile>
     <ClCompile Include="src\Gui\CodeGen\ClassBuilder.cpp">
       <Filter>Gui\CodeGen</Filter>
     </ClCompile>
@@ -170,6 +187,9 @@
       <Filter>Gui\CodeGen</Filter>
     </ClCompile>
     <ClCompile Include="src\Gui\Components\ImGuiEx.cpp">
+      <Filter>Gui\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Components\Input.cpp">
       <Filter>Gui\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\Gui\Components\SearchPopup.cpp">
@@ -277,8 +297,5 @@
     <ClCompile Include="src\Gui\Utils\EditorResources.cpp">
       <Filter>Gui\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="src\Gui\Cmd\CommandStack.cpp" />
-    <ClCompile Include="src\Gui\Cmd\Commands.cpp" />
-    <ClCompile Include="src\Gui\Components\Input.cpp" />
   </ItemGroup>
 </Project>

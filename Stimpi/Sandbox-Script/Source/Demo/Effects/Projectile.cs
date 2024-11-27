@@ -12,6 +12,7 @@ namespace Demo
     {
         private Entity _owner;
         private QuadComponent _quad;
+        private SortingGroupComponent _sortingGroup;
         private RigidBody2DComponent _rb2d;
         private AnimatedSpriteComponent _anim;
         private bool _enableUpdate = true;
@@ -96,6 +97,9 @@ namespace Demo
             _rb2d = AddComponent<RigidBody2DComponent>();
             _rb2d.Type = BodyType.DYNAMIC;
             _rb2d.FixedRotation = true;
+
+            _sortingGroup = AddComponent<SortingGroupComponent>();
+            _sortingGroup.SortingLayer = "Front";
         }
 
         public override void OnUpdate(float ts)

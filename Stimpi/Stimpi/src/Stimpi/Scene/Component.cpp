@@ -1,6 +1,7 @@
 #include "stpch.h"
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/SceneManager.h"
+#include "Stimpi/Scene/EntityManager.h"
 
 namespace Stimpi
 {
@@ -39,32 +40,32 @@ namespace Stimpi
 			quad.m_PickEnabled = false;
 		}
 
-		if (!entity.HasComponent<SortingGroupComponent>())
-			CheckAndSortEntityByAxis(entity);
+		/*if (!entity.HasComponent<SortingGroupComponent>())
+			CheckAndSortEntityByAxis(entity);*/
 	}
 
 	static void OnQuadDestruct(entt::registry& reg, entt::entity ent)
 	{
 		Entity entity = { ent, s_ActiveScene };
 
-		if (!entity.HasComponent<SortingGroupComponent>())
-			CheckAndSortEntityByAxis(entity);
+		/*if (!entity.HasComponent<SortingGroupComponent>())
+			CheckAndSortEntityByAxis(entity);*/
 	}
 
 	static void OnCircleConstruct(entt::registry& reg, entt::entity ent)
 	{
 		Entity entity = { ent, s_ActiveScene };
 
-		if (!entity.HasComponent<SortingGroupComponent>())
-			CheckAndSortEntityByAxis(entity);
+		/*if (!entity.HasComponent<SortingGroupComponent>())
+			CheckAndSortEntityByAxis(entity);*/
 	}
 
 	static void OnCircleDestruct(entt::registry& reg, entt::entity ent)
 	{
 		Entity entity = { ent, s_ActiveScene };
 
-		if (!entity.HasComponent<SortingGroupComponent>())
-			CheckAndSortEntityByAxis(entity);
+		/*if (!entity.HasComponent<SortingGroupComponent>())
+			CheckAndSortEntityByAxis(entity);*/
 	}
 
 	static void OnCameraConstruct(entt::registry& reg, entt::entity ent)
@@ -111,8 +112,8 @@ namespace Stimpi
 	{
 		Entity entity = { ent, s_ActiveScene };
 
-		if (!entity.HasComponent<SortingGroupComponent>())
-			CheckAndSortEntityByAxis(entity);
+		/*if (!entity.HasComponent<SortingGroupComponent>())
+			CheckAndSortEntityByAxis(entity);*/
 	}
 
 	static void OnSpriteDestruct(entt::registry& reg, entt::entity ent)
@@ -123,8 +124,8 @@ namespace Stimpi
 		if (sprite.m_TextureHandle.IsValid())
 			AssetManager::Release(sprite.m_TextureHandle);
 
-		if (!entity.HasComponent<SortingGroupComponent>())
-			CheckAndSortEntityByAxis(entity);
+		/*if (!entity.HasComponent<SortingGroupComponent>())
+			CheckAndSortEntityByAxis(entity);*/
 	}
 
 	// AnimatedSprite
@@ -132,16 +133,16 @@ namespace Stimpi
 	{
 		Entity entity = { ent, s_ActiveScene };
 
-		if (!entity.HasComponent<SortingGroupComponent>())
-			CheckAndSortEntityByAxis(entity);
+		/*if (!entity.HasComponent<SortingGroupComponent>())
+			CheckAndSortEntityByAxis(entity);*/
 	}
 
 	static void OnAnimatedSpriteDestruct(entt::registry& reg, entt::entity ent)
 	{
 		Entity entity = { ent, s_ActiveScene };
 
-		if (!entity.HasComponent<SortingGroupComponent>())
-			CheckAndSortEntityByAxis(entity);
+		/*if (!entity.HasComponent<SortingGroupComponent>())
+			CheckAndSortEntityByAxis(entity);*/
 	}
 
 	// RigidBody2D
@@ -160,22 +161,43 @@ namespace Stimpi
 	static void OnSortingGroupConstruct(entt::registry& reg, entt::entity ent)
 	{
 		Entity entity = { ent, s_ActiveScene };
+		
 		SortingGroupComponent sortingGroup = entity.GetComponent<SortingGroupComponent>();
+		DefaultGroupComponent& component = entity.GetComponent<DefaultGroupComponent>();
+		component.m_LayerIndex = sortingGroup.m_LayerIndex;
 
-		auto& sorter = s_ActiveScene->GetEntitySorter();
+		EntityManager::TriggerSortByGroupingLayersOrder();
+		/*auto& sorter = s_ActiveScene->GetEntitySorter();
 		sorter.RemoveAxisSortedEntity(entity);
-		sorter.SortEntityByLayer({ entity, sortingGroup.m_OrderInLayer }, sortingGroup.m_SortingLayerName);
+		sorter.SortEntityByLayer({ entity, sortingGroup.m_OrderInLayer }, sortingGroup.m_SortingLayerName);*/
 	}
 
 	static void OnSortingGroupDestruct(entt::registry& reg, entt::entity ent)
 	{
 		Entity entity = { ent, s_ActiveScene };
-		SortingGroupComponent sortingGroup = entity.GetComponent<SortingGroupComponent>();
+		if (entity.HasComponent<DefaultGroupComponent>())
+		{
+			DefaultGroupComponent& component = entity.GetComponent<DefaultGroupComponent>();
+			component.m_LayerIndex = Project::GetDefaultSortingLayerIndex();
+			
+			EntityManager::TriggerSortByGroupingLayersOrder();
+		}
 		
-		auto& sorter = s_ActiveScene->GetEntitySorter();
+		/*auto& sorter = s_ActiveScene->GetEntitySorter();
 		sorter.RemoveLayerSortedEntity(entity, sortingGroup.m_SortingLayerName);
 
-		CheckAndSortEntityByAxis(entity);
+		CheckAndSortEntityByAxis(entity);*/
+	}
+
+	// DefaultGroupComponent
+	static void OnDefaultGroupComponentConstruct(entt::registry& reg, entt::entity ent)
+	{
+		EntityManager::TriggerSortByGroupingLayersOrder();
+	}
+
+	static void OnDefaultGroupComponentDestruct(entt::registry& reg, entt::entity ent)
+	{
+		EntityManager::TriggerSortByGroupingLayersOrder();
 	}
 
 #define ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(component, function)	reg.on_construct<component>().connect<&function>()
@@ -195,6 +217,7 @@ namespace Stimpi
 		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(SpriteComponent, OnSpriteConstruct);
 		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(AnimatedSpriteComponent, OnAnimatedSpriteConstruct);
 		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(SortingGroupComponent, OnSortingGroupConstruct);
+		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(DefaultGroupComponent, OnDefaultGroupComponentConstruct);
 
 		// on_destroy
 		ENTT_REGISTER_COMPONENT_ON_DESTROY(QuadComponent, OnQuadDestruct);
@@ -204,6 +227,7 @@ namespace Stimpi
 		ENTT_REGISTER_COMPONENT_ON_DESTROY(AnimatedSpriteComponent, OnAnimatedSpriteDestruct);
 		ENTT_REGISTER_COMPONENT_ON_DESTROY(RigidBody2DComponent, OnRigidBody2DDestruct);
 		ENTT_REGISTER_COMPONENT_ON_DESTROY(SortingGroupComponent, OnSortingGroupDestruct);
+		ENTT_REGISTER_COMPONENT_ON_DESTROY(DefaultGroupComponent, OnDefaultGroupComponentDestruct);
 	}
 
 	void ComponentObserver::DeinitConstructObservers(entt::registry& reg)

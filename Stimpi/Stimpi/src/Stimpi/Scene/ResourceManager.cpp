@@ -71,6 +71,8 @@ namespace Stimpi
 			ST_CORE_INFO("Invalid project configuration!");
 			ST_CORE_ASSERT(true, "TODO - load fail handling");
 		}
+
+		return true;
 	}
 
 	void ResourceManager::ClearFile(const std::string& fileName)

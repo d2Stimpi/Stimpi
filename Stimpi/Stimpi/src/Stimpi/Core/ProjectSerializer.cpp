@@ -124,6 +124,7 @@ namespace Stimpi
 		// SortingLayers config
 		if (node["SortingLayers"])
 		{
+			uint32_t layerIndex = 0;
 			YAML::Node sortingLayers = node["SortingLayers"];
 			for (YAML::const_iterator it = sortingLayers.begin(); it != sortingLayers.end(); it++)
 			{
@@ -132,7 +133,12 @@ namespace Stimpi
 				
 				if (layerNode["Name"])
 				{
-					newLayer = std::make_shared<SortingLayer>(layerNode["Name"].as<std::string>());
+					newLayer = std::make_shared<SortingLayer>(layerNode["Name"].as<std::string>(), layerIndex);
+					// Cache the "Default" layer value
+					if (newLayer->m_Name == Project::GetDefaultSortingLayerName())
+						projectConfig.m_DefaultLayerIndex = layerIndex;
+
+					layerIndex++;
 				}
 
 				if (newLayer)

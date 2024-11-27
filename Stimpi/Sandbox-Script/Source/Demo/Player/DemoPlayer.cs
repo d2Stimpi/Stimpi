@@ -159,14 +159,14 @@ namespace Demo
             }
 
             // Spawn a bullet
-            if (Input.IsKeyDown(KeyCode.KEY_SPACE))
+            if (Input.IsKeyPressed(KeyCode.KEY_SPACE))
             {
                 if (_spellBar != null)
                 {
                     ProjectileType projType = ProjectileType.FIREBALL;
                     Vector2 projSize = new Vector2(9.0f, 9.0f);
                     string pattern = _spellBar.ConsumeRegiseredKeyPattern();
-                    if (pattern.Length > 0)
+                    if (pattern.Length >= 0)
                     {
                         Vector2 mousePos = Input.GetMousePosition();
 
@@ -194,8 +194,11 @@ namespace Demo
                             return;
                         }
 
-
+                        ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, MathUtils.RotatePointAroundCenter(mousePos, _quad.Position, -0.2617 * 2), projSize));
+                        ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, MathUtils.RotatePointAroundCenter(mousePos, _quad.Position, -0.2617), projSize));
                         ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, mousePos, projSize));
+                        ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, MathUtils.RotatePointAroundCenter(mousePos, _quad.Position, 0.2617), projSize));
+                        ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, MathUtils.RotatePointAroundCenter(mousePos, _quad.Position, 0.2617 * 2), projSize));
                     }
                 }
             }

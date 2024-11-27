@@ -7,6 +7,7 @@
 #include "Stimpi/Scene/EntityHierarchy.h"
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/ResourceManager.h"
+#include "Stimpi/Scene/EntityManager.h"
 #include "Stimpi/Scene/Utils/SceneUtils.h"
 #include "Stimpi/Scene/Assets/AssetManager.h"
 
@@ -75,6 +76,9 @@ namespace Stimpi
 
 		// Clear script instances - they are created in OnScriptConstruct
 		ScriptEngine::ClearScriptInstances();
+
+		// Refresh EntityManager internal flags and states
+		EntityManager::OnSceneCreated();
 
 		m_RuntimeState = RuntimeState::STOPPED;
 		m_DefaultShader.reset(Shader::CreateShader("shader.shader"));
@@ -167,46 +171,12 @@ namespace Stimpi
 		// Scene Rendering
 		if (m_RenderCamera)
 		{
-			auto quadGroup = m_Registry.group<QuadComponent>();
-
 			ST_PROFILE_SCOPE("SubmitForRendering");
 			Clock::Begin();
 
-			auto& sortingLayers = Project::GetSortingLayers();
-			auto& entityGroups = m_EntitySorter.GetEntityGroups();
-			for (auto& layer : sortingLayers)
-			{
-				ST_PROFILE_SCOPE("EntitySorter - Layer");
-
-				auto& entityLayerGroup = entityGroups[layer->m_Name];
-
-				// Pass filtered and sorted entities for rendering
-				if (!entityLayerGroup.m_Entities.empty())
-				{
-					std::vector<Entity> renderEntities;
-					for (auto& item : entityLayerGroup.m_Entities)
-						renderEntities.emplace_back((entt::entity)item.m_EntityID, this);
-
-					Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
-					SubmitForRendering(renderEntities);
-					Renderer2D::Instance()->EndScene();
-				}
-
-				// Render entities that don't use SortingGroup component as if in Default layer
-				// TODO: make sure Default layer can't be removed or renamed
-				if (layer->m_Name == Project::GetDefaultSortingLayerName())
-				{
-					Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
-
-					std::vector<Entity> axisOrdered;
-					for (auto entityID : m_EntitySorter.m_AxisSortedEntites)
-						axisOrdered.emplace_back((entt::entity)entityID, this);
-
-					SubmitForRendering(axisOrdered);
-
-					Renderer2D::Instance()->EndScene();
-				}
-			}
+			//Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
+			SubmitForRendering(m_Entities);
+			//Renderer2D::Instance()->EndScene();
 
 			Statistics::SetRenderingTime(Clock::Stop());
 		}
@@ -224,14 +194,67 @@ namespace Stimpi
 
 	void Scene::SubmitForRendering(std::vector<Entity>& entities)
 	{
-		for (auto& entity : entities)
-		{
-			if (entity.HasComponent<QuadComponent>())
+		//ST_CORE_INFO("SubmitForRendering - begin");
+		/*m_Registry.sort<QuadComponent>([](const QuadComponent& lhs, const QuadComponent& rhs)
 			{
-				auto& quad = entity.GetComponent<QuadComponent>();
-				if (entity.HasComponent<SpriteComponent>())
+				return lhs.m_Position.y < rhs.m_Position.y;
+			});*/
+		
+ 		//if (EntityManager::ShouldSortByGroupingLayersOrder())
+ 		//{
+			auto view = m_Registry.view<DefaultGroupComponent, QuadComponent>();
+			view.each(
+				[](DefaultGroupComponent& def, QuadComponent& quad) {
+					def.m_Position = quad.m_Position + 100000.0f * def.m_LayerIndex;
+				});
+
+			auto axis = Project::GetGraphicsConfig().m_RenderingOrderAxis;
+			if (axis == RenderingOrderAxis::X_AXIS)
+			{
+
+			}
+			else if (axis == RenderingOrderAxis::Y_AXIS)
+			{
+				m_Registry.sort<DefaultGroupComponent>([&](const auto& lhs, const auto& rhs)
+					{
+						if (lhs.m_LayerIndex == rhs.m_LayerIndex)
+							return lhs.m_Position.y > rhs.m_Position.y;
+						return lhs.m_LayerIndex < rhs.m_LayerIndex;
+					});
+			}
+			else if (axis == RenderingOrderAxis::Z_AXIS)
+			{
+
+			}
+		
+			/*auto layeredView = m_Registry.view<DefaultGroupComponent, TagComponent>();
+			layeredView.use<DefaultGroupComponent>();
+			layeredView.each([&](DefaultGroupComponent& sortGroup, TagComponent& tag)
 				{
-					auto& sprite = entity.GetComponent<SpriteComponent>();
+					ST_CORE_INFO("SubmitForRendering,  order: {}, pos: {} [{}]", sortGroup.m_LayerIndex, sortGroup.m_Position, tag.m_Tag);
+				});*/
+		//}
+
+		Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
+		// 1# Process entities sorted by SortingGroupComponent first
+		// SpriteComponent
+		auto layeredSpriteView = m_Registry.view<DefaultGroupComponent, QuadComponent/*, SpriteComponent*/>();
+		layeredSpriteView.use<DefaultGroupComponent>();
+		layeredSpriteView.each([&](auto entity, DefaultGroupComponent& sortGroup, QuadComponent& quad/*, SpriteComponent& sprite*/)
+			{
+				//ST_CORE_INFO("SubmitForRendering - Sprites,  order: {}", sortGroup.m_LayerIndex);
+				static uint32_t prevLayer = sortGroup.m_LayerIndex;
+				
+				if (prevLayer != sortGroup.m_LayerIndex)
+				{
+					Renderer2D::Instance()->EndScene();
+					Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
+				}
+
+				if (m_Registry.all_of<SpriteComponent>(entity))
+				{
+					auto& sprite = m_Registry.get<SpriteComponent>(entity);
+
 					if (sprite.m_Disabled == false)
 					{
 						if (sprite.TextureLoaded())
@@ -247,11 +270,10 @@ namespace Stimpi
 						}
 					}
 				}
-
-				// Draw AnimatedSprite if available (can overlap with Sprite)
-				if (entity.HasComponent<AnimatedSpriteComponent>())
+				else if (m_Registry.all_of<AnimatedSpriteComponent>(entity))
 				{
-					auto& anim = entity.GetComponent<AnimatedSpriteComponent>();
+					auto& anim = m_Registry.get<AnimatedSpriteComponent>(entity);
+
 					if (anim.Loaded())
 					{
 						// AnimationSprite is render always when in stopped "Editor" mode
@@ -260,33 +282,19 @@ namespace Stimpi
 					}
 				}
 
-				
-			}
-			else if (entity.HasComponent<CircleComponent>())
-			{
-				auto& circle = entity.GetComponent<CircleComponent>();
-				if (entity.HasComponent<SpriteComponent>())
-				{
-					auto& sprite = entity.GetComponent<SpriteComponent>();
-					if (sprite.m_Disabled == false)
-					{
-						if (sprite.TextureLoaded() && sprite.m_Enable)
-						{
-							Renderer2D::Instance()->Submit(circle.m_Position, circle.m_Size, circle.m_Rotation, sprite, m_DefaultShader.get());
-						}
-						else
-						{
-							Renderer2D::Instance()->SubmitCircle(circle.m_Position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
-						}
-					}
-				}
-				else
+				prevLayer = sortGroup.m_LayerIndex;
+			});
+		
+		Renderer2D::Instance()->EndScene();
+
+		// TODO: Move Circle as a part of Renderer component (Circle + Sprite doesn't make much sense)
+		auto circleView = m_Registry.view<CircleComponent>();
+		if (circleView)
+		{
+			circleView.each([this](CircleComponent& circle)
 				{
 					Renderer2D::Instance()->SubmitCircle(circle.m_Position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
-				}
-
-				
-			}
+				});
 		}
 	}
 
@@ -362,6 +370,7 @@ namespace Stimpi
 		UUID entityUUID = uuid == 0 ? UUID() : UUID(uuid);
 		entity.AddComponent<UUIDComponent>(entityUUID);
 		entity.AddComponent<TagComponent>(name.empty() ? "Entity" : name);
+		entity.AddComponent<DefaultGroupComponent>();
 
 		m_Entities.push_back(entity);
 		m_EntityUUIDMap[entityUUID] = entity;
@@ -819,7 +828,36 @@ namespace Stimpi
 		const int32_t positionIterations = 2;
 		m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
 
-		m_Registry.view<RigidBody2DComponent>().each([=](auto e, RigidBody2DComponent& rb2d)
+		auto physicsView = m_Registry.group<RigidBody2DComponent, BoxCollider2DComponent>(entt::get<QuadComponent>);
+		physicsView.each([&](RigidBody2DComponent& rb2d, BoxCollider2DComponent& bc2d, QuadComponent& quad)
+			{
+				// Complete deferred body updates
+				if (rb2d.m_ShouldUpdateTransform)
+				{
+					rb2d.m_ShouldUpdateTransform = false;
+					b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+					if (body)
+					{
+						b2Vec2 pos = b2Vec2(rb2d.m_DeferredTransformPos.x, rb2d.m_DeferredTransformPos.y);
+						body->SetTransform(pos, rb2d.m_DeferredTransfomrAngle);
+					}
+				}
+
+				b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+				if (body)
+				{
+					const auto& position = body->GetPosition();
+					quad.m_Position.x = position.x;
+					quad.m_Position.y = position.y;
+					quad.m_Rotation = body->GetAngle();
+
+					// Updated quad position by Collider offset
+					quad.m_Position.x -= bc2d.m_Offset.x;
+					quad.m_Position.y -= bc2d.m_Offset.y;
+				}
+			});
+
+		/*m_Registry.view<RigidBody2DComponent>().each([=](auto e, RigidBody2DComponent& rb2d)
 			{
 				// Complete deferred body updates
 				if (rb2d.m_ShouldUpdateTransform)
@@ -887,7 +925,7 @@ namespace Stimpi
 						ST_CORE_WARN("Entity {} has no Physics Body initialized!", tag.m_Tag);
 					}
 				}
-			});
+			});*/
 
 		Statistics::SetPhysicsSimTime(Clock::Stop());
 	}

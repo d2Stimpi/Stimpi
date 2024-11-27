@@ -89,6 +89,7 @@ inline OStream& operator<<(OStream& os, const glm::vec<L, T, Q>& vector)
 	} while (false)
 	
 #else
+	#define ST_CORE_ASSERT_MSG(x, ...)
 	#define ST_CORE_ASSERT(x, ...) /*if(x) { Stimpi::Log::GetCoreLogger()->error(__VA_ARGS__); }*/
 #endif
 

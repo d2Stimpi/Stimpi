@@ -24,6 +24,7 @@ namespace Stimpi
 		PhysicsConfig m_PhysicsConfig;
 
 		// Sorting Layers - Rendering
+		uint32_t m_DefaultLayerIndex = 0;
 		std::vector<std::shared_ptr<SortingLayer>> m_SortingLayers;
 
 		ProjectConfig() = default;
@@ -48,7 +49,9 @@ namespace Stimpi
 		static void SetGraphicsConfig(const GraphicsConfig& config) { m_ActiveProject.m_GraphicsConfig = config; }
 
 		static std::vector<std::shared_ptr<SortingLayer>>& GetSortingLayers() { return m_ActiveProject.m_SortingLayers; }
-		static std::string GetDefaultSortingLayerName() { return "Default"; }
+		static inline std::string GetDefaultSortingLayerName() { return "Default"; }
+		static inline uint32_t GetDefaultSortingLayerIndex() { return m_ActiveProject.m_DefaultLayerIndex; }
+		static void UpdateDefaultSortingLayerIndex();
 	
 		static PhysicsConfig& GetPhysicsConfig() { return m_ActiveProject.m_PhysicsConfig; }
 	private:

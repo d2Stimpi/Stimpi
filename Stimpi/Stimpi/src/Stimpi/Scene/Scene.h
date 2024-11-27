@@ -127,6 +127,7 @@ namespace Stimpi
 		EntitySorter m_EntitySorter;
 
 		friend class Entity;
+		friend class EntityManager;
 		friend class EntityHierarchy;
 		friend class SceneSerializer;
 		friend class SceneHierarchyWindow;

@@ -4,6 +4,7 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Core/Project.h"
 #include "Stimpi/Scene/SceneManager.h"
+#include "Stimpi/Scene/EntityManager.h"
 
 #include "Gui/Components/ImGuiEx.h"
 #include "Gui/Components/UIPayload.h"
@@ -74,7 +75,12 @@ namespace Stimpi
 							{
 								for (size_t n = 0; n < i - index; n++)
 								{
-									std::swap(layers[index + n], layers[index + n + 1]);
+									auto& layerA = layers[index + n];
+									auto& layerB = layers[index + n + 1];
+									std::swap(layerA, layerB);
+									uint32_t tmp = layerA->m_LayerIndex;
+									layerA->m_LayerIndex = layerB->m_LayerIndex;
+									layerB->m_LayerIndex = tmp;
 								}
 								s_Context->m_Selected = i + 1;
 							}
@@ -83,10 +89,19 @@ namespace Stimpi
 							{
 								for (size_t n = 0; n < index - i; n++)
 								{
-									std::swap(layers[index - n], layers[index - n - 1]);
+									auto& layerA = layers[index - n];
+									auto& layerB = layers[index - n - 1];
+									std::swap(layerA, layerB);
+									uint32_t tmp = layerA->m_LayerIndex;
+									layerA->m_LayerIndex = layerB->m_LayerIndex;
+									layerB->m_LayerIndex = tmp;
 								}
 								s_Context->m_Selected = i + 1;
 							}
+
+							// Update sorting layer index data
+							Project::UpdateDefaultSortingLayerIndex();
+							EntityManager::UpdateSortingLayerIndexing();
 						});
 						
 					}
@@ -96,7 +111,7 @@ namespace Stimpi
 					if (ImGui::Button("+##AddLayer", ImVec2(30.0f, 0)))
 					{
 						std::string newName = fmt::format("NewLayer_{}", layers.size());
-						auto newLayer = std::make_shared<SortingLayer>(newName);
+						auto newLayer = std::make_shared<SortingLayer>(newName, layers.size());
 						layers.emplace_back(newLayer);
 					}
 					ImGui::SameLine(0.0f, 3.0f);
