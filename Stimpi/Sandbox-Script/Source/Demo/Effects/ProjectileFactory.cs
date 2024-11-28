@@ -31,7 +31,7 @@ namespace Demo
     public static class ProjectileFactory
     {
         private static readonly bool s_debug = true;
-        private static ObjectPool<Projectile> s_projectilePool = new ObjectPool<Projectile>(20, CreateProjectileObject);
+        private static ObjectPool<Projectile> s_projectilePool = new ObjectPool<Projectile>(200, CreateProjectileObject);
 
         /* Create Object method */
 

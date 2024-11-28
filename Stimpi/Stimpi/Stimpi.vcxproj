@@ -182,6 +182,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Core\Window.h" />
     <ClInclude Include="src\Stimpi\Core\WindowManager.h" />
     <ClInclude Include="src\Stimpi\Debug\Profiler.h" />
+    <ClInclude Include="src\Stimpi\Debug\Statistics.h" />
     <ClInclude Include="src\Stimpi\Graphics\Animation\AnimatedSprite.h" />
     <ClInclude Include="src\Stimpi\Graphics\Animation\Animation.h" />
     <ClInclude Include="src\Stimpi\Graphics\Animation\AnimationSerializer.h" />
@@ -214,7 +215,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Scene\Component.h" />
     <ClInclude Include="src\Stimpi\Scene\Entity.h" />
     <ClInclude Include="src\Stimpi\Scene\EntityHierarchy.h" />
-    <ClInclude Include="src\Stimpi\Scene\EntitySorter.h" />
+    <ClInclude Include="src\Stimpi\Scene\EntityManager.h" />
     <ClInclude Include="src\Stimpi\Scene\ResourceManager.h" />
     <ClInclude Include="src\Stimpi\Scene\Scene.h" />
     <ClInclude Include="src\Stimpi\Scene\SceneManager.h" />
@@ -245,6 +246,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClCompile Include="src\Stimpi\Core\UUID.cpp" />
     <ClCompile Include="src\Stimpi\Core\Window.cpp" />
     <ClCompile Include="src\Stimpi\Core\WindowManager.cpp" />
+    <ClCompile Include="src\Stimpi\Debug\Statistics.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\Animation\AnimatedSprite.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\Animation\Animation.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\Animation\AnimationSerializer.cpp" />
@@ -277,7 +279,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClCompile Include="src\Stimpi\Scene\Component.cpp" />
     <ClCompile Include="src\Stimpi\Scene\Entity.cpp" />
     <ClCompile Include="src\Stimpi\Scene\EntityHierarchy.cpp" />
-    <ClCompile Include="src\Stimpi\Scene\EntitySorter.cpp" />
+    <ClCompile Include="src\Stimpi\Scene\EntityManager.cpp" />
     <ClCompile Include="src\Stimpi\Scene\ResourceManager.cpp" />
     <ClCompile Include="src\Stimpi\Scene\Scene.cpp" />
     <ClCompile Include="src\Stimpi\Scene\SceneManager.cpp" />

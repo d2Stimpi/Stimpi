@@ -24,7 +24,7 @@
  *  - [ImGui - SceneConfigWindow] Extend inspect window widgets 
  */
 
-// TODO: restructure - parent struct Component, Serialize/Deserialize method implmentation in separate file
+// TODO: restructure - parent struct Component, Serialize/Deserialize method implementation in separate file
 
 namespace Stimpi
 {
@@ -274,7 +274,7 @@ namespace Stimpi
 		// Sprite Texture
 		FilePath m_FilePath = "";
 		AssetHandle m_TextureHandle = {};
-		bool m_Enable = false; // Will override color use
+		bool m_Enable = false; // Will override color use - TODO: rename to more appropriate name
 
 		// Sprite Color
 		glm::vec4 m_Color = {1.0f, 1.0f, 1.0f, 1.0f };
@@ -408,11 +408,28 @@ namespace Stimpi
 													// we simply fail to match the layerName with existing layers
 		uint32_t m_OrderInLayer = 0;
 
+		// Internal
+		uint32_t m_LayerIndex = 0;
+
 		SortingGroupComponent() = default;
 		SortingGroupComponent(const SortingGroupComponent&) = default;
 		SortingGroupComponent(const std::string layerName, uint32_t order)
-			: m_SortingLayerName(layerName), m_OrderInLayer(order)
+			: m_SortingLayerName(layerName), m_OrderInLayer(order), m_LayerIndex(0)
 		{}
+
+		void UpdateLayerIndex()
+		{
+			auto& sortingLayers = Project::GetSortingLayers();
+			auto found = std::find_if(sortingLayers.begin(), sortingLayers.end(),
+				[&](auto& layer) {
+					return layer->m_Name == m_SortingLayerName;
+				});
+
+			if (found != sortingLayers.end())
+			{
+				m_LayerIndex = (*found)->m_LayerIndex;
+			}
+		}
 
 		void Serialize(YAML::Emitter& out)
 		{
@@ -438,6 +455,24 @@ namespace Stimpi
 			{
 				m_OrderInLayer = node["OrderInLayer"].as<uint32_t>();
 			}
+
+			UpdateLayerIndex();
+		}
+	};
+
+	/**
+	 * Empty component "Default" Sorting SortingGroupComponent
+	 */
+	struct DefaultGroupComponent
+	{
+		uint32_t m_LayerIndex = 0;
+		uint32_t m_OrderInLayer = 0;
+		glm::vec3 m_Position;
+
+		DefaultGroupComponent()
+		{
+			m_LayerIndex = Project::GetDefaultSortingLayerIndex();
+			m_Position = glm::vec3(0.0f, 0.0f, 0.0f);
 		}
 	};
 

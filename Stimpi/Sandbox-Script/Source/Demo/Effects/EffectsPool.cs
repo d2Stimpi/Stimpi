@@ -14,7 +14,7 @@ namespace Demo
     public static class EffectsPool
     {
         private static readonly bool s_debug = true;
-        private static ObjectPool<Explosion> s_explosionPool = new ObjectPool<Explosion>(20, EffectsPool.CreateExplosionObject);
+        private static ObjectPool<Explosion> s_explosionPool = new ObjectPool<Explosion>(50, EffectsPool.CreateExplosionObject);
 
         // Pool object create method
         public static Explosion CreateExplosionObject()

@@ -25,11 +25,12 @@ namespace Stimpi
 	struct SortingLayer
 	{
 		std::string m_Name;
+		uint32_t m_LayerIndex;
 
 		SortingLayer() = default;
 		SortingLayer(const SortingLayer&) = default;
-		SortingLayer(std::string name)
-			: m_Name(name)
+		SortingLayer(std::string name, uint32_t index)
+			: m_Name(name), m_LayerIndex(index)
 		{}
 	};
 

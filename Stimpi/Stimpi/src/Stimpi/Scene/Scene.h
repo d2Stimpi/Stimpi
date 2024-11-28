@@ -11,7 +11,6 @@
 
 #include "Stimpi/Scene/Camera.h"
 #include "Stimpi/Scene/CameraController.h"
-#include "Stimpi/Scene/EntitySorter.h"
 
 #include <entt/entt.hpp>
 #include <yaml-cpp/yaml.h>
@@ -63,11 +62,6 @@ namespace Stimpi
 
 		// Component change events
 		void OnSortingLayerRemove(const std::string layerName);
-
-		// Entity sorting
-		EntitySorter& GetEntitySorter();
-		void OnSortingAxisChange();
-		void UpdateLayerSorting(Entity entity);
 
 		// TODO: move physics related stuff to Physics class (Wrapper around Box2D)
 		// Physics
@@ -124,9 +118,8 @@ namespace Stimpi
 		std::shared_ptr <ContactListener> m_ContactListener;
 		std::unordered_map<uint32_t, bool> m_PhysicsStateToBeChanged;
 
-		EntitySorter m_EntitySorter;
-
 		friend class Entity;
+		friend class EntityManager;
 		friend class EntityHierarchy;
 		friend class SceneSerializer;
 		friend class SceneHierarchyWindow;

@@ -187,6 +187,9 @@ Scene:
         - 0.862745106
         - 0.581009448
         - 1
+    SortingGroupComponent:
+      SortingLayerName: UI
+      OrderInLayer: 0
     ScriptComponent:
       ScriptName: Demo.Icon
       ScriptFields:
@@ -243,6 +246,9 @@ Scene:
         - 0.857843161
         - 0.633364201
         - 1
+    SortingGroupComponent:
+      SortingLayerName: UI
+      OrderInLayer: 0
     ScriptComponent:
       ScriptName: Demo.Icon
       ScriptFields:
@@ -267,6 +273,9 @@ Scene:
         - 0.84803921
         - 0.6994856
         - 1
+    SortingGroupComponent:
+      SortingLayerName: UI
+      OrderInLayer: 0
     ScriptComponent:
       ScriptName: Demo.Icon
       ScriptFields:
@@ -291,6 +300,9 @@ Scene:
         - 0.84803921
         - 0.730663478
         - 1
+    SortingGroupComponent:
+      SortingLayerName: UI
+      OrderInLayer: 0
     ScriptComponent:
       ScriptName: Demo.Icon
       ScriptFields:
@@ -311,13 +323,13 @@ Scene:
       DefaultAnimation: animations\explosion01.anim
       Animations:
         Animation:
-          AnimationAssetPath: animations\char\sword_attack_front.anim
-        Animation:
-          AnimationAssetPath: animations\char\unarmed_walk_back.anim
+          AnimationAssetPath: animations\explosion01.anim
         Animation:
           AnimationAssetPath: animations\fireball01.anim
         Animation:
-          AnimationAssetPath: animations\explosion01.anim
+          AnimationAssetPath: animations\char\unarmed_walk_back.anim
+        Animation:
+          AnimationAssetPath: animations\char\sword_attack_front.anim
         Animation:
           AnimationAssetPath: animations\lightning_proj_start.anim
         Animation:

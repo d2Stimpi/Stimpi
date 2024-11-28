@@ -55,6 +55,12 @@ namespace Stimpi
 				}
 
 				ImGui::Separator();
+				if (ImGui::CollapsingHeader("Physics##Global Stats", ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					ImGui::Text("Active collisions %d", Physics::GetActiveCollisionsCount());
+				}
+
+				ImGui::Separator();
 				if (ImGui::CollapsingHeader("Mono Runtime##Global Stats", ImGuiTreeNodeFlags_DefaultOpen))
 				{
 					ImGui::Text("GC used size %ld", (long)ScriptEngine::GetGCUsedSize());
@@ -71,12 +77,6 @@ namespace Stimpi
 						ScriptEngine::ReloadAssembly();
 					}
 					//ImGui::EndDisabled();
-				}
-
-				ImGui::Separator();
-				if (ImGui::CollapsingHeader("Physics##Global Stats", ImGuiTreeNodeFlags_DefaultOpen))
-				{
-					ImGui::Text("Active collisions %d", Physics::GetActiveCollisionsCount());
 				}
 			}
 			ImGui::End();

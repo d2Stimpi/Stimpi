@@ -8,6 +8,7 @@
 
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/SceneManager.h"
+#include "Stimpi/Scene/EntityManager.h"
 #include "Stimpi/Scene/Utils/SceneUtils.h"
 
 #include "box2d/b2_body.h"
@@ -373,8 +374,12 @@ namespace Stimpi
 			char* nameCStr = mono_string_to_utf8(layerName);
 			sortingGroup.m_SortingLayerName = nameCStr;
 			mono_free(nameCStr);
+			sortingGroup.UpdateLayerIndex();
+
+			EntityManager::UpdateEntitySortingLayerIndex(entity);
+			
 			// Trigger sorting update
-			scene->UpdateLayerSorting({ (entt::entity)entityID, scene });
+			//scene->UpdateLayerSorting({ (entt::entity)entityID, scene });
 		}
 
 		return hasComponent;
