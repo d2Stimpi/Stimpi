@@ -3,11 +3,14 @@
 
 #include "Stimpi/Log.h"
 #include "Stimpi/Core/InputManager.h"
+#include "Stimpi/Cmd/CommandStack.h"
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/Utils/SceneUtils.h"
 #include "Gui/EditorUtils.h"
 
 #include "ImGui/src/imgui_internal.h"
+
+#include <glm/gtc/type_ptr.hpp>
 
 #define GIZMO_DEBUG false
 
@@ -21,6 +24,7 @@ namespace Stimpi
 		ImVec2 m_ClickHoldPos;
 		bool m_MouseHold;
 		bool m_Clicked; // To avoid manipulating when selecting Entity and holding mouse button
+		bool m_Moved; // Indicator if Gizmo was used to apply change to Entity
 		ManipulateAxis m_UsingAxis;
 		Entity m_Entity;
 		float m_CameraZoom;
@@ -29,7 +33,11 @@ namespace Stimpi
 		float m_TranslateScale = 1.0f;
 		float m_ScalingScale = 1.0f;
 
-		Context() : m_MouseHold(false), m_UsingAxis(ManipulateAxis::NONE), m_Clicked(false), m_Using(false)
+		// Data for Undo/Redo transforms
+		ImVec2 m_StartTransform;
+		ImVec2 m_Transform;
+
+		Context() : m_MouseHold(false), m_UsingAxis(ManipulateAxis::NONE), m_Clicked(false), m_Moved(false), m_Using(false)
 		{
 		}
 	};
@@ -61,6 +69,8 @@ namespace Stimpi
 			if (gContext.m_MouseHold == false)
 			{
 				gContext.m_ClickHoldPos = io.MousePos;
+				// Reset recorded transform amount
+				gContext.m_Transform = ImVec2(0.0f, 0.0f);
 			}
 			else
 			{
@@ -68,6 +78,7 @@ namespace Stimpi
 				if (axis == ManipulateAxis::X_AXIS)
 				{
 					float translate_x = io.MousePos.x - gContext.m_ClickHoldPos.x;
+					gContext.m_Transform.x += translate_x;
 
 					// Quad
 					if (gContext.m_Entity.HasComponent<QuadComponent>())
@@ -101,6 +112,7 @@ namespace Stimpi
 				if (axis == ManipulateAxis::Y_AXIS)
 				{
 					float translate_y = io.MousePos.y - gContext.m_ClickHoldPos.y;
+					gContext.m_Transform.y += translate_y;
 
 					// Quad
 					if (gContext.m_Entity.HasComponent<QuadComponent>())
@@ -113,7 +125,6 @@ namespace Stimpi
 						if (gContext.m_Action == GizmoAction::SCALE)
 						{
 							quad.m_Size.y -= translate_y * gContext.m_CameraZoom * gContext.m_ScalingScale;
-							quad.m_Position.y += translate_y * gContext.m_CameraZoom / 2 * gContext.m_ScalingScale;
 						}
 					}
 					// Circle
@@ -135,6 +146,8 @@ namespace Stimpi
 				{
 					float translate_x = io.MousePos.x - gContext.m_ClickHoldPos.x;
 					float translate_y = io.MousePos.y - gContext.m_ClickHoldPos.y;
+					gContext.m_Transform.x += translate_x;
+					gContext.m_Transform.y += translate_y;
 
 					// Quad
 					if (gContext.m_Entity.HasComponent<QuadComponent>())
@@ -149,8 +162,6 @@ namespace Stimpi
 						{
 							quad.m_Size.x += translate_x * gContext.m_CameraZoom * gContext.m_ScalingScale;
 							quad.m_Size.y -= translate_y * gContext.m_CameraZoom * gContext.m_ScalingScale;
-							quad.m_Position.x -= translate_x * gContext.m_CameraZoom / 2 * gContext.m_ScalingScale;
-							quad.m_Position.y += translate_y * gContext.m_CameraZoom / 2 * gContext.m_ScalingScale;
 						}
 					}
 					// Circle
@@ -170,6 +181,9 @@ namespace Stimpi
 					}
 				}
 
+				if (gContext.m_ClickHoldPos.x != io.MousePos.x || gContext.m_ClickHoldPos.y != io.MousePos.y)
+					gContext.m_Moved = true;
+
 				gContext.m_ClickHoldPos = io.MousePos;
 			}
 			gContext.m_MouseHold = true;
@@ -182,9 +196,67 @@ namespace Stimpi
 		}
 		else
 		{
+			if (gContext.m_MouseHold && gContext.m_Moved)
+			{
+				ST_CORE_INFO("Gizmo released {},{}", gContext.m_Transform.x, gContext.m_Transform.y);
+				Command* cmd = nullptr;
+				void* ptr = nullptr;
+				if (gContext.m_Entity.HasComponent<QuadComponent>())
+				{
+					auto& quad = gContext.m_Entity.GetComponent<QuadComponent>();
+					if (gContext.m_Action == GizmoAction::TRANSLATE)
+					{
+						ptr = glm::value_ptr(quad.m_Position);
+						glm::vec3 pos = { 0.0f, 0.0f, 0.0f };
+						pos.x = gContext.m_Transform.x * gContext.m_CameraZoom * gContext.m_TranslateScale;
+						pos.y = -gContext.m_Transform.y * gContext.m_CameraZoom * gContext.m_TranslateScale;
+						cmd = EntityCommand::Create(gContext.m_Entity, pos, ptr);
+					}
+					else if (gContext.m_Action == GizmoAction::SCALE)
+					{
+						ptr = glm::value_ptr(quad.m_Size);
+						glm::vec2 size = { 0.0f, 0.0f };
+						size.x = gContext.m_Transform.x * gContext.m_CameraZoom * gContext.m_ScalingScale;
+						size.y = -gContext.m_Transform.y * gContext.m_CameraZoom * gContext.m_ScalingScale;
+						cmd = EntityCommand::Create(gContext.m_Entity, size, ptr);
+					}
+					else if (gContext.m_Action == GizmoAction::ROTATE)
+					{
+						// TODO: support rotation with Gizmo
+					}
+				}
+				else if (gContext.m_Entity.HasComponent<CircleComponent>())
+				{
+					auto& circle = gContext.m_Entity.GetComponent<CircleComponent>();
+					if (gContext.m_Action == GizmoAction::TRANSLATE)
+					{
+						ptr = glm::value_ptr(circle.m_Position);
+						glm::vec3 pos = { 0.0f, 0.0f, 0.0f };
+						pos.x = gContext.m_Transform.x * gContext.m_CameraZoom * gContext.m_TranslateScale;
+						pos.y = -gContext.m_Transform.y * gContext.m_CameraZoom * gContext.m_TranslateScale;
+						cmd = EntityCommand::Create(gContext.m_Entity, pos, ptr);
+					}
+					else if (gContext.m_Action == GizmoAction::SCALE)
+					{
+						ptr = glm::value_ptr(circle.m_Size);
+						glm::vec2 size = { 0.0f, 0.0f };
+						size.x = gContext.m_Transform.x * gContext.m_CameraZoom * gContext.m_ScalingScale;
+						size.y = -gContext.m_Transform.y * gContext.m_CameraZoom * gContext.m_ScalingScale;
+						cmd = EntityCommand::Create(gContext.m_Entity, size, ptr);
+					}
+					else if (gContext.m_Action == GizmoAction::ROTATE)
+					{
+						// TODO: support rotation with Gizmo
+					}
+				}
+				CommandStack::Push(cmd);
+			}
+
 			gContext.m_Clicked = false;
 			gContext.m_MouseHold = false;
+			gContext.m_Moved = false;
 			gContext.m_UsingAxis = ManipulateAxis::NONE;
+
 		}
 
 		if (io.MouseClicked[ImGuiMouseButton_Left])
@@ -360,19 +432,19 @@ namespace Stimpi
 		}
 	}
 
-	void Gizmo2D::Manipulate(Camera* camera, Entity object, GizmoAction action)
+	void Gizmo2D::Manipulate(Camera* camera, Entity entity, GizmoAction action)
 	{
 		if (action == GizmoAction::NONE)
 			return;
 
 		glm::vec2 center = {};
-		if (object.HasComponent<QuadComponent>())
+		if (entity.HasComponent<QuadComponent>())
 		{
-			center = object.GetComponent<QuadComponent>().Center();
+			center = entity.GetComponent<QuadComponent>().Center();
 		}
-		else if (object.HasComponent<CircleComponent>())
+		else if (entity.HasComponent<CircleComponent>())
 		{
-			center = object.GetComponent<CircleComponent>().Center();
+			center = entity.GetComponent<CircleComponent>().Center();
 		}
 
 		glm::vec2 objPos = center;
@@ -386,7 +458,7 @@ namespace Stimpi
 		drawPos = EditorUtils::PositionInCurentWindow(drawPos);
 		
 		gContext.m_Action = action;
-		gContext.m_Entity = object;
+		gContext.m_Entity = entity;
 		gContext.m_CameraZoom = camera->GetZoomFactor();
 		gContext.m_TranslateScale = camera->GetOrthoView().y / winSize.x;
 		gContext.m_ScalingScale = camera->GetOrthoView().y / winSize.x;
@@ -397,4 +469,10 @@ namespace Stimpi
 		if (action == GizmoAction::SCALE)
 			DrawScaleArrow(ImVec2(drawPos.x, drawPos.y), 40, 4);
 	}
+
+	void Gizmo2D::RecordCommand()
+	{
+
+	}
+
 }

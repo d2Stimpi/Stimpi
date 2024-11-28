@@ -10,13 +10,12 @@ namespace Stimpi
 	{
 	public:
 		EntityCommand(Entity entity, EntityValueVariant value, void* ptr)
-			: Command(CommandType::TRANSLATE), m_Entity(entity), m_Value(value), m_DataPtr(ptr)
+			: m_Entity(entity), m_Value(value), m_DataPtr(ptr)
 		{}
 
 		void Undo() override;
 		void Redo() override;
 
-		static CommandType GetType() { return CommandType::TRANSLATE; }
 		static EntityCommand* Create(Entity entity, EntityValueVariant value, void* ptr);
 
 		EntityValueVariant& GetValue();
