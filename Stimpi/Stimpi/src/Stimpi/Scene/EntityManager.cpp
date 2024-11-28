@@ -7,12 +7,6 @@
 
 namespace Stimpi
 {
-	struct EntityManagerContext
-	{
-		bool m_SortingLayerChanged = true;	// To trigger initial sort by Grouping components
-	};
-
-	static EntityManagerContext s_Context;
 
 	void EntityManager::UpdateSortingLayerIndexing()
 	{
@@ -33,9 +27,6 @@ namespace Stimpi
 			{
 				def.m_LayerIndex = defaultIndex;
 			});
-
-		// Set sort flag
-		s_Context.m_SortingLayerChanged = true;
 	}
 
 	void EntityManager::UpdateEntitySortingLayerIndex(Entity entity)
@@ -46,27 +37,8 @@ namespace Stimpi
 			SortingGroupComponent& sor = entity.GetComponent<SortingGroupComponent>();
 
 			def.m_LayerIndex = sor.m_LayerIndex;
-
-			// Set sort flag
-			s_Context.m_SortingLayerChanged = true;
+			def.m_OrderInLayer = sor.m_OrderInLayer;
 		}
-	}
-
-	bool EntityManager::ShouldSortByGroupingLayersOrder()
-	{
-		bool resort = s_Context.m_SortingLayerChanged;
-		s_Context.m_SortingLayerChanged = false;
-		return resort;
-	}
-
-	void EntityManager::TriggerSortByGroupingLayersOrder()
-	{
-		s_Context.m_SortingLayerChanged = true;
-	}
-
-	void EntityManager::OnSceneCreated()
-	{
-		s_Context.m_SortingLayerChanged = true;
 	}
 
 }

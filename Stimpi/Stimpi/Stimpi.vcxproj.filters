@@ -196,9 +196,6 @@
     <ClInclude Include="src\Stimpi\Scene\EntityHierarchy.h">
       <Filter>Stimpi\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\Stimpi\Scene\EntitySorter.h">
-      <Filter>Stimpi\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="src\Stimpi\Scene\ResourceManager.h">
       <Filter>Stimpi\Scene</Filter>
     </ClInclude>
@@ -381,9 +378,6 @@
       <Filter>Stimpi\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Scene\EntityHierarchy.cpp">
-      <Filter>Stimpi\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Scene\EntitySorter.cpp">
       <Filter>Stimpi\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Scene\ResourceManager.cpp">

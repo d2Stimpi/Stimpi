@@ -33,6 +33,7 @@ namespace Demo
         public float Velocity = 20.0f;
         public Entity Camera;
         public Entity Cursor;
+        public float Projectiles = 2.0f;
 
         public override void OnCreate()
         {
@@ -194,11 +195,11 @@ namespace Demo
                             return;
                         }
 
-                        ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, MathUtils.RotatePointAroundCenter(mousePos, _quad.Position, -0.2617 * 2), projSize));
-                        ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, MathUtils.RotatePointAroundCenter(mousePos, _quad.Position, -0.2617), projSize));
+                        for (int i = 1; i < Projectiles; i++)
+                            ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, MathUtils.RotatePointAroundCenter(mousePos, _quad.Position, -0.2617 * i), projSize));
                         ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, mousePos, projSize));
-                        ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, MathUtils.RotatePointAroundCenter(mousePos, _quad.Position, 0.2617), projSize));
-                        ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, MathUtils.RotatePointAroundCenter(mousePos, _quad.Position, 0.2617 * 2), projSize));
+                        for (int i = 1; i < Projectiles; i++)
+                            ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, MathUtils.RotatePointAroundCenter(mousePos, _quad.Position, 0.2617 * i), projSize));
                     }
                 }
             }

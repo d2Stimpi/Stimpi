@@ -7,7 +7,6 @@
 #include "Stimpi/Scene/EntityHierarchy.h"
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/ResourceManager.h"
-#include "Stimpi/Scene/EntityManager.h"
 #include "Stimpi/Scene/Utils/SceneUtils.h"
 #include "Stimpi/Scene/Assets/AssetManager.h"
 
@@ -76,9 +75,6 @@ namespace Stimpi
 
 		// Clear script instances - they are created in OnScriptConstruct
 		ScriptEngine::ClearScriptInstances();
-
-		// Refresh EntityManager internal flags and states
-		EntityManager::OnSceneCreated();
 
 		m_RuntimeState = RuntimeState::STOPPED;
 		m_DefaultShader.reset(Shader::CreateShader("shader.shader"));
@@ -174,9 +170,7 @@ namespace Stimpi
 			ST_PROFILE_SCOPE("SubmitForRendering");
 			Clock::Begin();
 
-			//Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
 			SubmitForRendering(m_Entities);
-			//Renderer2D::Instance()->EndScene();
 
 			Statistics::SetRenderingTime(Clock::Stop());
 		}
@@ -194,55 +188,40 @@ namespace Stimpi
 
 	void Scene::SubmitForRendering(std::vector<Entity>& entities)
 	{
-		//ST_CORE_INFO("SubmitForRendering - begin");
-		/*m_Registry.sort<QuadComponent>([](const QuadComponent& lhs, const QuadComponent& rhs)
-			{
-				return lhs.m_Position.y < rhs.m_Position.y;
-			});*/
-		
- 		//if (EntityManager::ShouldSortByGroupingLayersOrder())
- 		//{
-			auto view = m_Registry.view<DefaultGroupComponent, QuadComponent>();
-			view.each(
-				[](DefaultGroupComponent& def, QuadComponent& quad) {
-					def.m_Position = quad.m_Position + 100000.0f * def.m_LayerIndex;
-				});
+		auto view = m_Registry.view<DefaultGroupComponent, QuadComponent>();
+		view.each(
+			[](DefaultGroupComponent& def, QuadComponent& quad) {
+				// Note: Possible issue if entity count exceeds 10k or position values are too high which is less likely.
+				//	Big number for OrderInLayer may cause precision comparison issues. TODO: use precise float comparison.
+				//	Layer count range [1...10].
+				//	Consider using a variable value that depends on the entity count.
+				def.m_Position = quad.m_Position + 100000.0f * def.m_LayerIndex + 1000000.0f * def.m_OrderInLayer;
+			});
 
-			auto axis = Project::GetGraphicsConfig().m_RenderingOrderAxis;
-			if (axis == RenderingOrderAxis::X_AXIS)
-			{
-
-			}
-			else if (axis == RenderingOrderAxis::Y_AXIS)
-			{
-				m_Registry.sort<DefaultGroupComponent>([&](const auto& lhs, const auto& rhs)
-					{
-						if (lhs.m_LayerIndex == rhs.m_LayerIndex)
-							return lhs.m_Position.y > rhs.m_Position.y;
-						return lhs.m_LayerIndex < rhs.m_LayerIndex;
-					});
-			}
-			else if (axis == RenderingOrderAxis::Z_AXIS)
-			{
-
-			}
-		
-			/*auto layeredView = m_Registry.view<DefaultGroupComponent, TagComponent>();
-			layeredView.use<DefaultGroupComponent>();
-			layeredView.each([&](DefaultGroupComponent& sortGroup, TagComponent& tag)
+		auto axis = Project::GetGraphicsConfig().m_RenderingOrderAxis;
+		if (axis == RenderingOrderAxis::X_AXIS)
+		{
+			// TODO
+		}
+		else if (axis == RenderingOrderAxis::Y_AXIS)
+		{
+			m_Registry.sort<DefaultGroupComponent>([&](const auto& lhs, const auto& rhs)
 				{
-					ST_CORE_INFO("SubmitForRendering,  order: {}, pos: {} [{}]", sortGroup.m_LayerIndex, sortGroup.m_Position, tag.m_Tag);
-				});*/
-		//}
+					if (lhs.m_LayerIndex == rhs.m_LayerIndex)
+						return lhs.m_Position.y > rhs.m_Position.y;
+					return lhs.m_LayerIndex < rhs.m_LayerIndex;
+				});
+		}
+		else if (axis == RenderingOrderAxis::Z_AXIS)
+		{
+			// TODO
+		}
 
 		Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
-		// 1# Process entities sorted by SortingGroupComponent first
-		// SpriteComponent
-		auto layeredSpriteView = m_Registry.view<DefaultGroupComponent, QuadComponent/*, SpriteComponent*/>();
-		layeredSpriteView.use<DefaultGroupComponent>();
-		layeredSpriteView.each([&](auto entity, DefaultGroupComponent& sortGroup, QuadComponent& quad/*, SpriteComponent& sprite*/)
+		auto layeredView = m_Registry.view<DefaultGroupComponent, QuadComponent>();
+		layeredView.use<DefaultGroupComponent>();
+		layeredView.each([&](auto entity, DefaultGroupComponent& sortGroup, QuadComponent& quad)
 			{
-				//ST_CORE_INFO("SubmitForRendering - Sprites,  order: {}", sortGroup.m_LayerIndex);
 				static uint32_t prevLayer = sortGroup.m_LayerIndex;
 				
 				if (prevLayer != sortGroup.m_LayerIndex)
@@ -296,46 +275,6 @@ namespace Stimpi
 					Renderer2D::Instance()->SubmitCircle(circle.m_Position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
 				});
 		}
-	}
-
-	EntitySorter& Scene::GetEntitySorter()
-	{
-		return m_EntitySorter;
-	}
-
-
-	void Scene::OnSortingAxisChange()
-	{
-		m_EntitySorter.ResetAxisSortedEntites();
-
-		GraphicsConfig graphicsConfig = Project::GetGraphicsConfig();
-		if (graphicsConfig.m_RenderingOrderAxis != RenderingOrderAxis::None)
-		{
-			for (auto entity : m_Entities)
-			{
-				if (!entity.HasComponent<SortingGroupComponent>() && entity.HasComponent<QuadComponent>() &&
-					(entity.HasComponent<SpriteComponent>() || entity.HasComponent<AnimatedSpriteComponent>()))
-				{
-					m_EntitySorter.SortQuadEntityByAxis(entity, graphicsConfig.m_RenderingOrderAxis);
-				}
-				else if (entity.HasComponent<CircleComponent>())
-				{
-					m_EntitySorter.SortCircleEntityByAxis(entity, graphicsConfig.m_RenderingOrderAxis);
-				}
-			}
-		}
-	}
-
-
-	void Scene::UpdateLayerSorting(Entity entity)
-	{
-		if (!entity.HasComponent<SortingGroupComponent>())
-			return;
-
-		SortingGroupComponent group = entity.GetComponent<SortingGroupComponent>();
-
-		m_EntitySorter.RemoveLayerSortedEntity(entity, group.m_SortingLayerName);
-		m_EntitySorter.SortEntityByLayer({ entity, group.m_OrderInLayer }, group.m_SortingLayerName);
 	}
 
 	void Scene::OnSceneStep()
@@ -532,7 +471,31 @@ namespace Stimpi
 	{
 		Entity picked = {};
 
-		GraphicsConfig graphicsConfig = Project::GetGraphicsConfig();
+		auto view = m_Registry.view<DefaultGroupComponent>();
+		for (auto it = view.rbegin(), last = view.rend(); it != last; ++it)
+		{
+			Entity entity = Entity(*it, this);
+			if (entity.HasComponent<QuadComponent>())
+			{
+				QuadComponent quad = entity.GetComponent<QuadComponent>();
+				if (quad.m_PickEnabled && SceneUtils::IsPointInRotatedSquare({ x, y }, quad.Center(), quad.m_Size, quad.m_Rotation))
+				{
+					picked = entity;
+					break;
+				}
+			}
+			else if (entity.HasComponent<CircleComponent>())
+			{
+				CircleComponent circle = entity.GetComponent<CircleComponent>();
+				if (SceneUtils::IsPointInCircle({ x, y }, circle.Center(), circle.MaxRadius() / 2.0f))
+				{
+					picked = entity;
+					break;
+				}
+			}
+		}
+
+		/*GraphicsConfig graphicsConfig = Project::GetGraphicsConfig();
 		auto& sortingLayers = Project::GetSortingLayers();
 		auto& entityGroups = m_EntitySorter.GetEntityGroups();
 		for (auto& riter = sortingLayers.rbegin(); riter != sortingLayers.rend(); riter++)
@@ -611,7 +574,7 @@ namespace Stimpi
 					picked = Entity(e, this);
 				}
 			});
-		}
+		}*/
 
 		return picked;
 	}

@@ -13,6 +13,7 @@
 #include "Stimpi/Core/WindowManager.h"
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Entity.h"
+#include "Stimpi/Scene/EntityManager.h"
 #include "Stimpi/Scene/EntityHierarchy.h"
 #include "Stimpi/Utils/PlatformUtils.h"
 
@@ -542,7 +543,8 @@ namespace Stimpi
 					{
 						currentSortingLayer = layer->m_Name;
 						component.m_SortingLayerName = layer->m_Name;
-						m_ActiveScene->UpdateLayerSorting(s_Context.m_SelectedEntity);
+						component.UpdateLayerIndex();
+						EntityManager::UpdateEntitySortingLayerIndex(s_Context.m_SelectedEntity);
 					}
 
 					if (isSelected)
@@ -559,7 +561,7 @@ namespace Stimpi
 					orderInLayerInput = 0;
 
 				component.m_OrderInLayer = orderInLayerInput;
-				m_ActiveScene->UpdateLayerSorting(s_Context.m_SelectedEntity);
+				EntityManager::UpdateEntitySortingLayerIndex(s_Context.m_SelectedEntity);
 			}
 			EditorUtils::SetActiveItemCaptureKeyboard(false);
 			ImGui::Spacing();

@@ -36,10 +36,6 @@ namespace Stimpi
 							{
 								config.m_RenderingOrderAxis = (RenderingOrderAxis)i;
 								Project::SetGraphicsConfig(config);
-								// Notify active scene to re-sort entities
-								auto scene = SceneManager::Instance()->GetActiveScene();
-								if (scene)
-									scene->OnSortingAxisChange();
 							}
 						}
 

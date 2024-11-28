@@ -466,6 +466,7 @@ namespace Stimpi
 	struct DefaultGroupComponent
 	{
 		uint32_t m_LayerIndex = 0;
+		uint32_t m_OrderInLayer = 0;
 		glm::vec3 m_Position;
 
 		DefaultGroupComponent()
