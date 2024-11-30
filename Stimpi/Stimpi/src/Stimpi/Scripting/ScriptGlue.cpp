@@ -1167,6 +1167,42 @@ namespace Stimpi
 		return hasComponent;
 	}
 
+	static bool BoxCollider2DComponent_GetGroupIndex(uint32_t entityID, int16_t* outGroupIndex)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<BoxCollider2DComponent>();
+		if (hasComponent)
+		{
+			auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+			*outGroupIndex = bc2d.m_GroupIndex;
+		}
+
+		return hasComponent;
+	}
+
+	static bool BoxCollider2DComponent_SetGroupIndex(uint32_t entityID, int16_t groupIndex)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<BoxCollider2DComponent>();
+		if (hasComponent)
+		{
+			auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+			bc2d.m_GroupIndex = groupIndex;
+		}
+
+		return hasComponent;
+	}
+
 #pragma endregion BoxCollider2DComponent
 
 #pragma region Pysics
@@ -1503,6 +1539,8 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(BoxCollider2DComponent_SetRestitution);
 		ST_ADD_INTERNAL_CALL(BoxCollider2DComponent_GetRestitutionThreshold);
 		ST_ADD_INTERNAL_CALL(BoxCollider2DComponent_SetRestitutionThreshold);
+		ST_ADD_INTERNAL_CALL(BoxCollider2DComponent_GetGroupIndex);
+		ST_ADD_INTERNAL_CALL(BoxCollider2DComponent_SetGroupIndex);
 
 		// CameraComponent
 		ST_ADD_INTERNAL_CALL(CameraComponent_GetIsMain);

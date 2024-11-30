@@ -136,6 +136,10 @@ namespace Stimpi
         public extern static bool BoxCollider2DComponent_GetRestitutionThreshold(uint entityID, out float outRestitutionThreshold);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool BoxCollider2DComponent_SetRestitutionThreshold(uint entityID, float restitutionThreshold);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool BoxCollider2DComponent_GetGroupIndex(uint entityID, out short outGroupIndex);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool BoxCollider2DComponent_SetGroupIndex(uint entityID, short groupIndex);
 
         /* CameraComponent */
         [MethodImplAttribute(MethodImplOptions.InternalCall)]

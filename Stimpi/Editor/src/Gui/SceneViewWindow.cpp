@@ -129,23 +129,26 @@ namespace Stimpi
 			frameBuffer->Resize(std::round((float)winSize.y*1.778f), winSize.y);
 		}
 
-		ImGuiIO& io = ImGui::GetIO();
-		if (io.MouseClicked[ImGuiMouseButton_Left] && m_Hovered && (Gizmo2D::IsUsing() == false))
+		// No "Editor" mouse picking when in Running Scene state
+		if (scene->GetRuntimeState() != RuntimeState::RUNNING)
 		{
-			ImVec2 winPos = ImGui::GetCursorScreenPos();
-			ImVec2 clickPos = io.MouseClickedPos[ImGuiMouseButton_Left];
-			glm::vec2 pickPos = { clickPos.x - winPos.x, winSize.y - (clickPos.y - winPos.y) };
-
-			auto worldPos = SceneUtils::WindowToWorldPoint(camera, glm::vec2{ winSize.x, winSize.y }, pickPos);
-
-			// First try to pick UI components only
-			if (PickUIComponents(ImVec2(pickPos.x, pickPos.y)) == false)
+			ImGuiIO& io = ImGui::GetIO();
+			if (io.MouseClicked[ImGuiMouseButton_Left] && m_Hovered && (Gizmo2D::IsUsing() == false))
 			{
-				auto picked = scene->MousePickEntity(worldPos.x, worldPos.y);
-				// Pass picked Entity to SceneHierarchy panel
-				SceneHierarchyWindow::SetPickedEntity(picked);
-			}
+				ImVec2 winPos = ImGui::GetCursorScreenPos();
+				ImVec2 clickPos = io.MouseClickedPos[ImGuiMouseButton_Left];
+				glm::vec2 pickPos = { clickPos.x - winPos.x, winSize.y - (clickPos.y - winPos.y) };
 
+				auto worldPos = SceneUtils::WindowToWorldPoint(camera, glm::vec2{ winSize.x, winSize.y }, pickPos);
+
+				// First try to pick UI components only
+				if (PickUIComponents(ImVec2(pickPos.x, pickPos.y)) == false)
+				{
+					auto picked = scene->MousePickEntity(worldPos.x, worldPos.y);
+					// Pass picked Entity to SceneHierarchy panel
+					SceneHierarchyWindow::SetPickedEntity(picked);
+				}
+			}
 		}
 
 		// Draw Scene before Gizmo

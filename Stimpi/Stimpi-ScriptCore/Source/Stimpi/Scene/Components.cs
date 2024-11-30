@@ -431,6 +431,22 @@ namespace Stimpi
                     Console.WriteLine($"Entity {Entity.ID} does not have BoxCollider2DComponent (set RestitutionThreshold)");
             }
         }
+
+        public short GroupIndex
+        {
+            get
+            {
+                if (!InternalCalls.BoxCollider2DComponent_GetGroupIndex(Entity.ID, out short outGroupIndex))
+                    Console.WriteLine($"Entity {Entity.ID} does not have BoxCollider2DComponent (get GroupIndex)");
+
+                return outGroupIndex;
+            }
+            set
+            {
+                if (!InternalCalls.BoxCollider2DComponent_SetGroupIndex(Entity.ID, value))
+                    Console.WriteLine($"Entity {Entity.ID} does not have BoxCollider2DComponent (set GroupIndex)");
+            }
+        }
     }
 
     public class CameraComponent : Component

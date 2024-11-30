@@ -158,12 +158,6 @@ namespace Stimpi
 
 		UpdateComponentDependacies(ts);
 
-		/* When not in Running state, use Editor sourced camera */
-		/*if (m_RuntimeState != RuntimeState::RUNNING)
-		{
-			m_RenderCamera = m_SceneCamera;
-		}*/
-
 		// Scene Rendering
 		if (m_RenderCamera)
 		{
@@ -734,7 +728,7 @@ namespace Stimpi
 					fixtureDef.restitution = bc2d.m_Restitution;
 					fixtureDef.restitutionThreshold = bc2d.m_RestitutionThreshold;
 
-					//fixtureDef.filter.groupIndex = -1;
+					fixtureDef.filter.groupIndex = bc2d.m_GroupIndex;
 
 					bodyDef.position.Set(center.x, center.y);
 					b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);

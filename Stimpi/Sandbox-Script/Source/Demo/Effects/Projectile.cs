@@ -93,6 +93,7 @@ namespace Demo
             BoxCollider2DComponent bc2d = AddComponent<BoxCollider2DComponent>();
             bc2d.Shape = Collider2DShape.CIRCLE;
             bc2d.Size = new Vector2(0.25f, 0.25f);  // Weird, but it means 2 times smaller collider than sprite
+            bc2d.GroupIndex = -1;
 
             _rb2d = AddComponent<RigidBody2DComponent>();
             _rb2d.Type = BodyType.DYNAMIC;

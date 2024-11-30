@@ -876,11 +876,20 @@ namespace Stimpi
 
 			ImGui::DragFloat2("Offset", glm::value_ptr(component.m_Offset));
 			ImGui::DragFloat2("Size##Collider", glm::value_ptr(component.m_Size));
+			ImGui::Separator();
 			ImGui::PushItemWidth(80.0f);
 			ImGui::DragFloat("Density", &component.m_Density, 0.01f, 0.0f, 1.0f);
 			ImGui::DragFloat("Friction", &component.m_Friction, 0.01f, 0.0f, 1.0f);
 			ImGui::DragFloat("Restitution", &component.m_Restitution, 0.01f, 0.0f, 1.0f);
 			ImGui::DragFloat("Restitution Threshold", &component.m_RestitutionThreshold, 0.01f, 0.0f);
+			ImGui::Separator();
+			if (ImGui::DragInt("GroupIndex", &component.m_GroupIndex, 1.0f, SHRT_MIN, SHRT_MAX))
+			{
+				if (component.m_GroupIndex > SHRT_MAX)
+					component.m_GroupIndex = SHRT_MAX;
+				else if(component.m_GroupIndex < SHRT_MIN)
+					component.m_GroupIndex = SHRT_MIN;
+			}
 			ImGui::PopItemWidth();
 			ImGui::Spacing();
 		}

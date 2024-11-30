@@ -921,6 +921,8 @@ namespace Stimpi
 		float m_Restitution = 0.0f;
 		float m_RestitutionThreshold = 0.5f;
 
+		int m_GroupIndex = 0;
+
 		// For runtime
 		void* m_RuntimeFixture = nullptr;
 
@@ -955,6 +957,8 @@ namespace Stimpi
 				out << YAML::Key << "Restitution" << YAML::Value << m_Restitution;
 
 				out << YAML::Key << "RestitutionThreshold" << YAML::Value << m_RestitutionThreshold;
+
+				out << YAML::Key << "GroupIndex" << YAML::Value << m_GroupIndex;
 			}
 			out << YAML::EndMap;
 		}
@@ -992,6 +996,10 @@ namespace Stimpi
 			if (node["RestitutionThreshold"])
 			{
 				m_RestitutionThreshold = node["RestitutionThreshold"].as<float>();
+			}
+			if (node["GroupIndex"])
+			{
+				m_GroupIndex = node["GroupIndex"].as<int>();
 			}
 		}
 	};
