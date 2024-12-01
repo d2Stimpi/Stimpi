@@ -5,7 +5,7 @@ Project:
   AssetsSubDir: assets
   ScriptsSubDir: resources/scripts
   Graphics:
-    RenderingOrderAxis: Z_AXIS
+    RenderingOrderAxis: Y_AXIS
   Physics:
     GravityFoce:
       - 0

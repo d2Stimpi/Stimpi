@@ -240,7 +240,7 @@ namespace Stimpi
 
 				return true;
 			}
-			else if (InputManager::Instance()->IsKeyPressed(ST_KEY_R))
+			else if (InputManager::Instance()->IsKeyPressed(ST_KEY_Y))
 			{
 				//ST_CORE_INFO("Redo key pressed");
 				Command* cmd = CommandStack::PrevCmd();
