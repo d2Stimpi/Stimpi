@@ -138,6 +138,9 @@
     <ClInclude Include="..\vendor\googletest\googletest\test\production.h">
       <Filter>vendor\googletest\googletest\test</Filter>
     </ClInclude>
+    <ClInclude Include="src\CmdStackTest.h">
+      <Filter>src</Filter>
+    </ClInclude>
     <ClInclude Include="src\SceneTest\EntitySortingTest.h">
       <Filter>src\SceneTest</Filter>
     </ClInclude>
@@ -151,6 +154,9 @@
   <ItemGroup>
     <ClCompile Include="..\vendor\googletest\googletest\src\gtest-all.cc">
       <Filter>vendor\googletest\googletest\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CmdStackTest.cpp">
+      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\SceneTest\EntitySortingTest.cpp">
       <Filter>src\SceneTest</Filter>

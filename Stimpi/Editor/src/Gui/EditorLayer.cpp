@@ -5,17 +5,19 @@
 #include "ImGui/src/backend/imgui_impl_sdl2.h"
 #include "ImGui/src/backend/imgui_impl_opengl3.h"
 
-#include "Stimpi/Core/Time.h"
 #include "Stimpi/Log.h"
+#include "Stimpi/Cmd/CommandStack.h"
+#include "Stimpi/Core/Time.h"
+#include "Stimpi/Core/WindowManager.h"
 #include "Stimpi/Graphics/Shader.h"
 #include "Stimpi/Graphics/Renderer2D.h"
+#include "Stimpi/Scene/SceneManager.h"
+#include "Stimpi/Scene/ResourceManager.h"
+
 #include "Gui/EditorUtils.h"
 #include "Gui/Gizmo2D.h"
 #include "Gui/Utils/EditorResources.h"
 
-#include "Stimpi/Core/WindowManager.h"
-#include "Stimpi/Scene/SceneManager.h"
-#include "Stimpi/Scene/ResourceManager.h"
 
 #include <SDL.h>
 #include <SDL_opengl.h>
@@ -148,17 +150,19 @@ namespace Stimpi
 		ImGui_ImplSDL2_ProcessEvent(e->GetRawSDLEvent());
 
 		EventDispatcher<KeyboardEvent> keyDispatcher;
-		keyDispatcher.Dispatch(e, [](KeyboardEvent* keyEvent) -> bool {
+		keyDispatcher.Dispatch(e, [this](KeyboardEvent* keyEvent) -> bool {
 			if (!EditorUtils::WantCaptureKeyboard())	// Bail out if we are processing some input text for example
 				return false;
+			else
+				return HandleUndoRedoKey();
 
 			return false;
 		});
 
-		if (e->GetEventType() == Stimpi::EventType::WindowEvent)
+		if (e->GetEventType() == EventType::WindowEvent)
 		{
-			auto* we = (Stimpi::WindowEvent*)e;
-			if (we->GetType() == Stimpi::WindowEventType::WINDOW_EVENT_RESIZE)
+			auto* we = (WindowEvent*)e;
+			if (we->GetType() == WindowEventType::WINDOW_EVENT_RESIZE)
 			{
 				//ST_CORE_INFO("ImGui window size: {0}, {1}", wsLog.x, wsLog.y);
 				//ST_CORE_INFO("ImGui texture uv: {0}, {1}", uvLog.x, uvLog.y);
@@ -219,6 +223,37 @@ namespace Stimpi
 	void EditorLayer::SetupComponentContext(Scene* scene)
 	{
 		m_SpriteAnimPanel.SetContext(scene);
+	}
+
+	bool EditorLayer::HandleUndoRedoKey()
+	{
+		if (InputManager::Instance()->IsKeyPressed(ST_KEY_LCTRL))
+		{
+			if (InputManager::Instance()->IsKeyPressed(ST_KEY_Z))
+			{
+				//ST_CORE_INFO("Undo key pressed");
+				Command* cmd = CommandStack::LastCmd();
+				if (cmd)
+				{
+					cmd->Undo();
+				}
+
+				return true;
+			}
+			else if (InputManager::Instance()->IsKeyPressed(ST_KEY_R))
+			{
+				//ST_CORE_INFO("Redo key pressed");
+				Command* cmd = CommandStack::PrevCmd();
+				if (cmd)
+				{
+					cmd->Redo();
+				}
+
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	void EditorLayer::Update(Timestep ts)

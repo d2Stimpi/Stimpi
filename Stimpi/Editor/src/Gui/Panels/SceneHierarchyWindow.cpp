@@ -7,7 +7,6 @@
 #include "Gui/EditorUtils.h"
 #include "Gui/Components/ImGuiEx.h"
 #include "Gui/Panels/ScriptFieldFragment.h"
-#include "Gui/Cmd/CommandStack.h"
 
 #include "Stimpi/Core/InputManager.h"
 #include "Stimpi/Core/WindowManager.h"
@@ -61,27 +60,32 @@ namespace Stimpi
 			{
 				if (EditorUtils::WantCaptureKeyboard() && s_Context.m_WindowFocused)
 				{
-					if (event.GetKeyCode() == ST_KEY_F && event.GetType() == KeyboardEventType::KEY_EVENT_DOWN)
+					// HierarcyWindow focused handling
+					if (s_Context.m_WindowFocused)
 					{
-						if (m_ActiveScene != nullptr)
+						if (event.GetKeyCode() == ST_KEY_F && event.GetType() == KeyboardEventType::KEY_EVENT_DOWN)
 						{
-							Camera* camera = m_ActiveScene->GetRenderCamera();
-							Entity entity = s_Context.m_SelectedEntity;
-
-							if (entity.HasComponent<QuadComponent>())
+							if (m_ActiveScene != nullptr)
 							{
-								QuadComponent quad = entity.GetComponent<QuadComponent>();
-								glm::vec2 view = { camera->GetViewportWidth(), camera->GetViewportHeight() };
-								glm::vec3 camPos = camera->GetPosition();
-								float zoom = camera->GetZoomFactor();
-								camPos.x = quad.m_Position.x - view.x / 2.0f * zoom;
-								camPos.y = quad.m_Position.y - view.y / 2.0f * zoom;
-								camera->SetPosition(camPos);
+								Camera* camera = m_ActiveScene->GetRenderCamera();
+								Entity entity = s_Context.m_SelectedEntity;
+
+								if (entity.HasComponent<QuadComponent>())
+								{
+									QuadComponent quad = entity.GetComponent<QuadComponent>();
+									glm::vec2 view = { camera->GetViewportWidth(), camera->GetViewportHeight() };
+									glm::vec3 camPos = camera->GetPosition();
+									float zoom = camera->GetZoomFactor();
+									camPos.x = quad.m_Position.x - view.x / 2.0f * zoom;
+									camPos.y = quad.m_Position.y - view.y / 2.0f * zoom;
+									camera->SetPosition(camPos);
+								}
 							}
+							return true;
 						}
-						return true;
-					}
+					}					
 				}
+
 				return false;
 			}));
 
@@ -106,7 +110,7 @@ namespace Stimpi
 			ImGui::Begin("Scene Hierarchy", &m_Show); 
 			ImGui::PopStyleVar();
 
-			s_Context.m_WindowFocused = ImGui::IsWindowFocused();
+			s_Context.m_WindowFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
 
 			if (m_ActiveScene)
 			{
@@ -178,7 +182,7 @@ namespace Stimpi
 			s_Context.m_SelectedEntity = picked;
 	}
 
-	Stimpi::Entity SceneHierarchyWindow::GetSelectedEntity()
+	Entity SceneHierarchyWindow::GetSelectedEntity()
 	{
 		return s_Context.m_SelectedEntity;
 	}
@@ -312,16 +316,9 @@ namespace Stimpi
 		{
 			ImGui::Spacing();
 			UI::Input::DragFloat3("Position##Quad", component.m_Position);
-			//if (ImGui::DragFloat3("Position##Quad", glm::value_ptr(component.m_Position)))
-			/*{
-				ST_CORE_INFO("Position: {}", component.m_Position);
-				glm::vec3 posDiff = prevComponent.m_Position - component.m_Position;
-				Command* cmd = TranslateCommand::Create(s_Context.m_SelectedEntity, posDiff);
-				CommandStack::Push(cmd);
-			}*/
-			ImGui::DragFloat2("Size##Quad", glm::value_ptr(component.m_Size));
+			UI::Input::DragFloat2("Size##Quad", component.m_Size);
 			ImGui::PushItemWidth(80.0f);
-			ImGui::DragFloat("Rotation", &component.m_Rotation, 0.01);
+			UI::Input::DragFloat("Rotation", component.m_Rotation, 0.01);
 			ImGui::PopItemWidth();
 			ImGui::Spacing();
 		}

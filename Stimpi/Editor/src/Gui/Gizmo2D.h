@@ -30,5 +30,6 @@ namespace Stimpi
 
 		static void Manipulate(Camera* camera, Entity object, GizmoAction action);
 	private:
+		static void RecordCommand();
 	};
 }
