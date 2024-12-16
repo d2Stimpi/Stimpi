@@ -530,6 +530,7 @@ namespace Stimpi
 			NewCmd();
 	}	
 
+	// TODO: when looking for valid batching cmd, consider max vertex capacity
 	void Renderer2D::CheckTextureBatching(Texture* texture)
 	{
 		auto found = std::find_if(std::begin(m_RenderCmds), std::end(m_RenderCmds), [&texture](auto elem) -> bool {
@@ -545,6 +546,7 @@ namespace Stimpi
 		}
 	}
 
+	// TODO: when looking for valid batching cmd, consider max vertex capacity
 	void Renderer2D::CheckShaderBatching(Shader* shader)
 	{
 		auto found = std::find_if(std::begin(m_RenderCmds), std::end(m_RenderCmds), [&shader](auto elem) -> bool {
@@ -560,6 +562,7 @@ namespace Stimpi
 		}
 	}
 
+	// TODO: when looking for valid batching cmd, consider max vertex capacity
 	void Renderer2D::CheckBatchingByType(RenderCommandType type)
 	{
 		auto found = std::find_if(std::begin(m_RenderCmds), std::end(m_RenderCmds), [&type](auto elem) -> bool {

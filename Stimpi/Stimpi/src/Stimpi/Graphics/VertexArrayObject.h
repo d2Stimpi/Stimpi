@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Stimpi/Core/Core.h"
+#include "Stimpi/Graphics/Shader.h"
 #include "Stimpi/Graphics/Graphics.h"
 #include "Stimpi/Log.h"
 
@@ -17,64 +18,6 @@
 
 namespace Stimpi
 {
-	enum class ShaderDataType
-	{
-		Int = 0, Int2, Int3, Int4,
-		Float, Float2, Float3, Float4,
-	};
-
-	static uint32_t ShaderDataTypeSize(ShaderDataType type)
-	{
-		switch (type)
-		{
-		case Stimpi::ShaderDataType::Int:		return sizeof(uint32_t);
-		case Stimpi::ShaderDataType::Int2:		return sizeof(uint32_t) * 2;
-		case Stimpi::ShaderDataType::Int3:		return sizeof(uint32_t) * 3;
-		case Stimpi::ShaderDataType::Int4:		return sizeof(uint32_t) * 4;
-		case Stimpi::ShaderDataType::Float:		return sizeof(float);
-		case Stimpi::ShaderDataType::Float2:	return sizeof(float) * 2;
-		case Stimpi::ShaderDataType::Float3:	return sizeof(float) * 3;
-		case Stimpi::ShaderDataType::Float4:	return sizeof(float) * 4;
-		}
-
-		ST_CORE_CRITICAL("Unknown Shader data type!");
-		return 0;
-	}
-
-	static uint32_t ShaderDataTypeLength(ShaderDataType type)
-	{
-		switch (type)
-		{
-		case Stimpi::ShaderDataType::Int:		return 1;
-		case Stimpi::ShaderDataType::Int2:		return 2;
-		case Stimpi::ShaderDataType::Int3:		return 3;
-		case Stimpi::ShaderDataType::Int4:		return 4;
-		case Stimpi::ShaderDataType::Float:		return 1;
-		case Stimpi::ShaderDataType::Float2:	return 2;
-		case Stimpi::ShaderDataType::Float3:	return 3;
-		case Stimpi::ShaderDataType::Float4:	return 4;
-		}
-
-		ST_CORE_CRITICAL("Unknown Shader data type!");
-		return 0;
-	}
-
-	struct ST_API LayoutData
-	{
-		ShaderDataType m_Type;
-		std::string m_Name;
-
-		uint32_t m_Offset;
-		uint32_t m_Size;
-
-		LayoutData(ShaderDataType type, const std::string& name)
-			: m_Type(type), m_Name(name)
-		{
-			m_Size = ShaderDataTypeLength(type);
-			m_Offset = 0;
-		}
-	};
-
 	struct ST_API VertexBufferLayout
 	{
 		std::vector<LayoutData> m_Layout;

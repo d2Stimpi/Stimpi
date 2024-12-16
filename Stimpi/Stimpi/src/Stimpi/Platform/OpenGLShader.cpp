@@ -3,9 +3,12 @@
 
 #include "Stimpi/Log.h"
 
+#define DBG_LOG true
+
 namespace Stimpi
 {
 	OpenGLShader::OpenGLShader(const std::string& fileName)
+		: Shader(fileName)
 	{
 		std::string vertexShaderCode;
 		std::string fragmentShaderCode;
@@ -32,13 +35,12 @@ namespace Stimpi
 				}
 				if (!readingFragmentShader)
 				{
+					ParseVertexShaderLine(line);
 					vertexStream << line << std::endl;
-					//std::cout << line << std::endl;
 				}
 				else
 				{
 					fragmentStream << line << std::endl;
-					//std::cout << line << std::endl;
 				}
 			}
 			vertexShaderCode = vertexStream.str();
@@ -74,6 +76,8 @@ namespace Stimpi
 		// Cleanup
 		glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
+
+		if (DBG_LOG) LogShaderInfo();
 	}
 
 	OpenGLShader::~OpenGLShader()
@@ -149,4 +153,53 @@ namespace Stimpi
 			}
 		}
 	}
+
+	void OpenGLShader::ParseVertexShaderLine(const std::string& line)
+	{
+		size_t pos = line.find("layout(location =");
+		if (pos != std::string::npos)
+		{
+			// find the location number, we will ignore everything before num. 3 ??
+			int location = std::stoi(line.substr(17, line.length() - 17));
+			//if (location > 2)
+			//{
+				// find ")" and get tokens after it
+				pos = line.find(")", pos + 1);
+				if (pos != std::string::npos)
+				{
+
+					std::string substr = line.substr(pos + 1, line.length() - pos - 1);
+					const char* delimiter = " ";
+					char* token = std::strtok(substr.data(), delimiter);
+				
+					std::string modifier = "";
+					std::string type = "";
+					std::string name = "";
+
+					if (token)
+					{
+						modifier = std::string(token);
+						token = std::strtok(nullptr, delimiter);
+					}
+
+					if (token)
+					{
+						type = std::string(token);
+						token = std::strtok(nullptr, delimiter);
+					}
+				
+					if (token)
+					{
+						name = std::string(token);
+						name.pop_back();	// remove ';' char
+					}
+
+					ShaderInfo& info = GetInfo();
+					info.m_ShaderLayout.m_Data.emplace_back(StringToShaderType(type), name);
+					//ST_CORE_INFO("Shader parsed layout: [{}] {} {} {}", location, modifier, type, name);
+				}
+			//}
+		}
+	}
+
 }

@@ -98,6 +98,11 @@ namespace Stimpi
 		RenderAPI* m_RenderAPI;
 		OrthoCamera* m_ActiveCamera;
 
+		// Custom shader rendering
+		std::unordered_map<std::string, std::shared_ptr<VertexArrayObject>> m_CustomVAOs;
+		std::unordered_map<std::string, std::shared_ptr<BufferObject>> m_CustomVBOs;
+		std::vector<std::shared_ptr<Shader>> m_CustomShaders;
+
 		// Quad rendering
 		std::shared_ptr<VertexArrayObject> m_QuadVAO;
 		std::shared_ptr<BufferObject> m_QuadVBO;

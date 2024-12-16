@@ -28,6 +28,7 @@ namespace Stimpi
 
 		void CheckForErrors(unsigned int shader, std::string type) override;
 
+		void ParseVertexShaderLine(const std::string& line);
 		/* Data members */
 		unsigned int m_ID;
 	};

@@ -29,6 +29,18 @@ namespace Stimpi
 		}
 	}
 
+	void Shader::LogShaderInfo()
+	{
+		ST_CORE_INFO("=== Shader {} info begin ===", m_Name);
+		ST_CORE_INFO("LayoutData:");
+		for (auto item : m_Info.m_ShaderLayout.m_Data)
+		{
+			ST_CORE_INFO("  {} {}", item.m_Name, ShaderDataTypeLength(item.m_Type));
+		}
+		ST_CORE_INFO("Properties: TODO", m_Name);
+		ST_CORE_INFO("=== Shader {} info end ===", m_Name);
+	}
+
 	void Shader::SetUniform(const std::string name, shader_variant value)
 	{
 		m_UniformList.emplace(name, value);
@@ -50,4 +62,5 @@ namespace Stimpi
 	{
 		m_UniformList.clear();
 	}
+
 }
