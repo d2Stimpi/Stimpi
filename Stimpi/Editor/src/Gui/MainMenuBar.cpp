@@ -5,6 +5,8 @@
 
 #include "Stimpi/Core/Project.h"
 
+#include "Stimpi/Asset/AssetManagerNew.h"
+
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/SceneSerializer.h"
 
@@ -173,6 +175,11 @@ namespace Stimpi
 #pragma region TESTING
 			if (ImGui::BeginMenu("Testing"))
 			{
+				if (ImGui::MenuItem("AssetManager"))
+				{
+					auto texture = AssetManagerNew::GetAsset<AssetNew>(AssetHandleNew(0));
+				}
+
 				if (ImGui::MenuItem("Run system cmd"))
 				{
 					System::ExecuteCmd("mono\\bin\\mcs TempGenClass.cs -r:D:\\GitHub\\Stimpi\\resources\\scripts\\Stimpi-ScriptCore.dll  -target:library  -out:pera2.dll");
