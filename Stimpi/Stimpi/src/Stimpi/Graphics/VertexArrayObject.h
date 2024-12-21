@@ -23,8 +23,22 @@ namespace Stimpi
 		std::vector<LayoutData> m_Layout;
 		uint32_t m_Stride = 0;
 
-		VertexBufferLayout() {} // Temp default ctor
+		VertexBufferLayout() = delete; // Temp default ctor
 		VertexBufferLayout(std::initializer_list<LayoutData> list)
+		{
+			BuildLayoutData(list);
+		}
+
+		VertexBufferLayout(std::vector<LayoutData> list)
+		{
+			BuildLayoutData(list);
+		}
+
+		std::vector<LayoutData>::iterator begin() { return m_Layout.begin(); }
+		std::vector<LayoutData>::iterator end() { return m_Layout.end(); }
+
+	private:
+		void BuildLayoutData(std::vector<LayoutData> list)
 		{
 			m_Stride = 0;
 			for (auto item : list)
@@ -34,9 +48,6 @@ namespace Stimpi
 				m_Layout.push_back(item);
 			}
 		}
-
-		std::vector<LayoutData>::iterator begin() { return m_Layout.begin(); }
-		std::vector<LayoutData>::iterator end() { return m_Layout.end(); }
 	};
 
 	class ST_API VertexArrayObject
@@ -45,6 +56,7 @@ namespace Stimpi
 		VertexArrayObject(const VertexBufferLayout& layout);
 		virtual ~VertexArrayObject();
 
+		virtual unsigned int GetID() = 0;
 		// Called from Renderer with proper VertexArray ID
 		virtual void BindArray() = 0;
 		virtual void Unbind() = 0;

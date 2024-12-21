@@ -14,6 +14,7 @@ namespace Stimpi
 		BufferObject(BufferObjectType type);
 		virtual ~BufferObject();
 
+		virtual unsigned int GetID() = 0;
 		// Called from Renderer with proper BufferObject ID
 		virtual void InitBuffer(uint32_t capacity) = 0;
 		virtual void BindBuffer() = 0;

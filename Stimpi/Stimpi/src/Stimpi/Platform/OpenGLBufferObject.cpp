@@ -29,6 +29,11 @@ namespace Stimpi
 		glDeleteBuffers(1, &m_ID);
 	}
 
+	unsigned int OpenGLBufferObject::GetID()
+	{
+		return m_ID;
+	}
+
 	void OpenGLBufferObject::InitBuffer(uint32_t capacity)
 	{
 		glBindBuffer(OpenGLTargetBuffer(m_Type), m_ID);
