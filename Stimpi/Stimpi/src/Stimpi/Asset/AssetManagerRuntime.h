@@ -8,5 +8,7 @@ namespace Stimpi
 	{
 	public:
 		std::shared_ptr<AssetNew> GetAsset(AssetHandleNew handle) override;
+		bool IsAssetHandleValid(AssetHandleNew handle) override;
+		virtual bool IsAssetLoaded(AssetHandleNew handle) override;
 	};
 }
