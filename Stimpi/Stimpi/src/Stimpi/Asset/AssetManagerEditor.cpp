@@ -1,5 +1,6 @@
 #include "stpch.h"
 #include "Stimpi/Asset/AssetManagerEditor.h"
+#include "Stimpi/Asset/AssetImporter.h"
 
 namespace Stimpi
 {
@@ -20,6 +21,15 @@ namespace Stimpi
 		{
 			// Load asset
 			auto& metadata = GetAssetMetadata(handle);
+			asset = AssetImporter::ImportAsset(handle, metadata);
+			if (!asset)
+			{
+				ST_CORE_ERROR("Failed to import asset: {}", metadata.m_FilePath);
+			}
+			else
+			{
+				m_LoadedAssets[handle] = asset;
+			}
 		}
 
 		// 3. Return asset.

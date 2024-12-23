@@ -6,7 +6,7 @@
 namespace Stimpi
 {
 
-	std::shared_ptr<Stimpi::AssetNew> AssetManagerRuntime::GetAsset(AssetHandleNew handle)
+	std::shared_ptr<AssetNew> AssetManagerRuntime::GetAsset(AssetHandleNew handle)
 	{
 		ST_CORE_WARN("AssetManagerRuntime::GetAsset - not implemented!");
 		return nullptr;
