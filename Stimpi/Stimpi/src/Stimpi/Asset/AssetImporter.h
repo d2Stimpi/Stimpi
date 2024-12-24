@@ -8,5 +8,6 @@ namespace Stimpi
 	{
 	public:
 		static std::shared_ptr<AssetNew> ImportAsset(AssetHandleNew handle, const AssetMetadata& metadata);
+		static std::shared_ptr<AssetNew> ImportAssetAsync(AssetHandleNew handle, const AssetMetadata& metadata);
 	};
 }

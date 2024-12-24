@@ -4,7 +4,8 @@
 
 namespace Stimpi
 {
-	struct ST_API TextureLoadData
+	// TODO: to be removed after AssetImporter update
+	struct TextureLoadData
 	{
 		unsigned char* m_Data = nullptr;
 		uint32_t m_Width = 0;
@@ -13,6 +14,13 @@ namespace Stimpi
 		std::string m_FileName;
 
 		TextureLoadData() = default;
+	};
+
+	struct TextureSpecification
+	{
+		uint32_t m_Width = 0;
+		uint32_t m_Height = 0;
+		uint32_t m_NumChannels = 0;
 	};
 
 	class ST_API Texture

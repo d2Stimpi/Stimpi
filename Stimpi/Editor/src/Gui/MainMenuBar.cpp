@@ -177,7 +177,16 @@ namespace Stimpi
 			{
 				if (ImGui::MenuItem("AssetManager"))
 				{
-					auto texture = AssetManagerNew::GetAsset<AssetNew>(AssetHandleNew(0));
+					static bool registerHandle = false;
+					static AssetHandleNew handle = 0;
+					if (!registerHandle)
+					{
+						registerHandle = true;
+						auto& assetManager = Project::GetEditorAssetManager();
+						handle = assetManager->RegisterAsset({ AssetTypeNew::TEXTURE, "TestAssetPath\\Sample.png" });
+					}
+
+					auto texture = AssetManagerNew::GetAsset<AssetNew>(handle);
 				}
 
 				if (ImGui::MenuItem("Run system cmd"))

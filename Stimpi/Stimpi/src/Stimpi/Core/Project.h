@@ -60,8 +60,8 @@ namespace Stimpi
 		static PhysicsConfig& GetPhysicsConfig() { return m_Config.m_PhysicsConfig; }
 
 		static std::shared_ptr<AssetManagerBase> GetAssetManager();
-		static std::shared_ptr<AssetManagerEditor> GetEditorAssetManager() { return std::static_pointer_cast<AssetManagerEditor>(m_AssetManager); }
-		static std::shared_ptr<AssetManagerRuntime> GetRuntimeAssetManager() { return std::static_pointer_cast<AssetManagerRuntime>(m_AssetManager); }
+		static std::shared_ptr<AssetManagerEditor> GetEditorAssetManager() { return std::static_pointer_cast<AssetManagerEditor>(GetAssetManager()); }
+		static std::shared_ptr<AssetManagerRuntime> GetRuntimeAssetManager() { return std::static_pointer_cast<AssetManagerRuntime>(GetAssetManager()); }
 	private:
 		static ProjectConfig m_Config;
 

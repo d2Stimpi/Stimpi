@@ -19,12 +19,12 @@ namespace Stimpi
 		}
 		else
 		{
-			// Load asset
+			// Load asset or check if loading is finished
 			auto& metadata = GetAssetMetadata(handle);
 			asset = AssetImporter::ImportAsset(handle, metadata);
 			if (!asset)
 			{
-				ST_CORE_ERROR("Failed to import asset: {}", metadata.m_FilePath);
+				ST_CORE_ERROR("Failed to import asset: {}", metadata.m_FilePath.string());
 			}
 			else
 			{
@@ -54,6 +54,13 @@ namespace Stimpi
 			return s_NullMetadata;
 
 		return it->second;
+	}
+
+	AssetHandleNew AssetManagerEditor::RegisterAsset(const AssetMetadata& metadata)
+	{
+		AssetHandleNew handle; // generate handle
+		m_AssetRegistry[handle] = metadata;
+		return handle;
 	}
 
 }
