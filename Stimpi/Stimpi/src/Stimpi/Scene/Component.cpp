@@ -83,7 +83,7 @@ namespace Stimpi
 		
 		SpriteComponent sprite = entity.GetComponent<SpriteComponent>();
 		if (sprite.m_TextureHandle.IsValid())
-			AssetManager::Release(sprite.m_TextureHandle);
+			AssetManagerB::Release(sprite.m_TextureHandle);
 	}
 
 	// AnimatedSprite

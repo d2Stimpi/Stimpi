@@ -6,23 +6,19 @@
 
 namespace Stimpi
 {
-	using AssetRegistry = std::unordered_map<AssetHandleNew, AssetMetadata>;
+	using AssetRegistry = std::unordered_map<AssetHandle, AssetMetadata>;
 
 	class ST_API AssetManagerEditor : public AssetManagerBase
 	{
 	public:
-		std::shared_ptr<AssetNew> GetAsset(AssetHandleNew handle) override;
+		std::shared_ptr<Asset> GetAsset(AssetHandle handle) override;
 
-		bool IsAssetHandleValid(AssetHandleNew handle) override;
-		virtual bool IsAssetLoaded(AssetHandleNew handle) override;
+		bool IsAssetHandleValid(AssetHandle handle) override;
+		virtual bool IsAssetLoaded(AssetHandle handle) override;
 
-		AssetMetadata& GetAssetMetadata(AssetHandleNew handle);
-		AssetRegistry& GetAssetRegistry() { 
-			int a = 1;
-			return m_AssetRegistry; 
-		}
+		AssetMetadata& GetAssetMetadata(AssetHandle handle);
 
-		AssetHandleNew RegisterAsset(const AssetMetadata& metadata);
+		AssetHandle RegisterAsset(const AssetMetadata& metadata);
 	private:
 		AssetMap m_LoadedAssets;
 		AssetRegistry m_AssetRegistry;

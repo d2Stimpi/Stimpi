@@ -35,9 +35,9 @@ namespace Stimpi
 	{
 		// Trigger load of used icons
 		// TODO: isolate to a class that manages UI resources
-		AssetManager::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/folder.png");
-		AssetManager::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/shader.png");
-		AssetManager::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/scene.png");
+		AssetManagerB::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/folder.png");
+		AssetManagerB::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/shader.png");
+		AssetManagerB::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/scene.png");
 
 		ReadDirHierarchyData();
 	}
@@ -144,30 +144,30 @@ namespace Stimpi
 			ImGuiStyle& style = ImGui::GetStyle();
 			ImVec2 itemSpacing = style.ItemSpacing;
 
-			AssetHandle asset;
+			AssetHandleB asset;
 			ThumbnailType type = GetThumbnailTypeFromFile(path);
 			switch (type)
 			{
 			case ThumbnailType::NONE:
-				asset = AssetManager::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/shader.png");
+				asset = AssetManagerB::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/shader.png");
 				break;
 			case ThumbnailType::DIRECTORY:
-				asset = AssetManager::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/folder.png");
+				asset = AssetManagerB::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/folder.png");
 				break;
 			case ThumbnailType::TEXTURE:
-				asset = AssetManager::GetAssetNoRefCount<Texture>(path);
+				asset = AssetManagerB::GetAssetNoRefCount<Texture>(path);
 				break;
 			case ThumbnailType::SHADER:
-				asset = AssetManager::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/shader.png");
+				asset = AssetManagerB::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/shader.png");
 				break;
 			case ThumbnailType::SCENE:
-				asset = AssetManager::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/scene.png");
+				asset = AssetManagerB::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/scene.png");
 				break;
 			default:
 				break;
 			}
 
-			Texture* texture = AssetManager::GetAsset(asset).As<Texture>();
+			Texture* texture = AssetManagerB::GetAsset(asset).As<Texture>();
 			if (texture->Loaded())
 			{
 				if (Thumbnail::Button(filenameStr.c_str(), texture, cursor, THUMBNAIL_SIZE))
@@ -250,7 +250,7 @@ namespace Stimpi
 	{
 		for (auto asset : m_DirectoryAssets)
 		{
-			AssetManager::Release(asset);
+			AssetManagerB::Release(asset);
 		}
 	}
 

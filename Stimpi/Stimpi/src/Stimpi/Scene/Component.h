@@ -9,7 +9,7 @@
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Scene/ScriptableEntity.h"
 #include "Stimpi/Scene/Camera.h"
-#include "Stimpi/Scene/Assets/AssetManager.h"
+#include "Stimpi/Scene/Assets/AssetManagerB.h"
 #include "Stimpi/Scripting/ScriptEngine.h"
 #include "Stimpi/Scripting/ScriptSerializer.h"
 
@@ -273,7 +273,7 @@ namespace Stimpi
 	{
 		// Sprite Texture
 		FilePath m_FilePath = "";
-		AssetHandle m_TextureHandle = {};
+		AssetHandleB m_TextureHandle = {};
 		bool m_Enable = false; // Will override color use - TODO: rename to more appropriate name
 
 		// Sprite Color
@@ -292,11 +292,11 @@ namespace Stimpi
 		{
 			if (m_FilePath.Exists())
 			{
-				m_TextureHandle = AssetManager::GetAsset<Texture>(filePath);
+				m_TextureHandle = AssetManagerB::GetAsset<Texture>(filePath);
 			}
 		}
 
-		operator Texture* () const { return AssetManager::GetAssetData<Texture>(m_TextureHandle); }
+		operator Texture* () const { return AssetManagerB::GetAssetData<Texture>(m_TextureHandle); }
 
 		bool TextureLoaded()
 		{
@@ -304,7 +304,7 @@ namespace Stimpi
 
 			if (m_TextureHandle.IsValid())
 			{
-				Texture* texture = AssetManager::GetAssetData<Texture>(m_TextureHandle);
+				Texture* texture = AssetManagerB::GetAssetData<Texture>(m_TextureHandle);
 				if (texture)
 					loaded = texture->Loaded();
 			}
@@ -323,7 +323,7 @@ namespace Stimpi
 			// Check if we are trying to load the same asset and skip if true
 			if (m_TextureHandle.IsValid())
 			{
-				Asset textureAsset = AssetManager::GetAsset(m_TextureHandle);
+				AssetB textureAsset = AssetManagerB::GetAsset(m_TextureHandle);
 				FilePath newPath = { filePath };
 				// Check only asset name rather than the full path
 				if (newPath.GetFileName() == textureAsset.GetName())
@@ -332,11 +332,11 @@ namespace Stimpi
 				}
 				else
 				{
-					AssetManager::Release(m_TextureHandle);
+					AssetManagerB::Release(m_TextureHandle);
 				}
 			}
 			// Load new asset
-			m_TextureHandle = AssetManager::GetAsset<Texture>(filePath);
+			m_TextureHandle = AssetManagerB::GetAsset<Texture>(filePath);
 
  			if (m_TextureHandle.IsValid())
  			{
@@ -372,7 +372,7 @@ namespace Stimpi
 
 				if (m_FilePath.Exists())
 				{
-					m_TextureHandle = AssetManager::GetAsset<Texture>(m_FilePath);
+					m_TextureHandle = AssetManagerB::GetAsset<Texture>(m_FilePath);
 				}
 			}
 			else

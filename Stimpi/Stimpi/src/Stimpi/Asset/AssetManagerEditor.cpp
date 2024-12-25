@@ -4,9 +4,9 @@
 
 namespace Stimpi
 {
-	std::shared_ptr<AssetNew> AssetManagerEditor::GetAsset(AssetHandleNew handle)
+	std::shared_ptr<Asset> AssetManagerEditor::GetAsset(AssetHandle handle)
 	{
-		std::shared_ptr<AssetNew> asset;
+		std::shared_ptr<Asset> asset;
 
 		// 1. Is handle valid?
 		if (!IsAssetHandleValid(handle))
@@ -36,17 +36,17 @@ namespace Stimpi
 		return asset;
 	}
 
-	bool AssetManagerEditor::IsAssetHandleValid(AssetHandleNew handle)
+	bool AssetManagerEditor::IsAssetHandleValid(AssetHandle handle)
 	{
 		return handle != 0 && (m_AssetRegistry.find(handle) != m_AssetRegistry.end());
 	}
 
-	bool AssetManagerEditor::IsAssetLoaded(AssetHandleNew handle)
+	bool AssetManagerEditor::IsAssetLoaded(AssetHandle handle)
 	{
 		return m_LoadedAssets.find(handle) != m_LoadedAssets.end();
 	}
 
-	Stimpi::AssetMetadata& AssetManagerEditor::GetAssetMetadata(AssetHandleNew handle)
+	Stimpi::AssetMetadata& AssetManagerEditor::GetAssetMetadata(AssetHandle handle)
 	{
 		static AssetMetadata s_NullMetadata;
 		auto it = m_AssetRegistry.find(handle);
@@ -56,9 +56,9 @@ namespace Stimpi
 		return it->second;
 	}
 
-	AssetHandleNew AssetManagerEditor::RegisterAsset(const AssetMetadata& metadata)
+	AssetHandle AssetManagerEditor::RegisterAsset(const AssetMetadata& metadata)
 	{
-		AssetHandleNew handle; // generate handle
+		AssetHandle handle; // generate handle
 		m_AssetRegistry[handle] = metadata;
 		return handle;
 	}

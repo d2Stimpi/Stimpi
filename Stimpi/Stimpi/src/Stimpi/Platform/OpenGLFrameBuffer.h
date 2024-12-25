@@ -7,7 +7,7 @@ namespace Stimpi
 	class OpenGLFrameBuffer : public FrameBuffer
 	{
 	public:
-		OpenGLFrameBuffer(FrameBufferConfig config);
+		OpenGLFrameBuffer(FrameBufferSpecification config);
 		~OpenGLFrameBuffer();
 
 		void BindBuffer() override;

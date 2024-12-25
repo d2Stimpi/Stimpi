@@ -4,7 +4,7 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Utils/FilePath.h"
 #include "Stimpi/Scene/ResourceManager.h"
-#include "Stimpi/Scene/Assets/AssetManager.h"
+#include "Stimpi/Scene/Assets/AssetManagerB.h"
 #include "Stimpi/Core/Project.h"
 
 #include <yaml-cpp/yaml.h>
@@ -28,7 +28,7 @@ namespace Stimpi
 			out << YAML::Key << "Animation" << YAML::Value;
 			out << YAML::BeginMap;
 			{
-				auto asset = AssetManager::GetAsset(m_Animation->GetSubTexture()->GetAssetHandle());
+				auto asset = AssetManagerB::GetAsset(m_Animation->GetSubTexture()->GetAssetHandle());
 				out << YAML::Key << "Texture" << YAML::Value << asset.GetFilePath().string();
 
 				out << YAML::Key << "Frames" << YAML::Value;

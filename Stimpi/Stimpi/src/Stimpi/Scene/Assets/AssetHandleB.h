@@ -4,10 +4,10 @@
 
 namespace Stimpi
 {
-	class ST_API AssetHandle
+	class ST_API AssetHandleB
 	{
 	public:
-		AssetHandle() : m_Handle(0) {}
+		AssetHandleB() : m_Handle(0) {}
 
 		void Init(uint32_t index)
 		{

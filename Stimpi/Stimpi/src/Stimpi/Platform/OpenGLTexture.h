@@ -15,8 +15,9 @@ namespace Stimpi
 
 		void Delete();
 
-		void InitEmptyTexture(uint32_t width, uint32_t height, uint32_t channems = 3) override;
+		void InitEmptyTexture(TextureSpecification spec) override;
 		void LoadTexture(std::string file) override;
+		void Generate(TextureSpecification spec, unsigned char* data) override;
 		void UseTexture() override; 
 		void Bind() override;
 		void Unbind() override;
@@ -29,13 +30,12 @@ namespace Stimpi
 		void LoadDataAsync(std::string file) override;
 	
 	private:
-		void CheckLoadFuture();
-		void GenerateTexture(TextureLoadData* data);
+		void CheckLoadFuture();	// to remove
+		void GenerateTexture(TextureLoadData* data);	// to remove
 
 	private:
 		unsigned int m_TextureID{ 0 };
-		uint32_t m_NumChannels{ 0 }; // for stb_img loading
 
-		std::future<TextureLoadData*> m_LoadFuture;
+		std::future<TextureLoadData*> m_LoadFuture;	// to remove
 	};
 }

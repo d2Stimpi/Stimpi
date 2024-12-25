@@ -8,7 +8,7 @@
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Scene/Utils/SceneUtils.h"
-#include "Stimpi/Scene/Assets/AssetManager.h"
+#include "Stimpi/Scene/Assets/AssetManagerB.h"
 
 #include "Stimpi/Physics/ContactListener.h"
 #include "Stimpi/Physics/Physics.h"

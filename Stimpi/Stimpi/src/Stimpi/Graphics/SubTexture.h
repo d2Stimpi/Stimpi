@@ -3,7 +3,7 @@
 #include "Stimpi/Core/Core.h"
 #include "Stimpi/Graphics/Texture.h"
 #include "Stimpi/Utils/FilePath.h"
-#include "Stimpi/Scene/Assets/AssetHandle.h"
+#include "Stimpi/Scene/Assets/AssetHandleB.h"
 
 #include "stpch.h"
 #include <glm/glm.hpp>
@@ -33,11 +33,11 @@ namespace Stimpi
 		Texture* GetTexture();
 		unsigned int GetTextureID() { return GetTexture()->GetTextureID(); }
 
-		AssetHandle GetAssetHandle() { return m_TextureHandle; }
+		AssetHandleB GetAssetHandle() { return m_TextureHandle; }
 
 	private:
 		bool m_Loaded = false;
-		AssetHandle m_TextureHandle = {};
+		AssetHandleB m_TextureHandle = {};
 		glm::vec2 m_Min = { 0.0f, 0.0f };
 		glm::vec2 m_Max = { 0.0f, 0.0f };
 		glm::vec2 m_UVmin = { 0.0f, 0.0f };

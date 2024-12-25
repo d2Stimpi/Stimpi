@@ -10,16 +10,16 @@
 namespace Stimpi
 {
 	using namespace std::chrono_literals;
-	using AssetImportFunction = std::function<std::shared_ptr<AssetNew>(AssetHandleNew, const AssetMetadata&)>;
+	using AssetImportFunction = std::function<std::shared_ptr<Asset>(AssetHandle, const AssetMetadata&)>;
 
-	std::unordered_map<AssetHandleNew, std::future<std::shared_ptr<AssetNew>>> s_LoadingFutures;
-	std::unordered_map<AssetTypeNew, AssetImportFunction> s_AssetImporters =
+	std::unordered_map<AssetHandle, std::future<std::shared_ptr<Asset>>> s_LoadingFutures;
+	std::unordered_map<AssetType, AssetImportFunction> s_AssetImporters =
 	{
-		{ AssetTypeNew::SHADER, nullptr },
-		{ AssetTypeNew::TEXTURE, TextureImporter::ImportTexture }
+		{ AssetType::SHADER, nullptr },
+		{ AssetType::TEXTURE, TextureImporter::ImportTexture }
 	};
 
-	std::shared_ptr<Stimpi::AssetNew> AssetImporter::ImportAsset(AssetHandleNew handle, const AssetMetadata& metadata)
+	std::shared_ptr<Stimpi::Asset> AssetImporter::ImportAsset(AssetHandle handle, const AssetMetadata& metadata)
 	{
 		if (s_AssetImporters.find(metadata.m_Type) == s_AssetImporters.end())
 		{
@@ -31,7 +31,7 @@ namespace Stimpi
 	}
 
 	// TODO: find most appropriate use case, ex. when loading a whole scene
-	std::shared_ptr<AssetNew> AssetImporter::ImportAssetAsync(AssetHandleNew handle, const AssetMetadata& metadata)
+	std::shared_ptr<Asset> AssetImporter::ImportAssetAsync(AssetHandle handle, const AssetMetadata& metadata)
 	{
 		if (s_AssetImporters.find(metadata.m_Type) == s_AssetImporters.end())
 		{
@@ -40,7 +40,7 @@ namespace Stimpi
 		}
 
 		FilePath path = metadata.m_FilePath;
-		std::shared_ptr<AssetNew> asset = nullptr;
+		std::shared_ptr<Asset> asset = nullptr;
 		// Check if we are waiting for asset loading future
 		if (s_LoadingFutures.find(handle) != s_LoadingFutures.end())
 		{

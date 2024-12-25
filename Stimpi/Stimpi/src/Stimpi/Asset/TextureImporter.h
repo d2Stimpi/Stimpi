@@ -7,6 +7,6 @@ namespace Stimpi
 	class TextureImporter
 	{
 	public:
-		static std::shared_ptr<AssetNew> ImportTexture(AssetHandleNew handle, const AssetMetadata& metadata);
+		static std::shared_ptr<Asset> ImportTexture(AssetHandle handle, const AssetMetadata& metadata);
 	};
 }

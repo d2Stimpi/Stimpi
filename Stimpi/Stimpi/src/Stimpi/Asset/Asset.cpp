@@ -1,5 +1,5 @@
 #include "stpch.h"
-#include "Stimpi/Asset/AssetNew.h"
+#include "Stimpi/Asset/Asset.h"
 
 namespace Stimpi
 {

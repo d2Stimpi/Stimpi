@@ -1,6 +1,6 @@
 #include "stpch.h"
 #include "Stimpi/Graphics/SubTexture.h"
-#include "Stimpi/Scene/Assets/AssetManager.h"
+#include "Stimpi/Scene/Assets/AssetManagerB.h"
 
 namespace Stimpi
 {
@@ -8,17 +8,17 @@ namespace Stimpi
 	SubTexture::SubTexture(FilePath filePath, glm::vec2 min, glm::vec2 max)
 		:  m_Min(min), m_Max(max)
 	{
-		m_TextureHandle = AssetManager::GetAsset<Texture>(filePath);
+		m_TextureHandle = AssetManagerB::GetAsset<Texture>(filePath);
 	}
 
 	SubTexture::~SubTexture()
 	{
-		AssetManager::Release(m_TextureHandle);
+		AssetManagerB::Release(m_TextureHandle);
 	}
 
 	void SubTexture::Initialize()
 	{
-		auto texture = AssetManager::GetAsset(m_TextureHandle).As<Texture>();
+		auto texture = AssetManagerB::GetAsset(m_TextureHandle).As<Texture>();
 		float textureWidth = texture->GetWidth();
 		float textureHeight = texture->GetHeight();
 
@@ -33,7 +33,7 @@ namespace Stimpi
 	{
 		if (!m_Loaded)
 		{
-			auto texture = AssetManager::GetAsset(m_TextureHandle).As<Texture>();
+			auto texture = AssetManagerB::GetAsset(m_TextureHandle).As<Texture>();
 			if (texture->Loaded())
 			{
 				if (!m_Loaded)
@@ -54,7 +54,7 @@ namespace Stimpi
 	{
 		if (!Loaded()) return;
 
-		auto texture = AssetManager::GetAsset(m_TextureHandle).As<Texture>();
+		auto texture = AssetManagerB::GetAsset(m_TextureHandle).As<Texture>();
 		float textureWidth = texture->GetWidth();
 		float textureHeight = texture->GetHeight();
 
@@ -66,7 +66,7 @@ namespace Stimpi
 	{
 		if (!Loaded()) return;
 
-		auto texture = AssetManager::GetAsset(m_TextureHandle).As<Texture>();
+		auto texture = AssetManagerB::GetAsset(m_TextureHandle).As<Texture>();
 		float textureWidth = texture->GetWidth();
 		float textureHeight = texture->GetHeight();
 
@@ -82,6 +82,6 @@ namespace Stimpi
 
 	Texture* SubTexture::GetTexture()
 	{
-		return AssetManager::GetAsset(m_TextureHandle).As<Texture>();
+		return AssetManagerB::GetAsset(m_TextureHandle).As<Texture>();
 	}
 }

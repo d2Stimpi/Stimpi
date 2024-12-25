@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Stimpi/Scene/Assets/AssetManager.h"
+#include "Stimpi/Scene/Assets/AssetManagerB.h"
 
 #include "ImGui/src/imgui.h"
 
@@ -34,7 +34,7 @@ namespace Stimpi
 
 	struct EditorIcons
 	{
-		AssetHandle m_GearIcon;
+		AssetHandleB m_GearIcon;
 	};
 
 	class EditorResources

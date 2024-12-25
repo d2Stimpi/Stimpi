@@ -6,19 +6,19 @@
 namespace Stimpi
 {
 
-	std::shared_ptr<AssetNew> AssetManagerRuntime::GetAsset(AssetHandleNew handle)
+	std::shared_ptr<Asset> AssetManagerRuntime::GetAsset(AssetHandle handle)
 	{
 		ST_CORE_WARN("AssetManagerRuntime::GetAsset - not implemented!");
 		return nullptr;
 	}
 
-	bool AssetManagerRuntime::IsAssetHandleValid(AssetHandleNew handle)
+	bool AssetManagerRuntime::IsAssetHandleValid(AssetHandle handle)
 	{
 		ST_CORE_WARN("AssetManagerRuntime::IsHandleValid - not implemented!");
 		return false;
 	}
 
-	bool AssetManagerRuntime::IsAssetLoaded(AssetHandleNew handle)
+	bool AssetManagerRuntime::IsAssetLoaded(AssetHandle handle)
 	{
 		ST_CORE_WARN("AssetManagerRuntime::IsAssetLoaded - not implemented!");
 		return false;

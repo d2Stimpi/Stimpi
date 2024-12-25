@@ -4,13 +4,13 @@
 
 namespace Stimpi
 {
-	class AssetManagerNew
+	class AssetManager
 	{
 	public:
 		template<typename T>
-		static std::shared_ptr<T> GetAsset(AssetHandleNew handle)
+		static std::shared_ptr<T> GetAsset(AssetHandle handle)
 		{
-			std::shared_ptr<AssetNew> asset = Project::GetAssetManager()->GetAsset(handle);
+			std::shared_ptr<Asset> asset = Project::GetAssetManager()->GetAsset(handle);
 			return std::static_pointer_cast<T>(asset);
 		}
 	};

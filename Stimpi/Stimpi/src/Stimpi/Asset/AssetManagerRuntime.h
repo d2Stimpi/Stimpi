@@ -7,8 +7,8 @@ namespace Stimpi
 	class AssetManagerRuntime : public AssetManagerBase
 	{
 	public:
-		std::shared_ptr<AssetNew> GetAsset(AssetHandleNew handle) override;
-		bool IsAssetHandleValid(AssetHandleNew handle) override;
-		virtual bool IsAssetLoaded(AssetHandleNew handle) override;
+		std::shared_ptr<Asset> GetAsset(AssetHandle handle) override;
+		bool IsAssetHandleValid(AssetHandle handle) override;
+		virtual bool IsAssetLoaded(AssetHandle handle) override;
 	};
 }

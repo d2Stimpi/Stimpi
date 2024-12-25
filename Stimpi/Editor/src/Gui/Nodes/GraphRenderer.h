@@ -2,7 +2,7 @@
 
 #include "Gui/Nodes/GraphComponents.h"
 
-#include "Stimpi/Scene/Assets/AssetManager.h"
+#include "Stimpi/Scene/Assets/AssetManagerB.h"
 
 namespace Stimpi
 {
@@ -40,8 +40,8 @@ namespace Stimpi
 		GraphPanel* m_PanelContext = nullptr;
 		GraphPanelCanvas* m_Canvas = nullptr;
 
-		AssetHandle m_HeaderImage;
-		AssetHandle m_HighlightImage;
+		AssetHandleB m_HeaderImage;
+		AssetHandleB m_HighlightImage;
 
 		bool m_DebugOn = false;
 	};

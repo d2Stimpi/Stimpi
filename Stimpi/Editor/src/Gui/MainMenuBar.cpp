@@ -5,7 +5,7 @@
 
 #include "Stimpi/Core/Project.h"
 
-#include "Stimpi/Asset/AssetManagerNew.h"
+#include "Stimpi/Asset/AssetManager.h"
 
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/SceneSerializer.h"
@@ -178,15 +178,15 @@ namespace Stimpi
 				if (ImGui::MenuItem("AssetManager"))
 				{
 					static bool registerHandle = false;
-					static AssetHandleNew handle = 0;
+					static AssetHandle handle = 0;
 					if (!registerHandle)
 					{
 						registerHandle = true;
 						auto& assetManager = Project::GetEditorAssetManager();
-						handle = assetManager->RegisterAsset({ AssetTypeNew::TEXTURE, "TestAssetPath\\Sample.png" });
+						handle = assetManager->RegisterAsset({ AssetType::TEXTURE, "TestAssetPath\\Sample.png" });
 					}
 
-					auto texture = AssetManagerNew::GetAsset<AssetNew>(handle);
+					auto texture = AssetManager::GetAsset<Asset>(handle);
 				}
 
 				if (ImGui::MenuItem("Run system cmd"))
