@@ -17,8 +17,10 @@ namespace Stimpi
 		virtual bool IsAssetLoaded(AssetHandle handle) override;
 
 		AssetMetadata& GetAssetMetadata(AssetHandle handle);
-
 		AssetHandle RegisterAsset(const AssetMetadata& metadata);
+
+		void SerializeAssetRegistry(const FilePath& filePath);
+		void DeserializeAssetRegistry(const FilePath& filePath);
 	private:
 		AssetMap m_LoadedAssets;
 		AssetRegistry m_AssetRegistry;

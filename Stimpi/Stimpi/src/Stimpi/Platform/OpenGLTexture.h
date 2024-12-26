@@ -10,6 +10,7 @@ namespace Stimpi
 	{
 	public:
 		OpenGLTexture();
+		OpenGLTexture(TextureSpecification spec);
 		OpenGLTexture(std::string file);
 		~OpenGLTexture();
 
@@ -17,7 +18,7 @@ namespace Stimpi
 
 		void InitEmptyTexture(TextureSpecification spec) override;
 		void LoadTexture(std::string file) override;
-		void Generate(TextureSpecification spec, unsigned char* data) override;
+		void SetData(unsigned char* data) override;
 		void UseTexture() override; 
 		void Bind() override;
 		void Unbind() override;

@@ -30,6 +30,11 @@ namespace Stimpi
 		LoadDataAsync(file);
 	}
 
+	OpenGLTexture::OpenGLTexture(TextureSpecification spec)
+	{
+		m_Spec = spec;
+	}
+
 	OpenGLTexture::~OpenGLTexture()
 	{
 		if(DBG_LOG) ST_CORE_INFO("Texture {0} deleted", m_TextureID);
@@ -151,12 +156,10 @@ namespace Stimpi
 			stbi_image_free(data->m_Data);
 	}
 
-	void OpenGLTexture::Generate(TextureSpecification spec, unsigned char* data)
+	void OpenGLTexture::SetData(unsigned char* data)
 	{
 		if (data != nullptr)
 		{
-			m_Spec = spec;
-
 			glGenTextures(1, &m_TextureID);
 			glBindTexture(GL_TEXTURE_2D, m_TextureID);
 			// set the texture wrapping parameters

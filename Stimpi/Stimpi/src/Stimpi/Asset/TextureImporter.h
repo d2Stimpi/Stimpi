@@ -8,5 +8,6 @@ namespace Stimpi
 	{
 	public:
 		static std::shared_ptr<Asset> ImportTexture(AssetHandle handle, const AssetMetadata& metadata);
+		static std::shared_ptr<Asset> LoadTexture(const FilePath& filePath);
 	};
 }

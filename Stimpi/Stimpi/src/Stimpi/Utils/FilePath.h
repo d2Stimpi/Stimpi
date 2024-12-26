@@ -24,6 +24,7 @@ namespace Stimpi
 		std::filesystem::path GetRelativePath(const std::filesystem::path& basePath);
 
 		std::string string() { return m_FilePath.string(); }
+		std::string string() const { return m_FilePath.string(); }
 
 		bool Exists() { return std::filesystem::exists(m_FilePath); }
 

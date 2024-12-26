@@ -31,7 +31,7 @@ namespace Stimpi
 
 		virtual void InitEmptyTexture(TextureSpecification spec) = 0;
 		virtual void LoadTexture(std::string file) = 0;	// to remove
-		virtual void Generate(TextureSpecification spec, unsigned char* data) = 0;
+		virtual void SetData(unsigned char* data) = 0;
 		virtual void UseTexture() = 0;
 		virtual void Bind() = 0;
 		virtual void Unbind() = 0;
@@ -45,7 +45,8 @@ namespace Stimpi
 		uint32_t GetHeight() { return m_Spec.m_Height; }
 		std::string& GetAssetPath() { return m_AssetPath; }
 
-		static Texture* CreateTexture(std::string filePath);
+		static std::shared_ptr<Texture> CreateTexture(TextureSpecification spec);
+		static Texture* CreateTexture(std::string filePath);	// to remove
 		static Texture* CreateFrameBufferTexture();
 
 		static AssetType GetTypeStatic() { return AssetType::TEXTURE; }

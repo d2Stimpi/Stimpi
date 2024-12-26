@@ -14,6 +14,8 @@ namespace Stimpi
 		SHADER
 	};
 
+	std::string AssetTypeToString(AssetType type);
+
 	class ST_API Asset
 	{
 	public:
