@@ -6,17 +6,19 @@
 
 namespace Stimpi
 {
+	using UUIDType = uint64_t;
+
 	class ST_API UUID
 	{
 	public:
 		UUID();
-		UUID(uint64_t uuid);
+		UUID(UUIDType uuid);
 		UUID(UUID& uuid) = default;
 
-		operator uint64_t() const { return m_UUID; }
+		operator UUIDType() const { return m_UUID; }
 
 	private:
-		uint64_t m_UUID;
+		UUIDType m_UUID;
 	};
 }
 
@@ -27,7 +29,7 @@ namespace std
 	{
 		std::size_t operator()(const Stimpi::UUID& uuid) const
 		{
-			return hash<uint64_t>()((uint64_t)uuid);
+			return hash<Stimpi::UUIDType>()((Stimpi::UUIDType)uuid);
 		}
 	};
 }

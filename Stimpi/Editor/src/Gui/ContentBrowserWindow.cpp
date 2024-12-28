@@ -18,8 +18,17 @@
 
 namespace Stimpi
 {
+	enum class ContentMode { FILESYSTEM, ASSETS };
+
+	struct ThumbanailPopupContext
+	{
+		FilePath m_FilePath = "";
+	};
+
 	struct ContentBrowserWindowContext
 	{
+		ContentMode m_Mode = ContentMode::FILESYSTEM;
+		ThumbanailPopupContext m_ThumbnailPopupContext;
 		char m_SearchTextBuffer[64];
 
 		ContentBrowserWindowContext()
@@ -56,7 +65,10 @@ namespace Stimpi
 			// Toolbar - Buttons and Search bar
 			if (ImGuiEx::IconButton("##ContentBrowserToolbarButtonPCH", EDITOR_ICON_CROSS))
 			{
-
+				if (s_Context.m_Mode == ContentMode::ASSETS)
+					s_Context.m_Mode = ContentMode::FILESYSTEM;
+				else
+					s_Context.m_Mode = ContentMode::ASSETS;
 			}
 			ImGui::SameLine(28.0f);
 			ImGui::SetNextItemWidth(ImGui::GetWindowContentRegionWidth() - 28.0f);
@@ -136,6 +148,11 @@ namespace Stimpi
 			auto relativePath = std::filesystem::relative(path, ResourceManager::GetAssetsPath());
 			std::string filenameStr = relativePath.filename().string();
 
+			// Asset display mode filtering
+			if (!std::filesystem::is_directory(path) && s_Context.m_Mode == ContentMode::ASSETS &&
+				!Project::GetEditorAssetManager()->IsAssetRegistered(relativePath))
+				continue;
+
 			// Search filtering
 			std::string filterTagString = s_Context.m_SearchTextBuffer;
 			if (!filterTagString.empty() && filenameStr.find(filterTagString) == std::string::npos)
@@ -178,6 +195,17 @@ namespace Stimpi
 						OnCurrentDirChange();
 					}
 				}
+
+				// Thumbnail allows for letting ImGui check IsItemHovered for Thumbnail button
+				if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+				{
+					if (!std::filesystem::is_directory(path))
+					{
+						s_Context.m_ThumbnailPopupContext.m_FilePath = relativePath;
+						ImGui::OpenPopup("ContentBrowserWindow##ThumbnailPopup");
+					}
+				}
+
 				// Check when to drop to next line for drawing (2xWidth because ImGui::SameLine moves cursor after the check)
 				if (winSize.x > cursor.x - startCursor.x + 2 * THUMBNAIL_WIDTH)
 					ImGui::SameLine();
@@ -198,6 +226,7 @@ namespace Stimpi
 				UIPayload::BeginSource(PAYLOAD_ANIMATION, path.string().c_str(), path.string().length(), filenameStr.c_str());
 			}
 		}
+		ThumbnailPopup();
 		ImGui::EndChild();
 	}
 
@@ -206,7 +235,7 @@ namespace Stimpi
 		ImGuiTreeNodeFlags leaf_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 		ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow /*| ImGuiTreeNodeFlags_OpenOnDoubleClick*/;
 
-		for (auto node : rootNode->m_Children)
+		for (auto& node : rootNode->m_Children)
 		{
 			if (node->m_IsDir)
 			{
@@ -284,7 +313,15 @@ namespace Stimpi
 				{
 					sFileNodeID++;
 					newNode->m_ID = sFolderNodeID << 16 + sFileNodeID;
-					node->AddChildNode(newNode);
+					if (s_Context.m_Mode == ContentMode::ASSETS)
+					{
+						if (Project::GetEditorAssetManager()->IsAssetRegistered(relativePath))
+							node->AddChildNode(newNode);
+					}
+					else
+					{
+						node->AddChildNode(newNode);
+					}
 				}
 			}
 		};
@@ -311,4 +348,18 @@ namespace Stimpi
 			m_RootFolderNode->m_Children.clear();
 		}
 	}
+
+	void ContentBrowserWindow::ThumbnailPopup()
+	{
+		if (ImGui::BeginPopup("ContentBrowserWindow##ThumbnailPopup"))
+		{
+			if (ImGui::Selectable("Import Asset"))
+			{
+				ST_CORE_INFO("Import asset {}", s_Context.m_ThumbnailPopupContext.m_FilePath.string());
+			}
+
+			ImGui::EndPopup();
+		}
+	}
+
 }

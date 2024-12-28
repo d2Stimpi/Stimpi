@@ -1,6 +1,7 @@
 #include "stpch.h"
 #include "Stimpi/Asset/AssetManagerEditor.h"
 
+#include "Stimpi/Core/Core.h"
 #include "Stimpi/Asset/AssetImporter.h"
 #include "Stimpi/Scene/ResourceManager.h"
 
@@ -8,22 +9,23 @@
 
 namespace Stimpi
 {
+	// Internal for path -> handle lookup (checking if asset is registered)
+	std::unordered_map<std::string, AssetHandle> s_PathLookupRegistry;
+
 	std::shared_ptr<Asset> AssetManagerEditor::GetAsset(AssetHandle handle)
 	{
 		std::shared_ptr<Asset> asset;
 
-		// 1. Is handle valid?
 		if (!IsAssetHandleValid(handle))
 			return nullptr;
 		
-		// 2. Is asset loaded, load it if not.
 		if (IsAssetLoaded(handle))
 		{
 			asset = m_LoadedAssets.at(handle);
 		}
 		else
 		{
-			// Load asset or check if loading is finished
+			// Load asset or check if loading is finished (for async version)
 			auto& metadata = GetAssetMetadata(handle);
 			asset = AssetImporter::ImportAsset(handle, metadata);
 			if (!asset)
@@ -36,7 +38,6 @@ namespace Stimpi
 			}
 		}
 
-		// 3. Return asset.
 		return asset;
 	}
 
@@ -64,7 +65,13 @@ namespace Stimpi
 	{
 		AssetHandle handle; // generate handle
 		m_AssetRegistry[handle] = metadata;
+		m_AssetLookup[metadata.m_FilePath.string()] = handle;
 		return handle;
+	}
+
+	bool AssetManagerEditor::IsAssetRegistered(const FilePath& filePath)
+	{
+		return m_AssetLookup.find(filePath.string()) != m_AssetLookup.end();
 	}
 
 	void AssetManagerEditor::SerializeAssetRegistry(const FilePath& filePath)
@@ -104,7 +111,37 @@ namespace Stimpi
 
 	void AssetManagerEditor::DeserializeAssetRegistry(const FilePath& filePath)
 	{
+		YAML::Node loadData = YAML::LoadFile(filePath.string());
+		YAML::Node registry = loadData["AssetRegistry"];
+		ST_CORE_ASSERT_MSG(!registry, "Invalid AssetRegistry file!");
 
+		for (YAML::const_iterator it = registry.begin(); it != registry.end(); it++)
+		{
+			YAML::Node assetNode = it->second;
+			if (assetNode["Handle"] && assetNode["Metadata"])
+			{
+				AssetHandle handle = assetNode["Handle"].as<UUIDType>();
+				YAML::Node metadataNode = assetNode["Metadata"];
+				if (metadataNode["AssetType"] && metadataNode["FilePath"])
+				{
+					AssetMetadata metadata;
+					metadata.m_Type = StringToAssetType(assetNode["Metadata"]["AssetType"].as<std::string>());
+					metadata.m_FilePath = assetNode["Metadata"]["FilePath"].as<std::string>();
+					m_AssetRegistry[handle] = metadata;
+					m_AssetLookup[metadata.m_FilePath.string()] = handle;
+				}
+				else
+				{
+					if (!metadataNode["AssetType"]) ST_CORE_ERROR("DeserializeAssetRegistry: Metadata malformed - missing AssetType!");
+					if (!metadataNode["FilePath"]) ST_CORE_ERROR("DeserializeAssetRegistry: Metadata malformed - missing FilePath!");
+				}
+			}
+			else
+			{
+				if (!assetNode["Handle"]) ST_CORE_ERROR("DeserializeAssetRegistry: invalid asset Handle!");
+				if (!assetNode["Metadata"]) ST_CORE_ERROR("DeserializeAssetRegistry: invalid asset Metadata!");
+			}
+		}
 	}
 
 }

@@ -7,7 +7,7 @@ namespace Stimpi
 {
 	struct AssetMetadata
 	{
-		AssetType m_Type;
-		FilePath m_FilePath;
+		AssetType m_Type = AssetType::NONE;
+		FilePath m_FilePath = "";
 	};
 }

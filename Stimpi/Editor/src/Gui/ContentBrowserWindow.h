@@ -13,16 +13,17 @@ namespace Stimpi
 	{
 		FilePath m_File;
 		bool m_IsDir = false;
+		bool m_IsAsset = false;
 		uint32_t m_ID = 0; // ID for UI Tree node
 		std::vector<std::shared_ptr<FileNode>> m_Children;
 
 		FileNode() = default;
 		FileNode(const FileNode&) = default;
 		FileNode(const FilePath& name)
-			: m_File(name), m_IsDir(false), m_ID(0)
+			: m_File(name), m_IsDir(false), m_IsAsset(false), m_ID(0)
 		{}
 		FileNode(const FilePath& name, uint32_t id)
-			: m_File(name), m_IsDir(false), m_ID(id)
+			: m_File(name), m_IsDir(false), m_IsAsset(false), m_ID(id)
 		{}
 
 		void AddChildNode(std::shared_ptr<FileNode> node)
@@ -46,6 +47,7 @@ namespace Stimpi
 		void RecurseNodeDraw(FileNode* rootNode);
 		void ReadDirHierarchyData();
 		void ResetDirHierarchyData();
+		void ThumbnailPopup();
 
 	private:
 		bool m_Show = true;

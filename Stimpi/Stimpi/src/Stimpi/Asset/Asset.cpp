@@ -15,4 +15,12 @@ namespace Stimpi
 		}
 	}
 
+	Stimpi::AssetType StringToAssetType(const std::string& str)
+	{
+		if (str == "NONE") return AssetType::NONE;
+		else if (str == "TEXTURE") return AssetType::TEXTURE;
+		else if (str == "SHADER") return AssetType::SHADER;
+		else return AssetType::NONE;
+	}
+
 }

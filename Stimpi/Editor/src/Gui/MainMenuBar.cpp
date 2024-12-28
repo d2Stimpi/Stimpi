@@ -195,6 +195,13 @@ namespace Stimpi
 					}
 				}
 
+				if (ImGui::MenuItem("AssetManager - load registry"))
+				{
+					auto& assetManager = Project::GetEditorAssetManager();
+					std::filesystem::path registry = Project::GetResourcesDir() / "Registry.d2ar";
+					assetManager->DeserializeAssetRegistry(registry);
+				}
+
 				if (ImGui::MenuItem("Run system cmd"))
 				{
 					System::ExecuteCmd("mono\\bin\\mcs TempGenClass.cs -r:D:\\GitHub\\Stimpi\\resources\\scripts\\Stimpi-ScriptCore.dll  -target:library  -out:pera2.dll");

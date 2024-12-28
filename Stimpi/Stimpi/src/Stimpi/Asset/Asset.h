@@ -15,6 +15,7 @@ namespace Stimpi
 	};
 
 	std::string AssetTypeToString(AssetType type);
+	AssetType StringToAssetType(const std::string& str);
 
 	class ST_API Asset
 	{

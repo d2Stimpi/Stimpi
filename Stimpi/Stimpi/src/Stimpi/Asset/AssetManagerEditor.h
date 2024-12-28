@@ -7,6 +7,7 @@
 namespace Stimpi
 {
 	using AssetRegistry = std::unordered_map<AssetHandle, AssetMetadata>;
+	using AssetLookup = std::unordered_map<std::string, AssetHandle>;
 
 	class ST_API AssetManagerEditor : public AssetManagerBase
 	{
@@ -14,15 +15,18 @@ namespace Stimpi
 		std::shared_ptr<Asset> GetAsset(AssetHandle handle) override;
 
 		bool IsAssetHandleValid(AssetHandle handle) override;
-		virtual bool IsAssetLoaded(AssetHandle handle) override;
+		bool IsAssetLoaded(AssetHandle handle) override;
 
 		AssetMetadata& GetAssetMetadata(AssetHandle handle);
 		AssetHandle RegisterAsset(const AssetMetadata& metadata);
+		bool IsAssetRegistered(const FilePath& filePath);
 
 		void SerializeAssetRegistry(const FilePath& filePath);
 		void DeserializeAssetRegistry(const FilePath& filePath);
 	private:
 		AssetMap m_LoadedAssets;
 		AssetRegistry m_AssetRegistry;
+		// For quick lookup by file path if asset is registered;
+		AssetLookup m_AssetLookup;
 	};
 }
