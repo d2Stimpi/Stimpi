@@ -286,12 +286,13 @@ namespace Stimpi
 	void ContentBrowserWindow::ReadDirHierarchyData()
 	{
 		auto assetsPath = ResourceManager::GetAssetsPath();
+		auto assetManager = Project::GetEditorAssetManager();
 
 		sFolderNodeID++;
 		m_RootFolderNode = std::make_shared<FileNode>(assetsPath, sFolderNodeID << 16);
 		m_RootFolderNode->m_IsDir = true;
 
-		std::function<void(FilePath, FileNode*)> readDir = [&readDir](FilePath dirPath, FileNode* node) {
+		std::function<void(FilePath, FileNode*)> readDir = [&](FilePath dirPath, FileNode* node) {
 			for (auto& directoryEntry : std::filesystem::directory_iterator(dirPath))
 			{
 				const auto& path = directoryEntry.path();
@@ -315,11 +316,36 @@ namespace Stimpi
 					newNode->m_ID = sFolderNodeID << 16 + sFileNodeID;
 					if (s_Context.m_Mode == ContentMode::ASSETS)
 					{
-						if (Project::GetEditorAssetManager()->IsAssetRegistered(relativePath))
+						if (assetManager->IsAssetRegistered(relativePath))
+						{
+							newNode->m_Handle = assetManager->GetAssetHandle(relativePath);
 							node->AddChildNode(newNode);
+						}
 					}
 					else
 					{
+						// Default Asset processing:
+						// 1. Check if file is of Asset type
+						AssetType assetType = AssetUtils::GetAssetType(path);
+						if (assetType != AssetType::NONE)
+						{
+							
+							// 2. Register Asset if it is not already registered
+							if (!assetManager->IsAssetRegistered(relativePath))
+							{
+								newNode->m_Handle = assetManager->RegisterAsset({ assetType, relativePath });
+							}
+							else
+							{
+								// 3. Check if Asset needs to be reloaded
+								if (assetManager->WasAssetUpdated(newNode->m_Handle))
+								{
+									assetManager->ReloadAsset(newNode->m_Handle);
+								}
+								newNode->m_Handle = assetManager->GetAssetHandle(relativePath);
+							}
+						}
+
 						node->AddChildNode(newNode);
 					}
 				}

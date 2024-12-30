@@ -2,6 +2,7 @@
 
 #include "Stimpi/Asset/Asset.h"
 #include "Stimpi/Utils/FilePath.h"
+#include "Stimpi/Utils/SystemUtils.h"
 
 namespace Stimpi
 {
@@ -9,5 +10,7 @@ namespace Stimpi
 	{
 		AssetType m_Type = AssetType::NONE;
 		FilePath m_FilePath = "";
+		// Internal - not serialized
+		FileTimeType m_LastWriteTime;
 	};
 }

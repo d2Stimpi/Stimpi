@@ -35,6 +35,7 @@ namespace Stimpi
 			else
 			{
 				m_LoadedAssets[handle] = asset;
+				metadata.m_LastWriteTime = FileSystem::LastWriteTime(metadata.m_FilePath);
 			}
 		}
 
@@ -59,6 +60,44 @@ namespace Stimpi
 			return s_NullMetadata;
 
 		return it->second;
+	}
+
+	Stimpi::AssetHandle AssetManagerEditor::GetAssetHandle(const FilePath& filePath)
+	{
+		auto it = m_AssetLookup.find(filePath.string());
+		if (it == m_AssetLookup.end())
+			return 0;
+
+		return it->second;
+	}
+
+	bool AssetManagerEditor::WasAssetUpdated(AssetHandle handle)
+	{
+		AssetMetadata& metadata = GetAssetMetadata(handle);
+		// Check if valid asset type
+		if (metadata.m_Type != AssetType::NONE)
+		{
+			return metadata.m_LastWriteTime != FileSystem::LastWriteTime(metadata.m_FilePath);
+		}
+
+		return false;
+	}
+
+	bool AssetManagerEditor::ReloadAsset(AssetHandle handle)
+	{
+		if (!IsAssetHandleValid(handle))
+			return false;
+
+		if (IsAssetLoaded(handle))
+		{
+			auto& metadata = GetAssetMetadata(handle);
+			auto newAsset = AssetImporter::ImportAsset(handle, metadata);
+
+			auto asset = m_LoadedAssets.at(handle);
+			asset.reset(newAsset.get());
+		}
+
+		return false;
 	}
 
 	AssetHandle AssetManagerEditor::RegisterAsset(const AssetMetadata& metadata)

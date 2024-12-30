@@ -7,13 +7,13 @@
 
 namespace Stimpi
 {
-	char* FileSystem::ReadBytes(const std::string& filepath, uint32_t* outSize)
+	char* FileSystem::ReadBytes(const FilePath& filePath, uint32_t* outSize)
 	{
-		std::ifstream stream(filepath, std::ios::binary | std::ios::ate);
+		std::ifstream stream(filePath.string(), std::ios::binary | std::ios::ate);
 
 		if (!stream)
 		{
-			ST_CORE_ERROR("Failed to open {}", filepath);
+			ST_CORE_ERROR("Failed to open {}", filePath.string());
 			return nullptr;
 		}
 
@@ -23,7 +23,7 @@ namespace Stimpi
 
 		if (size == 0)
 		{
-			ST_CORE_ERROR("Failed to read {} - file is empty", filepath);
+			ST_CORE_ERROR("Failed to read {} - file is empty", filePath.string());
 			return nullptr;
 		}
 
@@ -33,6 +33,11 @@ namespace Stimpi
 
 		*outSize = size;
 		return buffer;
+	}
+
+	Stimpi::FileTimeType FileSystem::LastWriteTime(const FilePath& filePath)
+	{
+		return std::filesystem::last_write_time(filePath.GetPath());
 	}
 
 	std::string System::ExecuteCmd(const std::string& cmd)

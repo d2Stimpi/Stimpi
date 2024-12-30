@@ -2,20 +2,29 @@
 
 #include "Stimpi/Core/Core.h"
 #include "Stimpi/Core/UUID.h"
+#include "Stimpi/Utils/FilePath.h"
 
 namespace Stimpi
 {
 	using AssetHandle = UUID;
 
-	enum class AssetType
+	enum class ST_API AssetType
 	{
 		NONE = 0,
 		TEXTURE,
-		SHADER
+		SHADER,
+		SCENE
 	};
 
 	std::string AssetTypeToString(AssetType type);
 	AssetType StringToAssetType(const std::string& str);
+
+	class ST_API AssetUtils
+	{
+	public:
+		static AssetType GetAssetType(FilePath filePath);
+	};
+
 
 	class ST_API Asset
 	{

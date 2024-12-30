@@ -18,6 +18,10 @@ namespace Stimpi
 		bool IsAssetLoaded(AssetHandle handle) override;
 
 		AssetMetadata& GetAssetMetadata(AssetHandle handle);
+		AssetHandle GetAssetHandle(const FilePath& filePath);
+		bool WasAssetUpdated(AssetHandle handle);
+		bool ReloadAsset(AssetHandle handle);
+
 		AssetHandle RegisterAsset(const AssetMetadata& metadata);
 		bool IsAssetRegistered(const FilePath& filePath);
 
