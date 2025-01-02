@@ -8,8 +8,6 @@ namespace Stimpi
 	ProjectConfig Project::m_Config;
 	std::shared_ptr<AssetManagerBase> Project::m_AssetManager;
 
-	FilePath s_RegistryFilePath = Project::GetResourcesDir() / "Registry.d2ar";
-
 	void Project::Save(std::filesystem::path projectFilePath)
 	{
 		ProjectSerializer::Serialize(projectFilePath, m_Config);
@@ -17,7 +15,7 @@ namespace Stimpi
 		// Saving AssetRegistry only makes sense in Editor mode
 		if (Runtime::GetRuntimeMode() == RuntimeMode::EDITOR)
 		{
-			std::filesystem::path registry = GetResourcesDir() / "Registry.d2ar";
+			std::filesystem::path registry = GetResourcesDir() / GetProjectRegistryName();
 			GetEditorAssetManager()->SerializeAssetRegistry(registry);
 		}
 	}
@@ -29,7 +27,7 @@ namespace Stimpi
 		// Loading AssetRegistry only makes sense in Editor mode
 		if (Runtime::GetRuntimeMode() == RuntimeMode::EDITOR)
 		{
-			std::filesystem::path registry = GetResourcesDir() / "Registry.d2ar";
+			std::filesystem::path registry = GetResourcesDir() / GetProjectRegistryName();
 			GetEditorAssetManager()->DeserializeAssetRegistry(registry);
 		}
 	}
@@ -59,6 +57,12 @@ namespace Stimpi
 		}
 
 		return m_AssetManager;
+	}
+
+	std::string Project::GetProjectRegistryName()
+	{
+		std::string registryName = m_Config.m_Name;
+		return registryName.append("_Registry.d2ar");
 	}
 
 }

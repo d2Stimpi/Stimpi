@@ -5,6 +5,7 @@
 #include "Stimpi/Core/Event.h"
 #include "Stimpi/Core/Timestep.h"
 #include "Stimpi/Core/UUID.h"
+#include "Stimpi/Asset/Asset.h"
 
 #include "Stimpi/Graphics/Shader.h"
 #include "Stimpi/Graphics/SubTexture.h"
@@ -24,7 +25,7 @@ namespace Stimpi
 
 	enum class RuntimeState { STOPPED = 0, RUNNING, PAUSED };
 
-	class ST_API Scene
+	class ST_API Scene : public Asset
 	{
 	public:
 		Scene();
@@ -75,6 +76,10 @@ namespace Stimpi
 
 		// Mouse Picking
 		Entity MousePickEntity(float x, float y);
+
+		// Asset
+		static AssetType GetTypeStatic() { return AssetType::SCENE; }
+		AssetType GetType() override { return GetTypeStatic(); }
 	private:
 		// Update components based on interactions
 		void UpdateComponentDependacies(Timestep ts);

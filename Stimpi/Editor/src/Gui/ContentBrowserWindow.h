@@ -52,6 +52,7 @@ namespace Stimpi
 		void RecurseNodeDraw(FileNode* rootNode);
 		void ReadDirHierarchyData();
 		void ResetDirHierarchyData();
+		void RefreshDirHierachyData();
 		void ThumbnailPopup();
 
 	private:

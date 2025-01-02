@@ -177,29 +177,10 @@ namespace Stimpi
 			{
 				if (ImGui::MenuItem("AssetManager"))
 				{
-					static bool registerHandle = false;
-					static AssetHandle handle = 0;
-					static AssetHandle handle2 = 0;
-					if (!registerHandle)
-					{
-						registerHandle = true;
-						auto& assetManager = Project::GetEditorAssetManager();
-						handle = assetManager->RegisterAsset({ AssetType::TEXTURE, "TestAssetPath\\Sample.png" });
-						handle2 = assetManager->RegisterAsset({ AssetType::TEXTURE, "TestAssetPath\\Sample2.png" });
-
-						auto texture = AssetManager::GetAsset<Asset>(handle);
-						auto texture2 = AssetManager::GetAsset<Asset>(handle2);
-
-						std::filesystem::path registry = Project::GetResourcesDir() / "Registry.d2ar";
-						assetManager->SerializeAssetRegistry(registry);
-					}
-				}
-
-				if (ImGui::MenuItem("AssetManager - load registry"))
-				{
 					auto& assetManager = Project::GetEditorAssetManager();
-					std::filesystem::path registry = Project::GetResourcesDir() / "Registry.d2ar";
-					assetManager->DeserializeAssetRegistry(registry);
+					AssetHandle handle = assetManager->RegisterAsset({ AssetType::SCENE, "scenes\\asd.d2s" });
+
+					auto scene = AssetManager::GetAsset<Asset>(handle);
 				}
 
 				if (ImGui::MenuItem("Run system cmd"))

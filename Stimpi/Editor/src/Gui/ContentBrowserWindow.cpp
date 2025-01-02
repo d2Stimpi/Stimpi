@@ -69,6 +69,8 @@ namespace Stimpi
 					s_Context.m_Mode = ContentMode::FILESYSTEM;
 				else
 					s_Context.m_Mode = ContentMode::ASSETS;
+
+				RefreshDirHierachyData();
 			}
 			ImGui::SameLine(28.0f);
 			ImGui::SetNextItemWidth(ImGui::GetWindowContentRegionWidth() - 28.0f);
@@ -110,11 +112,7 @@ namespace Stimpi
 		reloadTimer += ts.GetMilliseconds();
 		if (reloadTimer >= 4000.0f)
 		{
-			sFileNodeID = 0;	// reset file id "tracker"
-			sFolderNodeID = 0;
-			// Here refresh assets folder structure
-			ResetDirHierarchyData();
-			ReadDirHierarchyData();
+			RefreshDirHierachyData();
 			reloadTimer = 0.0f;
 		}
 	}
@@ -338,11 +336,11 @@ namespace Stimpi
 							else
 							{
 								// 3. Check if Asset needs to be reloaded
+								newNode->m_Handle = assetManager->GetAssetHandle(relativePath);
 								if (assetManager->WasAssetUpdated(newNode->m_Handle))
 								{
 									assetManager->ReloadAsset(newNode->m_Handle);
 								}
-								newNode->m_Handle = assetManager->GetAssetHandle(relativePath);
 							}
 						}
 
@@ -373,6 +371,15 @@ namespace Stimpi
 			resetNodeData(m_RootFolderNode.get());
 			m_RootFolderNode->m_Children.clear();
 		}
+	}
+
+	void ContentBrowserWindow::RefreshDirHierachyData()
+	{
+		sFileNodeID = 0;	// reset file id "tracker"
+		sFolderNodeID = 0;
+		// Here refresh assets folder structure
+		ResetDirHierarchyData();
+		ReadDirHierarchyData();
 	}
 
 	void ContentBrowserWindow::ThumbnailPopup()

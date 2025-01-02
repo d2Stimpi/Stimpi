@@ -2,6 +2,7 @@
 #include "Stimpi/Asset/AssetManagerEditor.h"
 
 #include "Stimpi/Core/Core.h"
+#include "Stimpi/Core/Project.h"
 #include "Stimpi/Asset/AssetImporter.h"
 #include "Stimpi/Scene/ResourceManager.h"
 
@@ -34,8 +35,8 @@ namespace Stimpi
 			}
 			else
 			{
+				metadata.m_LastWriteTime = FileSystem::LastWriteTime(Project::GetAssestsDir() / metadata.m_FilePath);
 				m_LoadedAssets[handle] = asset;
-				metadata.m_LastWriteTime = FileSystem::LastWriteTime(metadata.m_FilePath);
 			}
 		}
 
@@ -73,11 +74,12 @@ namespace Stimpi
 
 	bool AssetManagerEditor::WasAssetUpdated(AssetHandle handle)
 	{
+		static FileTimeType s_ZeroTime;
 		AssetMetadata& metadata = GetAssetMetadata(handle);
 		// Check if valid asset type
-		if (metadata.m_Type != AssetType::NONE)
+		if (metadata.m_Type != AssetType::NONE && metadata.m_LastWriteTime != s_ZeroTime)
 		{
-			return metadata.m_LastWriteTime != FileSystem::LastWriteTime(metadata.m_FilePath);
+			return metadata.m_LastWriteTime != FileSystem::LastWriteTime(Project::GetAssestsDir() / metadata.m_FilePath);
 		}
 
 		return false;
@@ -93,8 +95,8 @@ namespace Stimpi
 			auto& metadata = GetAssetMetadata(handle);
 			auto newAsset = AssetImporter::ImportAsset(handle, metadata);
 
-			auto asset = m_LoadedAssets.at(handle);
-			asset.reset(newAsset.get());
+			metadata.m_LastWriteTime = FileSystem::LastWriteTime(Project::GetAssestsDir() / metadata.m_FilePath);
+			m_LoadedAssets[handle] = newAsset;
 		}
 
 		return false;
@@ -150,6 +152,12 @@ namespace Stimpi
 
 	void AssetManagerEditor::DeserializeAssetRegistry(const FilePath& filePath)
 	{
+		if (!std::filesystem::exists(filePath.GetPath()))
+		{
+			ST_CORE_INFO("First time load project, no valid Asset Registry found");
+			return;
+		}
+
 		YAML::Node loadData = YAML::LoadFile(filePath.string());
 		YAML::Node registry = loadData["AssetRegistry"];
 		ST_CORE_ASSERT_MSG(!registry, "Invalid AssetRegistry file!");

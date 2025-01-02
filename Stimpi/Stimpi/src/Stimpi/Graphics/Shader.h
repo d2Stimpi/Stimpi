@@ -2,6 +2,7 @@
 
 #include "stpch.h"
 #include "Stimpi/Core/Core.h"
+#include "Stimpi/Asset/Asset.h"
 
 #include <type_traits>
 #include <unordered_map>
@@ -121,7 +122,7 @@ namespace Stimpi
 			: m_ShaderLayout(layout) {}
 	};
 
-	class ST_API Shader
+	class ST_API Shader : public Asset
 	{
 	public:
 		Shader(const std::string& fileName) : m_Name(fileName) {}
@@ -144,6 +145,9 @@ namespace Stimpi
 		// AssetManager
 		static Shader* Create(std::string& file) { return CreateShader(file); }
 		virtual bool Loaded() = 0;
+
+		static AssetType GetTypeStatic() { return AssetType::SHADER; }
+		AssetType GetType() override { return GetTypeStatic(); }
 
 		// Debug
 		void LogShaderInfo();
