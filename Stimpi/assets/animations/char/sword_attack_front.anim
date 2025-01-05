@@ -1,5 +1,5 @@
 Animation:
-  Texture: ../assets/sprite_sheets/char/Sword_Attack_front.png
+  Texture: sprite_sheets\char\Sword_attack_front.png
   Frames:
     Frame:
       Duration: 0.1

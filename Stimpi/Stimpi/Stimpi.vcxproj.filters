@@ -70,6 +70,12 @@
     <ClInclude Include="src\Stimpi\Asset\AssetMetadata.h">
       <Filter>Stimpi\Asset</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\Asset\SceneImporter.h">
+      <Filter>Stimpi\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Asset\ShaderImporter.h">
+      <Filter>Stimpi\Asset</Filter>
+    </ClInclude>
     <ClInclude Include="src\Stimpi\Asset\TextureImporter.h">
       <Filter>Stimpi\Asset</Filter>
     </ClInclude>
@@ -302,6 +308,12 @@
       <Filter>Stimpi\Asset</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Asset\AssetManagerRuntime.cpp">
+      <Filter>Stimpi\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Asset\SceneImporter.cpp">
+      <Filter>Stimpi\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Asset\ShaderImporter.cpp">
       <Filter>Stimpi\Asset</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Asset\TextureImporter.cpp">

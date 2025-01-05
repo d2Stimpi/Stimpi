@@ -18,7 +18,10 @@ namespace Stimpi
 		std::shared_ptr<Asset> asset;
 
 		if (!IsAssetHandleValid(handle))
+		{
+			ST_CORE_WARN("Invalid asset handle used: {}", handle);
 			return nullptr;
+		}
 		
 		if (IsAssetLoaded(handle))
 		{

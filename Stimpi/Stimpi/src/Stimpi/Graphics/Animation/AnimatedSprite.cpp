@@ -76,12 +76,4 @@ namespace Stimpi
 		m_Animation->GetSubTexture()->SetSubRegion(m_CurrentFrame);
 	}
 
-	bool AnimatedSprite::Loaded()
-	{
-		if (m_Animation->GetSubTexture())
-			return m_Animation->GetSubTexture()->Loaded();
-
-		return false;
-	}
-
 }

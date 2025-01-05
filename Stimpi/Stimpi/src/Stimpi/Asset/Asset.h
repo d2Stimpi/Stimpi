@@ -29,8 +29,10 @@ namespace Stimpi
 	class ST_API Asset
 	{
 	public:
-		AssetHandle m_Handle = 0;
+		AssetHandle m_Handle = 0;	// TODO: should be used? Maybe for easier metadata lookup?
 
 		virtual AssetType GetType() = 0;
+
+		operator bool() const { return m_Handle != 0; }
 	};
 }

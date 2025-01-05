@@ -14,6 +14,9 @@ namespace Stimpi
 		static void SetRuntimeMode(RuntimeMode mode);
 		static RuntimeMode GetRuntimeMode();
 
+		// For more convenient check
+		static bool IsEditorMode() { return m_RuntimeMode == RuntimeMode::EDITOR; }
+		static bool IsApplicationMode() { return m_RuntimeMode == RuntimeMode::APPLICATION; }
 	private:
 		static RuntimeMode m_RuntimeMode;
 	};

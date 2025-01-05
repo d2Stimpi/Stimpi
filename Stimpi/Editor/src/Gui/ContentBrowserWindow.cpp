@@ -213,7 +213,8 @@ namespace Stimpi
 			// Drag & Drop handling
 			if (relativePath.extension().string() == ".jpg" || relativePath.extension().string() == ".JPG" || relativePath.extension().string() == ".png")
 			{
-				UIPayload::BeginSource(PAYLOAD_TEXTURE, path.string().c_str(), path.string().length(), filenameStr.c_str());
+				AssetHandle handle = Project::GetEditorAssetManager()->GetAssetHandle(relativePath);
+				UIPayload::BeginSource(PAYLOAD_TEXTURE, &handle, sizeof(AssetHandle), filenameStr.c_str());
 			}
 			if (relativePath.extension().string() == ".d2s")
 			{

@@ -80,10 +80,6 @@ namespace Stimpi
 	static void OnSpriteDestruct(entt::registry& reg, entt::entity ent)
 	{
 		Entity entity = { ent, s_ActiveScene };
-		
-		SpriteComponent sprite = entity.GetComponent<SpriteComponent>();
-		if (sprite.m_TextureHandle.IsValid())
-			AssetManagerB::Release(sprite.m_TextureHandle);
 	}
 
 	// AnimatedSprite

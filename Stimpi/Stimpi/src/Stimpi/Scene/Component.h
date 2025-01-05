@@ -12,6 +12,7 @@
 #include "Stimpi/Scene/Assets/AssetManagerB.h"
 #include "Stimpi/Scripting/ScriptEngine.h"
 #include "Stimpi/Scripting/ScriptSerializer.h"
+#include "Stimpi/Asset/AssetManager.h"
 
 #include <glm/glm.hpp>
 #include <yaml-cpp/yaml.h>
@@ -271,9 +272,7 @@ namespace Stimpi
 
 	struct SpriteComponent
 	{
-		// Sprite Texture
-		FilePath m_FilePath = "";
-		AssetHandleB m_TextureHandle = {};
+		AssetHandle m_TextureAssetHandle = 0;
 		bool m_Enable = false; // Will override color use - TODO: rename to more appropriate name
 
 		// Sprite Color
@@ -287,69 +286,27 @@ namespace Stimpi
 		SpriteComponent(const SpriteComponent&) = default;
 		SpriteComponent(glm::vec4 color)
 			: m_Color(color) {}
-		SpriteComponent(const std::string& filePath)
-			: m_FilePath(filePath), m_Enable(true)
+		SpriteComponent(const FilePath& filePath)	// TODO: reconsider using this ctr
+			: m_Enable(true)
 		{
-			if (m_FilePath.Exists())
+			ST_CORE_ASSERT_MSG(!Runtime::IsEditorMode(), "SpriteComponent - not Editor mode runtime!");
+			if (filePath.Exists())
 			{
-				m_TextureHandle = AssetManagerB::GetAsset<Texture>(filePath);
+				m_TextureAssetHandle = Project::GetEditorAssetManager()->GetAssetHandle(filePath);
+				if (m_TextureAssetHandle == 0)
+					ST_CORE_INFO("Asset {} is not registered!", filePath.string());
 			}
 		}
 
-		operator Texture* () const { return AssetManagerB::GetAssetData<Texture>(m_TextureHandle); }
-
-		bool TextureLoaded()
-		{
-			bool loaded = false;
-
-			if (m_TextureHandle.IsValid())
-			{
-				Texture* texture = AssetManagerB::GetAssetData<Texture>(m_TextureHandle);
-				if (texture)
-					loaded = texture->Loaded();
-			}
-
-			return loaded;
-		}
-
-		void SetTexture(const std::string& filePath)
-		{
-			SetPayload(filePath);
-		}
-
-		// Used for DragDropTarget
-		void SetPayload(const std::string& filePath)
-		{
-			// Check if we are trying to load the same asset and skip if true
-			if (m_TextureHandle.IsValid())
-			{
-				AssetB textureAsset = AssetManagerB::GetAsset(m_TextureHandle);
-				FilePath newPath = { filePath };
-				// Check only asset name rather than the full path
-				if (newPath.GetFileName() == textureAsset.GetName())
-				{
-					return;
-				}
-				else
-				{
-					AssetManagerB::Release(m_TextureHandle);
-				}
-			}
-			// Load new asset
-			m_TextureHandle = AssetManagerB::GetAsset<Texture>(filePath);
-
- 			if (m_TextureHandle.IsValid())
- 			{
-				m_FilePath = filePath;
-				m_Enable = true;
-			}
-		}
+		// TODO: should not be here, Renderer (using asset) will get the texture
+		operator Texture* () const { return AssetManager::GetAsset<Texture>(m_TextureAssetHandle).get(); }
 
 		void Serialize(YAML::Emitter& out)
 		{
 			out << YAML::Key << "SpriteComponent";
 			out << YAML::BeginMap;
-				out << YAML::Key << "FilePath" << YAML::Value << m_FilePath.GetRelativePath(Project::GetAssestsDir()).string();
+				//out << YAML::Key << "FilePath" << YAML::Value << m_FilePath.GetRelativePath(Project::GetAssestsDir()).string();
+				out << YAML::Key << "AssetHandle" << YAML::Value << m_TextureAssetHandle;
 
 				out << YAML::Key << "Enabled" << YAML::Value << m_Enable;
 
@@ -365,29 +322,37 @@ namespace Stimpi
 		//De-serialize constructor
 		SpriteComponent(const YAML::Node& node)
 		{
+			// Legacy check
 			if (node["FilePath"])
 			{
+				FilePath filePath;
 				if (!node["FilePath"].as<std::string>().empty())
-					m_FilePath = Project::GetAssestsDir() / node["FilePath"].as<std::string>();
-
-				if (m_FilePath.Exists())
 				{
-					m_TextureHandle = AssetManagerB::GetAsset<Texture>(m_FilePath);
+					filePath = Project::GetAssestsDir() / node["FilePath"].as<std::string>();
+				}
+
+				if (filePath.Exists())
+				{
+					FilePath relativePath = std::filesystem::relative(filePath, ResourceManager::GetAssetsPath());
+					m_TextureAssetHandle = Project::GetEditorAssetManager()->GetAssetHandle(relativePath);
+					if (m_TextureAssetHandle == 0)
+						ST_CORE_INFO("Asset {} is not registered!", filePath.string());
 				}
 			}
-			else
+
+			if (node["AssetHandle"])
 			{
-				m_FilePath = "";
+				m_TextureAssetHandle = node["AssetHandle"].as<UUIDType>();
 			}
 
-			if (node["Enable"])
+			if (node["Enabled"])
 			{
-				m_Enable = node["Enable"].as<bool>();
+				m_Enable = node["Enabled"].as<bool>();
 			}
 			else
 			{
 				//m_Enable = m_Texture != nullptr;
-				m_Enable = m_TextureHandle.IsValid();
+				m_Enable = m_TextureAssetHandle != 0;
 			}
 
 			if (node["Color"])
@@ -593,14 +558,6 @@ namespace Stimpi
 		}
 
 		operator SubTexture* () const { return m_AnimSprite->GetSubTexture(); }
-
-		bool Loaded()
-		{
-			if (m_AnimSprite)
-				return m_AnimSprite->Loaded();
-
-			return false;
-		}
 
 		SubTexture* GetSubTexture()
 		{

@@ -471,7 +471,8 @@ namespace Stimpi
 
 		if (ImGui::CollapsingHeaderIcon("Sprite##ComponentName", EditorResources::GetIconTextureID(EDITOR_ICON_SPRITE), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 		{
-			std::filesystem::path texturePath = component.m_FilePath;
+			AssetMetadata metadata = Project::GetEditorAssetManager()->GetAssetMetadata(component.m_TextureAssetHandle);
+			std::filesystem::path texturePath = metadata.m_FilePath;
 
 			ImGui::Spacing();
 			ImGui::ColorEdit4("Color##SpriteColor", glm::value_ptr(component.m_Color));
@@ -482,15 +483,22 @@ namespace Stimpi
 				std::string filePath = FileDialogs::OpenFile("Texture (*.jpg)\0*.jpg\0(*.png)\0*.png\0");
 				if (!filePath.empty())
 				{
-					component.SetTexture(filePath);
+					AssetHandle handle = Project::GetEditorAssetManager()->GetAssetHandle(filePath);
+					if (!handle)
+					{
+						ST_CORE_INFO("Auto importing asset {}", filePath);
+						handle = Project::GetEditorAssetManager()->RegisterAsset({AssetType::TEXTURE, filePath});
+					}
+					component.m_TextureAssetHandle = handle;
 				}
 			}
 			ImGui::PopItemWidth();
 
 			UIPayload::BeginTarget(PAYLOAD_TEXTURE, [&component](void* data, uint32_t size) {
-				std::string strData = std::string((char*)data, size);
-				ST_CORE_INFO("Texture data dropped: {0}", strData.c_str());
-				component.SetPayload(strData);
+				AssetHandle handle = *(AssetHandle*)data;
+				AssetMetadata metadata = Project::GetEditorAssetManager()->GetAssetMetadata(handle);
+				ST_CORE_INFO("Texture data dropped: {}", metadata.m_FilePath.string());
+				component.m_TextureAssetHandle = handle;
 				});
 
 			ImGui::SameLine();

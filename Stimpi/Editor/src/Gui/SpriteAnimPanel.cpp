@@ -1,6 +1,9 @@
 #include "stpch.h"
 #include "Gui/SpriteAnimPanel.h"
 
+#include "Stimpi/Asset/AssetManager.h"
+#include "Stimpi/Core/Project.h"
+
 #include "ImGui/src/imgui.h"
 #include "ImGui/src/imgui_internal.h"
 
@@ -10,7 +13,8 @@ namespace Stimpi
 	SpriteAnimPanel::SpriteAnimPanel()
 	{
 		// Nero sprite test
-		m_SubTextureDisplay = std::make_shared<SubTexture>("..\/assets\/sprite_sheets\/nero_slap_anim-sheet.png", glm::vec2{ 0.0f, 0.0f }, glm::vec2{ 24, 24 });
+		AssetHandle handle = Project::GetEditorAssetManager()->RegisterAsset({ AssetType::TEXTURE, Project::GetAssestsDir() / "sprite_sheets\/nero_slap_anim-sheet.png" });
+		m_SubTextureDisplay = std::make_shared<SubTexture>(handle, glm::vec2{ 0.0f, 0.0f }, glm::vec2{ 24, 24 });
 		m_Sptire = std::make_shared<Sprite>(m_SubTextureDisplay.get(), 5, 1);
 		m_LoopAnim = m_Sptire->GetLooping();
 		m_Duration = m_Sptire->GetDuration();

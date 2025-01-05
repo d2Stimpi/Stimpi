@@ -4,6 +4,7 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Utils/ThreadPool.h"
 #include "Stimpi/Graphics/Texture.h"
+#include "Stimpi/Core/Project.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -13,7 +14,8 @@ namespace Stimpi
 
 	std::shared_ptr<Asset> TextureImporter::ImportTexture(AssetHandle handle, const AssetMetadata& metadata)
 	{
-		return LoadTexture(metadata.m_FilePath);
+		FilePath assetPath = Project::GetAssestsDir() / metadata.m_FilePath.string();
+		return LoadTexture(assetPath);
 	}
 
 	std::shared_ptr<Stimpi::Asset> TextureImporter::LoadTexture(const FilePath& filePath)

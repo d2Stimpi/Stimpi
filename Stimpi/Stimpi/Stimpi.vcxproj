@@ -171,6 +171,8 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Asset\AssetManagerEditor.h" />
     <ClInclude Include="src\Stimpi\Asset\AssetManagerRuntime.h" />
     <ClInclude Include="src\Stimpi\Asset\AssetMetadata.h" />
+    <ClInclude Include="src\Stimpi\Asset\SceneImporter.h" />
+    <ClInclude Include="src\Stimpi\Asset\ShaderImporter.h" />
     <ClInclude Include="src\Stimpi\Asset\TextureImporter.h" />
     <ClInclude Include="src\Stimpi\Cmd\Command.h" />
     <ClInclude Include="src\Stimpi\Cmd\CommandStack.h" />
@@ -251,6 +253,8 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClCompile Include="src\Stimpi\Asset\AssetManager.cpp" />
     <ClCompile Include="src\Stimpi\Asset\AssetManagerEditor.cpp" />
     <ClCompile Include="src\Stimpi\Asset\AssetManagerRuntime.cpp" />
+    <ClCompile Include="src\Stimpi\Asset\SceneImporter.cpp" />
+    <ClCompile Include="src\Stimpi\Asset\ShaderImporter.cpp" />
     <ClCompile Include="src\Stimpi\Asset\TextureImporter.cpp" />
     <ClCompile Include="src\Stimpi\Cmd\CommandStack.cpp" />
     <ClCompile Include="src\Stimpi\Cmd\Commands.cpp" />

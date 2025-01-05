@@ -6,7 +6,6 @@
 #include "Stimpi/Graphics/SubTexture.h"
 #include "Stimpi/Graphics/Animation/Sprite.h"
 #include "Stimpi/Core/Timestep.h"
-#include "Stimpi/Scene/Assets/AssetManagerB.h"
 
 namespace Stimpi
 {
