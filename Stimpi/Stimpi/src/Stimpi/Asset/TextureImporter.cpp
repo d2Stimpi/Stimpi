@@ -3,7 +3,6 @@
 
 #include "Stimpi/Log.h"
 #include "Stimpi/Utils/ThreadPool.h"
-#include "Stimpi/Graphics/Texture.h"
 #include "Stimpi/Core/Project.h"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -15,10 +14,10 @@ namespace Stimpi
 	std::shared_ptr<Asset> TextureImporter::ImportTexture(AssetHandle handle, const AssetMetadata& metadata)
 	{
 		FilePath assetPath = Project::GetAssestsDir() / metadata.m_FilePath.string();
-		return LoadTexture(assetPath);
+		return std::static_pointer_cast<Asset>(LoadTexture(assetPath));
 	}
 
-	std::shared_ptr<Stimpi::Asset> TextureImporter::LoadTexture(const FilePath& filePath)
+	std::shared_ptr<Stimpi::Texture> TextureImporter::LoadTexture(const FilePath& filePath)
 	{
 		// 1. Read image data -> TextureSpecification
 		TextureSpecification spec;

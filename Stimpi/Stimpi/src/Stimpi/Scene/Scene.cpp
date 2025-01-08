@@ -230,29 +230,17 @@ namespace Stimpi
 
 					if (sprite.m_Disabled == false)
 					{
-						//if (sprite.TextureLoaded())	// TODO: move this check to Renderer
-						//{
-							if (sprite.m_Enable)
-								Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite, m_DefaultShader.get());
-							else
-								Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
-						/*}
+						if (sprite.m_Enable)
+							Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite, m_DefaultShader.get());
 						else
-						{
 							Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
-						}*/
 					}
 				}
 				else if (m_Registry.all_of<AnimatedSpriteComponent>(entity))
 				{
 					auto& anim = m_Registry.get<AnimatedSpriteComponent>(entity);
-
-					//if (anim.Loaded())
-					//{
-						// AnimationSprite is render always when in stopped "Editor" mode
-						if (anim.IsPlaying() || m_RuntimeState == RuntimeState::STOPPED)
-							Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, anim, m_DefaultShader.get());
-					//}
+					if (anim.IsPlaying() || m_RuntimeState == RuntimeState::STOPPED)
+						Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, anim, m_DefaultShader.get());
 				}
 
 				prevLayer = sortGroup.m_LayerIndex;

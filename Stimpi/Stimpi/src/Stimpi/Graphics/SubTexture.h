@@ -29,7 +29,7 @@ namespace Stimpi
 		glm::vec2 GetUVMin() { return m_UVmin; }
 		glm::vec2 GetUVMax() { return m_UVmax; }
 
-		Texture* GetTexture();
+		Texture* GetTexture();	//TODO: to be removed
 		unsigned int GetTextureID() { return GetTexture()->GetTextureID(); }
 
 		AssetHandle GetAssetHandle() { return m_TextureAssetHandle; }

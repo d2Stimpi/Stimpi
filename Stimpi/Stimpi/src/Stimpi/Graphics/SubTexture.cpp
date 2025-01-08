@@ -63,7 +63,7 @@ namespace Stimpi
 		m_UVmax = glm::vec2((indexCol + 1) * m_SubWidth / textureWidth, (indexRow + 1) * m_SubHeight / textureHeight);
 	}
 
-	Texture* SubTexture::GetTexture()
+	Texture* SubTexture::GetTexture()	//TODO: to be removed
 	{
 		return AssetManager::GetAsset<Texture>(m_TextureAssetHandle).get();
 	}
