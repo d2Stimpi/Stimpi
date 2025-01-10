@@ -80,6 +80,12 @@ namespace Stimpi
 		if (DBG_LOG) LogShaderInfo();
 	}
 
+	OpenGLShader::OpenGLShader(ShaderInfo info, VertexShaderData vsd, FragmentShaderData fsd)
+		: Shader(info), m_ID(0)
+	{
+		// Compile shader programs
+	}
+
 	OpenGLShader::~OpenGLShader()
 	{
 		glDeleteShader(m_ID);

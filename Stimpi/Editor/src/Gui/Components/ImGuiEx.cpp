@@ -44,7 +44,7 @@ namespace Stimpi
 		retVal = ImGui::Button(strID, size);
 
 		Texture* iconTexture = EditorResources::GetIconTexture(iconName);
-		if (iconTexture->Loaded())
+		if (iconTexture)
 		{
 			ImGuiWindow* window = ImGui::GetCurrentWindow();
 
@@ -77,7 +77,7 @@ namespace Stimpi
 		}
 
 		Texture* iconTexture = EditorResources::GetIconTexture(iconName);
-		if (iconTexture->Loaded())
+		if (iconTexture)
 		{
 			ImGuiWindow* window = ImGui::GetCurrentWindow();
 
@@ -92,7 +92,7 @@ namespace Stimpi
 	void ImGuiEx::Icon(std::string iconName)
 	{
 		Texture* iconTexture = EditorResources::GetIconTexture(iconName);
-		if (iconTexture->Loaded())
+		if (iconTexture)
 		{
 			ImVec2 uv_min = ImVec2(0.0f, 1.0f);
 			ImVec2 uv_max = ImVec2(1.0f, 0.0f);
@@ -156,7 +156,7 @@ namespace Stimpi
 		ImVec2 inputRectSize = ImGui::GetItemRectSize();
 
 		Texture* iconTexture = EditorResources::GetIconTexture(EDITOR_ICON_SEARCH);
-		if (iconTexture->Loaded())
+		if (iconTexture)
 		{
 			ImVec2 icon_pos_min = { cursor.x + 5, cursor.y + style.FramePadding.y };
 			ImVec2 icon_pos_max = { icon_pos_min.x + s_Style.m_SmallIconSize.x, icon_pos_min.y + s_Style.m_SmallIconSize.y };

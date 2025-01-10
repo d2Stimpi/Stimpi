@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Stimpi/Scene/Assets/AssetManagerB.h"
+#include "Stimpi/Graphics/Texture.h"
 
 #include "ImGui/src/imgui.h"
 
@@ -20,21 +20,17 @@
 #define EDITOR_ICON_MOVE	"move.png"
 #define EDITOR_ICON_SCALE	"scale.png"
 
-
 // Default style initializer values
 constexpr ImVec2 s_DefaultIconButtonSize = { 22.0f, 21.0f };
 constexpr ImVec2 s_DefaultSmallIconSize = { 16.0f, 16.0f };
 
 namespace Stimpi
 {
+	using EditorIcons = std::unordered_map<std::string, std::shared_ptr<Texture>>;
+
 	struct EditorResourcesConfig
 	{
 		std::filesystem::path m_ResourcePath = "../resources/icons/";
-	};
-
-	struct EditorIcons
-	{
-		AssetHandleB m_GearIcon;
 	};
 
 	class EditorResources
@@ -44,5 +40,7 @@ namespace Stimpi
 
 		static Texture* GetIconTexture(std::string name);
 		static ImTextureID GetIconTextureID(std::string name);
+	private:
+		static EditorIcons m_Icons;
 	};
 }

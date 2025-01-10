@@ -31,8 +31,8 @@ namespace Stimpi
 			out << YAML::BeginMap;
 			{
 				// Temp to generate AssetProver and dllexport it
-				auto tmp = AssetManagerB::GetAsset<Texture>(filePath);
-				AssetManagerB::GetAssetData<Texture>(tmp);
+				//auto tmp = AssetManagerB::GetAsset<Texture>(filePath);
+				//AssetManagerB::GetAssetData<Texture>(tmp);
 
 				out << YAML::Key << "TextureAssetHandle" << YAML::Value << m_Animation->GetSubTexture()->GetAssetHandle();
 

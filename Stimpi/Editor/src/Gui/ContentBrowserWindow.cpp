@@ -196,7 +196,6 @@ namespace Stimpi
 				texture = s_Context.m_FolderTexture.get();
 				break;
 			case ThumbnailType::TEXTURE:
-				// texture = AssetManagerB::GetAssetNoRefCount<Texture>(path);
 				handle = Project::GetEditorAssetManager()->GetAssetHandle(relativePath);
 				asset = AssetManager::GetAsset<Texture>(handle);
 				if (asset != nullptr)
@@ -308,10 +307,7 @@ namespace Stimpi
 
 	void ContentBrowserWindow::OnCurrentDirChange()
 	{
-		for (auto asset : m_DirectoryAssets)
-		{
-			AssetManagerB::Release(asset);
-		}
+		
 	}
 
 	void ContentBrowserWindow::ReadDirHierarchyData()

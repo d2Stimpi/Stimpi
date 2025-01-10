@@ -153,7 +153,7 @@ namespace Stimpi
 	//template <typename T> ST_API AssetProviderData<T> AssetProvider<T>::m_ProviderData;
 
 	// AssetProvider specializations
-	template <> AssetTypeB AssetProvider<Texture>::GetType() { return AssetTypeB::TEXTURE; }
+	//template <> AssetTypeB AssetProvider<Texture>::GetType() { return AssetTypeB::TEXTURE; }
 	template <> AssetTypeB AssetProvider<Shader>::GetType() { return AssetTypeB::SHADER; }
 
 	/**

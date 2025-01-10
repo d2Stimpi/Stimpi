@@ -11,7 +11,6 @@ namespace Stimpi
 	public:
 		OpenGLTexture();
 		OpenGLTexture(TextureSpecification spec);
-		OpenGLTexture(std::string file);
 		~OpenGLTexture();
 
 		void Delete();
@@ -24,12 +23,7 @@ namespace Stimpi
 		void Unbind() override;
 		void Resize(uint32_t width, uint32_t height) override;
 		unsigned int GetTextureID() override { return m_TextureID; }
-
-		bool Loaded() override;
-
-		// For async loading
-		void LoadDataAsync(std::string file) override;
-	
+			
 	private:
 		void CheckLoadFuture();	// to remove
 		void GenerateTexture(TextureLoadData* data);	// to remove

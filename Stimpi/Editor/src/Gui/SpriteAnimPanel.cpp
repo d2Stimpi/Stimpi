@@ -55,7 +55,7 @@ namespace Stimpi
 			ImVec2 uvMin = ImVec2{ textureMin.x, textureMax.y };
 			ImVec2 uvMax = ImVec2{ textureMax.x, textureMin.y };
 
-			if (m_SubTextureDisplay->GetTexture()->Loaded())
+			if (m_SubTextureDisplay->GetTexture())
 				ImGui::Image((ImTextureID)m_SubTextureDisplay->GetTextureID(), ImVec2{ 80 , 80 }, uvMin, uvMax);
 
 			ImGui::PushItemWidth(40);

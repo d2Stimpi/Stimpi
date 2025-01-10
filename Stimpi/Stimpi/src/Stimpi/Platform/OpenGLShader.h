@@ -11,6 +11,7 @@ namespace Stimpi
 	{
 	public:
 		OpenGLShader(const std::string& fileName);
+		OpenGLShader(ShaderInfo info, VertexShaderData vsd, FragmentShaderData fsd);
 		~OpenGLShader();
 
 		unsigned int GetShaderID() override;
@@ -30,6 +31,6 @@ namespace Stimpi
 
 		void ParseVertexShaderLine(const std::string& line);
 		/* Data members */
-		unsigned int m_ID;
+		unsigned int m_ID = 0;
 	};
 }

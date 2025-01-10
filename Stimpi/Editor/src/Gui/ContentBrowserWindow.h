@@ -2,7 +2,6 @@
 
 #include "Gui/Components/Thumbnail.h"
 #include "Stimpi/Core/Timestep.h"
-#include "Stimpi/Scene/Assets/AssetManagerB.h"
 #include "Stimpi/Utils/FilePath.h"
 #include "Stimpi/Asset/Asset.h"
 
@@ -58,7 +57,6 @@ namespace Stimpi
 	private:
 		bool m_Show = true;
 		std::filesystem::path m_CurrentDirectory;
-		std::vector<AssetHandleB> m_DirectoryAssets;
 
 		std::shared_ptr<FileNode> m_RootFolderNode;
 	};

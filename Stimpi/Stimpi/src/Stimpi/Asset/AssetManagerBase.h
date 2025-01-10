@@ -2,6 +2,8 @@
 
 #include "Stimpi/Asset/Asset.h"
 
+#include <unordered_map>
+
 namespace Stimpi
 {
 	using AssetMap = std::unordered_map<AssetHandle, std::shared_ptr<Asset>>;

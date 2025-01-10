@@ -20,16 +20,6 @@ namespace Stimpi
 
 	}
 
-	OpenGLTexture::OpenGLTexture(std::string file)
-	{
-		// TODO:
-		// Get the project specified path where Textures are expected to be stored
-		auto texturePath = std::filesystem::absolute(ResourceManager::GetAssetsPath()) / file;
-		m_AssetPath = file;
-
-		LoadDataAsync(file);
-	}
-
 	OpenGLTexture::OpenGLTexture(TextureSpecification spec)
 	{
 		m_Spec = spec;
@@ -69,41 +59,6 @@ namespace Stimpi
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glBindTexture(GL_TEXTURE_2D, 0);
-	}
-
-	bool OpenGLTexture::Loaded()
-	{
-		if (m_TextureID == 0)
-		{
-			// Check if we have loading in progress (poll the future)
-			CheckLoadFuture();
-		}
-
-		return m_TextureID != 0;
-	}
-
-	void OpenGLTexture::LoadDataAsync(std::string file)
-	{
-		// Remove old texture if one exists
-		Delete();
-
-		m_LoadFuture = s_LoaderThreadPool->AddTask([file]() {
-			TextureLoadData* loadData = new TextureLoadData();
-
-			loadData->m_FileName = file;
-			stbi_set_flip_vertically_on_load(true); // TODO: Move somewhere on init
-			loadData->m_Data = stbi_load(file.c_str(), (int*)&loadData->m_Width, (int*)&loadData->m_Height, (int*)&loadData->m_NumChannels, 0);
-			if (loadData->m_Data)
-			{
-				if (DBG_LOG) ST_CORE_INFO(" ** Texture data is loaded {}", loadData->m_FileName);
-			}
-			else
-			{
-				ST_CORE_ERROR("Failed to load texture: {0}", loadData->m_FileName);
-			}
-
-			return loadData;
-		});
 	}
 
 	void OpenGLTexture::CheckLoadFuture()

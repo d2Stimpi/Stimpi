@@ -35,10 +35,6 @@ namespace Stimpi
 		void WriteToFileAppend(const std::string& fileName, const char* data);
 		void WriteToFileAppend(const std::string& fileName, const YAML::Node& data);
 
-		// Texture resource management
-		Texture* LoadTexture(const std::string& fileName);
-		void UnloadTextures();
-
 		// TODO: tmp test
 		void Test();
 
@@ -53,8 +49,6 @@ namespace Stimpi
 		void NotifyOnSceneChange();
 
 	private:
-		std::map<std::string, std::shared_ptr<Texture>> m_TextureMap;
-
 		// Project management
 		std::filesystem::path m_ProjectDir = DEFAULT_PROJECT_PATH;
 		std::vector<OnProjectChangedListener> m_OnProjectChangedListeners;

@@ -10,5 +10,8 @@ namespace Stimpi
 	public:
 		static std::shared_ptr<Asset> ImportShader(AssetHandle handle, const AssetMetadata& metadata);
 		static std::shared_ptr<Shader> LoadShader(const FilePath& filePath);
+
+	private:
+		static ShaderInfo ParseVertexShaderByLine(const std::string& line);
 	};
 }

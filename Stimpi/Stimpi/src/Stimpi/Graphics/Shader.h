@@ -21,6 +21,9 @@ namespace Stimpi
 {
 	using shader_variant = std::variant<int, float, glm::vec2, glm::vec3, glm::vec4, glm::mat4>;
 
+	using VertexShaderData = std::string;
+	using FragmentShaderData = std::string;
+
 	enum class ShaderDataType
 	{
 		Int = 0, Int2, Int3, Int4,
@@ -126,6 +129,7 @@ namespace Stimpi
 	{
 	public:
 		Shader(const std::string& fileName) : m_Name(fileName) {}
+		Shader(ShaderInfo info) : m_Name("unnamed"), m_Info(info) {}
 		virtual ~Shader();
 
 		virtual unsigned int GetShaderID() = 0;
@@ -141,6 +145,7 @@ namespace Stimpi
 		ShaderInfo& GetInfo() { return m_Info; }
 
 		static Shader* CreateShader(const std::string& fileName);
+		static std::shared_ptr<Shader> Create(ShaderInfo info, VertexShaderData vsd, FragmentShaderData fsd);
 
 		// AssetManager
 		static Shader* Create(std::string& file) { return CreateShader(file); }
