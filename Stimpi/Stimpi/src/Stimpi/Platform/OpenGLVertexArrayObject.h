@@ -10,6 +10,7 @@ namespace Stimpi
 		OpenGLVertexArrayObject(const VertexBufferLayout& layout);
 		~OpenGLVertexArrayObject();
 
+		unsigned int GetID() override;
 		void BindArray() override;
 		void Unbind() override;
 		void EnableVertexAttribArray() override;

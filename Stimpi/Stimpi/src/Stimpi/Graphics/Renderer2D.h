@@ -65,6 +65,10 @@ namespace Stimpi
 		void DrawFrame();
 		void EndFrame();
 
+		// Custom shader handling
+		void RegisterShader(std::shared_ptr<Shader> shader);
+		void UnregisterShader(std::shared_ptr<Shader> shader);
+
 		// To link with ImGui
 		FrameBuffer* GetFrameBuffer();
 
@@ -92,15 +96,19 @@ namespace Stimpi
 		void ClearRenderCommands();
 
 		void ShowDebugData();
+
+		unsigned int BuildCustomVAO(const VertexBufferLayout& layout, const unsigned int& shaderID);
+		unsigned int BuildCustomVBO(const BufferObjectType& type, const unsigned int& shaderID);
+		void PrepareCustomShaderObjects(const unsigned int& shaderID);
 	private:
 		bool m_LocalRendering = false;
 
 		RenderAPI* m_RenderAPI;
 		OrthoCamera* m_ActiveCamera;
 
-		// Custom shader rendering
-		std::unordered_map<std::string, std::shared_ptr<VertexArrayObject>> m_CustomVAOs;
-		std::unordered_map<std::string, std::shared_ptr<BufferObject>> m_CustomVBOs;
+		// Custom shader rendering [shaderID : VAO] and [shaderID : VBO]
+		std::unordered_map<unsigned int, std::shared_ptr<VertexArrayObject>> m_CustomVAOs;
+		std::unordered_map<unsigned int, std::shared_ptr<BufferObject>> m_CustomVBOs;
 		std::vector<std::shared_ptr<Shader>> m_CustomShaders;
 
 		// Quad rendering

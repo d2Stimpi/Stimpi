@@ -17,6 +17,8 @@
 *  - value - int, float, bool, glm::matX, glm::vecX 
 */
 
+// TODO: decouple Shader and VBO files, move the data types to new shared header file
+
 namespace Stimpi
 {
 	using shader_variant = std::variant<int, float, glm::vec2, glm::vec3, glm::vec4, glm::mat4>;
@@ -119,10 +121,12 @@ namespace Stimpi
 	struct ST_API ShaderInfo
 	{
 		ShaderLayout m_ShaderLayout;
+		// TODO: parse and store properties (uniforms)
+		unsigned int m_VAOHandle = 0;  // TODO: when shader handle asset is used move this outside of struct
 
 		ShaderInfo() = default;
 		ShaderInfo(const ShaderLayout& layout)
-			: m_ShaderLayout(layout) {}
+			: m_ShaderLayout(layout), m_VAOHandle(0) {}
 	};
 
 	class ST_API Shader : public Asset

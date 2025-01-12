@@ -58,10 +58,11 @@ namespace Stimpi
 
 		InputManager::Instance()->AddKeyboardEventHandler(new KeyboardEventHandler([&](KeyboardEvent event) -> bool 
 			{
-				if (EditorUtils::WantCaptureKeyboard() && s_Context.m_WindowFocused)
+				// Check m_WindowFocused value in order to enable F key only when this view is focused
+				if (EditorUtils::WantCaptureKeyboard()/* && s_Context.m_WindowFocused*/)
 				{
 					// HierarcyWindow focused handling
-					if (s_Context.m_WindowFocused)
+					//if (s_Context.m_WindowFocused)
 					{
 						if (event.GetKeyCode() == ST_KEY_F && event.GetType() == KeyboardEventType::KEY_EVENT_DOWN)
 						{

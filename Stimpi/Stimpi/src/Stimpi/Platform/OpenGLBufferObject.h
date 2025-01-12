@@ -11,6 +11,7 @@ namespace Stimpi
 		OpenGLBufferObject(BufferObjectType type);
 		~OpenGLBufferObject();
 
+		unsigned int GetID() override;
 		void InitBuffer(uint32_t capacity) override;
 		void BindBuffer() override;
 		void Unbind() override;

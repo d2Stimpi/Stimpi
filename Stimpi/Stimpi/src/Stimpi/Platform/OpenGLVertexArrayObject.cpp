@@ -34,6 +34,11 @@ namespace Stimpi
 	{
 		glDeleteVertexArrays(1, &m_ID);
 	}
+	
+	unsigned int OpenGLVertexArrayObject::GetID()
+	{
+		return m_ID;
+	}
 
 	void OpenGLVertexArrayObject::BindArray()
 	{

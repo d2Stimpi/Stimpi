@@ -381,7 +381,7 @@ namespace Stimpi
 
 		shader->SetUniform("u_texture", 0);
 		
-		if (currnetCmd->m_Texture != nullptr)
+		/*if (currnetCmd->m_Texture != nullptr)
 		{
 			auto width = currnetCmd->m_Texture->GetWidth();
 			auto height = currnetCmd->m_Texture->GetHeight();
@@ -391,7 +391,7 @@ namespace Stimpi
 		auto camView = m_ActiveCamera->GetViewQuad();
 		auto zoom = m_ActiveCamera->GetZoom();
 		float texelPerPixel = camView.w / m_FrameBuffer->GetHeight() / zoom;  // camView.y - width
-		shader->SetUniform("u_TexelsPerPixel", texelPerPixel);
+		shader->SetUniform("u_TexelsPerPixel", texelPerPixel);*/
 	}
 
 	void Renderer2D::ResizeCanvas(uint32_t width, uint32_t height)
@@ -451,6 +451,47 @@ namespace Stimpi
 		m_LastFrameRenderedCmdCnt = m_RenderedCmdCnt;
 		m_DrawCallCnt = 0;
 		m_RenderedCmdCnt = 0;
+	}
+
+	void Renderer2D::RegisterShader(std::shared_ptr<Shader> shader)
+	{
+		auto& info = shader->GetInfo();
+		unsigned int shaderID = shader->GetShaderID();
+
+		VertexBufferLayout vboLayout(info.m_ShaderLayout.m_Data);
+
+		BuildCustomVAO(vboLayout, shaderID);
+		BuildCustomVBO(BufferObjectType::ARRAY_BUFFER, shaderID);
+		PrepareCustomShaderObjects(shaderID);
+
+		if (std::find(m_CustomShaders.begin(), m_CustomShaders.end(), shader) == m_CustomShaders.end())
+		{
+			m_CustomShaders.push_back(shader);
+		}
+		else
+		{
+			ST_CORE_WARN("RegisterShader: Shader [ID={}] already registered!", shaderID);
+		}
+	}
+
+	void Renderer2D::UnregisterShader(std::shared_ptr<Shader> shader)
+	{
+		unsigned int shaderID = shader->GetShaderID();
+		auto vao = m_CustomVAOs[shaderID];
+		auto vbo = m_CustomVBOs[shaderID];
+
+		if (vao != nullptr && vbo != nullptr)
+		{
+			vao->Unbind();
+			vbo->Unbind();
+
+			m_CustomVAOs.erase(shaderID);
+			m_CustomVBOs.erase(shaderID);
+		}
+
+		auto found = std::find(m_CustomShaders.begin(), m_CustomShaders.end(), shader);
+		if (found != m_CustomShaders.end())
+			m_CustomShaders.erase(found);
 	}
 
 	void Renderer2D::DrawQuadRenderCmd(std::shared_ptr<RenderCommand>& renderCmd)
@@ -521,6 +562,58 @@ namespace Stimpi
 			}
 			loggedDrawCallCnt = m_DrawCallCnt;
 			loggedRenderCmdCnt = m_RenderedCmdCnt;
+		}
+	}
+
+	unsigned int Renderer2D::BuildCustomVAO(const VertexBufferLayout& layout, const unsigned int& shaderID)
+	{
+		std::shared_ptr<VertexArrayObject> vao;
+		vao.reset(VertexArrayObject::CreateVertexArrayObject(layout));
+
+		if (m_CustomVAOs.find(shaderID) == m_CustomVAOs.end())
+		{
+			m_CustomVAOs[shaderID] = vao;
+		}
+		else
+		{
+			ST_CORE_WARN("BuildCustomVAO: Shader [ID={}] already has registered VertexArrayObject!", shaderID);
+		}
+
+		return vao->GetID();
+	}
+
+	unsigned int Renderer2D::BuildCustomVBO(const BufferObjectType& type, const unsigned int& shaderID)
+	{
+		std::shared_ptr<BufferObject> vbo;
+		vbo.reset(BufferObject::CreateBufferObject(BufferObjectType::ARRAY_BUFFER));
+
+		if (m_CustomVBOs.find(shaderID) == m_CustomVBOs.end())
+		{
+			m_CustomVBOs[shaderID] = vbo;
+		}
+		else
+		{
+			ST_CORE_WARN("BuildCustomVBO: Shader [ID={}] already has registered BufferObject!", shaderID);
+		}
+
+		return vbo->GetID();
+	}
+
+	void Renderer2D::PrepareCustomShaderObjects(const unsigned int& shaderID)
+	{
+		auto vao = m_CustomVAOs[shaderID];
+		auto vbo = m_CustomVBOs[shaderID];
+
+		if (vao != nullptr && vbo != nullptr)
+		{
+			vao->BindArray();
+			vbo->BindBuffer();
+			vbo->InitBuffer(VERTEX_ARRAY_SIZE_QUADS);
+			vao->EnableVertexAttribArray();
+		}
+		else
+		{
+			ST_CORE_WARN("PrepareCustomShader: Shader [ID={}] has no valid VAO or BO created!", shaderID);
 		}
 	}
 

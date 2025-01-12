@@ -11,7 +11,14 @@
 
 namespace Stimpi
 {
-	enum class RenderCommandType { NONE = 0, QUAD, CIRLCE, LINE };
+	enum class RenderCommandType { NONE = 0, QUAD, CIRLCE, LINE, VARIABLE };
+
+	struct VariableVertexData
+	{
+		std::vector<float> m_Data;
+
+		float* operator&() { return &m_Data[0]; }
+	};
 
 	struct VertexData
 	{
@@ -55,6 +62,7 @@ namespace Stimpi
 		RenderCommandType m_Type;
 		Shader* m_Shader;
 		Texture* m_Texture;
+		std::vector<VariableVertexData> m_VariableVertexData;
 		std::vector<VertexData> m_VertexData;
 		std::vector<CircleVertexData> m_CircleVertexData;
 		std::vector<LineVertexData> m_LineVertexData;
@@ -74,9 +82,21 @@ namespace Stimpi
 		{}
 
 		uint32_t Size() { return m_VertexCount * m_VertexSize; }
+		float* VariableData() { return &(m_VariableVertexData[0]); }
 		float* Data() { return &(m_VertexData[0]); }
 		float* CircleData() { return &(m_CircleVertexData[0]); }
 		float* LineData() { return &(m_LineVertexData[0]); }
+
+		void PushVariableVertex(VariableVertexData vertexData)
+		{
+			ST_CORE_ASSERT((m_Type != RenderCommandType::NONE && m_Type != RenderCommandType::VARIABLE));
+
+			if (m_Type == RenderCommandType::NONE)
+				m_Type = RenderCommandType::VARIABLE;
+
+			m_VariableVertexData.push_back(vertexData);
+			m_VertexCount++;
+		}
 
 		void PushQuadVertex(glm::vec3 position, glm::vec4 color, glm::vec2 textureCoord)
 		{
