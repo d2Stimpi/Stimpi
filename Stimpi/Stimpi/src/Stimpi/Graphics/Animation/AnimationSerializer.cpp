@@ -4,7 +4,6 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Utils/FilePath.h"
 #include "Stimpi/Scene/ResourceManager.h"
-#include "Stimpi/Scene/Assets/AssetManagerB.h"
 #include "Stimpi/Core/Project.h"
 #include "Stimpi/Asset/AssetManager.h"
 #include "Stimpi/Core/Runtime.h"
@@ -30,10 +29,6 @@ namespace Stimpi
 			out << YAML::Key << "Animation" << YAML::Value;
 			out << YAML::BeginMap;
 			{
-				// Temp to generate AssetProver and dllexport it
-				//auto tmp = AssetManagerB::GetAsset<Texture>(filePath);
-				//AssetManagerB::GetAssetData<Texture>(tmp);
-
 				out << YAML::Key << "TextureAssetHandle" << YAML::Value << m_Animation->GetSubTexture()->GetAssetHandle();
 
 				out << YAML::Key << "Frames" << YAML::Value;

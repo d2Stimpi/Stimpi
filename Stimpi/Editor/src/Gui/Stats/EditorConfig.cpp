@@ -1,10 +1,10 @@
 #include "stpch.h"
 #include "Gui/Stats/EditorConfig.h"
 
+#include "Stimpi/Core/Project.h"
 #include "Stimpi/Core/Time.h"
 #include "Stimpi/Debug/Statistics.h"
 #include "Stimpi/Graphics/Renderer2D.h"
-#include "Stimpi/Scene/Assets/AssetManagerB.h"
 #include "Stimpi/Scripting/ScriptEngine.h"
 
 #include "ImGui/src/imgui.h"
@@ -44,7 +44,7 @@ namespace Stimpi
 				ImGui::Separator();
 				if (ImGui::CollapsingHeader("Asset Manager##Global Stats", ImGuiTreeNodeFlags_DefaultOpen))
 				{
-					ImGui::Text("Assets usage count: %d", AssetManagerB::GetLoadedAssetsCount());
+					ImGui::Text("Assets usage count: %d", Project::GetEditorAssetManager()->GetLoadedAssetsCount());
 				}
 
 				ImGui::Separator();

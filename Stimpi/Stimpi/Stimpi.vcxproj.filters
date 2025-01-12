@@ -220,12 +220,6 @@
     <ClInclude Include="src\Stimpi\Platform\OpenGLVertexArrayObject.h">
       <Filter>Stimpi\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="src\Stimpi\Scene\Assets\AssetHandleB.h">
-      <Filter>Stimpi\Scene\Assets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Stimpi\Scene\Assets\AssetManagerB.h">
-      <Filter>Stimpi\Scene\Assets</Filter>
-    </ClInclude>
     <ClInclude Include="src\Stimpi\Scene\Camera.h">
       <Filter>Stimpi\Scene</Filter>
     </ClInclude>
@@ -438,9 +432,6 @@
     </ClCompile>
     <ClCompile Include="src\Stimpi\Platform\Windows\WindowsPlatformUtils.cpp">
       <Filter>Stimpi\Platform\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Scene\Assets\AssetManagerB.cpp">
-      <Filter>Stimpi\Scene\Assets</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Scene\Camera.cpp">
       <Filter>Stimpi\Scene</Filter>

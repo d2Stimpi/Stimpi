@@ -6,6 +6,7 @@
 #include "Stimpi/Core/Project.h"
 
 #include "Stimpi/Asset/AssetManager.h"
+#include "Stimpi/Asset/ShaderImporter.h"
 
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/SceneSerializer.h"
@@ -175,12 +176,9 @@ namespace Stimpi
 #pragma region TESTING
 			if (ImGui::BeginMenu("Testing"))
 			{
-				if (ImGui::MenuItem("AssetManager"))
+				if (ImGui::MenuItem("Import Shader"))
 				{
-					auto& assetManager = Project::GetEditorAssetManager();
-					AssetHandle handle = assetManager->RegisterAsset({ AssetType::SCENE, "scenes\\asd.d2s" });
-
-					auto scene = AssetManager::GetAsset<Asset>(handle);
+					auto shader = ShaderImporter::LoadShader(Project::GetResourcesDir() / "shaders\/circle.shader");
 				}
 
 				if (ImGui::MenuItem("Run system cmd"))

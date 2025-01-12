@@ -136,6 +136,7 @@ namespace Stimpi
 
 		// Also pass all "buffered" uniform data to shader program
 		virtual void Use() = 0;
+		virtual bool Loaded() = 0;
 
 		void SetUniform(const std::string name, shader_variant value);
 		void SetBufferedUniforms();
@@ -144,12 +145,7 @@ namespace Stimpi
 		std::string& GetName() { return m_Name; }
 		ShaderInfo& GetInfo() { return m_Info; }
 
-		static Shader* CreateShader(const std::string& fileName);
 		static std::shared_ptr<Shader> Create(ShaderInfo info, VertexShaderData vsd, FragmentShaderData fsd);
-
-		// AssetManager
-		static Shader* Create(std::string& file) { return CreateShader(file); }
-		virtual bool Loaded() = 0;
 
 		static AssetType GetTypeStatic() { return AssetType::SHADER; }
 		AssetType GetType() override { return GetTypeStatic(); }

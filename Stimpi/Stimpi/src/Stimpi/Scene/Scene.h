@@ -115,8 +115,8 @@ namespace Stimpi
 		Camera* m_SceneCamera = nullptr; // Created outside of scene (Editor)
 		Camera* m_RenderCamera = nullptr; // Scene will use Camera Component in Runtime state
 		// Temp shader
-		std::shared_ptr<Stimpi::Shader> m_DefaultShader;
-		std::shared_ptr<Stimpi::Shader> m_DefaultSolidColorShader;
+		std::shared_ptr<Shader> m_DefaultShader;
+		std::shared_ptr<Shader> m_DefaultSolidColorShader;
 
 		// Physics
 		b2World* m_PhysicsWorld = nullptr;

@@ -2,13 +2,15 @@
 #include "Stimpi/Asset/ShaderImporter.h"
 
 #include "Stimpi/Log.h"
+#include "Stimpi/Core/Project.h"
 
 namespace Stimpi
 {
 
 	std::shared_ptr<Stimpi::Asset> ShaderImporter::ImportShader(AssetHandle handle, const AssetMetadata& metadata)
 	{
-		return nullptr;
+		FilePath assetPath = Project::GetAssestsDir() / metadata.m_FilePath.string();
+		return std::static_pointer_cast<Shader>(LoadShader(assetPath));
 	}
 
 	std::shared_ptr<Stimpi::Shader> ShaderImporter::LoadShader(const FilePath& filePath)
@@ -17,6 +19,7 @@ namespace Stimpi
 		std::string vertexShaderCode;
 		std::string fragmentShaderCode;
 		std::ifstream shaderFile;
+		ShaderInfo shaderInfo;
 
 		shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
@@ -39,7 +42,8 @@ namespace Stimpi
 				}
 				if (!readingFragmentShader)
 				{
-					ParseVertexShaderByLine(line);
+					// 2. Parse shader layout information
+					ParseVertexShaderByLine(line, shaderInfo);
 					vertexStream << line << std::endl;
 				}
 				else
@@ -56,26 +60,19 @@ namespace Stimpi
 		{
 			ST_CORE_ERROR("ShaderImporter: failed to read shader file {0} - error: {1}\n", filePath.string(), e.what());
 		}
-
-		// 2. Parse shader layout information
 		
 		// 3. Create shader asset
-		auto shader = Shader::Create({}, vertexShaderCode, fragmentShaderCode);
+		auto shader = Shader::Create(shaderInfo, vertexShaderCode, fragmentShaderCode);
 
-		return nullptr;
+		return shader;
 	}
 
-	Stimpi::ShaderInfo ShaderImporter::ParseVertexShaderByLine(const std::string& line)
+	Stimpi::ShaderInfo ShaderImporter::ParseVertexShaderByLine(const std::string& line, ShaderInfo& shaderInfo)
 	{
-		ShaderInfo shaderInfo;
 		size_t pos = line.find("layout(location =");
 		if (pos != std::string::npos)
 		{
-			// find the location number, we will ignore everything before num. 3 ??
 			int location = std::stoi(line.substr(17, line.length() - 17));
-			//if (location > 2)
-			//{
-				// find ")" and get tokens after it
 			pos = line.find(")", pos + 1);
 			if (pos != std::string::npos)
 			{
@@ -107,9 +104,7 @@ namespace Stimpi
 				}
 
 				shaderInfo.m_ShaderLayout.m_Data.emplace_back(StringToShaderType(type), name);
-				//ST_CORE_INFO("Shader parsed layout: [{}] {} {} {}", location, modifier, type, name);
 			}
-			//}
 		}
 
 		return shaderInfo;

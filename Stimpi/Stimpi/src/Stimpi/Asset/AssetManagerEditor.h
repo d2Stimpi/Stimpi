@@ -27,6 +27,9 @@ namespace Stimpi
 
 		void SerializeAssetRegistry(const FilePath& filePath);
 		void DeserializeAssetRegistry(const FilePath& filePath);
+
+		// Stats
+		size_t GetLoadedAssetsCount();
 	private:
 		AssetMap m_LoadedAssets;
 		AssetRegistry m_AssetRegistry;

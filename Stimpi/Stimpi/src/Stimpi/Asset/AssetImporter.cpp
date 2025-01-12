@@ -4,6 +4,7 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Asset/TextureImporter.h"
 #include "Stimpi/Asset/SceneImporter.h"
+#include "Stimpi/Asset/ShaderImporter.h"
 #include "Stimpi/Utils/ThreadPool.h"
 
 #include <chrono>
@@ -16,7 +17,7 @@ namespace Stimpi
 	std::unordered_map<AssetHandle, std::future<std::shared_ptr<Asset>>> s_LoadingFutures;
 	std::unordered_map<AssetType, AssetImportFunction> s_AssetImporters =
 	{
-		{ AssetType::SHADER, nullptr },
+		{ AssetType::SHADER, ShaderImporter::ImportShader },
 		{ AssetType::SCENE, SceneImporter::ImportScene },
 		{ AssetType::TEXTURE, TextureImporter::ImportTexture }
 	};

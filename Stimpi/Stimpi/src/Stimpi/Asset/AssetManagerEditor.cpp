@@ -194,4 +194,9 @@ namespace Stimpi
 		}
 	}
 
+	size_t AssetManagerEditor::GetLoadedAssetsCount()
+	{
+		return m_LoadedAssets.size();
+	}
+
 }

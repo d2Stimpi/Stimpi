@@ -9,7 +9,6 @@
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Scene/ScriptableEntity.h"
 #include "Stimpi/Scene/Camera.h"
-#include "Stimpi/Scene/Assets/AssetManagerB.h"
 #include "Stimpi/Scripting/ScriptEngine.h"
 #include "Stimpi/Scripting/ScriptSerializer.h"
 #include "Stimpi/Asset/AssetManager.h"

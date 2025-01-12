@@ -10,14 +10,12 @@ namespace Stimpi
 	class OpenGLShader : public Shader
 	{
 	public:
-		OpenGLShader(const std::string& fileName);
 		OpenGLShader(ShaderInfo info, VertexShaderData vsd, FragmentShaderData fsd);
 		~OpenGLShader();
 
 		unsigned int GetShaderID() override;
 		void Use() override;
-
-		virtual bool Loaded() override;
+		bool Loaded() override;
 	
 	private:
 		void SetUniformImpl(const std::string& name, int value) override;
@@ -29,8 +27,7 @@ namespace Stimpi
 
 		void CheckForErrors(unsigned int shader, std::string type) override;
 
-		void ParseVertexShaderLine(const std::string& line);
-		/* Data members */
+	private:
 		unsigned int m_ID = 0;
 	};
 }

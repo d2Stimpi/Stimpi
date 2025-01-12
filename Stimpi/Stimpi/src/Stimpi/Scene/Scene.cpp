@@ -3,12 +3,13 @@
 
 #include "Stimpi/Log.h"
 
+#include "Stimpi/Asset/ShaderImporter.h"
+
 #include "Stimpi/Scene/Entity.h"
 #include "Stimpi/Scene/EntityHierarchy.h"
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Scene/Utils/SceneUtils.h"
-#include "Stimpi/Scene/Assets/AssetManagerB.h"
 
 #include "Stimpi/Physics/ContactListener.h"
 #include "Stimpi/Physics/Physics.h"
@@ -77,9 +78,8 @@ namespace Stimpi
 		ScriptEngine::ClearScriptInstances();
 
 		m_RuntimeState = RuntimeState::STOPPED;
-		m_DefaultShader.reset(Shader::CreateShader("shader.shader"));
-		//m_DefaultShader.reset(Shader::CreateShader("pixelart.shader"));
-		m_DefaultSolidColorShader.reset(Shader::CreateShader("solidcolor.shader"));
+		m_DefaultShader = ShaderImporter::LoadShader(Project::GetResourcesDir() / "shaders\/shader.shader");
+		m_DefaultSolidColorShader = ShaderImporter::LoadShader(Project::GetResourcesDir() / "shaders\/solidcolor.shader");
 
 		// Collision listener for Box2D
 		m_ContactListener = std::make_unique<ContactListener>();

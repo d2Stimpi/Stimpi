@@ -221,8 +221,6 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Platform\OpenGLShader.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLTexture.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLVertexArrayObject.h" />
-    <ClInclude Include="src\Stimpi\Scene\Assets\AssetHandleB.h" />
-    <ClInclude Include="src\Stimpi\Scene\Assets\AssetManagerB.h" />
     <ClInclude Include="src\Stimpi\Scene\Camera.h" />
     <ClInclude Include="src\Stimpi\Scene\CameraController.h" />
     <ClInclude Include="src\Stimpi\Scene\Component.h" />
@@ -296,7 +294,6 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClCompile Include="src\Stimpi\Platform\OpenGLTexture.cpp" />
     <ClCompile Include="src\Stimpi\Platform\OpenGLVertexArrayObject.cpp" />
     <ClCompile Include="src\Stimpi\Platform\Windows\WindowsPlatformUtils.cpp" />
-    <ClCompile Include="src\Stimpi\Scene\Assets\AssetManagerB.cpp" />
     <ClCompile Include="src\Stimpi\Scene\Camera.cpp" />
     <ClCompile Include="src\Stimpi\Scene\CameraController.cpp" />
     <ClCompile Include="src\Stimpi\Scene\Component.cpp" />

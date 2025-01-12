@@ -5,12 +5,14 @@
 #include "ImGui/src/backend/imgui_impl_sdl2.h"
 #include "ImGui/src/backend/imgui_impl_opengl3.h"
 
-#include "Stimpi/Log.h"
+#include "Stimpi/Asset/ShaderImporter.h"
 #include "Stimpi/Cmd/CommandStack.h"
 #include "Stimpi/Core/Time.h"
 #include "Stimpi/Core/WindowManager.h"
+#include "Stimpi/Core/Project.h"
 #include "Stimpi/Graphics/Shader.h"
 #include "Stimpi/Graphics/Renderer2D.h"
+#include "Stimpi/Log.h"
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/ResourceManager.h"
 
@@ -63,7 +65,7 @@ namespace Stimpi
 		EditorResources::LoadTextues();
 
 		// Scene Init
-		m_ShaderChecker.reset(Shader::CreateShader("checkerboard.shader"));
+		m_ShaderChecker = ShaderImporter::LoadShader(Project::GetResourcesDir() / "shaders\/checkerboard.shader");
 		// Editor camera init
 		m_EditorCamera = std::make_shared<Camera>(0.0f, 128.0f, 0.0f, 72.0f); // TODO: expose to Editor
 		m_EditorCamera->SetPosition({ 0.0f, 0.0f, 0.0f });
