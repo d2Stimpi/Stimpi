@@ -164,6 +164,16 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi.h" />
+    <ClInclude Include="src\Stimpi\Asset\Asset.h" />
+    <ClInclude Include="src\Stimpi\Asset\AssetImporter.h" />
+    <ClInclude Include="src\Stimpi\Asset\AssetManager.h" />
+    <ClInclude Include="src\Stimpi\Asset\AssetManagerBase.h" />
+    <ClInclude Include="src\Stimpi\Asset\AssetManagerEditor.h" />
+    <ClInclude Include="src\Stimpi\Asset\AssetManagerRuntime.h" />
+    <ClInclude Include="src\Stimpi\Asset\AssetMetadata.h" />
+    <ClInclude Include="src\Stimpi\Asset\SceneImporter.h" />
+    <ClInclude Include="src\Stimpi\Asset\ShaderImporter.h" />
+    <ClInclude Include="src\Stimpi\Asset\TextureImporter.h" />
     <ClInclude Include="src\Stimpi\Cmd\Command.h" />
     <ClInclude Include="src\Stimpi\Cmd\CommandStack.h" />
     <ClInclude Include="src\Stimpi\Cmd\Commands.h" />
@@ -211,8 +221,6 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Platform\OpenGLShader.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLTexture.h" />
     <ClInclude Include="src\Stimpi\Platform\OpenGLVertexArrayObject.h" />
-    <ClInclude Include="src\Stimpi\Scene\Assets\AssetHandle.h" />
-    <ClInclude Include="src\Stimpi\Scene\Assets\AssetManager.h" />
     <ClInclude Include="src\Stimpi\Scene\Camera.h" />
     <ClInclude Include="src\Stimpi\Scene\CameraController.h" />
     <ClInclude Include="src\Stimpi\Scene\Component.h" />
@@ -238,6 +246,14 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\stpch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Stimpi\Asset\Asset.cpp" />
+    <ClCompile Include="src\Stimpi\Asset\AssetImporter.cpp" />
+    <ClCompile Include="src\Stimpi\Asset\AssetManager.cpp" />
+    <ClCompile Include="src\Stimpi\Asset\AssetManagerEditor.cpp" />
+    <ClCompile Include="src\Stimpi\Asset\AssetManagerRuntime.cpp" />
+    <ClCompile Include="src\Stimpi\Asset\SceneImporter.cpp" />
+    <ClCompile Include="src\Stimpi\Asset\ShaderImporter.cpp" />
+    <ClCompile Include="src\Stimpi\Asset\TextureImporter.cpp" />
     <ClCompile Include="src\Stimpi\Cmd\CommandStack.cpp" />
     <ClCompile Include="src\Stimpi\Cmd\Commands.cpp" />
     <ClCompile Include="src\Stimpi\Core\Application.cpp" />
@@ -278,7 +294,6 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClCompile Include="src\Stimpi\Platform\OpenGLTexture.cpp" />
     <ClCompile Include="src\Stimpi\Platform\OpenGLVertexArrayObject.cpp" />
     <ClCompile Include="src\Stimpi\Platform\Windows\WindowsPlatformUtils.cpp" />
-    <ClCompile Include="src\Stimpi\Scene\Assets\AssetManager.cpp" />
     <ClCompile Include="src\Stimpi\Scene\Camera.cpp" />
     <ClCompile Include="src\Stimpi\Scene\CameraController.cpp" />
     <ClCompile Include="src\Stimpi\Scene\Component.cpp" />

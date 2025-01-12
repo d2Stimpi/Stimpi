@@ -6,6 +6,9 @@
 #include "Stimpi/Core/Project.h"
 #include "Stimpi/Graphics/Renderer2D.h"
 
+#include "Stimpi/Asset/AssetManager.h"
+#include "Stimpi/Asset/ShaderImporter.h"
+
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/SceneSerializer.h"
 
@@ -175,38 +178,9 @@ namespace Stimpi
 #pragma region TESTING
 			if (ImGui::BeginMenu("Testing"))
 			{
-				if (ImGui::MenuItem("Parser/Lexer"))
+				if (ImGui::MenuItem("Import Shader"))
 				{
-					auto path = Project::GetResourcesDir() / "shaders" / "shader.shader";
-					Lexer lexer(path.string());
-
-					ST_CORE_INFO("Tokens:");
-					for (auto token : lexer)
-					{
-						ST_CORE_INFO("{}", token);
-					}
-				}
-
-				if (ImGui::MenuItem("Load custom Shader"))
-				{
-					std::string filePath = FileDialogs::OpenFile("d2S Shader (*.shader)\0*.shader\0");
-					if (!filePath.empty())
-					{
-						std::shared_ptr<Shader> shader;
-						shader.reset(Shader::CreateShader(filePath));
-						Renderer2D::Instance()->RegisterShader(shader);
-
-						Renderer2D::Instance()->UnregisterShader(shader);
-
-						/*auto shaderHandle = AssetManager::GetAsset<Shader>(FilePath(filePath));
-						if (shaderHandle.IsValid())
-						{
-							// TODO: use asset handle to pass shader
-							Renderer2D::Instance()->RegisterShader(shader);
-						}
-
-						AssetManager::Release(shaderHandle);*/
-					}
+					auto shader = ShaderImporter::LoadShader(Project::GetResourcesDir() / "shaders\/circle.shader");
 				}
 
 				if (ImGui::MenuItem("Run system cmd"))

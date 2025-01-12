@@ -1,8 +1,7 @@
 #pragma once
 
 #include "Gui/Nodes/GraphComponents.h"
-
-#include "Stimpi/Scene/Assets/AssetManager.h"
+#include "Stimpi/Graphics/Texture.h"
 
 namespace Stimpi
 {
@@ -40,8 +39,8 @@ namespace Stimpi
 		GraphPanel* m_PanelContext = nullptr;
 		GraphPanelCanvas* m_Canvas = nullptr;
 
-		AssetHandle m_HeaderImage;
-		AssetHandle m_HighlightImage;
+		std::shared_ptr<Texture> m_HeaderImage;
+		std::shared_ptr<Texture> m_HighlightImage;
 
 		bool m_DebugOn = false;
 	};

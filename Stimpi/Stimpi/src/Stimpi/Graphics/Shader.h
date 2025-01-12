@@ -2,6 +2,7 @@
 
 #include "stpch.h"
 #include "Stimpi/Core/Core.h"
+#include "Stimpi/Asset/Asset.h"
 
 #include <type_traits>
 #include <unordered_map>
@@ -21,6 +22,9 @@
 namespace Stimpi
 {
 	using shader_variant = std::variant<int, float, glm::vec2, glm::vec3, glm::vec4, glm::mat4>;
+
+	using VertexShaderData = std::string;
+	using FragmentShaderData = std::string;
 
 	enum class ShaderDataType
 	{
@@ -125,16 +129,18 @@ namespace Stimpi
 			: m_ShaderLayout(layout), m_VAOHandle(0) {}
 	};
 
-	class ST_API Shader
+	class ST_API Shader : public Asset
 	{
 	public:
 		Shader(const std::string& fileName) : m_Name(fileName) {}
+		Shader(ShaderInfo info) : m_Name("unnamed"), m_Info(info) {}
 		virtual ~Shader();
 
 		virtual unsigned int GetShaderID() = 0;
 
 		// Also pass all "buffered" uniform data to shader program
 		virtual void Use() = 0;
+		virtual bool Loaded() = 0;
 
 		void SetUniform(const std::string name, shader_variant value);
 		void SetBufferedUniforms();
@@ -143,11 +149,10 @@ namespace Stimpi
 		std::string& GetName() { return m_Name; }
 		ShaderInfo& GetInfo() { return m_Info; }
 
-		static Shader* CreateShader(const std::string& fileName);
+		static std::shared_ptr<Shader> Create(ShaderInfo info, VertexShaderData vsd, FragmentShaderData fsd);
 
-		// AssetManager
-		static Shader* Create(std::string& file) { return CreateShader(file); }
-		virtual bool Loaded() = 0;
+		static AssetType GetTypeStatic() { return AssetType::SHADER; }
+		AssetType GetType() override { return GetTypeStatic(); }
 
 		// Debug
 		void LogShaderInfo();

@@ -44,7 +44,6 @@ namespace Stimpi
 		AnimationWrapMode GetWrapMode() { return m_WrapMode; }
 		void SetWrapMode(AnimationWrapMode wrapMode) { m_WrapMode = wrapMode; }
 
-		bool Loaded();
 		SubTexture* GetSubTexture() { return m_Animation->GetSubTexture(); }
 
 	private:

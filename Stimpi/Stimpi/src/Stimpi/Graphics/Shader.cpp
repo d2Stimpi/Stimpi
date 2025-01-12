@@ -17,14 +17,11 @@ namespace Stimpi
 
 	}
 
-	Shader* Shader::CreateShader(const std::string& fileName)
+	std::shared_ptr<Stimpi::Shader> Shader::Create(ShaderInfo info, VertexShaderData vsd, FragmentShaderData fsd)
 	{
-		// Get the project specified path where shaders are expected to be stored
-		auto shaderFolderPath = std::filesystem::absolute(ResourceManager::GetResourcesPath()) / "shaders" / fileName;
-
 		switch (Graphics::GetAPI())
 		{
-		case GraphicsAPI::OpenGL: return new OpenGLShader(shaderFolderPath.string());
+		case GraphicsAPI::OpenGL: return std::make_shared<OpenGLShader>(info, vsd, fsd);
 		case GraphicsAPI::None: ST_CORE_CRITICAL("GraphicsAPI: not supported!"); return nullptr;
 		}
 	}
@@ -33,7 +30,7 @@ namespace Stimpi
 	{
 		ST_CORE_INFO("=== Shader {} info begin ===", m_Name);
 		ST_CORE_INFO("LayoutData:");
-		for (auto item : m_Info.m_ShaderLayout.m_Data)
+		for (auto& item : m_Info.m_ShaderLayout.m_Data)
 		{
 			ST_CORE_INFO("  {} {}", item.m_Name, ShaderDataTypeLength(item.m_Type));
 		}
@@ -48,9 +45,9 @@ namespace Stimpi
 
 	void Shader::SetBufferedUniforms()
 	{
-		for (auto uniform : m_UniformList)
+		for (auto& uniform : m_UniformList)
 		{
-			auto name = uniform.first;
+			auto& name = uniform.first;
 			auto value = uniform.second;
 			std::visit([&, name](auto&& arg) {
 				SetUniformImpl(name, arg);

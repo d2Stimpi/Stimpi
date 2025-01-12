@@ -4,6 +4,8 @@
 #include "Gui/Nodes/GraphPanel.h"
 
 #include "Stimpi/Log.h"
+#include "Stimpi/Asset/TextureImporter.h"
+#include "Stimpi/Core/Project.h"
 
 namespace Stimpi
 {
@@ -29,8 +31,8 @@ namespace Stimpi
 	GraphRenderer::GraphRenderer(GraphPanel* panelContext)
 	{
 		m_PanelContext = panelContext;
-		m_HeaderImage = AssetManager::GetAsset<Texture>("..\/assets\/textures\/Gradient2.png");
-		m_HighlightImage = AssetManager::GetAsset<Texture>("..\/assets\/textures\/Highlight.png");
+		m_HeaderImage = TextureImporter::LoadTexture(Project::GetAssestsDir() / "textures\/Gradient2.png");
+		m_HighlightImage = TextureImporter::LoadTexture(Project::GetAssestsDir() / "textures\/Highlight.png");
 	}
 
 	GraphRenderer::~GraphRenderer()
@@ -79,8 +81,8 @@ namespace Stimpi
 
 			ImVec2 uv_min = ImVec2(0.0f, 1.0f);
 			ImVec2 uv_max = ImVec2(1.0f, 0.0f);
-			auto texture = AssetManager::GetAsset(m_HeaderImage).As<Texture>();
-			if (texture->Loaded())
+			auto texture = m_HeaderImage.get();
+			if (texture)
 			{
 				m_DrawList->AddImageRounded((void*)(intptr_t)texture->GetTextureID(),
 					{ m_Canvas->m_Origin.x + nodePos.x * m_Canvas->m_Scale, m_Canvas->m_Origin.y + nodePos.y * m_Canvas->m_Scale },
@@ -107,8 +109,8 @@ namespace Stimpi
 
 			ImVec2 uv_min = ImVec2(0.0f, 1.0f);
 			ImVec2 uv_max = ImVec2(1.0f, 0.0f);
-			auto texture = AssetManager::GetAsset(m_HighlightImage).As<Texture>();
-			if (texture->Loaded())
+			auto texture = m_HeaderImage.get();
+			if (texture)
 			{
 				ImU32 bgColor = IM_COL32(30, 225, 30, 255);
 				if (!node->m_InPins.empty() || !node->m_OutPins.empty())

@@ -11,7 +11,7 @@ namespace Stimpi
 
 	}
 
-	FrameBuffer* FrameBuffer::CreateFrameBuffer(FrameBufferConfig config)
+	FrameBuffer* FrameBuffer::CreateFrameBuffer(FrameBufferSpecification config)
 	{
 		switch (Graphics::GetAPI())
 		{

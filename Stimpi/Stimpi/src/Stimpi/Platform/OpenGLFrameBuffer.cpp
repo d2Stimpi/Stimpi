@@ -6,14 +6,14 @@
 
 namespace Stimpi
 {
-	OpenGLFrameBuffer::OpenGLFrameBuffer(FrameBufferConfig config)
+	OpenGLFrameBuffer::OpenGLFrameBuffer(FrameBufferSpecification config)
 		: FrameBuffer(config)
 	{
 		glGenFramebuffers(1, &m_ID);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_ID);
 
 		m_Texture.reset(Texture::CreateFrameBufferTexture());
-		m_Texture->InitEmptyTexture(m_Width, m_Height, m_Channels); // Create RGBA
+		m_Texture->InitEmptyTexture({ m_Spec.m_Width, m_Spec.m_Height, m_Spec.m_Channels }); // Create RGBA
 
 		// Attach texture to FBO
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Texture->GetTextureID(), 0);
@@ -39,15 +39,15 @@ namespace Stimpi
 
 	void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height)
 	{
-		if ((m_Width == width) && (m_Height == height))
+		if ((m_Spec.m_Width == width) && (m_Spec.m_Height == height))
 			return;
 
-		m_Width = width;
-		m_Height = height;
+		m_Spec.m_Width = width;
+		m_Spec.m_Height = height;
 		//ST_CORE_INFO("Framebuffer size: {0}, {1}", m_Width, m_Height);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, m_ID);
-		m_Texture->Resize(m_Width, m_Height);
+		m_Texture->Resize(m_Spec.m_Width, m_Spec.m_Height);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Texture->GetTextureID(), 0);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}

@@ -4,8 +4,9 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Utils/FilePath.h"
 #include "Stimpi/Scene/ResourceManager.h"
-#include "Stimpi/Scene/Assets/AssetManager.h"
 #include "Stimpi/Core/Project.h"
+#include "Stimpi/Asset/AssetManager.h"
+#include "Stimpi/Core/Runtime.h"
 
 #include <yaml-cpp/yaml.h>
 
@@ -28,8 +29,7 @@ namespace Stimpi
 			out << YAML::Key << "Animation" << YAML::Value;
 			out << YAML::BeginMap;
 			{
-				auto asset = AssetManager::GetAsset(m_Animation->GetSubTexture()->GetAssetHandle());
-				out << YAML::Key << "Texture" << YAML::Value << asset.GetFilePath().string();
+				out << YAML::Key << "TextureAssetHandle" << YAML::Value << m_Animation->GetSubTexture()->GetAssetHandle();
 
 				out << YAML::Key << "Frames" << YAML::Value;
 				out << YAML::BeginMap;
@@ -74,11 +74,25 @@ namespace Stimpi
 		{
 			YAML::Node animation = loadData["Animation"];
 
+			AssetHandle handle = 0;
+			// Temp legacy TODO: remove after converting files
 			if (animation["Texture"])
 			{
-				FilePath assetPath(Project::GetAssestsDir() / animation["Texture"].as<std::string>());
-				m_Animation->m_SubTexture = std::make_shared<SubTexture>(assetPath, glm::vec2{ 0.0f, 0.0f }, glm::vec2{ 0.0f, 0.0f });;
+				handle = Project::GetEditorAssetManager()->GetAssetHandle(animation["Texture"].as<std::string>());
 			}
+
+			if (animation["TextureAssetHandle"])
+			{
+				handle = animation["TextureAssetHandle"].as<UUIDType>();
+
+				// Check asset type, expected Texture
+				if (Runtime::IsEditorMode())
+				{
+					AssetMetadata metadata = Project::GetEditorAssetManager()->GetAssetMetadata(handle);
+					ST_CORE_ASSERT_MSG(metadata.m_Type != AssetType::TEXTURE, "Animation: wrong asset type used!");
+				}
+			}
+			m_Animation->m_SubTexture = std::make_shared<SubTexture>(handle, glm::vec2{ 0.0f, 0.0f }, glm::vec2{ 0.0f, 0.0f });;
 
 			if (animation["Frames"])
 			{

@@ -20,15 +20,9 @@ namespace Stimpi
 
 	}
 
-	OpenGLTexture::OpenGLTexture(std::string file)
+	OpenGLTexture::OpenGLTexture(TextureSpecification spec)
 	{
-		// TODO:
-		// Get the project specified path where Textures are expected to be stored
-		auto texturePath = std::filesystem::absolute(ResourceManager::GetAssetsPath()) / file;
-		m_AssetPath = file;
-
-		//LoadTexture(file);
-		LoadDataAsync(file);
+		m_Spec = spec;
 	}
 
 	OpenGLTexture::~OpenGLTexture()
@@ -46,62 +40,25 @@ namespace Stimpi
 	}
 
 	// Primary use for FrameBuffer texture
-	void OpenGLTexture::InitEmptyTexture(uint32_t width, uint32_t height, uint32_t channels)
+	void OpenGLTexture::InitEmptyTexture(TextureSpecification spec)
 	{
-		m_Width = width;
-		m_Height = height;
-		m_NumChannels = channels;
+		m_Spec = spec;
 
 		glGenTextures(1, &m_TextureID);
 		glBindTexture(GL_TEXTURE_2D, m_TextureID);
-		if (m_NumChannels == 3) // RGB
+		if (m_Spec.m_NumChannels == 3) // RGB
 		{
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Spec.m_Width, m_Spec.m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 		}
 		else //RGBA
 		{
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Spec.m_Width, m_Spec.m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 		}
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glBindTexture(GL_TEXTURE_2D, 0);
-	}
-
-	bool OpenGLTexture::Loaded()
-	{
-		if (m_TextureID == 0)
-		{
-			// Check if we have loading in progress (poll the future)
-			CheckLoadFuture();
-		}
-
-		return m_TextureID != 0;
-	}
-
-	void OpenGLTexture::LoadDataAsync(std::string file)
-	{
-		// Remove old texture if one exists
-		Delete();
-
-		m_LoadFuture = s_LoaderThreadPool->AddTask([file]() {
-			TextureLoadData* loadData = new TextureLoadData();
-
-			loadData->m_FileName = file;
-			stbi_set_flip_vertically_on_load(true); // TODO: Move somewhere on init
-			loadData->m_Data = stbi_load(file.c_str(), (int*)&loadData->m_Width, (int*)&loadData->m_Height, (int*)&loadData->m_NumChannels, 0);
-			if (loadData->m_Data)
-			{
-				if (DBG_LOG) ST_CORE_INFO(" ** Texture data is loaded {}", loadData->m_FileName);
-			}
-			else
-			{
-				ST_CORE_ERROR("Failed to load texture: {0}", loadData->m_FileName);
-			}
-
-			return loadData;
-		});
 	}
 
 	void OpenGLTexture::CheckLoadFuture()
@@ -120,9 +77,9 @@ namespace Stimpi
 	{
 		if (data != nullptr && data->m_Data)
 		{
-			m_Width = data->m_Width;
-			m_Height = data->m_Height;
-			m_NumChannels = data->m_NumChannels;
+			m_Spec.m_Width = data->m_Width;
+			m_Spec.m_Height = data->m_Height;
+			m_Spec.m_NumChannels = data->m_NumChannels;
 
 			glGenTextures(1, &m_TextureID);
 			glBindTexture(GL_TEXTURE_2D, m_TextureID);
@@ -133,13 +90,13 @@ namespace Stimpi
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // better for pixel art stuff
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); // TODO: parametrize
 
-			if (m_NumChannels == 3) // RGB
+			if (m_Spec.m_NumChannels == 3) // RGB
 			{
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, data->m_Data);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Spec.m_Width, m_Spec.m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, data->m_Data);
 			}
 			else //RGBA
 			{
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data->m_Data);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Spec.m_Width, m_Spec.m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data->m_Data);
 			}
 			//glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -154,14 +111,44 @@ namespace Stimpi
 			stbi_image_free(data->m_Data);
 	}
 
+	void OpenGLTexture::SetData(unsigned char* data)
+	{
+		if (data != nullptr)
+		{
+			glGenTextures(1, &m_TextureID);
+			glBindTexture(GL_TEXTURE_2D, m_TextureID);
+			// set the texture wrapping parameters
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			// set texture filtering parameters
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // better for pixel art stuff
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); // TODO: parametrize
+
+			if (m_Spec.m_NumChannels == 3) // RGB
+			{
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Spec.m_Width, m_Spec.m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			}
+			else //RGBA
+			{
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Spec.m_Width, m_Spec.m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+			}
+
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
+		else
+		{
+			ST_CORE_ERROR("Invalid data used for generating texture!");
+		}
+	}
+
 	void OpenGLTexture::LoadTexture(std::string file)
 	{
 		// Remove old texture if one exists
 		Delete();
 
 		stbi_set_flip_vertically_on_load(true); // TODO: Move somewhere on init
-		unsigned char* data = stbi_load(file.c_str(), (int*)&m_Width, (int*)&m_Height, (int*)&m_NumChannels, 0);
-		if (DBG_LOG) ST_CORE_INFO("Texture Loaded: {0}, numChannels: {1}", file.c_str(), m_NumChannels);
+		unsigned char* data = stbi_load(file.c_str(), (int*)&m_Spec.m_Width, (int*)&m_Spec.m_Height, (int*)&m_Spec.m_NumChannels, 0);
+		if (DBG_LOG) ST_CORE_INFO("Texture Loaded: {0}, numChannels: {1}", file.c_str(), m_Spec.m_NumChannels);
 		if (data)
 		{
 			glGenTextures(1, &m_TextureID);
@@ -173,13 +160,13 @@ namespace Stimpi
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-			if (m_NumChannels == 3) // RGB
+			if (m_Spec.m_NumChannels == 3) // RGB
 			{
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Spec.m_Width, m_Spec.m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 			}
 			else //RGBA
 			{
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Spec.m_Width, m_Spec.m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 			}
 			//glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -224,16 +211,16 @@ namespace Stimpi
 
 	void OpenGLTexture::Resize(uint32_t width, uint32_t height)
 	{
-		m_Width = width;
-		m_Height = height;
+		m_Spec.m_Width = width;
+		m_Spec.m_Height = height;
 		glBindTexture(GL_TEXTURE_2D, m_TextureID);
-		if (m_NumChannels == 3) // RGB
+		if (m_Spec.m_NumChannels == 3) // RGB
 		{
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Spec.m_Width, m_Spec.m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 		}
 		else //RGBA
 		{
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Spec.m_Width, m_Spec.m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 		}
 		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

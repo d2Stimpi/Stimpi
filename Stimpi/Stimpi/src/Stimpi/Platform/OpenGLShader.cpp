@@ -7,56 +7,13 @@
 
 namespace Stimpi
 {
-	OpenGLShader::OpenGLShader(const std::string& fileName)
-		: Shader(fileName)
+	OpenGLShader::OpenGLShader(ShaderInfo info, VertexShaderData vsd, FragmentShaderData fsd)
+		: Shader(info), m_ID(0)
 	{
-		std::string vertexShaderCode;
-		std::string fragmentShaderCode;
-		std::ifstream shaderFile;
-
-		shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-		try
-		{
-			std::stringstream vertexStream;
-			std::stringstream fragmentStream;
-			std::string line;
-			bool readingFragmentShader = false;
-
-			shaderFile.open(fileName);
-
-			while (!shaderFile.eof())
-			{
-				std::getline(shaderFile, line);
-				if (line.compare("#fragment") == 0)
-				{
-					readingFragmentShader = true;
-					continue;
-				}
-				if (!readingFragmentShader)
-				{
-					ParseVertexShaderLine(line);
-					vertexStream << line << std::endl;
-				}
-				else
-				{
-					fragmentStream << line << std::endl;
-				}
-			}
-			vertexShaderCode = vertexStream.str();
-			fragmentShaderCode = fragmentStream.str();
-
-			shaderFile.close();
-		}
-		catch (std::ifstream::failure& e)
-		{
-			ST_CORE_ERROR("Shader: failed to read shader file {0} - error: {1}\n", fileName, e.what());
-		}
-
 		// Compiling of shader code
 		unsigned int vertexShader, fragmentShader;
-		const char* cstrVertexShaderCode = vertexShaderCode.c_str();
-		const char* cstrFragmentShaderCode = fragmentShaderCode.c_str();
+		const char* cstrVertexShaderCode = vsd.c_str();
+		const char* cstrFragmentShaderCode = fsd.c_str();
 		// Vertex Shader
 		vertexShader = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(vertexShader, 1, &cstrVertexShaderCode, NULL);
@@ -153,53 +110,4 @@ namespace Stimpi
 			}
 		}
 	}
-
-	void OpenGLShader::ParseVertexShaderLine(const std::string& line)
-	{
-		size_t pos = line.find("layout(location =");
-		if (pos != std::string::npos)
-		{
-			// find the location number, we will ignore everything before num. 3 ??
-			int location = std::stoi(line.substr(17, line.length() - 17));
-			//if (location > 2)
-			//{
-				// find ")" and get tokens after it
-				pos = line.find(")", pos + 1);
-				if (pos != std::string::npos)
-				{
-
-					std::string substr = line.substr(pos + 1, line.length() - pos - 1);
-					const char* delimiter = " ";
-					char* token = std::strtok(substr.data(), delimiter);
-				
-					std::string modifier = "";
-					std::string type = "";
-					std::string name = "";
-
-					if (token)
-					{
-						modifier = std::string(token);
-						token = std::strtok(nullptr, delimiter);
-					}
-
-					if (token)
-					{
-						type = std::string(token);
-						token = std::strtok(nullptr, delimiter);
-					}
-				
-					if (token)
-					{
-						name = std::string(token);
-						name.pop_back();	// remove ';' char
-					}
-
-					ShaderInfo& info = GetInfo();
-					info.m_ShaderLayout.m_Data.emplace_back(StringToShaderType(type), name);
-					//ST_CORE_INFO("Shader parsed layout: [{}] {} {} {}", location, modifier, type, name);
-				}
-			//}
-		}
-	}
-
 }

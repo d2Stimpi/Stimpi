@@ -1,24 +1,24 @@
 #include "stpch.h"
 #include "Stimpi/Graphics/SubTexture.h"
-#include "Stimpi/Scene/Assets/AssetManager.h"
+#include "Stimpi/Asset/AssetManager.h"
+#include "Stimpi/Core/Project.h"
 
 namespace Stimpi
 {
-	
-	SubTexture::SubTexture(FilePath filePath, glm::vec2 min, glm::vec2 max)
-		:  m_Min(min), m_Max(max)
+	// Note: correct asset type passed verification is done when loading asset
+	SubTexture::SubTexture(AssetHandle textureAsset, glm::vec2 min, glm::vec2 max)
+		: m_TextureAssetHandle(textureAsset), m_Min(min), m_Max(max)
 	{
-		m_TextureHandle = AssetManager::GetAsset<Texture>(filePath);
+		Initialize();
 	}
 
 	SubTexture::~SubTexture()
 	{
-		AssetManager::Release(m_TextureHandle);
 	}
 
 	void SubTexture::Initialize()
 	{
-		auto texture = AssetManager::GetAsset(m_TextureHandle).As<Texture>();
+		auto texture = AssetManager::GetAsset<Texture>(m_TextureAssetHandle);
 		float textureWidth = texture->GetWidth();
 		float textureHeight = texture->GetHeight();
 
@@ -29,32 +29,17 @@ namespace Stimpi
 		m_SubHeight = m_Max.y;
 	}
 
-	bool SubTexture::Loaded()
-	{
-		if (!m_Loaded)
-		{
-			auto texture = AssetManager::GetAsset(m_TextureHandle).As<Texture>();
-			if (texture->Loaded())
-			{
-				if (!m_Loaded)
-					Initialize();
-				m_Loaded = true;
-			}
-		}
-		return m_Loaded;
-	}
-
 	void SubTexture::SetSubTextureSize(glm::vec2 min, glm::vec2 max)
 	{
 		m_Min = min;
 		m_Max = max;
+
+		Initialize();
 	}
 
 	void SubTexture::SetSubRegion(glm::vec2 min, glm::vec2 max)
 	{
-		if (!Loaded()) return;
-
-		auto texture = AssetManager::GetAsset(m_TextureHandle).As<Texture>();
+		auto texture = AssetManager::GetAsset<Texture>(m_TextureAssetHandle);
 		float textureWidth = texture->GetWidth();
 		float textureHeight = texture->GetHeight();
 
@@ -64,9 +49,7 @@ namespace Stimpi
 
 	void SubTexture::SetSubRegion(uint32_t index)
 	{
-		if (!Loaded()) return;
-
-		auto texture = AssetManager::GetAsset(m_TextureHandle).As<Texture>();
+		auto texture = AssetManager::GetAsset<Texture>(m_TextureAssetHandle);
 		float textureWidth = texture->GetWidth();
 		float textureHeight = texture->GetHeight();
 
@@ -80,8 +63,8 @@ namespace Stimpi
 		m_UVmax = glm::vec2((indexCol + 1) * m_SubWidth / textureWidth, (indexRow + 1) * m_SubHeight / textureHeight);
 	}
 
-	Texture* SubTexture::GetTexture()
+	Texture* SubTexture::GetTexture()	//TODO: to be removed
 	{
-		return AssetManager::GetAsset(m_TextureHandle).As<Texture>();
+		return AssetManager::GetAsset<Texture>(m_TextureAssetHandle).get();
 	}
 }

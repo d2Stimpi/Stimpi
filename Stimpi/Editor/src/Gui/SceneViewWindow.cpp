@@ -4,7 +4,9 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Core/InputManager.h"
 #include "Stimpi/Core/KeyCodes.h"
+#include "Stimpi/Core/Project.h"
 #include "Stimpi/Graphics/Renderer2D.h"
+#include "Stimpi/Asset/TextureImporter.h"
 
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Entity.h"
@@ -207,7 +209,7 @@ namespace Stimpi
 
 		scene->m_Registry.view<CameraComponent>().each([=, &scene](auto e, CameraComponent& camera)
 			{
-				static Texture* camTexture = ResourceManager::Instance()->LoadTexture("..\/Editor\/assets\/icons\/camera.png");
+				static std::shared_ptr<Texture> camTexture = TextureImporter::LoadTexture(Project::GetAssestsDir() / "textures\/camera.png");
 				glm::vec2 iconSize = { 30.0f , 24.0f }; // TODO: Icon manager? and uniform size of icons
 				auto camPos = camera.m_Camera->GetPosition();
 				auto camView = camera.m_Camera->GetOrthoView();
@@ -226,7 +228,7 @@ namespace Stimpi
 				calcPos = EditorUtils::PositionInCurentWindow(calcPos);
 				ImVec2 uv_min = ImVec2(0.0f, 1.0f);
 				ImVec2 uv_max = ImVec2(1.0f, 0.0f);
-				if (camTexture->Loaded())
+				if (camTexture)
 					ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)camTexture->GetTextureID(), ImVec2(calcPos.x - iconSize.x / 2, calcPos.y - iconSize.y / 2), ImVec2(calcPos.x + iconSize.x / 2, calcPos.y + iconSize.y / 2), uv_min, uv_max);
 				
 				// Cam bounds

@@ -17,6 +17,7 @@ namespace Stimpi
 
 		std::filesystem::path& GetDir() { return m_FileDir; }
 		std::filesystem::path& GetPath() { return m_FilePath; }
+		std::filesystem::path GetPath() const { return m_FilePath; }
 		std::string& GetFileName() { return m_FileName; }
 		std::string GetFileExtension() { return m_FilePath.extension().string(); }
 		std::string GetFileNameStem() { return m_FilePath.stem().string(); }
@@ -24,8 +25,10 @@ namespace Stimpi
 		std::filesystem::path GetRelativePath(const std::filesystem::path& basePath);
 
 		std::string string() { return m_FilePath.string(); }
+		std::string string() const { return m_FilePath.string(); }
 
 		bool Exists() { return std::filesystem::exists(m_FilePath); }
+		bool Exists() const { return std::filesystem::exists(m_FilePath); }
 
 		operator std::string() { return m_FilePath.string(); }
 		operator std::filesystem::path() { return m_FilePath; }

@@ -1,8 +1,10 @@
 #include "Gui/ContentBrowserWindow.h"
 
+#include "Stimpi/Asset/TextureImporter.h"
+#include "Stimpi/Asset/AssetManager.h"
+#include "Stimpi/Core/Project.h"
 #include "Stimpi/Log.h"
 #include "Stimpi/Scene/ResourceManager.h"
-#include "Stimpi/Core/Project.h"
 
 #include "Gui/Components/UIPayload.h"
 #include "Gui/Components/ImGuiEx.h"
@@ -18,9 +20,27 @@
 
 namespace Stimpi
 {
+	// For caching loaded thumbnail images
+	using ThumbnailCache = std::unordered_map < std::string, std::shared_ptr<Texture>>;
+
+	enum class ContentMode { FILESYSTEM, ASSETS };
+
+	struct ThumbanailPopupContext
+	{
+		FilePath m_FilePath = "";
+	};
+
 	struct ContentBrowserWindowContext
 	{
+		ContentMode m_Mode = ContentMode::FILESYSTEM;
+		ThumbanailPopupContext m_ThumbnailPopupContext;
 		char m_SearchTextBuffer[64];
+
+		// Content browser used Textures
+		std::shared_ptr<Texture> m_FolderTexture;
+		std::shared_ptr<Texture> m_ShaderTexture;
+		std::shared_ptr<Texture> m_SceneTexture;
+		ThumbnailCache m_ThumbnailCache;
 
 		ContentBrowserWindowContext()
 		{
@@ -30,14 +50,27 @@ namespace Stimpi
 
 	ContentBrowserWindowContext s_Context;
 
+	// Local helper methods
+	static std::shared_ptr<Texture> GetCachedThumbnailImage(const FilePath& imgPath)
+	{
+		auto it = s_Context.m_ThumbnailCache.find(imgPath.string());
+		if (it == s_Context.m_ThumbnailCache.end())
+		{
+			auto texture = TextureImporter::LoadTexture(imgPath);
+			s_Context.m_ThumbnailCache[imgPath.string()] = texture;
+			return texture;
+		}
+		
+		return it->second;
+	}
+
+
 	ContentBrowserWindow::ContentBrowserWindow()
 		: m_CurrentDirectory(ResourceManager::GetAssetsPath())
 	{
-		// Trigger load of used icons
-		// TODO: isolate to a class that manages UI resources
-		AssetManager::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/folder.png");
-		AssetManager::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/shader.png");
-		AssetManager::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/scene.png");
+		s_Context.m_FolderTexture = TextureImporter::LoadTexture(Project::GetAssestsDir() / "textures\/folder.png");
+		s_Context.m_ShaderTexture = TextureImporter::LoadTexture(Project::GetAssestsDir() / "textures\/shader.png");
+		s_Context.m_SceneTexture = TextureImporter::LoadTexture(Project::GetAssestsDir() / "textures\/scene.png");
 
 		ReadDirHierarchyData();
 	}
@@ -56,7 +89,12 @@ namespace Stimpi
 			// Toolbar - Buttons and Search bar
 			if (ImGuiEx::IconButton("##ContentBrowserToolbarButtonPCH", EDITOR_ICON_CROSS))
 			{
+				if (s_Context.m_Mode == ContentMode::ASSETS)
+					s_Context.m_Mode = ContentMode::FILESYSTEM;
+				else
+					s_Context.m_Mode = ContentMode::ASSETS;
 
+				RefreshDirHierachyData();
 			}
 			ImGui::SameLine(28.0f);
 			ImGui::SetNextItemWidth(ImGui::GetWindowContentRegionWidth() - 28.0f);
@@ -98,11 +136,7 @@ namespace Stimpi
 		reloadTimer += ts.GetMilliseconds();
 		if (reloadTimer >= 4000.0f)
 		{
-			sFileNodeID = 0;	// reset file id "tracker"
-			sFolderNodeID = 0;
-			// Here refresh assets folder structure
-			ResetDirHierarchyData();
-			ReadDirHierarchyData();
+			RefreshDirHierachyData();
 			reloadTimer = 0.0f;
 		}
 	}
@@ -136,6 +170,11 @@ namespace Stimpi
 			auto relativePath = std::filesystem::relative(path, ResourceManager::GetAssetsPath());
 			std::string filenameStr = relativePath.filename().string();
 
+			// Asset display mode filtering
+			if (!std::filesystem::is_directory(path) && s_Context.m_Mode == ContentMode::ASSETS &&
+				!Project::GetEditorAssetManager()->IsAssetRegistered(relativePath))
+				continue;
+
 			// Search filtering
 			std::string filterTagString = s_Context.m_SearchTextBuffer;
 			if (!filterTagString.empty() && filenameStr.find(filterTagString) == std::string::npos)
@@ -144,50 +183,69 @@ namespace Stimpi
 			ImGuiStyle& style = ImGui::GetStyle();
 			ImVec2 itemSpacing = style.ItemSpacing;
 
-			AssetHandle asset;
+			Texture* texture = nullptr;
+			AssetHandle handle = 0;
+			std::shared_ptr<Texture> asset;
 			ThumbnailType type = GetThumbnailTypeFromFile(path);
 			switch (type)
 			{
 			case ThumbnailType::NONE:
-				asset = AssetManager::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/shader.png");
+				texture = s_Context.m_ShaderTexture.get();
 				break;
 			case ThumbnailType::DIRECTORY:
-				asset = AssetManager::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/folder.png");
+				texture = s_Context.m_FolderTexture.get();
 				break;
 			case ThumbnailType::TEXTURE:
-				asset = AssetManager::GetAssetNoRefCount<Texture>(path);
+				handle = Project::GetEditorAssetManager()->GetAssetHandle(relativePath);
+				asset = AssetManager::GetAsset<Texture>(handle);
+				if (asset != nullptr)
+					texture = asset.get();
+				else
+				{
+					auto thumbnailImg = GetCachedThumbnailImage(path);
+					if (thumbnailImg)
+						texture = thumbnailImg.get();
+				}
 				break;
 			case ThumbnailType::SHADER:
-				asset = AssetManager::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/shader.png");
+				texture = s_Context.m_ShaderTexture.get();
 				break;
 			case ThumbnailType::SCENE:
-				asset = AssetManager::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/scene.png");
+				texture = s_Context.m_SceneTexture.get();
 				break;
 			default:
 				break;
 			}
 
-			Texture* texture = AssetManager::GetAsset(asset).As<Texture>();
-			if (texture->Loaded())
+			if (Thumbnail::Button(filenameStr.c_str(), texture, cursor, THUMBNAIL_SIZE))
 			{
-				if (Thumbnail::Button(filenameStr.c_str(), texture, cursor, THUMBNAIL_SIZE))
+				if (type == ThumbnailType::DIRECTORY)
 				{
-					if (type == ThumbnailType::DIRECTORY)
-					{
-						m_CurrentDirectory /= path.filename();
-						OnCurrentDirChange();
-					}
+					m_CurrentDirectory /= path.filename();
+					OnCurrentDirChange();
 				}
-				// Check when to drop to next line for drawing (2xWidth because ImGui::SameLine moves cursor after the check)
-				if (winSize.x > cursor.x - startCursor.x + 2 * THUMBNAIL_WIDTH)
-					ImGui::SameLine();
-				cursor = ImGui::GetCursorScreenPos();
 			}
+
+			// Thumbnail allows for letting ImGui check IsItemHovered for Thumbnail button
+			if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+			{
+				if (!std::filesystem::is_directory(path))
+				{
+					s_Context.m_ThumbnailPopupContext.m_FilePath = relativePath;
+					ImGui::OpenPopup("ContentBrowserWindow##ThumbnailPopup");
+				}
+			}
+
+			// Check when to drop to next line for drawing (2xWidth because ImGui::SameLine moves cursor after the check)
+			if (winSize.x > cursor.x - startCursor.x + 2 * THUMBNAIL_WIDTH)
+				ImGui::SameLine();
+			cursor = ImGui::GetCursorScreenPos();
 
 			// Drag & Drop handling
 			if (relativePath.extension().string() == ".jpg" || relativePath.extension().string() == ".JPG" || relativePath.extension().string() == ".png")
 			{
-				UIPayload::BeginSource(PAYLOAD_TEXTURE, path.string().c_str(), path.string().length(), filenameStr.c_str());
+				AssetHandle handle = Project::GetEditorAssetManager()->GetAssetHandle(relativePath);
+				UIPayload::BeginSource(PAYLOAD_TEXTURE, &handle, sizeof(AssetHandle), filenameStr.c_str());
 			}
 			if (relativePath.extension().string() == ".d2s")
 			{
@@ -198,6 +256,7 @@ namespace Stimpi
 				UIPayload::BeginSource(PAYLOAD_ANIMATION, path.string().c_str(), path.string().length(), filenameStr.c_str());
 			}
 		}
+		ThumbnailPopup();
 		ImGui::EndChild();
 	}
 
@@ -206,7 +265,7 @@ namespace Stimpi
 		ImGuiTreeNodeFlags leaf_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 		ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow /*| ImGuiTreeNodeFlags_OpenOnDoubleClick*/;
 
-		for (auto node : rootNode->m_Children)
+		for (auto& node : rootNode->m_Children)
 		{
 			if (node->m_IsDir)
 			{
@@ -248,21 +307,19 @@ namespace Stimpi
 
 	void ContentBrowserWindow::OnCurrentDirChange()
 	{
-		for (auto asset : m_DirectoryAssets)
-		{
-			AssetManager::Release(asset);
-		}
+		
 	}
 
 	void ContentBrowserWindow::ReadDirHierarchyData()
 	{
 		auto assetsPath = ResourceManager::GetAssetsPath();
+		auto assetManager = Project::GetEditorAssetManager();
 
 		sFolderNodeID++;
 		m_RootFolderNode = std::make_shared<FileNode>(assetsPath, sFolderNodeID << 16);
 		m_RootFolderNode->m_IsDir = true;
 
-		std::function<void(FilePath, FileNode*)> readDir = [&readDir](FilePath dirPath, FileNode* node) {
+		std::function<void(FilePath, FileNode*)> readDir = [&](FilePath dirPath, FileNode* node) {
 			for (auto& directoryEntry : std::filesystem::directory_iterator(dirPath))
 			{
 				const auto& path = directoryEntry.path();
@@ -284,7 +341,40 @@ namespace Stimpi
 				{
 					sFileNodeID++;
 					newNode->m_ID = sFolderNodeID << 16 + sFileNodeID;
-					node->AddChildNode(newNode);
+					if (s_Context.m_Mode == ContentMode::ASSETS)
+					{
+						if (assetManager->IsAssetRegistered(relativePath))
+						{
+							newNode->m_Handle = assetManager->GetAssetHandle(relativePath);
+							node->AddChildNode(newNode);
+						}
+					}
+					else
+					{
+						// Default Asset processing:
+						// 1. Check if file is of Asset type
+						AssetType assetType = AssetUtils::GetAssetType(path);
+						if (assetType != AssetType::NONE)
+						{
+							
+							// 2. Register Asset if it is not already registered
+							if (!assetManager->IsAssetRegistered(relativePath))
+							{
+								newNode->m_Handle = assetManager->RegisterAsset({ assetType, relativePath });
+							}
+							else
+							{
+								// 3. Check if Asset needs to be reloaded
+								newNode->m_Handle = assetManager->GetAssetHandle(relativePath);
+								if (assetManager->WasAssetUpdated(newNode->m_Handle))
+								{
+									assetManager->ReloadAsset(newNode->m_Handle);
+								}
+							}
+						}
+
+						node->AddChildNode(newNode);
+					}
 				}
 			}
 		};
@@ -311,4 +401,27 @@ namespace Stimpi
 			m_RootFolderNode->m_Children.clear();
 		}
 	}
+
+	void ContentBrowserWindow::RefreshDirHierachyData()
+	{
+		sFileNodeID = 0;	// reset file id "tracker"
+		sFolderNodeID = 0;
+		// Here refresh assets folder structure
+		ResetDirHierarchyData();
+		ReadDirHierarchyData();
+	}
+
+	void ContentBrowserWindow::ThumbnailPopup()
+	{
+		if (ImGui::BeginPopup("ContentBrowserWindow##ThumbnailPopup"))
+		{
+			if (ImGui::Selectable("Import Asset"))
+			{
+				ST_CORE_INFO("Import asset {}", s_Context.m_ThumbnailPopupContext.m_FilePath.string());
+			}
+
+			ImGui::EndPopup();
+		}
+	}
+
 }

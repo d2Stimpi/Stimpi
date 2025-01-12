@@ -1,6 +1,6 @@
 #pragma once
 
-#define STB_IMAGE_IMPLEMENTATION
+//#define STB_IMAGE_IMPLEMENTATION
 
 #ifdef STIMPI_BUILD_DLL
 #define ST_API	__declspec (dllexport)

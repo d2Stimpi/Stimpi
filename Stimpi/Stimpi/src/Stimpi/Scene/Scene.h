@@ -5,6 +5,7 @@
 #include "Stimpi/Core/Event.h"
 #include "Stimpi/Core/Timestep.h"
 #include "Stimpi/Core/UUID.h"
+#include "Stimpi/Asset/Asset.h"
 
 #include "Stimpi/Graphics/Shader.h"
 #include "Stimpi/Graphics/SubTexture.h"
@@ -24,7 +25,7 @@ namespace Stimpi
 
 	enum class RuntimeState { STOPPED = 0, RUNNING, PAUSED };
 
-	class ST_API Scene
+	class ST_API Scene : public Asset
 	{
 	public:
 		Scene();
@@ -75,6 +76,10 @@ namespace Stimpi
 
 		// Mouse Picking
 		Entity MousePickEntity(float x, float y);
+
+		// Asset
+		static AssetType GetTypeStatic() { return AssetType::SCENE; }
+		AssetType GetType() override { return GetTypeStatic(); }
 	private:
 		// Update components based on interactions
 		void UpdateComponentDependacies(Timestep ts);
@@ -110,8 +115,8 @@ namespace Stimpi
 		Camera* m_SceneCamera = nullptr; // Created outside of scene (Editor)
 		Camera* m_RenderCamera = nullptr; // Scene will use Camera Component in Runtime state
 		// Temp shader
-		std::shared_ptr<Stimpi::Shader> m_DefaultShader;
-		std::shared_ptr<Stimpi::Shader> m_DefaultSolidColorShader;
+		std::shared_ptr<Shader> m_DefaultShader;
+		std::shared_ptr<Shader> m_DefaultSolidColorShader;
 
 		// Physics
 		b2World* m_PhysicsWorld = nullptr;

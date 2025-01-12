@@ -13,11 +13,11 @@ namespace Stimpi
 		//ST_CORE_INFO("~Texture");
 	}
 
-	Texture* Texture::CreateTexture(std::string filePath)
+	std::shared_ptr<Texture> Texture::CreateTexture(TextureSpecification spec)
 	{
 		switch (Graphics::GetAPI())
 		{
-		case GraphicsAPI::OpenGL: return new OpenGLTexture(filePath);
+		case GraphicsAPI::OpenGL: return std::make_shared<OpenGLTexture>(spec);
 		case GraphicsAPI::None: ST_CORE_CRITICAL("GraphicsAPI: not supported!"); return nullptr;
 		}
 

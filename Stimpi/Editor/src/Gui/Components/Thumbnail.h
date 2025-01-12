@@ -2,6 +2,7 @@
 
 #include "Stimpi/Utils/FilePath.h"
 #include "Stimpi/Graphics/Texture.h"
+#include "Stimpi/Asset/Asset.h"
 
 #include "ImGui/src/imgui.h"
 
@@ -16,15 +17,16 @@ namespace Stimpi
 		if (std::filesystem::is_directory(filePath))
 			return ThumbnailType::DIRECTORY;
 
-		std::string extension = filePath.GetFileExtension();
-		if (extension == ".png" || extension == ".PNG" || extension == ".jpg" || extension == ".JPG")
-			return ThumbnailType::TEXTURE;
-		if (extension == ".shader")
-			return ThumbnailType::SHADER;
-		if (extension == ".d2s")
-			return ThumbnailType::SCENE;
+		AssetType assetType = AssetUtils::GetAssetType(filePath);
+		switch (assetType)
+		{
+		case Stimpi::AssetType::NONE:		return ThumbnailType::NONE;
+		case Stimpi::AssetType::TEXTURE:	return ThumbnailType::TEXTURE;
+		case Stimpi::AssetType::SHADER:		return ThumbnailType::SHADER;
+		case Stimpi::AssetType::SCENE:		return ThumbnailType::SCENE;
+		default: return ThumbnailType::NONE;
+		}
 
-		return ThumbnailType::NONE;
 	}
 
 	class Thumbnail

@@ -3,12 +3,13 @@
 
 #include "Stimpi/Log.h"
 
+#include "Stimpi/Asset/ShaderImporter.h"
+
 #include "Stimpi/Scene/Entity.h"
 #include "Stimpi/Scene/EntityHierarchy.h"
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Scene/Utils/SceneUtils.h"
-#include "Stimpi/Scene/Assets/AssetManager.h"
 
 #include "Stimpi/Physics/ContactListener.h"
 #include "Stimpi/Physics/Physics.h"
@@ -77,9 +78,8 @@ namespace Stimpi
 		ScriptEngine::ClearScriptInstances();
 
 		m_RuntimeState = RuntimeState::STOPPED;
-		m_DefaultShader.reset(Shader::CreateShader("shader.shader"));
-		//m_DefaultShader.reset(Shader::CreateShader("pixelart.shader"));
-		m_DefaultSolidColorShader.reset(Shader::CreateShader("solidcolor.shader"));
+		m_DefaultShader = ShaderImporter::LoadShader(Project::GetResourcesDir() / "shaders\/shader.shader");
+		m_DefaultSolidColorShader = ShaderImporter::LoadShader(Project::GetResourcesDir() / "shaders\/solidcolor.shader");
 
 		// Collision listener for Box2D
 		m_ContactListener = std::make_unique<ContactListener>();
@@ -230,29 +230,17 @@ namespace Stimpi
 
 					if (sprite.m_Disabled == false)
 					{
-						if (sprite.TextureLoaded())
-						{
-							if (sprite.m_Enable)
-								Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite, m_DefaultShader.get());
-							else
-								Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
-						}
+						if (sprite.m_Enable)
+							Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite, m_DefaultShader.get());
 						else
-						{
 							Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());
-						}
 					}
 				}
 				else if (m_Registry.all_of<AnimatedSpriteComponent>(entity))
 				{
 					auto& anim = m_Registry.get<AnimatedSpriteComponent>(entity);
-
-					if (anim.Loaded())
-					{
-						// AnimationSprite is render always when in stopped "Editor" mode
-						if (anim.IsPlaying() || m_RuntimeState == RuntimeState::STOPPED)
-							Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, anim, m_DefaultShader.get());
-					}
+					if (anim.IsPlaying() || m_RuntimeState == RuntimeState::STOPPED)
+						Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, anim, m_DefaultShader.get());
 				}
 
 				prevLayer = sortGroup.m_LayerIndex;

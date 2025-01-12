@@ -4,6 +4,9 @@
     <Filter Include="Stimpi">
       <UniqueIdentifier>{BBBDE9D1-A75F-14A8-901A-28FC7C5B9BF8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Stimpi\Asset">
+      <UniqueIdentifier>{8A92C948-76F5-58ED-1F7B-91A30BBD2470}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Stimpi\Cmd">
       <UniqueIdentifier>{7E14D307-6ACC-1455-D3D3-EDB0BFAAAF45}</UniqueIdentifier>
     </Filter>
@@ -46,6 +49,36 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi.h" />
+    <ClInclude Include="src\Stimpi\Asset\Asset.h">
+      <Filter>Stimpi\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Asset\AssetImporter.h">
+      <Filter>Stimpi\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Asset\AssetManager.h">
+      <Filter>Stimpi\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Asset\AssetManagerBase.h">
+      <Filter>Stimpi\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Asset\AssetManagerEditor.h">
+      <Filter>Stimpi\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Asset\AssetManagerRuntime.h">
+      <Filter>Stimpi\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Asset\AssetMetadata.h">
+      <Filter>Stimpi\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Asset\SceneImporter.h">
+      <Filter>Stimpi\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Asset\ShaderImporter.h">
+      <Filter>Stimpi\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Asset\TextureImporter.h">
+      <Filter>Stimpi\Asset</Filter>
+    </ClInclude>
     <ClInclude Include="src\Stimpi\Cmd\Command.h">
       <Filter>Stimpi\Cmd</Filter>
     </ClInclude>
@@ -187,12 +220,6 @@
     <ClInclude Include="src\Stimpi\Platform\OpenGLVertexArrayObject.h">
       <Filter>Stimpi\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="src\Stimpi\Scene\Assets\AssetHandle.h">
-      <Filter>Stimpi\Scene\Assets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Stimpi\Scene\Assets\AssetManager.h">
-      <Filter>Stimpi\Scene\Assets</Filter>
-    </ClInclude>
     <ClInclude Include="src\Stimpi\Scene\Camera.h">
       <Filter>Stimpi\Scene</Filter>
     </ClInclude>
@@ -262,6 +289,30 @@
     <ClInclude Include="src\stpch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Stimpi\Asset\Asset.cpp">
+      <Filter>Stimpi\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Asset\AssetImporter.cpp">
+      <Filter>Stimpi\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Asset\AssetManager.cpp">
+      <Filter>Stimpi\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Asset\AssetManagerEditor.cpp">
+      <Filter>Stimpi\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Asset\AssetManagerRuntime.cpp">
+      <Filter>Stimpi\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Asset\SceneImporter.cpp">
+      <Filter>Stimpi\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Asset\ShaderImporter.cpp">
+      <Filter>Stimpi\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Asset\TextureImporter.cpp">
+      <Filter>Stimpi\Asset</Filter>
+    </ClCompile>
     <ClCompile Include="src\Stimpi\Cmd\CommandStack.cpp">
       <Filter>Stimpi\Cmd</Filter>
     </ClCompile>
@@ -381,9 +432,6 @@
     </ClCompile>
     <ClCompile Include="src\Stimpi\Platform\Windows\WindowsPlatformUtils.cpp">
       <Filter>Stimpi\Platform\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Scene\Assets\AssetManager.cpp">
-      <Filter>Stimpi\Scene\Assets</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Scene\Camera.cpp">
       <Filter>Stimpi\Scene</Filter>

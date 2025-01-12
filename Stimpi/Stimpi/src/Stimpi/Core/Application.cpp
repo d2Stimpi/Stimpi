@@ -8,7 +8,6 @@
 #include "Stimpi/Core/InputManager.h"
 #include "Stimpi/Core/WindowManager.h"
 #include "Stimpi/Core/Time.h"
-#include "Stimpi/Scene/Assets/AssetManager.h"
 #include "Stimpi/Utils/ThreadPool.h"
 
 #include "Stimpi/Scripting/ScriptEngine.h"
@@ -66,7 +65,6 @@ namespace Stimpi
 		};
 
 		ScriptEngine::Shutdown();
-		AssetManager::ReleaseAll();
 	}
 
 	void Application::Stop()
