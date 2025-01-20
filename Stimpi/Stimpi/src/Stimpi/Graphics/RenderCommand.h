@@ -13,6 +13,17 @@ namespace Stimpi
 {
 	enum class RenderCommandType { NONE = 0, QUAD, CIRLCE, LINE, VARIABLE };
 
+	/**
+	 * Base shader data is VertexData (Pos, Col, Tex)
+	 * Custom shader can have more layered data - VariableVertexData
+	 * 
+	 * Rendering custom shader
+	 *  - Component has valid Shader asset
+	 *  - based on custom shader layer data, component can have more data set
+	 *		* dynamic UI to show layer data
+	 *		* allow drag and drop relation for setting layer data or input fixed data
+	 */
+
 	struct VariableVertexData
 	{
 		std::vector<float> m_Data;

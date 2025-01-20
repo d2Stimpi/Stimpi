@@ -34,9 +34,6 @@
     <Filter Include="Stimpi\Scene">
       <UniqueIdentifier>{184B064A-04AE-95EE-AD33-CEA499756171}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Stimpi\Scene\Assets">
-      <UniqueIdentifier>{FA26C238-6688-9F46-EFF5-E5F85B56D605}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Stimpi\Scene\Utils">
       <UniqueIdentifier>{783EAE31-6422-6F87-CD82-69DAB9855909}</UniqueIdentifier>
     </Filter>

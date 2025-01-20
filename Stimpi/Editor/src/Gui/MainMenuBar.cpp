@@ -17,7 +17,6 @@
 #include "Stimpi/Utils/PlatformUtils.h"
 #include "Stimpi/Utils/FileWatcher.h"
 #include "Stimpi/Utils/SystemUtils.h"
-#include "Stimpi/Utils/Parser.h"
 
 #include "Gui/Config/GraphicsConfigPanel.h"
 #include "Gui/Config/LayersConfigPanel.h"

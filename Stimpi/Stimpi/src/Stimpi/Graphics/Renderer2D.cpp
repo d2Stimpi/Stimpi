@@ -463,6 +463,7 @@ namespace Stimpi
 		BuildCustomVAO(vboLayout, shaderID);
 		BuildCustomVBO(BufferObjectType::ARRAY_BUFFER, shaderID);
 		PrepareCustomShaderObjects(shaderID);
+		// Note: check if PrepareCustomShaderObject was already performed for the input shader
 
 		if (std::find(m_CustomShaders.begin(), m_CustomShaders.end(), shader) == m_CustomShaders.end())
 		{

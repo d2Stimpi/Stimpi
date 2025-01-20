@@ -452,6 +452,9 @@ namespace Stimpi
 		std::unordered_map<std::string, std::shared_ptr<Animation>> m_Animations;
 		bool m_AutoPlay = false; // Auto play the default anim on start
 
+		// Custom shader asset
+		AssetHandle m_Shader = 0;
+
 		AnimatedSpriteComponent(const AnimatedSpriteComponent&) = default;
 		AnimatedSpriteComponent()
 		{
@@ -590,6 +593,11 @@ namespace Stimpi
 				}
 				out << YAML::EndMap;
 				out << YAML::Key << "AutoPlay" << YAML::Value << m_AutoPlay;
+				// If custom shader is used only
+				if (m_Shader != 0)
+				{
+					out << YAML::Key << "Shader" << YAML::Value << m_Shader;
+				}
 			}
 			out << YAML::EndMap;
 		}
@@ -621,6 +629,10 @@ namespace Stimpi
 			if (node["AutoPlay"])
 			{
 				m_AutoPlay = node["AutoPlay"].as<bool>();
+			}
+			if (node["Shader"])
+			{
+				m_Shader = node["Shader"].as<UUIDType>();
 			}
 		}
 	};

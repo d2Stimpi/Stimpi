@@ -23,14 +23,8 @@ namespace Stimpi
 		void Unbind() override;
 		void Resize(uint32_t width, uint32_t height) override;
 		unsigned int GetTextureID() override { return m_TextureID; }
-			
-	private:
-		void CheckLoadFuture();	// to remove
-		void GenerateTexture(TextureLoadData* data);	// to remove
 
 	private:
 		unsigned int m_TextureID{ 0 };
-
-		std::future<TextureLoadData*> m_LoadFuture;	// to remove
 	};
 }
