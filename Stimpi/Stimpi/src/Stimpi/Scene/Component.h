@@ -454,6 +454,7 @@ namespace Stimpi
 
 		// Custom shader asset
 		AssetHandle m_Shader = 0;
+		bool m_UseCustomShader = false;
 
 		AnimatedSpriteComponent(const AnimatedSpriteComponent&) = default;
 		AnimatedSpriteComponent()
@@ -633,6 +634,7 @@ namespace Stimpi
 			if (node["Shader"])
 			{
 				m_Shader = node["Shader"].as<UUIDType>();
+				m_UseCustomShader = true;
 			}
 		}
 	};

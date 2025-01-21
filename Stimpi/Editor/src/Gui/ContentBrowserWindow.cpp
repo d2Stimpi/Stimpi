@@ -255,6 +255,11 @@ namespace Stimpi
 			{
 				UIPayload::BeginSource(PAYLOAD_ANIMATION, path.string().c_str(), path.string().length(), filenameStr.c_str());
 			}
+			if (relativePath.extension().string() == ".shader")
+			{
+				AssetHandle shaderHandle = Project::GetEditorAssetManager()->GetAssetHandle(relativePath);
+				UIPayload::BeginSource(PAYLOAD_SHADER, &shaderHandle, sizeof(AssetHandle), filenameStr.c_str());
+			}
 		}
 		ThumbnailPopup();
 		ImGui::EndChild();

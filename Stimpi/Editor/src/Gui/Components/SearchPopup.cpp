@@ -23,12 +23,12 @@ namespace Stimpi
 
 	static Context s_Context;
 
-	bool SearchPopup::OnImGuiRender(std::vector<std::string>& data)
+	bool SearchPopup::OnImGuiRender(const char* popupName, std::vector<std::string>& data)
 	{
 		bool itemSelected = false;
 
 		ImGui::SetNextWindowSize(s_Context.m_WinSize);
-		if (ImGui::BeginPopup("GlobalSearchPopup"))
+		if (ImGui::BeginPopup(popupName))
 		{
 			ImGui::InputText("Search", s_Context.m_SearchText, sizeof(s_Context.m_SearchText));
 			EditorUtils::SetActiveItemCaptureKeyboard(false);
@@ -66,9 +66,9 @@ namespace Stimpi
 		return s_Context.m_SelectedItem;
 	}
 
-	void SearchPopup::OpenPopup()
+	void SearchPopup::OpenPopup(const char* popupName)
 	{
-		ImGui::OpenPopup("GlobalSearchPopup");
+		ImGui::OpenPopup(popupName);
 	}
 
 	void SearchPopup::ClosePopup()

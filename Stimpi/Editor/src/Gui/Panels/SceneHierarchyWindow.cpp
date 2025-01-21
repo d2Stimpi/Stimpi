@@ -389,14 +389,14 @@ namespace Stimpi
 			ImGui::InputText("##ScriptComponentPreview", scriptName, sizeof(scriptName), ImGuiInputTextFlags_ReadOnly);
 			if (ImGui::IsItemClicked())
 			{
-				SearchPopup::OpenPopup();
+				SearchPopup::OpenPopup("ScriptSearch##ScriptComponent");
 				showPopup = true;
 			}
 			
 			if (showPopup)
 			{
 				auto& filterData = ScriptEngine::GetScriptClassNames();
-				if (SearchPopup::OnImGuiRender(filterData))
+				if (SearchPopup::OnImGuiRender("ScriptSearch##ScriptComponent", filterData))
 				{
 					component.m_ScriptName = SearchPopup::GetSelection();
 					ScriptEngine::OnScriptComponentAdd(component.m_ScriptName, s_Context.m_SelectedEntity);
@@ -735,6 +735,51 @@ namespace Stimpi
 					std::string strData = std::string((char*)data, size);
 					component.AddAnimation(strData);
 					});
+			}
+			
+			// Custom shader section
+			ImGui::Checkbox("Use custom shader", &component.m_UseCustomShader);
+
+			if (component.m_UseCustomShader)
+			{
+				static bool showShaderPopup = false;
+				static char shaderName[64] = "";
+				if (component.m_Shader != 0)
+				{
+					AssetMetadata metadata = Project::GetEditorAssetManager()->GetAssetMetadata(component.m_Shader);
+					strcpy(shaderName, metadata.m_FilePath.GetFileName().c_str());
+				}
+
+				ImGui::Spacing();
+				ImGui::InputText("##ScriptComponentPreview", shaderName, sizeof(shaderName), ImGuiInputTextFlags_ReadOnly);
+
+				if (ImGui::IsItemClicked())
+				{
+					SearchPopup::OpenPopup("ShaderSearch##AnimatedSpriteComponent");
+					showShaderPopup = true;
+				}
+
+				if (showShaderPopup)
+				{
+					
+					auto& filterData = ScriptEngine::GetScriptClassNames();
+					if (SearchPopup::OnImGuiRender("ShaderSearch##AnimatedSpriteComponent", filterData))
+					{
+						//component.m_ScriptName = SearchPopup::GetSelection();
+						showShaderPopup = false;
+					}
+				}
+
+				// Target for custom shader field
+				UIPayload::BeginTarget(PAYLOAD_SHADER, [&component](void* data, uint32_t size) {
+					AssetHandle shaderHandle = *((AssetHandle*)data);
+					AssetMetadata metadata = Project::GetEditorAssetManager()->GetAssetMetadata(shaderHandle);
+					ST_CORE_INFO("Shader data dropped: {}", metadata.m_FilePath.string());
+					component.m_Shader = shaderHandle;
+					});
+
+				ImGui::SameLine();
+				ImGui::Text("Shader");
 			}
 
 			ImGui::Spacing();

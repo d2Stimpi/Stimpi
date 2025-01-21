@@ -702,14 +702,14 @@ namespace Stimpi
 		{
 			s_Context->m_NewNodePos = GetNodePanelViewMouseLocation();
 			m_ShowPopup = true;
-			SearchPopup::OpenPopup();
+			SearchPopup::OpenPopup("AddNodePopup##GraphPanel");
 		}
 
 		if (m_ShowPopup)
 		{
 			std::vector<std::string>& nodeTypeList = NodeBuilder::GetNodeNamesList();
 
-			if (SearchPopup::OnImGuiRender(nodeTypeList))
+			if (SearchPopup::OnImGuiRender("AddNodePopup##GraphPanel", nodeTypeList))
 			{
 				m_ShowPopup = false;
 				CreateNodeByName(s_Context->m_NewNodePos, SearchPopup::GetSelection());
