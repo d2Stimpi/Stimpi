@@ -10,6 +10,7 @@
 
 #include "Stimpi/Core/InputManager.h"
 #include "Stimpi/Core/WindowManager.h"
+#include "Stimpi/Graphics/ShaderRegistry.h"
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Entity.h"
 #include "Stimpi/Scene/EntityManager.h"
@@ -762,10 +763,10 @@ namespace Stimpi
 				if (showShaderPopup)
 				{
 					
-					auto& filterData = ScriptEngine::GetScriptClassNames();
+					auto& filterData = ShaderRegistry::GetShaderNames();
 					if (SearchPopup::OnImGuiRender("ShaderSearch##AnimatedSpriteComponent", filterData))
 					{
-						//component.m_ScriptName = SearchPopup::GetSelection();
+						component.m_Shader = ShaderRegistry::GetShaderHandle(SearchPopup::GetSelection());
 						showShaderPopup = false;
 					}
 				}

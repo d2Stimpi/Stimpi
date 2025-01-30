@@ -31,6 +31,9 @@ namespace Stimpi
 		// Stats
 		size_t GetLoadedAssetsCount();
 	private:
+		void OnAssetRegistered(AssetHandle handle, AssetMetadata metadata);
+
+	private:
 		AssetMap m_LoadedAssets;
 		AssetRegistry m_AssetRegistry;
 		// For quick lookup by file path if asset is registered;

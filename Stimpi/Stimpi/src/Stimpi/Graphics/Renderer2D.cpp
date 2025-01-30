@@ -5,6 +5,7 @@
 #include "Stimpi/Core/Window.h"
 #include "Stimpi/Core/Project.h"
 #include "Stimpi/Asset/ShaderImporter.h"
+#include "Stimpi/Asset/AssetManager.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/glm.hpp>
@@ -453,21 +454,22 @@ namespace Stimpi
 		m_RenderedCmdCnt = 0;
 	}
 
-	void Renderer2D::RegisterShader(std::shared_ptr<Shader> shader)
+	void Renderer2D::RegisterShader(AssetHandle shaderHandle)
 	{
+		auto shader = AssetManager::GetAsset<Shader>(shaderHandle);
 		auto& info = shader->GetInfo();
 		unsigned int shaderID = shader->GetShaderID();
 
-		VertexBufferLayout vboLayout(info.m_ShaderLayout.m_Data);
-
-		BuildCustomVAO(vboLayout, shaderID);
-		BuildCustomVBO(BufferObjectType::ARRAY_BUFFER, shaderID);
-		PrepareCustomShaderObjects(shaderID);
-		// Note: check if PrepareCustomShaderObject was already performed for the input shader
-
-		if (std::find(m_CustomShaders.begin(), m_CustomShaders.end(), shader) == m_CustomShaders.end())
+		// Check if PrepareCustomShaderObject was already performed for the registering shader
+		if (std::find(m_CustomShaders.begin(), m_CustomShaders.end(), shaderHandle) == m_CustomShaders.end())
 		{
-			m_CustomShaders.push_back(shader);
+			VertexBufferLayout vboLayout(info.m_ShaderLayout.m_Data);
+
+			BuildCustomVAO(vboLayout, shaderID);
+			BuildCustomVBO(BufferObjectType::ARRAY_BUFFER, shaderID);
+			PrepareCustomShaderObjects(shaderID);
+
+			m_CustomShaders.push_back(shaderHandle);
 		}
 		else
 		{
@@ -475,8 +477,9 @@ namespace Stimpi
 		}
 	}
 
-	void Renderer2D::UnregisterShader(std::shared_ptr<Shader> shader)
+	void Renderer2D::UnregisterShader(AssetHandle shaderHandle)
 	{
+		auto shader = AssetManager::GetAsset<Shader>(shaderHandle);
 		unsigned int shaderID = shader->GetShaderID();
 		auto vao = m_CustomVAOs[shaderID];
 		auto vbo = m_CustomVBOs[shaderID];
@@ -490,7 +493,7 @@ namespace Stimpi
 			m_CustomVBOs.erase(shaderID);
 		}
 
-		auto found = std::find(m_CustomShaders.begin(), m_CustomShaders.end(), shader);
+		auto found = std::find(m_CustomShaders.begin(), m_CustomShaders.end(), shaderHandle);
 		if (found != m_CustomShaders.end())
 			m_CustomShaders.erase(found);
 	}

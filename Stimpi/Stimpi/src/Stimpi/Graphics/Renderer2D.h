@@ -53,6 +53,9 @@ namespace Stimpi
 
 		void SetLineWidth(float width);
 
+		// Custom Shader
+		//void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, SubTexture* subtexture, Shader* shader);
+
 		// Event Callbacks
 		void ResizeCanvas(uint32_t width, uint32_t height);
 
@@ -66,8 +69,8 @@ namespace Stimpi
 		void EndFrame();
 
 		// Custom shader handling
-		void RegisterShader(std::shared_ptr<Shader> shader);
-		void UnregisterShader(std::shared_ptr<Shader> shader);
+		void RegisterShader(AssetHandle shaderHandle);
+		void UnregisterShader(AssetHandle shaderHandle);
 
 		// To link with ImGui
 		FrameBuffer* GetFrameBuffer();
@@ -109,7 +112,7 @@ namespace Stimpi
 		// Custom shader rendering [shaderID : VAO] and [shaderID : VBO]
 		std::unordered_map<unsigned int, std::shared_ptr<VertexArrayObject>> m_CustomVAOs;
 		std::unordered_map<unsigned int, std::shared_ptr<BufferObject>> m_CustomVBOs;
-		std::vector<std::shared_ptr<Shader>> m_CustomShaders;
+		std::vector<AssetHandle> m_CustomShaders;
 
 		// Quad rendering
 		std::shared_ptr<VertexArrayObject> m_QuadVAO;

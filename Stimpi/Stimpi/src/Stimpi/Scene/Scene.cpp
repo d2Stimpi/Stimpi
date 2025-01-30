@@ -14,6 +14,7 @@
 #include "Stimpi/Physics/ContactListener.h"
 #include "Stimpi/Physics/Physics.h"
 
+#include "Stimpi/Graphics/ShaderRegistry.h"
 #include "Stimpi/Graphics/Renderer2D.h"
 
 #include "Stimpi/Core/InputManager.h"
@@ -80,6 +81,14 @@ namespace Stimpi
 		m_RuntimeState = RuntimeState::STOPPED;
 		m_DefaultShader = ShaderImporter::LoadShader(Project::GetResourcesDir() / "shaders\/shader.shader");
 		m_DefaultSolidColorShader = ShaderImporter::LoadShader(Project::GetResourcesDir() / "shaders\/solidcolor.shader");
+
+		// Prepare Custom Shaders for usage, create required VAOs and BOs
+		auto& customShaders = ShaderRegistry::GetShaderNames();
+		for (auto& shader : customShaders)
+		{
+			AssetHandle handle = ShaderRegistry::GetShaderHandle(shader);
+			Renderer2D::Instance()->RegisterShader(handle);
+		}
 
 		// Collision listener for Box2D
 		m_ContactListener = std::make_unique<ContactListener>();
@@ -195,7 +204,12 @@ namespace Stimpi
 		auto axis = Project::GetGraphicsConfig().m_RenderingOrderAxis;
 		if (axis == RenderingOrderAxis::X_AXIS)
 		{
-			// TODO
+			m_Registry.sort<DefaultGroupComponent>([&](const auto& lhs, const auto& rhs)
+				{
+					if (lhs.m_LayerIndex == rhs.m_LayerIndex)
+						return lhs.m_Position.x > rhs.m_Position.x;
+					return lhs.m_LayerIndex < rhs.m_LayerIndex;
+				});
 		}
 		else if (axis == RenderingOrderAxis::Y_AXIS)
 		{
@@ -208,7 +222,12 @@ namespace Stimpi
 		}
 		else if (axis == RenderingOrderAxis::Z_AXIS)
 		{
-			// TODO
+			m_Registry.sort<DefaultGroupComponent>([&](const auto& lhs, const auto& rhs)
+				{
+					if (lhs.m_LayerIndex == rhs.m_LayerIndex)
+						return lhs.m_Position.z > rhs.m_Position.z;
+					return lhs.m_LayerIndex < rhs.m_LayerIndex;
+				});
 		}
 
 		Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());

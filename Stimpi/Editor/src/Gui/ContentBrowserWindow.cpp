@@ -27,7 +27,7 @@ namespace Stimpi
 
 	struct ThumbanailPopupContext
 	{
-		FilePath m_FilePath = "";
+		FilePath m_RelativePath = "";
 	};
 
 	struct ContentBrowserWindowContext
@@ -231,7 +231,7 @@ namespace Stimpi
 			{
 				if (!std::filesystem::is_directory(path))
 				{
-					s_Context.m_ThumbnailPopupContext.m_FilePath = relativePath;
+					s_Context.m_ThumbnailPopupContext.m_RelativePath = relativePath;
 					ImGui::OpenPopup("ContentBrowserWindow##ThumbnailPopup");
 				}
 			}
@@ -422,7 +422,17 @@ namespace Stimpi
 		{
 			if (ImGui::Selectable("Import Asset"))
 			{
-				ST_CORE_INFO("Import asset {}", s_Context.m_ThumbnailPopupContext.m_FilePath.string());
+				ST_CORE_INFO("Import asset {}", s_Context.m_ThumbnailPopupContext.m_RelativePath.string());
+				auto assetManager = Project::GetEditorAssetManager();
+
+				AssetType assetType = AssetUtils::GetAssetType(s_Context.m_ThumbnailPopupContext.m_RelativePath);
+				if (assetType != AssetType::NONE)
+				{
+					if (!assetManager->IsAssetRegistered(s_Context.m_ThumbnailPopupContext.m_RelativePath))
+					{
+						assetManager->RegisterAsset({ assetType, s_Context.m_ThumbnailPopupContext.m_RelativePath });
+					}
+				}
 			}
 
 			ImGui::EndPopup();

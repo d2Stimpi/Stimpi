@@ -284,6 +284,7 @@
       <Filter>Stimpi\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\stpch.h" />
+    <ClInclude Include="src\Stimpi\Graphics\ShaderRegistry.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Asset\Asset.cpp">
@@ -485,5 +486,6 @@
       <Filter>Stimpi\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\ShaderRegistry.cpp" />
   </ItemGroup>
 </Project>

@@ -5,6 +5,7 @@
 #include "Stimpi/Core/Project.h"
 #include "Stimpi/Asset/AssetImporter.h"
 #include "Stimpi/Scene/ResourceManager.h"
+#include "Stimpi/Graphics/ShaderRegistry.h"
 
 #include <yaml-cpp/yaml.h>
 
@@ -40,6 +41,8 @@ namespace Stimpi
 			{
 				metadata.m_LastWriteTime = FileSystem::LastWriteTime(Project::GetAssestsDir() / metadata.m_FilePath);
 				m_LoadedAssets[handle] = asset;
+
+				asset->m_Handle = handle;
 			}
 		}
 
@@ -110,6 +113,9 @@ namespace Stimpi
 		AssetHandle handle; // generate handle
 		m_AssetRegistry[handle] = metadata;
 		m_AssetLookup[metadata.m_FilePath.string()] = handle;
+
+		OnAssetRegistered(handle, metadata);
+
 		return handle;
 	}
 
@@ -179,6 +185,8 @@ namespace Stimpi
 					metadata.m_FilePath = assetNode["Metadata"]["FilePath"].as<std::string>();
 					m_AssetRegistry[handle] = metadata;
 					m_AssetLookup[metadata.m_FilePath.string()] = handle;
+
+					OnAssetRegistered(handle, metadata);
 				}
 				else
 				{
@@ -197,6 +205,17 @@ namespace Stimpi
 	size_t AssetManagerEditor::GetLoadedAssetsCount()
 	{
 		return m_LoadedAssets.size();
+	}
+
+	void AssetManagerEditor::OnAssetRegistered(AssetHandle handle, AssetMetadata metadata)
+	{
+		if (metadata.m_Type == AssetType::SHADER)
+		{
+			ShaderRegistry::RegisterShader(handle);
+
+			// Register shader with Renderer to prepare VAO and BO structures
+			//Renderer2D::Instance()->RegisterShader(handle);
+		}
 	}
 
 }

@@ -209,6 +209,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Graphics\RenderCommand.h" />
     <ClInclude Include="src\Stimpi\Graphics\Renderer2D.h" />
     <ClInclude Include="src\Stimpi\Graphics\Shader.h" />
+    <ClInclude Include="src\Stimpi\Graphics\ShaderRegistry.h" />
     <ClInclude Include="src\Stimpi\Graphics\SubTexture.h" />
     <ClInclude Include="src\Stimpi\Graphics\Texture.h" />
     <ClInclude Include="src\Stimpi\Graphics\VertexArrayObject.h" />
@@ -281,6 +282,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClCompile Include="src\Stimpi\Graphics\RenderCommand.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\Renderer2D.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\Shader.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\ShaderRegistry.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\SubTexture.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\Texture.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\VertexArrayObject.cpp" />
