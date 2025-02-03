@@ -7,6 +7,7 @@ namespace Stimpi
 	// Forwards to avoid include issues
 	struct NGraphPanelCanvas;
 	class NGraphPanel;
+	class NNode;
 
 	class NGraphRenderer
 	{
@@ -25,10 +26,6 @@ namespace Stimpi
 		static bool IsDebugModeOn();
 
 		// Node render API
-		static void BeginNode(const std::string& title, bool hasHeader, const ImVec2& pos, const ImVec2& size);
-		static void EndNode();
-
-	private:
-		
+		static void DrawNode(std::shared_ptr<NNode> node);		
 	};
 }

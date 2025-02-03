@@ -24,6 +24,8 @@ namespace Stimpi
 
 		void SetActive(bool active) { m_IsActive = active; }
 
+		std::shared_ptr<NNode> GetSelectedNode();
+
 		NControllAction GetAction();
 
 	private:
@@ -34,6 +36,6 @@ namespace Stimpi
 		NControllAction m_Action = NControllAction::NONE;
 
 		NGraph* m_Graph = nullptr;
-		NNode* m_SelectedNode = nullptr;
+		std::shared_ptr<NNode> m_SelectedNode = nullptr;
 	};
 }

@@ -12,13 +12,6 @@ namespace Stimpi
 
 	}
 
-	void NNode::OnImGuiRender()
-	{
-		NGraphRenderer::BeginNode(m_Title, m_HasHeader, m_Pos, m_Size);
-
-		NGraphRenderer::EndNode();
-	}
-
 	ImVec2 NNode::CalcNodeSize()
 	{
 		ImVec2 size = { 0.0f, 0.0f };

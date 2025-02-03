@@ -1,18 +1,40 @@
 #include "stpch.h"
 #include "Gui/NNode/NNodeRegistry.h"
 
+#define ST_REGISTER_NODE(Name, FuncName) s_NodeNames.emplace_back(Name); s_NodeRegistry[Name] = []() { return FuncName(Name); };
+
 namespace Stimpi
 {
 	using NNodeCtor = std::function<std::shared_ptr<NNode>()>;
 	using NNodeRegistryType = std::unordered_map<std::string, NNodeCtor>;
 
-	std::vector<std::string> s_NodeNames = { "Sample Getter", "Sample Node" };
+	std::vector<std::string> s_NodeNames;
+	NNodeRegistryType s_NodeRegistry;
 
-	NNodeRegistryType s_NodeRegistry = 
+	/* Node construction methods begin */
+
+	static std::shared_ptr<NNode> SampleGetter(const std::string& title)
 	{
-		{s_NodeNames[0], []() { return std::make_shared<NNode>(); }},
-		{s_NodeNames[1], []() { return std::make_shared<NNode>(); }}
-	};
+		auto node = std::make_shared<NNode>(title,	NNode::Type::Getter);
+
+		return node;
+	}
+
+	static std::shared_ptr<NNode> SampleNode(const std::string& title)
+	{
+		auto node = std::make_shared<NNode>(title, NNode::Type::Modifier);
+
+		return node;
+	}
+
+
+	/* Node construction methods end */
+
+	void NNodeRegistry::InitializeNodeRegisrty()
+	{
+		ST_REGISTER_NODE("Sample Getter", SampleGetter);
+		ST_REGISTER_NODE("Sample Node", SampleGetter);
+	}
 
 	std::vector<std::string> NNodeRegistry::GetNodeNamesList()
 	{

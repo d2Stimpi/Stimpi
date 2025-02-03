@@ -67,6 +67,7 @@ namespace Stimpi
 				// Clear node selection if clicked on empty space
 				if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 				{
+					if (m_SelectedNode) m_SelectedNode->SetSelected(false);
 					m_SelectedNode = nullptr;
 					//m_PanelContext->OnNodeDeselect();
 
@@ -107,10 +108,10 @@ namespace Stimpi
 				ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
 
 				// Check if we are hovering any Pins
-				/*Node* hoveredNode = m_PanelContext->GetNodeByID(hoverNodeID);
+				auto hoveredNode = m_PanelContext->GetNodeByID(hoverNodeID);
 				if (hoveredNode)
 				{
-					Pin* hoveredPin = m_PanelContext->GetMouseHoveredPin(hoveredNode);
+					/*Pin* hoveredPin = m_PanelContext->GetMouseHoveredPin(hoveredNode);
 					if (hoveredPin)
 					{
 
@@ -127,26 +128,30 @@ namespace Stimpi
 							m_PinFloatingTarget = m_PanelContext->GetNodePanelViewMouseLocation();
 							break; //exit case
 						}
-					}
-				}*/
+					}*/
+				}
 			}
 
 			if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 			{
-				/*m_Action = NControllAction::NODE_DRAGABLE;
+				m_Action = NControllAction::NODE_DRAGABLE;
+				// Clear previous selection
+				if (m_SelectedNode) m_SelectedNode->SetSelected(false);
+
 				m_SelectedNode = m_PanelContext->GetNodeByID(hoverNodeID);
+				m_SelectedNode->SetSelected(true);
 
 				// Clear Connection hover selection
-				m_SelectedConnection = nullptr;*/
+				//m_SelectedConnection = nullptr;
 			}
 			break;
 		case NControllAction::NODE_DRAGABLE:
-			/*ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
+			ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
 
 			if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
 			{
 				// Node Dragging finished - find all connections to the moved node and update points for mouse picking
-				m_PanelContext->UpdateNodeConnectionsPoints(m_SelectedNode);
+				//m_PanelContext->UpdateNodeConnectionsPoints(m_SelectedNode);
 
 				m_Action = NControllAction::NONE;
 				break;
@@ -158,18 +163,16 @@ namespace Stimpi
 				dragOffset.x = io.MouseDelta.x / m_Canvas->m_Scale;
 				dragOffset.y = io.MouseDelta.y / m_Canvas->m_Scale;
 
-				Node* selected = m_SelectedNode;
-				if (selected != nullptr)
+				if (m_SelectedNode != nullptr)
 				{
-					selected->m_Pos.x += dragOffset.x;
-					selected->m_Pos.y += dragOffset.y;
+					m_SelectedNode->Translate({ dragOffset.x, dragOffset.y });
 				}
 			}
 			else
 			{
 				dragOffset.x = 0.0f;
 				dragOffset.y = 0.0f;
-			}*/
+			}
 			break;
 		case NControllAction::NODE_PIN_DRAG:
 			/*if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
@@ -271,6 +274,11 @@ namespace Stimpi
 	void NGraphController::HandleKeyPresses()
 	{
 
+	}
+
+	std::shared_ptr<Stimpi::NNode> NGraphController::GetSelectedNode()
+	{
+		return m_SelectedNode;
 	}
 
 	Stimpi::NControllAction NGraphController::GetAction()

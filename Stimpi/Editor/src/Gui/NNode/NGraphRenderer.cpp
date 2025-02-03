@@ -21,9 +21,6 @@ namespace Stimpi
 
 		std::shared_ptr<Texture> m_HeaderImage;
 		std::shared_ptr<Texture> m_HighlightImage;
-
-		// Drawing state data
-		bool m_Begin = false;
 	};
 
 	NGraphRendererContext s_Context;
@@ -67,7 +64,7 @@ namespace Stimpi
 		{
 			for (auto& node : activeGraph->m_Nodes)
 			{
-				node->OnImGuiRender();
+				DrawNode(node);
 			}
 		}
 	}
@@ -82,10 +79,16 @@ namespace Stimpi
 		return s_Context.m_DebugOn;
 	}
 
-	void NGraphRenderer::BeginNode(const std::string& title, bool hasHeader, const ImVec2& pos, const ImVec2& size)
+	void NGraphRenderer::DrawNode(std::shared_ptr<NNode> node)
 	{
-		ST_CORE_ASSERT_MSG(s_Context.m_Begin, "EndNode not called before previous BeginNode!");
-		s_Context.m_Begin = true;
+		ST_CORE_ASSERT_MSG(!s_Context.m_DrawList, "Drawing list was not set!");
+		ST_CORE_ASSERT_MSG(!s_Context.m_Canvas, "Drawing canvas was not set!");
+		ST_CORE_ASSERT_MSG(!s_Context.m_PanelContext, "Context was not set!");
+		ST_CORE_ASSERT_MSG(!s_Context.m_PanelContext->GetController(), "Graph Controller not set!");
+
+		ImVec2 pos = node->GetPos();
+		ImVec2 size = node->GetSize();
+		bool hasHeader = node->HasHeader();
 
 		// Draw the header
 		if (hasHeader)
@@ -113,7 +116,7 @@ namespace Stimpi
 			s_Context.m_DrawList->AddText(
 				{ s_Context.m_Canvas->m_Origin.x + (s_PanelStyle.m_HeaderTextOffset.x + pos.x) * s_Context.m_Canvas->m_Scale, s_Context.m_Canvas->m_Origin.y + (s_PanelStyle.m_HeaderTextOffset.y + pos.y) * s_Context.m_Canvas->m_Scale },
 				IM_COL32(255, 255, 255, 255),
-				title.c_str());
+				node->GetTitle().c_str());
 			ImGui::SetWindowFontScale(1.0f);
 		}
 		else
@@ -147,11 +150,18 @@ namespace Stimpi
 					s_PanelStyle.m_NodeRounding * s_Context.m_Canvas->m_Scale);
 			}
 		}
-	}
 
-	void NGraphRenderer::EndNode()
-	{
-		s_Context.m_Begin = false;
+		// Draw Pins and other components here
+
+		// Draw frame if hovered over Node
+		if (s_Context.m_PanelContext->IsNodeSelected(node))
+		{
+			s_Context.m_DrawList->AddRect(
+				{ s_Context.m_Canvas->m_Origin.x + pos.x * s_Context.m_Canvas->m_Scale - s_PanelStyle.m_SelectionThinckness, s_Context.m_Canvas->m_Origin.y + pos.y * s_Context.m_Canvas->m_Scale - s_PanelStyle.m_SelectionThinckness },
+				{ s_Context.m_Canvas->m_Origin.x + (pos.x + size.x) * s_Context.m_Canvas->m_Scale + s_PanelStyle.m_SelectionThinckness, s_Context.m_Canvas->m_Origin.y + (pos.y + size.y) * s_Context.m_Canvas->m_Scale + s_PanelStyle.m_SelectionThinckness },
+				s_PanelStyle.m_NodeHoverColor,
+				s_PanelStyle.m_NodeRounding * s_Context.m_Canvas->m_Scale, ImDrawFlags_RoundCornersAll, s_PanelStyle.m_SelectionThinckness);
+		}
 	}
 
 }
