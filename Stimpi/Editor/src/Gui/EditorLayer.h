@@ -23,6 +23,7 @@
 #include "Gui/Config/PhysicsConfigPanel.h"
 // Test - WIP
 #include "Gui/Nodes/GraphPanel.h"
+#include "Gui/NNode/NGraphPanel.h"
 
 #include "ImGui/src/imgui.h"
 
@@ -68,6 +69,7 @@ namespace Stimpi
 
 		//Test-WIP
 		GraphPanel m_NodePanelNew;
+		NGraphPanel m_NNodePanelNew;
 
 		//Scene data
 		std::shared_ptr<Scene> m_Scene;

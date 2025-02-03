@@ -159,6 +159,13 @@
     <ClInclude Include="src\Gui\Utils\Utils.h">
       <Filter>Gui\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\Gui\NNode\NGraphPanel.h" />
+    <ClInclude Include="src\Gui\NNode\NGraphStyle.h" />
+    <ClInclude Include="src\Gui\NNode\NGraphRenderer.h" />
+    <ClInclude Include="src\Gui\NNode\NGraphController.h" />
+    <ClInclude Include="src\Gui\NNode\NGraph.h" />
+    <ClInclude Include="src\Gui\NNode\NGraphComponents.h" />
+    <ClInclude Include="src\Gui\NNode\NNodeRegistry.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
@@ -279,5 +286,12 @@
     <ClCompile Include="src\Gui\Utils\EditorResources.cpp">
       <Filter>Gui\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="src\Gui\NNode\NGraphPanel.cpp" />
+    <ClCompile Include="src\Gui\NNode\NGraphStyle.cpp" />
+    <ClCompile Include="src\Gui\NNode\NGraphRenderer.cpp" />
+    <ClCompile Include="src\Gui\NNode\NGraphController.cpp" />
+    <ClCompile Include="src\Gui\NNode\NGraph.cpp" />
+    <ClCompile Include="src\Gui\NNode\NGraphComponents.cpp" />
+    <ClCompile Include="src\Gui\NNode\NNodeRegisrty.cpp" />
   </ItemGroup>
 </Project>

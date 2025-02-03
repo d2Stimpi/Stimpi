@@ -1,0 +1,405 @@
+#include "stpch.h"
+#include "Gui/NNode/NGraphPanel.h"
+
+#include "Gui/NNode/NGraphRenderer.h"
+#include "Gui/NNode/NGraphStyle.h"
+#include "Gui/NNode/NNodeRegistry.h"
+
+#include "Gui/Components/Toolbar.h"
+#include "Gui/Components/SearchPopup.h"
+
+namespace Stimpi
+{
+
+
+	bool NGraphPanel::m_Show = false;
+	bool NGraphPanel::m_ShowNodesPanel = true;
+	bool NGraphPanel::m_ShowDetailsPanel = true;
+	bool NGraphPanel::m_ShowPopup = false;
+
+	struct NGraphPanelContext
+	{
+		NGraphPanelCanvas m_Canvas;
+		ImDrawList* m_DrawList;
+
+		bool m_IsHovered = false;
+		bool m_IsActive = false;
+		bool m_ZoomEnabled = true;
+
+		// Popup data
+		ImVec2 m_NewNodePos = { 0.0f, 0.0f };
+
+		bool m_DebugTooltip = false;
+
+		std::unordered_map<UUID, std::shared_ptr<NGraph>> m_Graphs;
+		NGraph* m_ActiveGraph;
+	};
+
+	static NGraphPanelContext* s_Context;
+
+	NGraphPanel::NGraphPanel()
+	{
+		s_Context = new NGraphPanelContext();
+
+		NGraphRenderer::SetDrawCanvas(&s_Context->m_Canvas);
+		NGraphRenderer::SetPanelContext(this);
+
+		m_GraphController = new NGraphController(this);
+		m_GraphController->SetDrawCanvas(&s_Context->m_Canvas);
+
+		AddGraph(std::make_shared<NGraph>());
+	}
+
+	NGraphPanel::~NGraphPanel()
+	{
+		delete s_Context;
+	}
+
+	void NGraphPanel::SetDrawList(ImDrawList* drawList)
+	{
+		s_Context->m_DrawList = drawList;
+		NGraphRenderer::SetDrawList(drawList);
+	}
+
+	void NGraphPanel::OnImGuiRender()
+	{
+		if (m_Show)
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4.0f, 4.0f));
+			ImGui::Begin("Node Panel v2", &m_Show, ImGuiWindowFlags_MenuBar);
+			ImGui::PopStyleVar();
+
+			ImDrawList* draw_list = ImGui::GetWindowDrawList();
+			s_Context->m_DrawList = draw_list;
+			NGraphRenderer::SetDrawList(s_Context->m_DrawList);
+
+			// Menu bar
+			if (ImGui::BeginMenuBar())
+			{
+				if (ImGui::BeginMenu("View##NGraphPanel"))
+				{
+					if (ImGui::MenuItem("Nodes##NGraphPanel", nullptr, m_ShowNodesPanel))
+					{
+						m_ShowNodesPanel = !m_ShowNodesPanel;
+					}
+					if (ImGui::MenuItem("Details##NGraphPanel", nullptr, m_ShowDetailsPanel))
+					{
+						m_ShowDetailsPanel = !m_ShowDetailsPanel;
+					}
+					ImGui::EndMenu();
+				}
+
+				if (ImGui::BeginMenu("Menu##NGraphPanel"))
+				{
+					if (ImGui::MenuItem("Show Tooltip##NGraphPanel", nullptr, s_Context->m_DebugTooltip))
+					{
+						s_Context->m_DebugTooltip = !s_Context->m_DebugTooltip;
+					}
+					if (ImGui::MenuItem("Debug##NGraphPanel", nullptr, NGraphRenderer::IsDebugModeOn()))
+					{
+						NGraphRenderer::SetDebugMode(!NGraphRenderer::IsDebugModeOn());
+					}
+					ImGui::EndMenu();
+				}
+
+				ImGui::EndMenuBar();
+			}
+
+			// Main panel components
+			if (ImGui::BeginTable("##NGraphPanelTable", 3, ImGuiTableFlags_Resizable))
+			{
+				ImGui::TableSetupColumn("ColNodePanel##NGraphPanelTable", !m_ShowNodesPanel ? ImGuiTableColumnFlags_Disabled : 0);
+				ImGui::TableSetupColumn("ColGraph##NGraphPanelTable");
+				ImGui::TableSetupColumn("ColDetailsPanel##NGraphPanelTable", !m_ShowDetailsPanel ? ImGuiTableColumnFlags_Disabled : 0);
+
+				ImGui::TableNextColumn();
+				if (m_ShowNodesPanel)
+				{
+					DrawNodesPanel();
+				}
+
+				ImGui::TableSetColumnIndex(1);
+				DrawGraph();
+
+				if (m_ShowDetailsPanel)
+				{
+					ImGui::TableSetColumnIndex(2);
+					DrawDetailsPanel();
+				}
+
+				ImGui::EndTable();
+			}
+
+			ImGui::End();
+		}
+	}
+
+	void NGraphPanel::DrawNodesPanel()
+	{
+		ImGui::BeginChild("NodesInspector##NGraphPanel", ImVec2(0.0f, 0.0f), false);
+
+		if (ImGui::BeginTabBar("NodesInspectorTabBar##NGraphPanel", ImGuiTabBarFlags_AutoSelectNewTabs))
+		{
+			if (ImGui::BeginTabItem("Graph_Name_here", &m_ShowNodesPanel, ImGuiTabItemFlags_None))
+			{
+				ImVec2 cursor = ImGui::GetCursorPos(); // For positioning AddButton icon
+				if (ImGui::CollapsingHeader("Variables##NGraphPanelNodesInspector", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
+				{
+					// Draw content here
+				}
+				ImGui::Separator();
+
+				ImGui::EndTabItem();
+			}
+			ImGui::EndTabBar();
+		}
+
+		ImGui::EndChild();
+	}
+
+	void NGraphPanel::DrawDetailsPanel()
+	{
+		ImGui::BeginChild("Details##NGraphPanel", ImVec2(0.0f, 0.0f), false);
+
+		if (ImGui::BeginTabBar("DetailsTabBar##NGraphPanel", ImGuiTabBarFlags_AutoSelectNewTabs))
+		{
+			if (ImGui::BeginTabItem("Details##NGraphPanel", &m_ShowDetailsPanel, ImGuiTabItemFlags_None))
+			{
+				// Draw details here
+
+				ImGui::EndTabItem();
+			}
+			ImGui::EndTabBar();
+		}
+
+
+		ImGui::EndChild();
+	}
+
+	void NGraphPanel::DrawGraph()
+	{
+		// Main Toolbar
+		Toolbar::Begin("NodePanelToolbar##NGraphPanel");
+		{
+			if (Toolbar::ToolbarButton("Compile##NGraphPanel"))
+			{
+				ST_CORE_INFO("Compile button presed");
+			}
+			Toolbar::Separator();
+
+			if (Toolbar::ToolbarButton("Save##NGraphPanel"))
+			{
+
+			}
+			Toolbar::Separator();
+
+			if (Toolbar::ToolbarButton("Load##NGraphPanel"))
+			{
+
+			}
+			Toolbar::Separator();
+
+			if (Toolbar::ToolbarButton("Add Graph##NGraphPanel"))
+			{
+
+			}
+			Toolbar::Separator();
+		}
+		Toolbar::End();
+
+		// Tabs start here
+		static ImGuiTabBarFlags tabBarFlags = ImGuiTabBarFlags_Reorderable | ImGuiTabBarFlags_AutoSelectNewTabs;
+
+		if (ImGui::BeginTabBar("NodePanelNewTabBar##NGraphPanel", tabBarFlags))
+		{
+			// Render all graphs as TabItems
+			for (auto& item : s_Context->m_Graphs)
+			{
+				auto& graph = item.second;
+				if (ImGui::BeginTabItem(graph->m_Name.c_str(), &graph->m_Show, ImGuiTabItemFlags_None))
+				{
+					//Set active graph to selected tab item
+					s_Context->m_ActiveGraph = graph.get();
+
+					SetCanvasData();
+
+					// Process mouse control before any drawing calls
+					m_GraphController->UpdateMouseControls();
+					m_GraphController->HandleKeyPresses();
+
+					DrawCanvasGrid();
+					NGraphRenderer::OnImGuiRender();
+
+					// Rect pushed in drawing of the Grid (start of the draw commands)
+					s_Context->m_DrawList->PopClipRect();
+					// Draw border
+					s_Context->m_DrawList->AddRect(s_Context->m_Canvas.m_PosMin, s_Context->m_Canvas.m_PosMax, IM_COL32(255, 255, 255, 255));
+
+					DrawGraphOverlay();
+
+					ImGui::EndTabItem();
+				}
+			}
+
+			ImGui::EndTabBar();
+		}
+	}
+
+	void NGraphPanel::DrawGraphOverlay()
+	{
+		// Draw zoom level
+		s_Context->m_DrawList->AddText(
+			{ s_Context->m_Canvas.m_PosMax.x - 90, s_Context->m_Canvas.m_PosMin.y + 10 },
+			IM_COL32(220, 220, 220, 255), fmt::format("Zoom 1:{:.2f}", 1.0f / s_Context->m_Canvas.m_Scale).c_str());
+	}
+
+	void NGraphPanel::ShowWindow(bool show)
+	{
+		m_Show = show;
+	}
+
+	bool NGraphPanel::IsVisible()
+	{
+		return m_Show;
+	}
+
+	void NGraphPanel::AddNodePopup(bool show)
+	{
+		if (show)
+		{
+			s_Context->m_NewNodePos = GetNodePanelViewMouseLocation();
+			m_ShowPopup = true;
+			SearchPopup::OpenPopup("AddNodePopup##GraphPanel");
+		}
+
+		if (m_ShowPopup)
+		{
+			std::vector<std::string>& nodeTypeList = NNodeRegistry::GetNodeNamesList();
+
+			if (SearchPopup::OnImGuiRender("AddNodePopup##GraphPanel", nodeTypeList))
+			{
+				m_ShowPopup = false;
+				CreateNodeByName(SearchPopup::GetSelection());
+			}
+		}
+	}
+
+	ImVec2 NGraphPanel::GetNodePanelViewMouseLocation()
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		return { (io.MousePos.x - s_Context->m_Canvas.m_Origin.x) / s_Context->m_Canvas.m_Scale, (io.MousePos.y - s_Context->m_Canvas.m_Origin.y) / s_Context->m_Canvas.m_Scale };
+	}
+
+	void NGraphPanel::AddGraph(std::shared_ptr<NGraph> graph)
+	{
+		if (graph == nullptr)
+			return;
+
+		auto found = s_Context->m_Graphs.find(graph->m_ID);
+		if (found == s_Context->m_Graphs.end())
+			s_Context->m_Graphs[graph->m_ID] = graph;
+
+		graph->m_Show = true;
+		s_Context->m_ActiveGraph = graph.get();
+
+		m_GraphController->SetActiveGraph(s_Context->m_ActiveGraph);
+	}
+
+	void NGraphPanel::SetCanvasData()
+	{
+		s_Context->m_Canvas.m_PosMin = ImGui::GetCursorScreenPos();	   // ImDrawList API uses screen coordinates!
+		s_Context->m_Canvas.m_Size = ImGui::GetContentRegionAvail();   // Resize canvas to what's available
+		if (s_Context->m_Canvas.m_Size.x < 50.0f) s_Context->m_Canvas.m_Size.x = 50.0f;
+		if (s_Context->m_Canvas.m_Size.y < 50.0f) s_Context->m_Canvas.m_Size.y = 50.0f;
+		s_Context->m_Canvas.m_PosMax = ImVec2(s_Context->m_Canvas.m_PosMin.x + s_Context->m_Canvas.m_Size.x, s_Context->m_Canvas.m_PosMin.y + s_Context->m_Canvas.m_Size.y);
+
+		ImGuiIO& io = ImGui::GetIO();
+		ImGui::InvisibleButton("canvas", s_Context->m_Canvas.m_Size, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight | ImGuiButtonFlags_MouseButtonMiddle);
+		s_Context->m_IsHovered = ImGui::IsItemHovered(); // Hovered
+		s_Context->m_IsActive = ImGui::IsItemActive();   // Held
+
+		m_GraphController->SetActive(s_Context->m_IsActive);
+
+		s_Context->m_Canvas.m_Origin = { s_Context->m_Canvas.m_PosMin.x + s_Context->m_Canvas.m_Scrolling.x, s_Context->m_Canvas.m_PosMin.y + s_Context->m_Canvas.m_Scrolling.y };
+
+
+		// Debug Tooltip
+		if (s_Context->m_DebugTooltip)
+		{
+			if (ImGui::BeginItemTooltip())
+			{
+				ImGuiIO& io = ImGui::GetIO();
+				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+				ImGui::Text("Canvas posMin: %f, %f", s_Context->m_Canvas.m_PosMin.x, s_Context->m_Canvas.m_PosMin.y);
+				ImGui::Text("Canvas posMax: %f, %f", s_Context->m_Canvas.m_PosMax.x, s_Context->m_Canvas.m_PosMax.y);
+				ImGui::Text("Mouse: %f, %f", io.MousePos.x, io.MousePos.y);
+				ImVec2 viewPos = { io.MousePos.x - s_Context->m_Canvas.m_PosMin.x, io.MousePos.y - s_Context->m_Canvas.m_PosMin.y };
+				ImGui::Text("=>: %f, %f", viewPos.x, viewPos.y);
+				ImGui::Text("Origin: %f, %f", s_Context->m_Canvas.m_Origin.x, s_Context->m_Canvas.m_Origin.y);
+				ImGui::Text("=>: %f, %f", io.MousePos.x - s_Context->m_Canvas.m_Origin.x, io.MousePos.y - s_Context->m_Canvas.m_Origin.y);
+				ImGui::PopTextWrapPos();
+				ImGui::EndTooltip();
+			}
+		}
+	}
+
+	void NGraphPanel::DrawCanvasGrid()
+	{
+		ImVec2 canvasPosMin = s_Context->m_Canvas.m_PosMin;
+		ImVec2 canvasPosMax = s_Context->m_Canvas.m_PosMax;
+		ImVec2 canvasSize = s_Context->m_Canvas.m_Size;
+		ImVec2 scrolling = s_Context->m_Canvas.m_Scrolling;
+
+		// Background color
+		s_Context->m_DrawList->AddRectFilled(canvasPosMin, canvasPosMax, IM_COL32(50, 50, 50, 255));
+
+		// Draw grid + all lines in the canvas
+		s_Context->m_DrawList->PushClipRect(canvasPosMin, canvasPosMax, true);
+		{
+			const float GRID_STEP = s_PanelStyle.m_GridStep * s_Context->m_Canvas.m_Scale;
+			for (float x = fmodf(scrolling.x, GRID_STEP); x < canvasSize.x; x += GRID_STEP)
+				s_Context->m_DrawList->AddLine(ImVec2(canvasPosMin.x + x, canvasPosMin.y), ImVec2(canvasPosMin.x + x, canvasPosMax.y), IM_COL32(200, 200, 200, 40));
+			for (float y = fmodf(scrolling.y, GRID_STEP); y < canvasSize.y; y += GRID_STEP)
+				s_Context->m_DrawList->AddLine(ImVec2(canvasPosMin.x, canvasPosMin.y + y), ImVec2(canvasPosMax.x, canvasPosMin.y + y), IM_COL32(200, 200, 200, 40));
+		}
+	}
+
+	Stimpi::NGraph* NGraphPanel::GetActiveGraph()
+	{
+		return s_Context->m_ActiveGraph;
+	}
+
+	Stimpi::NNodeId NGraphPanel::GetMouseHoverNode()
+	{
+		return 0;
+	}
+
+	float NGraphPanel::GetPanelZoom()
+	{
+		return s_Context->m_Canvas.m_Scale;
+	}
+
+	void NGraphPanel::SetPanelZoom(float zoom)
+	{
+		if (zoom <= 1.0f && zoom >= 0.09f && s_Context->m_ZoomEnabled)
+			s_Context->m_Canvas.m_Scale = zoom;
+	}
+
+	void NGraphPanel::SetZoomEnable(bool enable)
+	{
+		s_Context->m_ZoomEnabled = enable;
+	}
+
+	void NGraphPanel::CreateNodeByName(const std::string& name)
+	{
+		auto newNode = NNodeRegistry::CreateNodeByName(name);
+		if (newNode)
+		{
+			newNode->SetPos(s_Context->m_NewNodePos);
+			newNode->SetSize(newNode->CalcNodeSize());
+
+			s_Context->m_ActiveGraph->m_Nodes.push_back(newNode);
+		}
+	}
+
+}

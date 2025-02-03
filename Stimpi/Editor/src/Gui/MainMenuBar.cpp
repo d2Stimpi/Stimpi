@@ -27,6 +27,7 @@
 
 // Window show toggle includes
 #include "Gui/Nodes/GraphPanel.h"
+#include "Gui/NNode/NGraphPanel.h"
 
 #include <SDL.h>
 
@@ -168,6 +169,11 @@ namespace Stimpi
 				if (ImGui::MenuItem("Node Panel", nullptr, GraphPanel::IsVisible()))
 				{
 					GraphPanel::ShowWindow(!GraphPanel::IsVisible());
+				}
+
+				if (ImGui::MenuItem("Node Panel v2", nullptr, NGraphPanel::IsVisible()))
+				{
+					NGraphPanel::ShowWindow(!NGraphPanel::IsVisible());
 				}
 
 				ImGui::EndMenu();
