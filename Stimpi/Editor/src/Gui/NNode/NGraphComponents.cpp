@@ -17,42 +17,42 @@ namespace Stimpi
 		ImVec2 size = { 0.0f, 0.0f };
 
 		// Pin space
-		int pinCount = 0; //std::max(node->m_InPins.size(), node->m_OutPins.size());
+		int pinCount = std::max(m_InPins.size(), m_OutPins.size());
 		size.y += pinCount * (s_PanelStyle.m_PinRadius + s_PanelStyle.m_PinSpacing) + s_PanelStyle.m_PinOffset;
 
 		// Width
-		/*if (!node->m_InPins.empty())
+		if (!m_InPins.empty())
 		{
 			// Find longest text pin
 			float maxWidth = 0.0f;
-			for (auto& pin : node->m_InPins)
+			for (auto& pin : m_InPins)
 			{
-				ImVec2 textSize = ImGui::CalcTextSize(pin->m_Variable->m_Name.c_str());
+				ImVec2 textSize = ImGui::CalcTextSize(pin->m_Label.c_str());
 				maxWidth = std::max(textSize.x, maxWidth);
 			}
 
-			size.x += s_Style.m_PinRadius + s_Style.m_PinArrowSpacing + s_Style.m_PinArrowWidth + s_Style.m_PinOffset + s_Style.m_PinTextSpacing;
+			size.x += s_PanelStyle.m_PinRadius + s_PanelStyle.m_PinArrowSpacing + s_PanelStyle.m_PinArrowWidth + s_PanelStyle.m_PinOffset + s_PanelStyle.m_PinTextSpacing;
 			size.x += maxWidth;
 		}
 
-		if (!node->m_OutPins.empty())
+		if (!m_OutPins.empty())
 		{
 			// Find longest text pin
 			float maxWidth = 0.0f;
-			for (auto& pin : node->m_OutPins)
+			for (auto& pin : m_OutPins)
 			{
-				ImVec2 textSize = ImGui::CalcTextSize(pin->m_Variable->m_Name.c_str());
+				ImVec2 textSize = ImGui::CalcTextSize(pin->m_Label.c_str());
 				maxWidth = std::max(textSize.x, maxWidth);
 			}
 
-			size.x += s_Style.m_PinRadius + s_Style.m_PinArrowSpacing + s_Style.m_PinArrowWidth + s_Style.m_PinOffset + s_Style.m_PinTextSpacing;
+			size.x += s_PanelStyle.m_PinRadius + s_PanelStyle.m_PinArrowSpacing + s_PanelStyle.m_PinArrowWidth + s_PanelStyle.m_PinOffset + s_PanelStyle.m_PinTextSpacing;
 			size.x += maxWidth;
 		}
 
-		if (!node->m_OutPins.empty() && !node->m_InPins.empty())
+		if (!m_OutPins.empty() && !m_InPins.empty())
 		{
-			size.x += s_Style.m_PinSpacing * 2;
-		}*/
+			size.x += s_PanelStyle.m_PinSpacing * 2;
+		}
 
 		if (m_HasHeader)
 		{
@@ -71,7 +71,24 @@ namespace Stimpi
 			size.x += s_PanelStyle.m_HeaderTextOffset.x;
 		}
 
+		m_Size = size;
 		return size;
+	}
+
+
+	/**
+	 * Pin methods
+	 */
+
+
+	float NPin::GetPinSpaceHeight()
+	{
+		return s_PanelStyle.m_PinRadius * 2.0f;
+	}
+
+	float NPin::GetPinSpaceWidth()
+	{
+		return s_PanelStyle.m_PinRadius * 2.0f + s_PanelStyle.m_PinArrowSpacing + s_PanelStyle.m_PinArrowWidth;
 	}
 
 }

@@ -67,7 +67,6 @@ namespace Stimpi
 				// Clear node selection if clicked on empty space
 				if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 				{
-					if (m_SelectedNode) m_SelectedNode->SetSelected(false);
 					m_SelectedNode = nullptr;
 					//m_PanelContext->OnNodeDeselect();
 
@@ -135,11 +134,7 @@ namespace Stimpi
 			if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 			{
 				m_Action = NControllAction::NODE_DRAGABLE;
-				// Clear previous selection
-				if (m_SelectedNode) m_SelectedNode->SetSelected(false);
-
 				m_SelectedNode = m_PanelContext->GetNodeByID(hoverNodeID);
-				m_SelectedNode->SetSelected(true);
 
 				// Clear Connection hover selection
 				//m_SelectedConnection = nullptr;
@@ -165,7 +160,8 @@ namespace Stimpi
 
 				if (m_SelectedNode != nullptr)
 				{
-					m_SelectedNode->Translate({ dragOffset.x, dragOffset.y });
+					m_SelectedNode->m_Pos.x += dragOffset.x;
+					m_SelectedNode->m_Pos.y += dragOffset.y;
 				}
 			}
 			else

@@ -8,10 +8,12 @@
 namespace Stimpi
 {
 	using NNodeId = UUID;
+	using NPinId = UUID;
 
-	class NNode
+	struct NPin;
+
+	struct NNode
 	{
-	public:
 		enum class Type { None = 0, Getter, Variable, Modifier, Setter };
 	
 		NNode() = delete;
@@ -22,33 +24,45 @@ namespace Stimpi
 
 		~NNode();
 
-		std::string& GetTitle() { return m_Title; }
-
-		void SetPos(ImVec2 pos) { m_Pos = pos; }
-		ImVec2 GetPos() { return m_Pos; }
-		void Translate(ImVec2 pos) { m_Pos.x += pos.x; m_Pos.y += pos.y; }
-
-		void SetSize(ImVec2 size) { m_Size = size; }
-		ImVec2 GetSize() { return m_Size; }
-
-		NNodeId GetID() { return m_ID; }
-		bool HasHeader() { return m_HasHeader; }
-
-		void SetSelected(bool selected) { m_IsSelected = selected; }
-		bool IsSelected() { return m_IsSelected; }
-
-		//TODO: move to style or something
 		ImVec2 CalcNodeSize();
 
-	private:
 		ImVec2 m_Pos;
 		ImVec2 m_Size;
 		NNodeId m_ID;
 
 		std::string m_Title = "Sample node";
 		bool m_HasHeader = true;
-		bool m_IsSelected;
 
 		Type m_Type = Type::None;
+
+		// List of Pins
+		std::vector<std::shared_ptr<NPin>> m_InPins;
+		std::vector<std::shared_ptr<NPin>> m_OutPins;
+	};
+
+	struct NPin
+	{
+		enum class Type { None = 0, In, Out };
+
+		NPin() = delete;
+		NPin(const NPin&) = default;
+		NPin(std::shared_ptr<NNode> parent, Type type, const std::string& label)
+			: m_Type(type), m_ParentNode(parent), m_Label(label)
+		{}
+
+		float GetPinSpaceHeight();
+		float GetPinSpaceWidth();
+
+		Type m_Type;
+		std::string m_Label = "Sample pin";
+		std::shared_ptr<NNode> m_ParentNode;
+
+		NPinId m_ID;
+		bool m_Connected = false;
+		bool m_SingelConnection = false;
+		std::vector<std::shared_ptr<NPin>> m_ConnectedPins;
+
+		ImVec2 m_Pos = { 0.0f, 0.0f };
+
 	};
 }

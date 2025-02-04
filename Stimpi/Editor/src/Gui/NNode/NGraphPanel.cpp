@@ -371,10 +371,10 @@ namespace Stimpi
 		return s_Context->m_ActiveGraph;
 	}
 
-	bool NGraphPanel::IsMouseHoverNode(std::shared_ptr<NNode> node)
+	bool NGraphPanel::IsMouseHoverNode(NNode* node)
 	{
-		ImVec2 min(s_Context->m_Canvas.m_Origin.x + node->GetPos().x * s_Context->m_Canvas.m_Scale, s_Context->m_Canvas.m_Origin.y + node->GetPos().y * s_Context->m_Canvas.m_Scale);
-		ImVec2 max(min.x + node->GetSize().x * s_Context->m_Canvas.m_Scale, min.y + node->GetSize().y * s_Context->m_Canvas.m_Scale);
+		ImVec2 min(s_Context->m_Canvas.m_Origin.x + node->m_Pos.x * s_Context->m_Canvas.m_Scale, s_Context->m_Canvas.m_Origin.y + node->m_Pos.y * s_Context->m_Canvas.m_Scale);
+		ImVec2 max(min.x + node->m_Size.x * s_Context->m_Canvas.m_Scale, min.y + node->m_Size.y * s_Context->m_Canvas.m_Scale);
 
 		return ImGui::IsMouseHoveringRect(min, max, true /*clip*/);
 	}
@@ -383,9 +383,9 @@ namespace Stimpi
 	{
 		for (auto& node : s_Context->m_ActiveGraph->m_Nodes)
 		{
-			if (IsMouseHoverNode(node))
+			if (IsMouseHoverNode(node.get()))
 			{
-				return node->GetID();
+				return node->m_ID;
 			}
 		}
 
@@ -396,7 +396,7 @@ namespace Stimpi
 	{
 		for (auto& node : s_Context->m_ActiveGraph->m_Nodes)
 		{
-			if (node->GetID() == id)
+			if (node->m_ID == id)
 				return node;
 		}
 
@@ -424,17 +424,17 @@ namespace Stimpi
 		auto newNode = NNodeRegistry::CreateNodeByName(name);
 		if (newNode)
 		{
-			newNode->SetPos(s_Context->m_NewNodePos);
-			newNode->SetSize(newNode->CalcNodeSize());
+			newNode->m_Pos = s_Context->m_NewNodePos;
+			newNode->CalcNodeSize();
 
 			s_Context->m_ActiveGraph->m_Nodes.push_back(newNode);
 		}
 	}
 
-	bool NGraphPanel::IsNodeSelected(std::shared_ptr<NNode> node)
+	bool NGraphPanel::IsNodeSelected(NNode* node)
 	{
 		if (node != nullptr && m_GraphController->GetSelectedNode() != nullptr)
-			return node->GetID() == m_GraphController->GetSelectedNode()->GetID();
+			return node->m_ID == m_GraphController->GetSelectedNode()->m_ID;
 
 		return false;
 	}

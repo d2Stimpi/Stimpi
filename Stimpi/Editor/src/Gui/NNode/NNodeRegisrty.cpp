@@ -16,6 +16,8 @@ namespace Stimpi
 	static std::shared_ptr<NNode> SampleGetter(const std::string& title)
 	{
 		auto node = std::make_shared<NNode>(title,	NNode::Type::Getter);
+		auto pin = std::make_shared<NPin>(node, NPin::Type::In, "Input");
+		node->m_InPins.push_back(pin);
 
 		return node;
 	}
@@ -23,6 +25,10 @@ namespace Stimpi
 	static std::shared_ptr<NNode> SampleNode(const std::string& title)
 	{
 		auto node = std::make_shared<NNode>(title, NNode::Type::Modifier);
+		auto pinIn = std::make_shared<NPin>(node, NPin::Type::In, "Data");
+		auto pinOut = std::make_shared<NPin>(node, NPin::Type::Out, "Output");
+		node->m_InPins.push_back(pinIn);
+		node->m_OutPins.push_back(pinOut);
 
 		return node;
 	}
@@ -33,7 +39,7 @@ namespace Stimpi
 	void NNodeRegistry::InitializeNodeRegisrty()
 	{
 		ST_REGISTER_NODE("Sample Getter", SampleGetter);
-		ST_REGISTER_NODE("Sample Node", SampleGetter);
+		ST_REGISTER_NODE("Sample Node", SampleNode);
 	}
 
 	std::vector<std::string> NNodeRegistry::GetNodeNamesList()

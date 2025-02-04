@@ -46,7 +46,7 @@ namespace Stimpi
 		NGraphController* GetController() { return m_GraphController; }
 
 		// Controller helpers
-		bool IsMouseHoverNode(std::shared_ptr<NNode> node);
+		bool IsMouseHoverNode(NNode* node);
 		NNodeId GetMouseHoverNode();
 		std::shared_ptr<NNode> GetNodeByID(NNodeId id);
 
@@ -57,7 +57,7 @@ namespace Stimpi
 		// Node methods
 		void CreateNodeByName(const std::string& name);
 
-		bool IsNodeSelected(std::shared_ptr<NNode> node);
+		bool IsNodeSelected(NNode* node);
 
 	private:
 		void SetCanvasData();

@@ -8,6 +8,7 @@ namespace Stimpi
 	struct NGraphPanelCanvas;
 	class NGraphPanel;
 	class NNode;
+	class NPin;
 
 	class NGraphRenderer
 	{
@@ -26,6 +27,11 @@ namespace Stimpi
 		static bool IsDebugModeOn();
 
 		// Node render API
-		static void DrawNode(std::shared_ptr<NNode> node);		
+		static void DrawNode(NNode* node);	
+		static void DrawNodePins(NNode* node);
+		static void DrawPin(NPin* pin, ImVec2 pos);
+
+	private:
+		static ImU32 GetPinVariantColor(NPin* pin);
 	};
 }
