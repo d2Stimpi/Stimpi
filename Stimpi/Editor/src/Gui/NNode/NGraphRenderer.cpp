@@ -172,7 +172,7 @@ namespace Stimpi
 		if (node->m_HasHeader)
 			pinStartPos.y += s_PanelStyle.m_HeaderHeight;
 
-		for (auto pin : node->m_InPins)
+		for (auto& pin : node->m_InPins)
 		{
 			DrawPin(pin.get(), pinStartPos);
 			pinStartPos.y += s_PanelStyle.m_PinSpacing + s_PanelStyle.m_PinRadius; // + radius because we draw from pin center
@@ -183,7 +183,7 @@ namespace Stimpi
 		if (node->m_HasHeader)
 			pinStartPos.y += s_PanelStyle.m_HeaderHeight;
 
-		for (auto pin : node->m_OutPins)
+		for (auto& pin : node->m_OutPins)
 		{
 			DrawPin(pin.get(), pinStartPos);
 			pinStartPos.y += s_PanelStyle.m_PinSpacing + s_PanelStyle.m_PinRadius; // + radius because we draw from pin center
@@ -270,22 +270,21 @@ namespace Stimpi
 		}
 
 		// Draw Pin <-> FloatingTarget connection
-		/*if (pin == s_Context.m_PanelContext->GetController()->GetSelectedPin() && s_Context.m_PanelContext->GetController()->GetAction() == ControllAction::NODE_PIN_DRAG)
+		if (pin == s_Context.m_PanelContext->GetController()->GetSelectedPin() && s_Context.m_PanelContext->GetController()->GetAction() == NControllAction::NODE_PIN_DRAG)
 		{
 			ImVec2 startPoint = pin->m_Pos;
 			ImVec2 endPoint = s_Context.m_PanelContext->GetController()->GetPinFloatingTarget();
 
 			DrawBezierLine(startPoint, endPoint);
-		}*/
-
+		}
 		// Draw pin connections
-		/*for (auto target : pin->m_ConnectedPins)
+		for (auto& target : pin->m_ConnectedPins)
 		{
 			if (target)
 			{
-				DrawPinToPinConnection(pin, target);
+				DrawPinToPinConnection(pin, target.get());
 			}
-		}*/
+		}
 
 		// Draw debug layer
 		if (s_Context.m_DebugOn)
@@ -310,6 +309,50 @@ namespace Stimpi
 		}
 	}
 
+	void NGraphRenderer::DrawBezierLine(ImVec2 start, ImVec2 end, ImU32 col /*= IM_COL32(255, 255, 255, 255)*/)
+	{
+		ImVec2 startPoint = start;
+		ImVec2 endPoint = end;
+		ImVec2 middlePoint1 = CalcFirstMidBezierPoint(startPoint, endPoint);
+		ImVec2 middlePoint2 = CalcLastMidBezierPoint(startPoint, endPoint);
+		float lineThickness = s_PanelStyle.m_LineThickness * s_Context.m_Canvas->m_Scale;
+		s_Context.m_DrawList->AddBezierCubic(
+			{ s_Context.m_Canvas->m_Origin.x + startPoint.x * s_Context.m_Canvas->m_Scale, s_Context.m_Canvas->m_Origin.y + startPoint.y * s_Context.m_Canvas->m_Scale },
+			{ s_Context.m_Canvas->m_Origin.x + middlePoint1.x * s_Context.m_Canvas->m_Scale, s_Context.m_Canvas->m_Origin.y + middlePoint1.y * s_Context.m_Canvas->m_Scale },
+			{ s_Context.m_Canvas->m_Origin.x + middlePoint2.x * s_Context.m_Canvas->m_Scale, s_Context.m_Canvas->m_Origin.y + middlePoint2.y * s_Context.m_Canvas->m_Scale },
+			{ s_Context.m_Canvas->m_Origin.x + endPoint.x * s_Context.m_Canvas->m_Scale, s_Context.m_Canvas->m_Origin.y + endPoint.y * s_Context.m_Canvas->m_Scale },
+			col,
+			lineThickness,
+			s_PanelStyle.m_ConnectionSegments);
+
+		if (s_Context.m_DebugOn)
+		{
+			s_Context.m_DrawList->AddCircleFilled(
+				{ s_Context.m_Canvas->m_Origin.x + startPoint.x * s_Context.m_Canvas->m_Scale, s_Context.m_Canvas->m_Origin.y + startPoint.y * s_Context.m_Canvas->m_Scale },
+				lineThickness, IM_COL32(225, 25, 25, 255), 6);
+			s_Context.m_DrawList->AddCircleFilled(
+				{ s_Context.m_Canvas->m_Origin.x + middlePoint1.x * s_Context.m_Canvas->m_Scale, s_Context.m_Canvas->m_Origin.y + middlePoint1.y * s_Context.m_Canvas->m_Scale },
+				lineThickness, IM_COL32(225, 25, 25, 255), 6);
+			s_Context.m_DrawList->AddCircleFilled(
+				{ s_Context.m_Canvas->m_Origin.x + middlePoint2.x * s_Context.m_Canvas->m_Scale, s_Context.m_Canvas->m_Origin.y + middlePoint2.y * s_Context.m_Canvas->m_Scale },
+				lineThickness, IM_COL32(225, 25, 25, 255), 6);
+			s_Context.m_DrawList->AddCircleFilled(
+				{ s_Context.m_Canvas->m_Origin.x + endPoint.x * s_Context.m_Canvas->m_Scale, s_Context.m_Canvas->m_Origin.y + endPoint.y * s_Context.m_Canvas->m_Scale },
+				lineThickness, IM_COL32(225, 25, 25, 255), 6);
+		}
+	}
+
+	void NGraphRenderer::DrawPinToPinConnection(NPin* src, NPin* dest, ImU32 col /*= IM_COL32(255, 255, 255, 255)*/)
+	{
+		if (src == nullptr || dest == nullptr)
+			return;
+
+		ImVec2 startPoint = src->m_Pos;
+		ImVec2 endPoint = dest->m_Pos;
+
+		DrawBezierLine(startPoint, endPoint, col);
+	}
+
 	ImU32 NGraphRenderer::GetPinVariantColor(NPin* pin)
 	{
 		ImU32 picked = IM_COL32(35, 195, 35, 255);
@@ -327,6 +370,16 @@ namespace Stimpi
 		}*/
 
 		return picked;
+	}
+
+	ImVec2 NGraphRenderer::CalcFirstMidBezierPoint(const ImVec2& start, const ImVec2& end)
+	{
+		return { start.x + (end.x - start.x) / 2.0f, start.y };
+	}
+
+	ImVec2 NGraphRenderer::CalcLastMidBezierPoint(const ImVec2& start, const ImVec2& end)
+	{
+		return { start.x + (end.x - start.x) / 2.0f, end.y };
 	}
 
 }

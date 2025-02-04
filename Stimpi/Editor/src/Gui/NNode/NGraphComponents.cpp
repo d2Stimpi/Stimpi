@@ -91,4 +91,50 @@ namespace Stimpi
 		return s_PanelStyle.m_PinRadius * 2.0f + s_PanelStyle.m_PinArrowSpacing + s_PanelStyle.m_PinArrowWidth;
 	}
 
+
+	/**
+	 * PinConnection methods
+	 */
+	
+	
+	ImVec2 NPinConnection::CalcFirstMidBezierPoint(const ImVec2& start, const ImVec2& end)
+	{
+		return { start.x + (end.x - start.x) / 2.0f, start.y };
+	}
+
+	ImVec2 NPinConnection::CalcLastMidBezierPoint(const ImVec2& start, const ImVec2& end)
+	{
+		return { start.x + (end.x - start.x) / 2.0f, end.y };
+	}
+
+	ImVec2 NPinConnection::BezierCubicCalc(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, float t)
+	{
+		float u = 1.0f - t;
+		float w1 = u * u * u;
+		float w2 = 3 * u * u * t;
+		float w3 = 3 * u * t * t;
+		float w4 = t * t * t;
+		return ImVec2(w1 * p1.x + w2 * p2.x + w3 * p3.x + w4 * p4.x, w1 * p1.y + w2 * p2.y + w3 * p3.y + w4 * p4.y);
+	}
+
+	void NPinConnection::CalculateBezierPoints(uint32_t segments)
+	{
+		ImVec2 startPoint = m_Src->m_Pos;
+		ImVec2 endPoint = m_Dest->m_Pos;
+		ImVec2 middlePoint1 = CalcFirstMidBezierPoint(startPoint, endPoint);
+		ImVec2 middlePoint2 = CalcLastMidBezierPoint(startPoint, endPoint);
+
+		m_BezierLinePoints.push_back(startPoint);
+
+		float t_step = 1.0f / (float)segments;
+		for (int i_step = 1; i_step <= segments; i_step++)
+			m_BezierLinePoints.push_back(BezierCubicCalc(startPoint, middlePoint1, middlePoint2, endPoint, t_step * i_step));
+	}
+
+	void NPinConnection::UpdateConnectionPoints()
+	{
+		m_BezierLinePoints.clear();
+		CalculateBezierPoints(s_PanelStyle.m_ConnectionSegments);
+	}
+
 }

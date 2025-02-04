@@ -11,7 +11,6 @@
 namespace Stimpi
 {
 
-
 	bool NGraphPanel::m_Show = false;
 	bool NGraphPanel::m_ShowNodesPanel = true;
 	bool NGraphPanel::m_ShowDetailsPanel = true;
@@ -366,6 +365,11 @@ namespace Stimpi
 		}
 	}
 
+	float NGraphPanel::PointDistance(ImVec2 p1, ImVec2 p2)
+	{
+		return sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
+	}
+
 	NGraph* NGraphPanel::GetActiveGraph()
 	{
 		return s_Context->m_ActiveGraph;
@@ -390,6 +394,35 @@ namespace Stimpi
 		}
 
 		return 0; // 0 - no hovered node
+	}
+
+	bool NGraphPanel::IsMouseHoveringConnection(std::shared_ptr<NPinConnection> connection)
+	{
+		ImVec2 mousePos = GetNodePanelViewMouseLocation();
+
+		for (auto it = connection->m_BezierLinePoints.begin(); std::next(it) != connection->m_BezierLinePoints.end(); it++)
+		{
+			ImVec2 p1 = *it;
+			ImVec2 p2 = *(std::next(it));
+
+			if (PointDistance(p1, mousePos) + PointDistance(mousePos, p2) <= PointDistance(p1, p2) + 1.0f)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	std::shared_ptr<Stimpi::NPinConnection> NGraphPanel::GetMouseHoveredConnection()
+	{
+		for (auto& connection : s_Context->m_ActiveGraph->m_PinConnections)
+		{
+			if (IsMouseHoveringConnection(connection))
+				return connection;
+		}
+
+		return nullptr;
 	}
 
 	std::shared_ptr<NNode> NGraphPanel::GetNodeByID(NNodeId id)
@@ -431,12 +464,94 @@ namespace Stimpi
 		}
 	}
 
+	void NGraphPanel::RemoveNode(std::shared_ptr<NNode> node)
+	{
+		if (!node)
+			return;
+
+		// Break all connections to the Node
+
+		// Remove Node
+		auto& nodes = s_Context->m_ActiveGraph->m_Nodes;
+		auto found = std::find(nodes.begin(), nodes.end(), node);
+		if (found != nodes.end())
+			nodes.erase(found);
+	}
+
+	void NGraphPanel::OnNodeDeleted(std::shared_ptr<NNode> node)
+	{
+		RemoveNode(node);
+	}
+
+	void NGraphPanel::OnNodeDeselect()
+	{
+		// TBD
+	}
+
+	bool NGraphPanel::IsMouseHoveringPin(std::shared_ptr<NPin> pin)
+	{
+		ImVec2 min(s_Context->m_Canvas.m_Origin.x + (pin->m_Pos.x - s_PanelStyle.m_PinRadius - s_PanelStyle.m_PinSelectOffset) * s_Context->m_Canvas.m_Scale, s_Context->m_Canvas.m_Origin.y + (pin->m_Pos.y - s_PanelStyle.m_PinRadius - s_PanelStyle.m_PinSelectOffset) * s_Context->m_Canvas.m_Scale);
+		ImVec2 max(s_Context->m_Canvas.m_Origin.x + (pin->m_Pos.x + s_PanelStyle.m_PinRadius + s_PanelStyle.m_PinSelectOffset) * s_Context->m_Canvas.m_Scale, s_Context->m_Canvas.m_Origin.y + (pin->m_Pos.y + s_PanelStyle.m_PinRadius + s_PanelStyle.m_PinSelectOffset) * s_Context->m_Canvas.m_Scale);
+
+		return ImGui::IsMouseHoveringRect(min, max, true /*clip*/);
+	}
+
+	std::shared_ptr<Stimpi::NPin> NGraphPanel::GetMouseHoveredPin(std::shared_ptr<NNode> node)
+	{
+		if (node == nullptr)
+			return nullptr;
+
+		for (auto& pin : node->m_InPins)
+		{
+			if (IsMouseHoveringPin(pin))
+				return pin;
+		}
+
+		for (auto& pin : node->m_OutPins)
+		{
+			if (IsMouseHoveringPin(pin))
+				return pin;
+		}
+
+		return nullptr;
+	}
+
 	bool NGraphPanel::IsNodeSelected(NNode* node)
 	{
 		if (node != nullptr && m_GraphController->GetSelectedNode() != nullptr)
 			return node->m_ID == m_GraphController->GetSelectedNode()->m_ID;
 
 		return false;
+	}
+
+	void NGraphPanel::UpdateNodeConnectionsPoints(std::shared_ptr<NNode> node)
+	{
+		auto selected = m_GraphController->GetSelectedNode();
+		for (auto& inPin : selected->m_InPins)
+		{
+			if (inPin->m_Connected)
+			{
+				for (auto connPin : inPin->m_ConnectedPins)
+				{
+					auto connection = s_Context->m_ActiveGraph->FindPinToPinConnection(inPin, connPin);
+					if (connection)
+						connection->UpdateConnectionPoints();
+				}
+			}
+		}
+
+		for (auto& outPin : selected->m_OutPins)
+		{
+			if (outPin->m_Connected)
+			{
+				for (auto connPin : outPin->m_ConnectedPins)
+				{
+					auto connection = s_Context->m_ActiveGraph->FindPinToPinConnection(outPin, connPin);
+					if (connection)
+						connection->UpdateConnectionPoints();
+				}
+			}
+		}
 	}
 
 }

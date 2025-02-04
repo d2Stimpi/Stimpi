@@ -68,16 +68,16 @@ namespace Stimpi
 				if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 				{
 					m_SelectedNode = nullptr;
-					//m_PanelContext->OnNodeDeselect();
+					m_PanelContext->OnNodeDeselect();
 
 					// Check for hovered connection lines and select one if found
 					// Done on mouse click to avoid checking each frame for line hovers
-					/*m_SelectedConnection = m_PanelContext->GetMouseHoveredConnection();
+					m_SelectedConnection = m_PanelContext->GetMouseHoveredConnection();
 					if (m_SelectedConnection)
 					{
 						m_Action = NControllAction::CONNECTION_ONPRESS;
 						break;
-					}*/
+					}
 				}
 
 				// Nothing hovered, start canvas move action on click
@@ -110,7 +110,7 @@ namespace Stimpi
 				auto hoveredNode = m_PanelContext->GetNodeByID(hoverNodeID);
 				if (hoveredNode)
 				{
-					/*Pin* hoveredPin = m_PanelContext->GetMouseHoveredPin(hoveredNode);
+					auto hoveredPin = m_PanelContext->GetMouseHoveredPin(hoveredNode);
 					if (hoveredPin)
 					{
 
@@ -118,7 +118,7 @@ namespace Stimpi
 
 						if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 						{
-							//ST_CORE_INFO("Pin {} clicked", hoveredPin->m_ID);
+							ST_CORE_INFO("Pin {} clicked", hoveredPin->m_ID);
 							// Clear Connection hover selection
 							m_SelectedConnection = nullptr;
 
@@ -127,7 +127,7 @@ namespace Stimpi
 							m_PinFloatingTarget = m_PanelContext->GetNodePanelViewMouseLocation();
 							break; //exit case
 						}
-					}*/
+					}
 				}
 			}
 
@@ -137,7 +137,7 @@ namespace Stimpi
 				m_SelectedNode = m_PanelContext->GetNodeByID(hoverNodeID);
 
 				// Clear Connection hover selection
-				//m_SelectedConnection = nullptr;
+				m_SelectedConnection = nullptr;
 			}
 			break;
 		case NControllAction::NODE_DRAGABLE:
@@ -146,7 +146,7 @@ namespace Stimpi
 			if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
 			{
 				// Node Dragging finished - find all connections to the moved node and update points for mouse picking
-				//m_PanelContext->UpdateNodeConnectionsPoints(m_SelectedNode);
+				m_PanelContext->UpdateNodeConnectionsPoints(m_SelectedNode);
 
 				m_Action = NControllAction::NONE;
 				break;
@@ -171,23 +171,23 @@ namespace Stimpi
 			}
 			break;
 		case NControllAction::NODE_PIN_DRAG:
-			/*if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+			if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
 			{
 				// clear drag target
-				m_Action = ControllAction::NONE;
+				m_Action = NControllAction::NONE;
 
 				// Handle pin drag-drop
 				if (hoverNodeID != 0)
 				{
-					Node* hoveredNode = m_PanelContext->GetNodeByID(hoverNodeID);
+					auto hoveredNode = m_PanelContext->GetNodeByID(hoverNodeID);
 					if (hoveredNode != nullptr && hoveredNode != m_SelectedPin->m_ParentNode)
 					{
-						Pin* target = m_PanelContext->GetMouseHoveredPin(hoveredNode);
+						auto target = m_PanelContext->GetMouseHoveredPin(hoveredNode);
 						if (target)
 						{
 							//ST_CORE_INFO("Target Node::Pin {} - {} selected", hoveredNode->m_ID, target->m_ID);
 							// Handle forming Pin - Pin connection
-							ConnectPinToPin(m_SelectedPin, target, m_Graph);
+							m_Graph->ConnectPinToPin(m_SelectedPin, target);
 						}
 					}
 				}
@@ -199,10 +199,10 @@ namespace Stimpi
 			{
 				// Update floating target
 				m_PinFloatingTarget = m_PanelContext->GetNodePanelViewMouseLocation();
-			}*/
+			}
 			break;
 		case NControllAction::CONNECTION_ONPRESS:
-			/*if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+			if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
 			{
 				//ST_CORE_INFO("Hovering stopped - back to none");
 				m_Action = NControllAction::NONE;
@@ -214,19 +214,19 @@ namespace Stimpi
 				if (mouseDragDelta.x != 0 || mouseDragDelta.y != 0)
 				{
 					//ST_CORE_INFO("Dragging connection - mouse delta {}, {}", mouseDragDelta.x, mouseDragDelta.y);
-					PinConnection* connection = m_SelectedConnection;
+					auto& connection = m_SelectedConnection;
 					if (connection)
 					{
 						m_Action = NControllAction::NODE_PIN_DRAG;
-						m_SelectedPin = connection->m_SourcePin;
+						m_SelectedPin = connection->m_Src;
 						m_PinFloatingTarget = m_PanelContext->GetNodePanelViewMouseLocation();
 
-						BreakPinToPinConnection(connection, m_Graph);
+						m_Graph->BreakPinToPinConnection(connection);
 						m_SelectedConnection = nullptr;
 						break;
 					}
 				}
-			}*/
+			}
 
 			break;
 		case NControllAction::SHOW_POPUP_ONRELEASE:
@@ -269,12 +269,36 @@ namespace Stimpi
 
 	void NGraphController::HandleKeyPresses()
 	{
+		if (InputManager::Instance()->IsKeyDown(ST_KEY_DELETE))
+		{
+			if (m_SelectedNode)
+			{
+				// Remove Node
+				m_PanelContext->OnNodeDeleted(m_SelectedNode);
+				m_SelectedNode = nullptr;
+			}
 
+			if (m_SelectedConnection)
+			{
+				m_Graph->BreakPinToPinConnection(m_SelectedConnection);
+				m_SelectedConnection = nullptr;
+			}
+		}
 	}
 
 	std::shared_ptr<Stimpi::NNode> NGraphController::GetSelectedNode()
 	{
 		return m_SelectedNode;
+	}
+
+	NPin* NGraphController::GetSelectedPin()
+	{
+		return m_SelectedPin.get();
+	}
+
+	ImVec2& NGraphController::GetPinFloatingTarget()
+	{
+		return m_PinFloatingTarget;
 	}
 
 	Stimpi::NControllAction NGraphController::GetAction()

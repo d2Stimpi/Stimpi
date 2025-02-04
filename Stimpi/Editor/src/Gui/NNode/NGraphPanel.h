@@ -48,6 +48,10 @@ namespace Stimpi
 		// Controller helpers
 		bool IsMouseHoverNode(NNode* node);
 		NNodeId GetMouseHoverNode();
+
+		bool IsMouseHoveringConnection(std::shared_ptr<NPinConnection> connection);
+		std::shared_ptr<NPinConnection> GetMouseHoveredConnection();
+
 		std::shared_ptr<NNode> GetNodeByID(NNodeId id);
 
 		float GetPanelZoom();
@@ -56,12 +60,23 @@ namespace Stimpi
 
 		// Node methods
 		void CreateNodeByName(const std::string& name);
+		void RemoveNode(std::shared_ptr<NNode> node);
 
 		bool IsNodeSelected(NNode* node);
+		void UpdateNodeConnectionsPoints(std::shared_ptr<NNode> node);
+
+		void OnNodeDeleted(std::shared_ptr<NNode> node);
+		void OnNodeDeselect();
+
+		// Pin methods
+		bool IsMouseHoveringPin(std::shared_ptr<NPin> pin);
+		std::shared_ptr<NPin> GetMouseHoveredPin(std::shared_ptr<NNode> node);
 
 	private:
 		void SetCanvasData();
 		void DrawCanvasGrid();
+
+		float PointDistance(ImVec2 p1, ImVec2 p2);
 
 	private:
 		static bool m_Show;		// Easier use in menu if static - to toggle window visibility

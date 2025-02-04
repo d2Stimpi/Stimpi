@@ -11,6 +11,7 @@ namespace Stimpi
 	using NPinId = UUID;
 
 	struct NPin;
+	struct NPinConnection;
 
 	struct NNode
 	{
@@ -64,5 +65,24 @@ namespace Stimpi
 
 		ImVec2 m_Pos = { 0.0f, 0.0f };
 
+	};
+
+	struct NPinConnection
+	{
+		ImVec2 CalcFirstMidBezierPoint(const ImVec2& start, const ImVec2& end);
+		ImVec2 CalcLastMidBezierPoint(const ImVec2& start, const ImVec2& end);
+		ImVec2 BezierCubicCalc(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, float t);
+		void CalculateBezierPoints(uint32_t segments);
+		void UpdateConnectionPoints();
+
+		std::shared_ptr<NPin> m_Src;
+		std::shared_ptr<NPin> m_Dest;
+
+		std::vector<ImVec2> m_BezierLinePoints;
+
+		NPinConnection() = delete;
+		NPinConnection(std::shared_ptr<NPin> src, std::shared_ptr<NPin> dest)
+			: m_Src(src), m_Dest(dest)
+		{ }
 	};
 }

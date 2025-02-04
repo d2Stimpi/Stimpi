@@ -25,6 +25,8 @@ namespace Stimpi
 		void SetActive(bool active) { m_IsActive = active; }
 
 		std::shared_ptr<NNode> GetSelectedNode();
+		NPin* GetSelectedPin();
+		ImVec2& GetPinFloatingTarget();
 
 		NControllAction GetAction();
 
@@ -37,5 +39,8 @@ namespace Stimpi
 
 		NGraph* m_Graph = nullptr;
 		std::shared_ptr<NNode> m_SelectedNode = nullptr;
+		std::shared_ptr<NPin> m_SelectedPin = nullptr;
+		std::shared_ptr<NPinConnection> m_SelectedConnection = nullptr;
+		ImVec2 m_PinFloatingTarget = { 0.0f, 0.0f };
 	};
 }

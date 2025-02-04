@@ -30,8 +30,13 @@ namespace Stimpi
 		static void DrawNode(NNode* node);	
 		static void DrawNodePins(NNode* node);
 		static void DrawPin(NPin* pin, ImVec2 pos);
+		static void DrawBezierLine(ImVec2 start, ImVec2 end, ImU32 col = IM_COL32(255, 255, 255, 255));
+		static void DrawPinToPinConnection(NPin* src, NPin* dest, ImU32 col = IM_COL32(255, 255, 255, 255));
 
 	private:
 		static ImU32 GetPinVariantColor(NPin* pin);
+
+		static ImVec2 CalcFirstMidBezierPoint(const ImVec2& start, const ImVec2& end);
+		static ImVec2 CalcLastMidBezierPoint(const ImVec2& start, const ImVec2& end);
 	};
 }
