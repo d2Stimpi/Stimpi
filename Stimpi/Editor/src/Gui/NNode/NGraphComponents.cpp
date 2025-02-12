@@ -75,6 +75,18 @@ namespace Stimpi
 		return size;
 	}
 
+	void NNode::AddPin(NPin::Type type, const std::string& title)
+	{
+		if (type == NPin::Type::In)
+		{
+			m_InPins.push_back(std::make_shared<NPin>(this, NPin::Type::In, title));
+		}
+		else if (type == NPin::Type::Out)
+		{
+			m_OutPins.push_back(std::make_shared<NPin>(this, NPin::Type::Out, title));
+		}
+	}
+
 
 	/**
 	 * Pin methods
