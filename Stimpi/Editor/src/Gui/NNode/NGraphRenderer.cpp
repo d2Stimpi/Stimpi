@@ -357,17 +357,22 @@ namespace Stimpi
 	{
 		ImU32 picked = IM_COL32(35, 195, 35, 255);
 
-		/*switch (pin->m_Variable->m_ValueType)
+		switch (pin->m_DataType)
 		{
-		case Variable::ValueType::None: // No custom color
-		case Variable::ValueType::Flow: // No custom color
+		case NPin::DataType::Any: // No custom color
 			break;
-		case Variable::ValueType::Bool:		picked = IM_COL32(35, 195, 35, 255);	break;
-		case Variable::ValueType::Int:		picked = IM_COL32(35, 35, 195, 255);	break;
-		case Variable::ValueType::Float:	picked = IM_COL32(195, 35, 35, 255);	break;
-		case Variable::ValueType::Vector2:	picked = IM_COL32(195, 195, 35, 255);	break;
-		case Variable::ValueType::String:	picked = IM_COL32(35, 195, 195, 255);	break;
-		}*/
+		case NPin::DataType::Bool:		picked = IM_COL32(35, 195, 35, 255);	break;
+		case NPin::DataType::Int:
+		case NPin::DataType::Int2:
+		case NPin::DataType::Int3:
+		case NPin::DataType::Int4:		picked = IM_COL32(35, 35, 195, 255);	break;
+		case NPin::DataType::Float:
+		case NPin::DataType::Float2:
+		case NPin::DataType::Float3:
+		case NPin::DataType::Float4:		picked = IM_COL32(195, 35, 35, 255);	break;
+		//case NPin::DataType::Vector2:	picked = IM_COL32(195, 195, 35, 255);	break;
+		//case NPin::DataType::String:	picked = IM_COL32(35, 195, 195, 255);	break;
+		}
 
 		return picked;
 	}

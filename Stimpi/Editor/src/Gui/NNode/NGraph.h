@@ -23,5 +23,10 @@ namespace Stimpi
 
 		std::vector<std::shared_ptr<NNode>> m_Nodes;
 		std::vector<std::shared_ptr<NPinConnection>> m_PinConnections;
+
+		~NGraph()
+		{
+			ST_INFO("~NGraph");
+		}
 	};
 }

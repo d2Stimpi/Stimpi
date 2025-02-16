@@ -181,6 +181,9 @@
     <ClInclude Include="src\Stimpi\Graphics\Shader.h">
       <Filter>Stimpi\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\Graphics\ShaderRegistry.h">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClInclude>
     <ClInclude Include="src\Stimpi\Graphics\SubTexture.h">
       <Filter>Stimpi\Graphics</Filter>
     </ClInclude>
@@ -284,7 +287,6 @@
       <Filter>Stimpi\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\stpch.h" />
-    <ClInclude Include="src\Stimpi\Graphics\ShaderRegistry.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Asset\Asset.cpp">
@@ -392,6 +394,9 @@
     <ClCompile Include="src\Stimpi\Graphics\Shader.cpp">
       <Filter>Stimpi\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\ShaderRegistry.cpp">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClCompile>
     <ClCompile Include="src\Stimpi\Graphics\SubTexture.cpp">
       <Filter>Stimpi\Graphics</Filter>
     </ClCompile>
@@ -486,6 +491,5 @@
       <Filter>Stimpi\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
-    <ClCompile Include="src\Stimpi\Graphics\ShaderRegistry.cpp" />
   </ItemGroup>
 </Project>

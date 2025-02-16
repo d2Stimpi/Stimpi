@@ -15,11 +15,12 @@ namespace Stimpi
 	struct NPin
 	{
 		enum class Type { None = 0, In, Out };
+		enum class DataType { Any = 0, Bool, Int, Int2, Int3, Int4, Float, Float2, Float3, Float4 };
 
 		NPin() = delete;
 		NPin(const NPin&) = default;
-		NPin(NNode* parent, Type type, const std::string& label)
-			: m_Type(type), m_Label(label)
+		NPin(NNode* parent, const Type& type, const std::string& label, const DataType& dataType)
+			: m_Type(type), m_Label(label), m_DataType(dataType)
 		{
 			m_ParentNode.reset(parent);
 		}
@@ -38,6 +39,8 @@ namespace Stimpi
 
 		ImVec2 m_Pos = { 0.0f, 0.0f };
 
+		// Pin data type
+		DataType m_DataType = DataType::Any;
 	};
 
 	struct NPinConnection
@@ -70,11 +73,10 @@ namespace Stimpi
 		{
 		}
 
-		~NNode();
-
 		ImVec2 CalcNodeSize();
 
-		void AddPin(NPin::Type type, const std::string& title);
+		void AddPin(NPin::Type type, const std::string& title, const NPin::DataType& dataType = NPin::DataType::Any);
+		void AddMethod(const std::string& methodName) { m_MethodName = methodName; }
 
 		ImVec2 m_Pos;
 		ImVec2 m_Size;
@@ -88,5 +90,8 @@ namespace Stimpi
 		// List of Pins
 		std::vector<std::shared_ptr<NPin>> m_InPins;
 		std::vector<std::shared_ptr<NPin>> m_OutPins;
+
+		// Modifier, Getter or Setter method name
+		std::string m_MethodName = "None";
 	};
 }

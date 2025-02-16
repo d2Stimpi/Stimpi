@@ -53,7 +53,6 @@ namespace Stimpi
 
 	NGraphPanel::~NGraphPanel()
 	{
-		delete s_Context;
 	}
 
 	void NGraphPanel::SetDrawList(ImDrawList* drawList)

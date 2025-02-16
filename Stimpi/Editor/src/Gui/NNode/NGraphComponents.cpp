@@ -7,11 +7,6 @@
 namespace Stimpi
 {
 
-	NNode::~NNode()
-	{
-
-	}
-
 	ImVec2 NNode::CalcNodeSize()
 	{
 		ImVec2 size = { 0.0f, 0.0f };
@@ -75,15 +70,15 @@ namespace Stimpi
 		return size;
 	}
 
-	void NNode::AddPin(NPin::Type type, const std::string& title)
+	void NNode::AddPin(NPin::Type type, const std::string& title, const NPin::DataType& dataType)
 	{
 		if (type == NPin::Type::In)
 		{
-			m_InPins.push_back(std::make_shared<NPin>(this, NPin::Type::In, title));
+			m_InPins.push_back(std::make_shared<NPin>(this, NPin::Type::In, title, dataType));
 		}
 		else if (type == NPin::Type::Out)
 		{
-			m_OutPins.push_back(std::make_shared<NPin>(this, NPin::Type::Out, title));
+			m_OutPins.push_back(std::make_shared<NPin>(this, NPin::Type::Out, title, dataType));
 		}
 	}
 

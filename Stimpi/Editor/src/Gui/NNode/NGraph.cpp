@@ -1,6 +1,7 @@
 #include "stpch.h"
 #include "Gui/NNode/NGraph.h"
 
+#include "Gui/NNode/NGraphVerifier.h"
 #include "Gui/NNode/NGraphStyle.h"
 
 namespace Stimpi
@@ -32,7 +33,9 @@ namespace Stimpi
 			// If input pin has active connection do nothing - make the user break it first
 			if ((!src->m_Connected || !src->m_SingelConnection) && !dest->m_Connected)
 			{
-				// TODO: Check type compatibility
+				// Check type compatibility
+				if (!NGraphVerifier::ValidConnection(src, dest))
+					return;
 
 				if (IsConnected(src, dest) == false)
 				{

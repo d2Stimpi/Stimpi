@@ -16,7 +16,7 @@ namespace Stimpi
 	static std::shared_ptr<NNode> SampleGetter(const std::string& title)
 	{
 		auto node = std::make_shared<NNode>(title,	NNode::Type::Getter);
-		node->AddPin(NPin::Type::Out, "Output");
+		node->AddPin(NPin::Type::Out, "Output", NPin::DataType::Float);
 
 		return node;
 	}
@@ -24,7 +24,7 @@ namespace Stimpi
 	static std::shared_ptr<NNode> SampleSetter(const std::string& title)
 	{
 		auto node = std::make_shared<NNode>(title, NNode::Type::Setter);
-		node->AddPin(NPin::Type::In, "Input");
+		node->AddPin(NPin::Type::In, "Input", NPin::DataType::Bool);
 
 		return node;
 	}
@@ -32,8 +32,8 @@ namespace Stimpi
 	static std::shared_ptr<NNode> SampleNode(const std::string& title)
 	{
 		auto node = std::make_shared<NNode>(title, NNode::Type::Modifier);
-		node->AddPin(NPin::Type::In, "Data");
-		node->AddPin(NPin::Type::Out, "Output");
+		node->AddPin(NPin::Type::In, "Data", NPin::DataType::Int);
+		node->AddPin(NPin::Type::Out, "Output", NPin::DataType::Bool);
 
 		return node;
 	}
