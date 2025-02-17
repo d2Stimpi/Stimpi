@@ -13,6 +13,7 @@ namespace Stimpi
 
 	/* Node construction methods begin */
 
+	/* Temp examples */
 	static std::shared_ptr<NNode> SampleGetter(const std::string& title)
 	{
 		auto node = std::make_shared<NNode>(title,	NNode::Type::Getter);
@@ -38,6 +39,49 @@ namespace Stimpi
 		return node;
 	}
 
+	/* Getters */
+
+	// TODO: Get entity by name makes more sense for usage of this getter
+	static std::shared_ptr<NNode> GetEntity(const std::string& title)
+	{
+		auto node = std::make_shared<NNode>(title, NNode::Type::Getter);
+		node->AddPin(NPin::Type::Out, "Entity", NPin::DataType::Entity);
+		node->m_HasHeader = false;
+
+		return node;
+	}
+
+	static std::shared_ptr<NNode> GetPosition(const std::string& title)
+	{
+		auto node = std::make_shared<NNode>(title, NNode::Type::Getter);
+		node->AddPin(NPin::Type::Out, "Position", NPin::DataType::Float3);
+		node->AddMethod(MethodName::GetPosition);
+		node->m_HasHeader = false;
+
+		return node;
+	}
+
+	/* Modifiers */
+	static std::shared_ptr<NNode> Translate(const std::string& title)
+	{
+		auto node = std::make_shared<NNode>(title, NNode::Type::Modifier);
+		node->AddPin(NPin::Type::In, "Position", NPin::DataType::Float3);
+		node->AddPin(NPin::Type::In, "Vec3", NPin::DataType::Float3);
+		node->AddPin(NPin::Type::Out, "Output", NPin::DataType::Float3);
+		node->AddMethod(MethodName::Translate);
+
+		return node;
+	}
+
+	/* Setters */
+	static std::shared_ptr<NNode> SetPosition(const std::string& title)
+	{
+		auto node = std::make_shared<NNode>(title, NNode::Type::Setter);
+		node->AddPin(NPin::Type::In, "Position", NPin::DataType::Float3);
+		node->AddMethod(MethodName::SetPosition);
+
+		return node;
+	}
 
 	/* Node construction methods end */
 
@@ -46,6 +90,16 @@ namespace Stimpi
 		ST_REGISTER_NODE("Sample Getter", SampleGetter);
 		ST_REGISTER_NODE("Sample Setter", SampleSetter);
 		ST_REGISTER_NODE("Sample Node", SampleNode);
+
+		/* Getters */
+		ST_REGISTER_NODE("GetEntity", GetEntity);
+		ST_REGISTER_NODE("GetPosition", GetPosition);
+
+		/* Modifiers */
+		ST_REGISTER_NODE("Translate", Translate);
+
+		/* Setters */
+		ST_REGISTER_NODE("SetPosition", SetPosition);
 	}
 
 	std::vector<std::string> NNodeRegistry::GetNodeNamesList()

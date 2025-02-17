@@ -172,6 +172,8 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
     <ClInclude Include="src\Gui\EditorUtils.h" />
     <ClInclude Include="src\Gui\Gizmo2D.h" />
     <ClInclude Include="src\Gui\MainManuBar.h" />
+    <ClInclude Include="src\Gui\NNode\Exec\ExecTree.h" />
+    <ClInclude Include="src\Gui\NNode\Exec\ExecTreeBuilder.h" />
     <ClInclude Include="src\Gui\NNode\NGraph.h" />
     <ClInclude Include="src\Gui\NNode\NGraphComponents.h" />
     <ClInclude Include="src\Gui\NNode\NGraphController.h" />
@@ -180,6 +182,7 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
     <ClInclude Include="src\Gui\NNode\NGraphStyle.h" />
     <ClInclude Include="src\Gui\NNode\NGraphVerifier.h" />
     <ClInclude Include="src\Gui\NNode\NNodeRegistry.h" />
+    <ClInclude Include="src\Gui\NNode\Exec\NNodeMethodRegistry.h" />
     <ClInclude Include="src\Gui\Nodes\CodeComponent.h" />
     <ClInclude Include="src\Gui\Nodes\Events\OnCreateNode.h" />
     <ClInclude Include="src\Gui\Nodes\Events\SampleEventNode.h" />
@@ -224,6 +227,8 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
     <ClCompile Include="src\Gui\EditorUtils.cpp" />
     <ClCompile Include="src\Gui\Gizmo2D.cpp" />
     <ClCompile Include="src\Gui\MainMenuBar.cpp" />
+    <ClCompile Include="src\Gui\NNode\Exec\ExecTree.cpp" />
+    <ClCompile Include="src\Gui\NNode\Exec\ExecTreeBuilder.cpp" />
     <ClCompile Include="src\Gui\NNode\NGraph.cpp" />
     <ClCompile Include="src\Gui\NNode\NGraphComponents.cpp" />
     <ClCompile Include="src\Gui\NNode\NGraphController.cpp" />
@@ -231,6 +236,7 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
     <ClCompile Include="src\Gui\NNode\NGraphRenderer.cpp" />
     <ClCompile Include="src\Gui\NNode\NGraphStyle.cpp" />
     <ClCompile Include="src\Gui\NNode\NGraphVerifier.cpp" />
+    <ClCompile Include="src\Gui\NNode\Exec\NNodeMethodRegistry.cpp" />
     <ClCompile Include="src\Gui\NNode\NNodeRegisrty.cpp" />
     <ClCompile Include="src\Gui\Nodes\CodeComponent.cpp" />
     <ClCompile Include="src\Gui\Nodes\Events\OnCreateNode.cpp" />

@@ -369,8 +369,8 @@ namespace Stimpi
 		case NPin::DataType::Float:
 		case NPin::DataType::Float2:
 		case NPin::DataType::Float3:
-		case NPin::DataType::Float4:		picked = IM_COL32(195, 35, 35, 255);	break;
-		//case NPin::DataType::Vector2:	picked = IM_COL32(195, 195, 35, 255);	break;
+		case NPin::DataType::Float4:	picked = IM_COL32(195, 35, 35, 255);	break;
+		case NPin::DataType::Entity:	picked = IM_COL32(195, 195, 35, 255);	break;
 		//case NPin::DataType::String:	picked = IM_COL32(35, 195, 195, 255);	break;
 		}
 

@@ -83,6 +83,33 @@ namespace Stimpi
 	}
 
 
+	bool NNode::HasConnection()
+	{
+		return HasInputConnection() || HasOutputConnection();
+	}
+
+	bool NNode::HasInputConnection()
+	{
+		for (auto& in : m_InPins)
+		{
+			if (in->m_Connected)
+				return true;
+		}
+
+		return false;
+	}
+
+	bool NNode::HasOutputConnection()
+	{
+		for (auto& out : m_OutPins)
+		{
+			if (out->m_Connected)
+				return true;
+		}
+
+		return false;
+	}
+
 	/**
 	 * Pin methods
 	 */

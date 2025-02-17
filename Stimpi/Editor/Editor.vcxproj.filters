@@ -184,6 +184,9 @@
       <Filter>Gui\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\Gui\NNode\NGraphVerifier.h" />
+    <ClInclude Include="src\Gui\NNode\Exec\NNodeMethodRegistry.h" />
+    <ClInclude Include="src\Gui\NNode\Exec\ExecTree.h" />
+    <ClInclude Include="src\Gui\NNode\Exec\ExecTreeBuilder.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
@@ -326,5 +329,8 @@
       <Filter>Gui\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\Gui\NNode\NGraphVerifier.cpp" />
+    <ClCompile Include="src\Gui\NNode\Exec\NNodeMethodRegistry.cpp" />
+    <ClCompile Include="src\Gui\NNode\Exec\ExecTree.cpp" />
+    <ClCompile Include="src\Gui\NNode\Exec\ExecTreeBuilder.cpp" />
   </ItemGroup>
 </Project>

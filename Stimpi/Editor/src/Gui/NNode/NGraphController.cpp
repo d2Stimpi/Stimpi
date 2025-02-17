@@ -118,7 +118,7 @@ namespace Stimpi
 
 						if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 						{
-							ST_CORE_INFO("Pin {} clicked", hoveredPin->m_ID);
+							//ST_CORE_INFO("Pin {} clicked", hoveredPin->m_ID);
 							// Clear Connection hover selection
 							m_SelectedConnection = nullptr;
 
@@ -180,7 +180,7 @@ namespace Stimpi
 				if (hoverNodeID != 0)
 				{
 					auto hoveredNode = m_PanelContext->GetNodeByID(hoverNodeID);
-					if (hoveredNode != nullptr && hoveredNode != m_SelectedPin->m_ParentNode)
+					if (hoveredNode != nullptr && hoveredNode.get() != m_SelectedPin->m_ParentNode)
 					{
 						auto target = m_PanelContext->GetMouseHoveredPin(hoveredNode);
 						if (target)

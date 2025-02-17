@@ -1,6 +1,9 @@
 #pragma once
 
+#include "Gui/NNode/Exec/NNodeMethodRegistry.h"
+
 #include "Stimpi/Core/UUID.h"
+#include "Stimpi/Log.h"
 
 #include "ImGui/src/imgui.h"
 #include <glm/glm.hpp>
@@ -15,14 +18,14 @@ namespace Stimpi
 	struct NPin
 	{
 		enum class Type { None = 0, In, Out };
-		enum class DataType { Any = 0, Bool, Int, Int2, Int3, Int4, Float, Float2, Float3, Float4 };
+		enum class DataType { Any = 0, Entity, Bool, Int, Int2, Int3, Int4, Float, Float2, Float3, Float4 };
 
 		NPin() = delete;
 		NPin(const NPin&) = default;
 		NPin(NNode* parent, const Type& type, const std::string& label, const DataType& dataType)
 			: m_Type(type), m_Label(label), m_DataType(dataType)
 		{
-			m_ParentNode.reset(parent);
+			m_ParentNode = parent;
 		}
 
 		float GetPinSpaceHeight();
@@ -30,7 +33,7 @@ namespace Stimpi
 
 		Type m_Type;
 		std::string m_Label = "Sample pin";
-		std::shared_ptr<NNode> m_ParentNode;
+		NNode* m_ParentNode; // Owner node - TODO: rename to m_Node
 
 		NPinId m_ID;
 		bool m_Connected = false;
@@ -72,11 +75,20 @@ namespace Stimpi
 			: m_Title(title), m_Type(type)
 		{
 		}
+		~NNode()
+		{
+			ST_INFO("~NNode {}", m_ID);
+		}
 
 		ImVec2 CalcNodeSize();
 
 		void AddPin(NPin::Type type, const std::string& title, const NPin::DataType& dataType = NPin::DataType::Any);
-		void AddMethod(const std::string& methodName) { m_MethodName = methodName; }
+		void AddMethod(const MethodName& methodName) { m_MethodName = methodName; }
+		
+		// TODO: consider making this as a local value
+		bool HasConnection();
+		bool HasInputConnection();
+		bool HasOutputConnection();
 
 		ImVec2 m_Pos;
 		ImVec2 m_Size;
@@ -92,6 +104,6 @@ namespace Stimpi
 		std::vector<std::shared_ptr<NPin>> m_OutPins;
 
 		// Modifier, Getter or Setter method name
-		std::string m_MethodName = "None";
+		MethodName m_MethodName = MethodName::None;
 	};
 }

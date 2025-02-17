@@ -4,6 +4,8 @@
 #include "Gui/NNode/NGraphRenderer.h"
 #include "Gui/NNode/NGraphStyle.h"
 #include "Gui/NNode/NNodeRegistry.h"
+#include "Gui/NNode/Exec/ExecTree.h"
+#include "Gui/NNode/Exec/ExecTreeBuilder.h"
 
 #include "Gui/Components/Toolbar.h"
 #include "Gui/Components/SearchPopup.h"
@@ -32,6 +34,9 @@ namespace Stimpi
 
 		std::unordered_map<UUID, std::shared_ptr<NGraph>> m_Graphs;
 		NGraph* m_ActiveGraph;
+
+		// Temp execution tree
+		std::shared_ptr<ExecTree> m_TempExecTree;
 	};
 
 	static NGraphPanelContext* s_Context;
@@ -184,6 +189,14 @@ namespace Stimpi
 			if (Toolbar::ToolbarButton("Compile##NGraphPanel"))
 			{
 				ST_CORE_INFO("Compile button presed");
+				s_Context->m_TempExecTree = ExecTreeBuilder::BuildExecutionTree(s_Context->m_ActiveGraph);
+			}
+			Toolbar::Separator();
+
+			if (Toolbar::ToolbarButton("TestExec##NGraphPanel"))
+			{
+				if (s_Context->m_TempExecTree)
+					s_Context->m_TempExecTree->ExecuteWalk(0);
 			}
 			Toolbar::Separator();
 
@@ -469,6 +482,23 @@ namespace Stimpi
 			return;
 
 		// Break all connections to the Node
+		for (auto inPin : node->m_InPins)
+		{
+			for (auto cPin : inPin->m_ConnectedPins)
+			{
+				auto connection = s_Context->m_ActiveGraph->FindPinToPinConnection(inPin, cPin);
+				s_Context->m_ActiveGraph->BreakPinToPinConnection(connection);
+			}
+		}
+
+		for (auto outPin : node->m_OutPins)
+		{
+			for (auto cPin : outPin->m_ConnectedPins)
+			{
+				auto connection = s_Context->m_ActiveGraph->FindPinToPinConnection(outPin, cPin);
+				s_Context->m_ActiveGraph->BreakPinToPinConnection(connection);
+			}
+		}
 
 		// Remove Node
 		auto& nodes = s_Context->m_ActiveGraph->m_Nodes;
