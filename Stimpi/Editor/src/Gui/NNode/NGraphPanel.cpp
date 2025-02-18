@@ -10,6 +10,9 @@
 #include "Gui/Components/Toolbar.h"
 #include "Gui/Components/SearchPopup.h"
 
+//temp
+#include "Stimpi/Scene/SceneManager.h"
+
 namespace Stimpi
 {
 
@@ -195,8 +198,12 @@ namespace Stimpi
 
 			if (Toolbar::ToolbarButton("TestExec##NGraphPanel"))
 			{
+				auto scene = SceneManager::Instance()->GetActiveScene();
+
 				if (s_Context->m_TempExecTree)
+				{
 					s_Context->m_TempExecTree->ExecuteWalk(0);
+				}
 			}
 			Toolbar::Separator();
 

@@ -46,6 +46,7 @@ namespace Stimpi
 	{
 		auto node = std::make_shared<NNode>(title, NNode::Type::Getter);
 		node->AddPin(NPin::Type::Out, "Entity", NPin::DataType::Entity);
+		// TODO: AddMethod
 		node->m_HasHeader = false;
 
 		return node;
