@@ -31,7 +31,7 @@ namespace Stimpi
 			(src->m_Type == NPin::Type::In && dest->m_Type == NPin::Type::Out))
 		{
 			// If input pin has active connection do nothing - make the user break it first
-			if ((!src->m_Connected || !src->m_SingelConnection) && !dest->m_Connected)
+			if ((!src->m_Connected || !src->m_SingleConnection) && !dest->m_Connected)
 			{
 				// Check type compatibility
 				if (!NGraphVerifier::ValidConnection(src, dest))

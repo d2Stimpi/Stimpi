@@ -6,12 +6,14 @@
 #include "Gui/NNode/NNodeRegistry.h"
 #include "Gui/NNode/Exec/ExecTree.h"
 #include "Gui/NNode/Exec/ExecTreeBuilder.h"
+#include "Gui/NNode/NGraphSerializer.h"
 
 #include "Gui/Components/Toolbar.h"
 #include "Gui/Components/SearchPopup.h"
 
 //temp
 #include "Stimpi/Scene/SceneManager.h"
+#include "Stimpi/Core/Project.h"
 
 namespace Stimpi
 {
@@ -210,13 +212,19 @@ namespace Stimpi
 
 			if (Toolbar::ToolbarButton("Save##NGraphPanel"))
 			{
-
+				NGraphSerializer serializer(s_Context->m_ActiveGraph);
+				FilePath path = Project::GetProjectDir() / "NewGraph.txt";
+				serializer.Serialize(path);
 			}
 			Toolbar::Separator();
 
 			if (Toolbar::ToolbarButton("Load##NGraphPanel"))
 			{
+				NGraphSerializer serializer(s_Context->m_ActiveGraph);
+				FilePath path = Project::GetProjectDir() / "NewGraph.txt";
+				serializer.Deseriealize(path);
 
+				s_Context->m_ActiveGraph->RegenerateGraphDataAfterLoad();
 			}
 			Toolbar::Separator();
 

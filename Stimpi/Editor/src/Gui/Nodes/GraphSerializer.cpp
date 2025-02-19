@@ -1,10 +1,12 @@
 #include "stpch.h"
 #include "Gui/Nodes/GraphSerializer.h"
 
+
 #include "Stimpi/Log.h"
 #include "Stimpi/Utils/FilePath.h"
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Utils/YamlCustomTypes.h"
+#include "Gui/Utils/YamlCustomTypesEditor.h"
 
 namespace Stimpi
 {

@@ -37,7 +37,7 @@ namespace Stimpi
 
 		NPinId m_ID;
 		bool m_Connected = false;
-		bool m_SingelConnection = false;
+		bool m_SingleConnection = false;
 		std::vector<std::shared_ptr<NPin>> m_ConnectedPins;
 
 		ImVec2 m_Pos = { 0.0f, 0.0f };
@@ -74,10 +74,6 @@ namespace Stimpi
 		NNode(const std::string& title, Type type)
 			: m_Title(title), m_Type(type)
 		{
-		}
-		~NNode()
-		{
-			ST_INFO("~NNode {}", m_ID);
 		}
 
 		ImVec2 CalcNodeSize();
