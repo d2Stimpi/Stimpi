@@ -73,8 +73,16 @@ namespace Stimpi
 
 		for (auto& inPin : node->m_InPins)
 		{
-			uint32_t inIndex = s_PinParamIndexRegistry.at(inPin->m_ConnectedPins[0]->m_ID);
-			inputs.push_back(inIndex);
+			if (inPin->m_Connected)
+			{
+				uint32_t inIndex = s_PinParamIndexRegistry.at(inPin->m_ConnectedPins[0]->m_ID);
+				inputs.push_back(inIndex);
+			}
+			else
+			{
+				s_Context.m_ActiveTree->m_Params.emplace_back(glm::vec3(5.0f));
+				inputs.push_back(s_Context.m_ParamCount++);
+			}
 		}
 
 		for (auto& outPin : node->m_OutPins)
@@ -167,32 +175,6 @@ namespace Stimpi
 		}
 
 		return tree;
-	}
-
-	void ExecTreeBuilder::ProcessRootNode(ExecTree* tree, NNode* node)
-	{
-		// Check if the setter node has any connections
-		if (node->HasInputConnection())
-		{
-			std::vector<uint32_t> inputs;
-			uint32_t inputCnt = 0;
-
-			// Add param data
-			for (auto& in : node->m_InPins)
-			{
-				/*if (in->m_DataType == NPin::DataType::Float3)
-				{
-					tree->m_Params.emplace_back(glm::vec3(0.0));
-				}*/
-
-				tree->m_Params.emplace_back(glm::vec3(0.0));
-				inputs.push_back(inputCnt++);
-
-			}
-
-			// Add method
-			tree->m_Methods.emplace_back(inputs, true, node->m_MethodName, tree);
-		}
 	}
 
 }

@@ -47,6 +47,7 @@ namespace Stimpi
 	NGraphPanel::NGraphPanel()
 	{
 		NNodeRegistry::InitializeNodeRegisrty();
+		NNodeMethodRegistry::PopulateMethods();
 
 		s_Context = new NGraphPanelContext();
 
@@ -202,7 +203,7 @@ namespace Stimpi
 
 				if (s_Context->m_TempExecTree)
 				{
-					s_Context->m_TempExecTree->ExecuteWalk(0);
+					s_Context->m_TempExecTree->ExecuteWalk(scene->GetEntityByHandle((entt::entity)1));
 				}
 			}
 			Toolbar::Separator();

@@ -19,6 +19,7 @@ namespace Stimpi
 	}
 
 	Method::Method(std::vector<uint32_t> params, bool isInput, MethodName name, ExecTree* owner)
+		: m_Name(name), m_ExecTree(owner)
 	{
 		if (isInput)
 		{
@@ -30,6 +31,8 @@ namespace Stimpi
 			for (auto& param : params)
 				m_OutParams.push_back(param);
 		}
+
+		m_Method = NNodeMethodRegistry::GetMethod(m_Name);
 	}
 
 	void Method::Execute()
