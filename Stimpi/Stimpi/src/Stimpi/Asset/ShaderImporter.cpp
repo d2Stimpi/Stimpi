@@ -61,8 +61,13 @@ namespace Stimpi
 			ST_CORE_ERROR("ShaderImporter: failed to read shader file {0} - error: {1}\n", filePath.string(), e.what());
 		}
 		
+		shaderInfo.m_Name = filePath.GetPath().stem().string();
+
 		// 3. Create shader asset
 		auto shader = Shader::Create(shaderInfo, vertexShaderCode, fragmentShaderCode);
+
+		// 4. Try to parse the shader Graph if available
+		ParseShaderGraph(shader.get(), filePath);
 
 		return shader;
 	}
@@ -108,6 +113,19 @@ namespace Stimpi
 		}
 
 		return shaderInfo;
+	}
+
+	bool ShaderImporter::ParseShaderGraph(Shader* shader, const FilePath& filePath)
+	{
+		FilePath graphPath = FilePath(filePath.GetPath().parent_path() / filePath.GetPath().stem());
+		if (graphPath.Exists())
+		{
+			// Deserialize the ExecTree
+
+			return true;
+		}
+
+		return false;
 	}
 
 }

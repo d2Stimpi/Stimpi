@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Gui/NNode/Exec/ExecTree.h"
+#include "Stimpi/VisualScripting/ExecTree.h"
 #include "Gui/NNode/NGraph.h"
 
 namespace Stimpi

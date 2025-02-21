@@ -1,5 +1,5 @@
 #include "stpch.h"
-#include "Gui/NNode/Exec/NNodeMethodRegistry.h"
+#include "Stimpi/VisualScripting/NNodeMethodRegistry.h"
 
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Log.h"
@@ -98,7 +98,8 @@ namespace Stimpi
 
 	/* NNodeMethodRegistry */
 
-	MethodRegistry NNodeMethodRegistry::m_MethodRegistry;
+
+	MethodRegistry s_MethodRegistry;
 
 	void NNodeMethodRegistry::PopulateMethods()
 	{
@@ -114,12 +115,12 @@ namespace Stimpi
 
 	void NNodeMethodRegistry::RegisterMethod(MethodName name, MethodType method)
 	{
-		m_MethodRegistry[name] = method;
+		s_MethodRegistry[name] = method;
 	}
 
-	Stimpi::MethodType NNodeMethodRegistry::GetMethod(MethodName name)
+	MethodType NNodeMethodRegistry::GetMethod(MethodName name)
 	{
-		return m_MethodRegistry.at(name);
+		return s_MethodRegistry.at(name);
 	}
 
 }

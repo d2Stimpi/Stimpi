@@ -4,9 +4,10 @@
 #include "Gui/NNode/NGraphRenderer.h"
 #include "Gui/NNode/NGraphStyle.h"
 #include "Gui/NNode/NNodeRegistry.h"
-#include "Gui/NNode/Exec/ExecTree.h"
 #include "Gui/NNode/Exec/ExecTreeBuilder.h"
 #include "Gui/NNode/NGraphSerializer.h"
+
+#include "Stimpi/VisualScripting/ExecTree.h"
 
 #include "Gui/Components/Toolbar.h"
 #include "Gui/Components/SearchPopup.h"
@@ -49,7 +50,6 @@ namespace Stimpi
 	NGraphPanel::NGraphPanel()
 	{
 		NNodeRegistry::InitializeNodeRegisrty();
-		NNodeMethodRegistry::PopulateMethods();
 
 		s_Context = new NGraphPanelContext();
 

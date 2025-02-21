@@ -14,5 +14,6 @@ namespace Stimpi
 
 	private:
 		static ShaderInfo ParseVertexShaderByLine(const std::string& line, ShaderInfo& shaderInfo);
+		static bool ParseShaderGraph(Shader* shader, const FilePath& filePath);
 	};
 }

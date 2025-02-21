@@ -11,6 +11,7 @@
 #include "Stimpi/Utils/ThreadPool.h"
 
 #include "Stimpi/Scripting/ScriptEngine.h"
+#include "Stimpi/VisualScripting/NNodeMethodRegistry.h"
 
 namespace Stimpi
 {
@@ -36,6 +37,9 @@ namespace Stimpi
 
 		// Create resource loader thread pool
 		ThreadPool::InitThreadPools();
+
+		// Node methods for Visual Scripting
+		NNodeMethodRegistry::PopulateMethods();
 	}
 
 	void Application::Run()

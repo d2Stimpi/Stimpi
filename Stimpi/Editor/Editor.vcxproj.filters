@@ -108,7 +108,13 @@
     <ClInclude Include="src\Gui\NNode\NGraphRenderer.h">
       <Filter>Gui\NNode</Filter>
     </ClInclude>
+    <ClInclude Include="src\Gui\NNode\NGraphSerializer.h">
+      <Filter>Gui\NNode</Filter>
+    </ClInclude>
     <ClInclude Include="src\Gui\NNode\NGraphStyle.h">
+      <Filter>Gui\NNode</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\NNode\NGraphVerifier.h">
       <Filter>Gui\NNode</Filter>
     </ClInclude>
     <ClInclude Include="src\Gui\NNode\NNodeRegistry.h">
@@ -183,9 +189,9 @@
     <ClInclude Include="src\Gui\Utils\Utils.h">
       <Filter>Gui\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="src\Gui\NNode\NGraphVerifier.h" />
-    <ClInclude Include="src\Gui\NNode\Exec\NNodeMethodRegistry.h" />
-    <ClInclude Include="src\Gui\NNode\Exec\ExecTree.h" />
+    <ClInclude Include="src\Gui\Utils\YamlCustomTypesEditor.h">
+      <Filter>Gui\Utils</Filter>
+    </ClInclude>
     <ClInclude Include="src\Gui\NNode\Exec\ExecTreeBuilder.h" />
   </ItemGroup>
   <ItemGroup>
@@ -259,7 +265,13 @@
     <ClCompile Include="src\Gui\NNode\NGraphRenderer.cpp">
       <Filter>Gui\NNode</Filter>
     </ClCompile>
+    <ClCompile Include="src\Gui\NNode\NGraphSerializer.cpp">
+      <Filter>Gui\NNode</Filter>
+    </ClCompile>
     <ClCompile Include="src\Gui\NNode\NGraphStyle.cpp">
+      <Filter>Gui\NNode</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\NNode\NGraphVerifier.cpp">
       <Filter>Gui\NNode</Filter>
     </ClCompile>
     <ClCompile Include="src\Gui\NNode\NNodeRegisrty.cpp">
@@ -328,9 +340,9 @@
     <ClCompile Include="src\Gui\Utils\EditorResources.cpp">
       <Filter>Gui\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="src\Gui\NNode\NGraphVerifier.cpp" />
-    <ClCompile Include="src\Gui\NNode\Exec\NNodeMethodRegistry.cpp" />
-    <ClCompile Include="src\Gui\NNode\Exec\ExecTree.cpp" />
+    <ClCompile Include="src\Gui\Utils\YamlCustomTypesEditor.cpp">
+      <Filter>Gui\Utils</Filter>
+    </ClCompile>
     <ClCompile Include="src\Gui\NNode\Exec\ExecTreeBuilder.cpp" />
   </ItemGroup>
 </Project>

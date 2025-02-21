@@ -1,7 +1,7 @@
 #include "stpch.h"
-#include "Gui/NNode/Exec/ExecTree.h"
+#include "Stimpi/VisualScripting/ExecTree.h"
 
-#include "Gui/NNode/Exec/NNodeMethodRegistry.h"
+#include "Stimpi/VisualScripting/NNodeMethodRegistry.h"
 
 namespace Stimpi
 {

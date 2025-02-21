@@ -62,6 +62,8 @@ namespace Stimpi
 			outputs.push_back(s_Context.m_ParamCount++);
 		}
 
+		auto method = std::shared_ptr<Method>(new Method(outputs, false, node->m_MethodName, s_Context.m_ActiveTree.get()));
+
 		// Method
 		s_Context.m_ActiveTree->m_Methods.emplace_back(outputs, false, node->m_MethodName, s_Context.m_ActiveTree.get());
 	}

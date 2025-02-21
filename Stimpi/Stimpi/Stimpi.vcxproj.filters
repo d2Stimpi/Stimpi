@@ -43,6 +43,9 @@
     <Filter Include="Stimpi\Utils">
       <UniqueIdentifier>{5BDF334A-4742-C3EE-F0C7-FBA4DC098F71}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Stimpi\VisualScripting">
+      <UniqueIdentifier>{B1F3DBB3-9DED-0406-865A-9B1672F36A72}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi.h" />
@@ -286,6 +289,12 @@
     <ClInclude Include="src\Stimpi\Utils\YamlCustomTypes.h">
       <Filter>Stimpi\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\VisualScripting\ExecTree.h">
+      <Filter>Stimpi\VisualScripting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\VisualScripting\NNodeMethodRegistry.h">
+      <Filter>Stimpi\VisualScripting</Filter>
+    </ClInclude>
     <ClInclude Include="src\stpch.h" />
   </ItemGroup>
   <ItemGroup>
@@ -489,6 +498,15 @@
     </ClCompile>
     <ClCompile Include="src\Stimpi\Utils\ThreadPool.cpp">
       <Filter>Stimpi\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Utils\YamlCustomTypes.cpp">
+      <Filter>Stimpi\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\VisualScripting\ExecTree.cpp">
+      <Filter>Stimpi\VisualScripting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\VisualScripting\NNodeMethodRegistry.cpp">
+      <Filter>Stimpi\VisualScripting</Filter>
     </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
   </ItemGroup>

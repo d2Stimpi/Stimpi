@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Stimpi/Core/Core.h"
 #include "Stimpi/Scene/Entity.h"
 
 #include <glm/glm.hpp>
@@ -22,11 +23,12 @@ namespace Stimpi
 	using Param = std::variant<uint32_t, bool, int, float, glm::vec3>;
 	using MethodType = std::function<void(Method*)>;
 
-	struct Method
+	struct ST_API Method
 	{
 		ExecTree* m_ExecTree;
 
-		std::vector<uint32_t> m_InParams;	// Index of parameters in ExecTree
+		// Index of parameters in ExecTree
+		std::vector<uint32_t> m_InParams;	
 		std::vector<uint32_t> m_OutParams;
 
 		MethodName m_Name;
@@ -37,7 +39,7 @@ namespace Stimpi
 		void Execute();
 	};
 
-	struct ExecTree
+	struct ST_API ExecTree
 	{
 		Entity m_Entity = 0;
 

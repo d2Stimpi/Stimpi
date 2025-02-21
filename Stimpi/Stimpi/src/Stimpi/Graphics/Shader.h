@@ -120,13 +120,14 @@ namespace Stimpi
 
 	struct ST_API ShaderInfo
 	{
+		std::string m_Name;
 		ShaderLayout m_ShaderLayout;
 		// TODO: parse and store properties (uniforms)
 		unsigned int m_VAOHandle = 0;  // TODO: when shader handle asset is used move this outside of struct
 
 		ShaderInfo() = default;
-		ShaderInfo(const ShaderLayout& layout)
-			: m_ShaderLayout(layout), m_VAOHandle(0) {}
+		ShaderInfo(const std::string& name, ShaderLayout& layout)
+			: m_Name(name), m_ShaderLayout(layout), m_VAOHandle(0) {}
 	};
 
 	/* Storage of shader data for extra layout values, per entity that uses the shader
@@ -155,7 +156,7 @@ namespace Stimpi
 	{
 	public:
 		Shader(const std::string& fileName) : m_Name(fileName) {}
-		Shader(ShaderInfo info) : m_Name("unnamed"), m_Info(info) {}
+		Shader(ShaderInfo info) : m_Name(info.m_Name), m_Info(info) {}
 		virtual ~Shader();
 
 		virtual unsigned int GetShaderID() = 0;

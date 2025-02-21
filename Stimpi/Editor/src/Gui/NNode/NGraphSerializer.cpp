@@ -230,6 +230,9 @@ namespace Stimpi
 				SerializePin(out, outPin.get());
 			}
 			out << YAML::EndMap;
+
+			// For less clutter of conversion to str method just use enum value
+			out << YAML::Key << "MethodID" << YAML::Value << (uint32_t)node->m_MethodName;
 		}
 		out << YAML::EndMap;
 	}
@@ -290,6 +293,10 @@ namespace Stimpi
 				// Add to Pin only collection
 				m_Pins.emplace_back(newPin);
 			}
+		}
+		if (yamlNode["MethodID"])
+		{
+			node->m_MethodName = (MethodName)yamlNode["MethodID"].as<uint32_t>();
 		}
 
 		return loaded;

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Gui/NNode/Exec/NNodeMethodRegistry.h"
-
+//#include "Stimpi/VisualScripting/NNodeMethodRegistry.h"
+#include "Stimpi/VisualScripting/ExecTree.h"
 #include "Stimpi/Core/UUID.h"
 #include "Stimpi/Log.h"
 
