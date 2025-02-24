@@ -1,6 +1,7 @@
 #include "stpch.h"
 #include "Stimpi/VisualScripting/NNodeMethodRegistry.h"
 
+#include "Stimpi/VisualScripting/ExecTree.h"
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Log.h"
 

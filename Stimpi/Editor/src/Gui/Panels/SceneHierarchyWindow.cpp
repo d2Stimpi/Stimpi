@@ -7,6 +7,9 @@
 #include "Gui/EditorUtils.h"
 #include "Gui/Components/ImGuiEx.h"
 #include "Gui/Panels/ScriptFieldFragment.h"
+#include "Gui/NNode/NGraphPanel.h"
+#include "Gui/NNode/NGraphBuilder.h"
+#include "Gui/NNode/NGraphRegistry.h"
 
 #include "Stimpi/Core/InputManager.h"
 #include "Stimpi/Core/WindowManager.h"
@@ -593,6 +596,7 @@ namespace Stimpi
 	{
 		ImGui::Separator();
 		ImVec2 cursor = ImGui::GetCursorPos();	// To render SettingsPopupButton on the same line as Collapsing header
+		ImVec2 shaderSettingsCursor;	// To render ShaderPopupButton on the same line as Shader input
 
 		if (ImGui::CollapsingHeaderIcon("AnimatedSprite##ComponentName", EditorResources::GetIconTextureID(EDITOR_ICON_ANIM), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 		{
@@ -722,7 +726,7 @@ namespace Stimpi
 					animNum++;
 				}
 
-				// Finish cleanup, if Animation was selected for removal by popup
+				// Finish cleanup, if Animation was selected for removal by pop up
 				if (toBeRemoved != "")
 				{
 					component.RemoveAnimation(toBeRemoved);
@@ -752,6 +756,7 @@ namespace Stimpi
 				}
 
 				ImGui::Spacing();
+				shaderSettingsCursor = ImGui::GetCursorPos();
 				ImGui::InputText("##ScriptComponentPreview", shaderName, sizeof(shaderName), ImGuiInputTextFlags_ReadOnly);
 
 				if (ImGui::IsItemClicked())
@@ -798,7 +803,35 @@ namespace Stimpi
 			return showPoput;
 		};
 
+		auto popupCustomShaderSettings = [&component]() -> bool
+		{
+			bool showPoput = true;
+			if (ImGui::Selectable("Edit Shader"))
+			{
+				std::shared_ptr<NGraph> graph = nullptr;
+				showPoput = false;
+
+				if (component.m_Shader)
+				{
+					auto shader = AssetManager::GetAsset<Shader>(component.m_Shader);
+					std::string graphName = shader->GetName();
+
+					graph = NGraphRegistry::GetGraph(graphName);
+					if (graph == nullptr)
+					{
+						graph = NGraphBuilder::BuildGraph({ graphName, {MethodName::SetPosition} });
+						NGraphRegistry::RegisterGraph(graph);
+					}
+				}
+
+				NGraphPanel::ShowGraph(graph);
+			}
+
+			return showPoput;
+		};
+
 		SettingsPopupButton(cursor, "##AnimatedSpriteComponentPopup", popupContentAnimatedSprite);
+		SettingsPopupButton(shaderSettingsCursor, "##ShaderSettings_AnimatedSpriteComponentPopup", popupCustomShaderSettings);
 	}
 
 	void SceneHierarchyWindow::CameraComponentLayout(CameraComponent& component)

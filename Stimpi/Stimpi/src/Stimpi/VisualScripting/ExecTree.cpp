@@ -49,7 +49,7 @@ namespace Stimpi
 
 		for (auto& method : m_Methods)
 		{
-			method.Execute();
+			method->Execute();
 		}
 	}
 

@@ -2,26 +2,14 @@
 
 #include "Stimpi/Core/Core.h"
 #include "Stimpi/Scene/Entity.h"
+#include "Stimpi/VisualScripting/NNodeMethodRegistry.h"
 
 #include <glm/glm.hpp>
 
-// TODO: move to Engine core and make it an asset
-
 namespace Stimpi
 {
-	// Forwards
 	struct Method;
 	struct ExecTree;
-
-	enum class MethodName
-	{ 
-		None,
-		GetEntity,
-		GetPosition, Translate, SetPosition
-	};
-
-	using Param = std::variant<uint32_t, bool, int, float, glm::vec3>;
-	using MethodType = std::function<void(Method*)>;
 
 	struct ST_API Method
 	{
@@ -44,7 +32,7 @@ namespace Stimpi
 		Entity m_Entity = 0;
 
 		std::vector<Param> m_Params;
-		std::vector<Method> m_Methods;
+		std::vector<std::shared_ptr<Method>> m_Methods;
 
 		// For reusability of same Tree on multiple Entities
 		void ExecuteWalk(Entity entity);

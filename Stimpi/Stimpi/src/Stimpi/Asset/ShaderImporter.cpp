@@ -3,6 +3,8 @@
 
 #include "Stimpi/Log.h"
 #include "Stimpi/Core/Project.h"
+#include "Stimpi/VisualScripting/ExecTreeSerializer.h"
+
 
 namespace Stimpi
 {
@@ -67,7 +69,7 @@ namespace Stimpi
 		auto shader = Shader::Create(shaderInfo, vertexShaderCode, fragmentShaderCode);
 
 		// 4. Try to parse the shader Graph if available
-		ParseShaderGraph(shader.get(), filePath);
+		LoadShaderGraph(shader.get(), filePath);
 
 		return shader;
 	}
@@ -115,14 +117,19 @@ namespace Stimpi
 		return shaderInfo;
 	}
 
-	bool ShaderImporter::ParseShaderGraph(Shader* shader, const FilePath& filePath)
+	bool ShaderImporter::LoadShaderGraph(Shader* shader, const FilePath& filePath)
 	{
 		FilePath graphPath = FilePath(filePath.GetPath().parent_path() / filePath.GetPath().stem());
 		if (graphPath.Exists())
 		{
 			// Deserialize the ExecTree
-
-			return true;
+			std::shared_ptr<ExecTree> execTree = std::make_shared<ExecTree>();
+			ExecTreeSerializer serializer(execTree.get());
+			if (serializer.Deseriealize(filePath.string()))
+			{
+				shader->SetCustomExecTree(execTree);
+				return true;
+			}
 		}
 
 		return false;

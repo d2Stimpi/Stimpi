@@ -62,10 +62,9 @@ namespace Stimpi
 			outputs.push_back(s_Context.m_ParamCount++);
 		}
 
-		auto method = std::shared_ptr<Method>(new Method(outputs, false, node->m_MethodName, s_Context.m_ActiveTree.get()));
-
 		// Method
-		s_Context.m_ActiveTree->m_Methods.emplace_back(outputs, false, node->m_MethodName, s_Context.m_ActiveTree.get());
+		auto method = std::shared_ptr<Method>(new Method(outputs, false, node->m_MethodName, s_Context.m_ActiveTree.get()));
+		s_Context.m_ActiveTree->m_Methods.push_back(method);
 	}
 
 	static void ProcessModifierNode(NNode* node, NNode* parent)
@@ -94,7 +93,8 @@ namespace Stimpi
 			outputs.push_back(s_Context.m_ParamCount++);
 		}
 
-		s_Context.m_ActiveTree->m_Methods.emplace_back(inputs, outputs, node->m_MethodName, s_Context.m_ActiveTree.get());
+		auto method = std::shared_ptr<Method>(new Method(inputs, outputs, node->m_MethodName, s_Context.m_ActiveTree.get()));
+		s_Context.m_ActiveTree->m_Methods.push_back(method);
 	}
 
 	static void ProcessSetterNode(NNode* node, NNode* parent)
@@ -107,7 +107,8 @@ namespace Stimpi
 			inputs.push_back(inIndex);
 		}
 
-		s_Context.m_ActiveTree->m_Methods.emplace_back(inputs, true, node->m_MethodName, s_Context.m_ActiveTree.get());
+		auto method = std::shared_ptr<Method>(new Method(inputs, true, node->m_MethodName, s_Context.m_ActiveTree.get()));
+		s_Context.m_ActiveTree->m_Methods.push_back(method);
 	}
 
 	static void ProcessVaraibaleNode(NNode* node, NNode* parent)

@@ -296,6 +296,8 @@
       <Filter>Stimpi\VisualScripting</Filter>
     </ClInclude>
     <ClInclude Include="src\stpch.h" />
+    <ClInclude Include="src\Stimpi\VisualScripting\ExecTreeSerializer.h" />
+    <ClInclude Include="src\Stimpi\VisualScripting\NNodeNames.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Asset\Asset.cpp">
@@ -509,5 +511,6 @@
       <Filter>Stimpi\VisualScripting</Filter>
     </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
+    <ClCompile Include="src\Stimpi\VisualScripting\ExecTreeSerializer.cpp" />
   </ItemGroup>
 </Project>

@@ -245,7 +245,9 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Utils\ThreadPool.h" />
     <ClInclude Include="src\Stimpi\Utils\YamlCustomTypes.h" />
     <ClInclude Include="src\Stimpi\VisualScripting\ExecTree.h" />
+    <ClInclude Include="src\Stimpi\VisualScripting\ExecTreeSerializer.h" />
     <ClInclude Include="src\Stimpi\VisualScripting\NNodeMethodRegistry.h" />
+    <ClInclude Include="src\Stimpi\VisualScripting\NNodeNames.h" />
     <ClInclude Include="src\stpch.h" />
   </ItemGroup>
   <ItemGroup>
@@ -318,6 +320,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClCompile Include="src\Stimpi\Utils\ThreadPool.cpp" />
     <ClCompile Include="src\Stimpi\Utils\YamlCustomTypes.cpp" />
     <ClCompile Include="src\Stimpi\VisualScripting\ExecTree.cpp" />
+    <ClCompile Include="src\Stimpi\VisualScripting\ExecTreeSerializer.cpp" />
     <ClCompile Include="src\Stimpi\VisualScripting\NNodeMethodRegistry.cpp" />
     <ClCompile Include="src\stpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

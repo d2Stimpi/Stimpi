@@ -21,6 +21,8 @@
 
 namespace Stimpi
 {
+	class ExecTree;
+
 	using shader_variant = std::variant<int, float, glm::vec2, glm::vec3, glm::vec4, glm::mat4>;
 
 	using VertexShaderData = std::string;
@@ -177,6 +179,10 @@ namespace Stimpi
 		static AssetType GetTypeStatic() { return AssetType::SHADER; }
 		AssetType GetType() override { return GetTypeStatic(); }
 
+		// Custom shader support
+		void SetCustomExecTree(std::shared_ptr<ExecTree> execTree);
+		std::shared_ptr<ExecTree>& GetCustomExecTree();
+
 		// Debug
 		void LogShaderInfo();
 
@@ -195,5 +201,8 @@ namespace Stimpi
 
 		// name : value for buffering Uniforms
 		std::unordered_map<std::string, shader_variant> m_UniformList;
+
+		// For custom shader support
+		std::shared_ptr<ExecTree> m_ExecTree;
 	};
 }

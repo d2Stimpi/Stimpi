@@ -193,6 +193,8 @@
       <Filter>Gui\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\Gui\NNode\Exec\ExecTreeBuilder.h" />
+    <ClInclude Include="src\Gui\NNode\NGraphBuilder.h" />
+    <ClInclude Include="src\Gui\NNode\NGraphRegistry.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
@@ -344,5 +346,7 @@
       <Filter>Gui\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\Gui\NNode\Exec\ExecTreeBuilder.cpp" />
+    <ClCompile Include="src\Gui\NNode\NGraphBuilder.cpp" />
+    <ClCompile Include="src\Gui\NNode\NGraphRegistry.cpp" />
   </ItemGroup>
 </Project>

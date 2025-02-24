@@ -15,6 +15,7 @@
 //temp
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Core/Project.h"
+#include "Stimpi/VisualScripting/ExecTreeSerializer.h"
 
 namespace Stimpi
 {
@@ -28,6 +29,7 @@ namespace Stimpi
 	{
 		NGraphPanelCanvas m_Canvas;
 		ImDrawList* m_DrawList;
+		NGraphController* m_GraphController;
 
 		bool m_IsHovered = false;
 		bool m_IsActive = false;
@@ -56,8 +58,8 @@ namespace Stimpi
 		NGraphRenderer::SetDrawCanvas(&s_Context->m_Canvas);
 		NGraphRenderer::SetPanelContext(this);
 
-		m_GraphController = new NGraphController(this);
-		m_GraphController->SetDrawCanvas(&s_Context->m_Canvas);
+		s_Context->m_GraphController = new NGraphController(this);
+		s_Context->m_GraphController->SetDrawCanvas(&s_Context->m_Canvas);
 
 		AddGraph(std::make_shared<NGraph>());
 	}
@@ -215,6 +217,10 @@ namespace Stimpi
 				NGraphSerializer serializer(s_Context->m_ActiveGraph);
 				FilePath path = Project::GetProjectDir() / "NewGraph.txt";
 				serializer.Serialize(path);
+
+				ExecTreeSerializer execTreeSerializer(s_Context->m_TempExecTree.get());
+				path = Project::GetProjectDir() / "ExecGraph.txt";
+				execTreeSerializer.Serialize(path);
 			}
 			Toolbar::Separator();
 
@@ -225,6 +231,13 @@ namespace Stimpi
 				serializer.Deseriealize(path);
 
 				s_Context->m_ActiveGraph->RegenerateGraphDataAfterLoad();
+
+				if (s_Context->m_TempExecTree == nullptr)
+					s_Context->m_TempExecTree = std::make_shared<ExecTree>();
+
+				ExecTreeSerializer execTreeSerializer(s_Context->m_TempExecTree.get());
+				path = Project::GetProjectDir() / "ExecGraph.txt";
+				execTreeSerializer.Deseriealize(path);
 			}
 			Toolbar::Separator();
 
@@ -253,8 +266,8 @@ namespace Stimpi
 					SetCanvasData();
 
 					// Process mouse control before any drawing calls
-					m_GraphController->UpdateMouseControls();
-					m_GraphController->HandleKeyPresses();
+					s_Context->m_GraphController->UpdateMouseControls();
+					s_Context->m_GraphController->HandleKeyPresses();
 
 					DrawCanvasGrid();
 					NGraphRenderer::OnImGuiRender();
@@ -285,6 +298,24 @@ namespace Stimpi
 	void NGraphPanel::ShowWindow(bool show)
 	{
 		m_Show = show;
+	}
+
+	void NGraphPanel::ShowGraph(const std::string& name)
+	{
+		m_Show = true;
+
+		// TODO:
+	}
+
+	void NGraphPanel::ShowGraph(std::shared_ptr<NGraph> graph)
+	{
+		m_Show = true;
+
+		if (graph)
+		{
+			AddGraph(graph);
+			s_Context->m_GraphController->SetActiveGraph(s_Context->m_ActiveGraph);
+		}
 	}
 
 	bool NGraphPanel::IsVisible()
@@ -331,7 +362,7 @@ namespace Stimpi
 		graph->m_Show = true;
 		s_Context->m_ActiveGraph = graph.get();
 
-		m_GraphController->SetActiveGraph(s_Context->m_ActiveGraph);
+		s_Context->m_GraphController->SetActiveGraph(s_Context->m_ActiveGraph);
 	}
 
 	void NGraphPanel::SetCanvasData()
@@ -347,7 +378,7 @@ namespace Stimpi
 		s_Context->m_IsHovered = ImGui::IsItemHovered(); // Hovered
 		s_Context->m_IsActive = ImGui::IsItemActive();   // Held
 
-		m_GraphController->SetActive(s_Context->m_IsActive);
+		s_Context->m_GraphController->SetActive(s_Context->m_IsActive);
 
 		s_Context->m_Canvas.m_Origin = { s_Context->m_Canvas.m_PosMin.x + s_Context->m_Canvas.m_Scrolling.x, s_Context->m_Canvas.m_PosMin.y + s_Context->m_Canvas.m_Scrolling.y };
 
@@ -401,6 +432,11 @@ namespace Stimpi
 	NGraph* NGraphPanel::GetActiveGraph()
 	{
 		return s_Context->m_ActiveGraph;
+	}
+
+	NGraphController* NGraphPanel::GetController()
+	{
+		return s_Context->m_GraphController;
 	}
 
 	bool NGraphPanel::IsMouseHoverNode(NNode* node)
@@ -486,7 +522,6 @@ namespace Stimpi
 		if (newNode)
 		{
 			newNode->m_Pos = s_Context->m_NewNodePos;
-			newNode->CalcNodeSize();
 
 			s_Context->m_ActiveGraph->m_Nodes.push_back(newNode);
 		}
@@ -563,15 +598,15 @@ namespace Stimpi
 
 	bool NGraphPanel::IsNodeSelected(NNode* node)
 	{
-		if (node != nullptr && m_GraphController->GetSelectedNode() != nullptr)
-			return node->m_ID == m_GraphController->GetSelectedNode()->m_ID;
+		if (node != nullptr && s_Context->m_GraphController->GetSelectedNode() != nullptr)
+			return node->m_ID == s_Context->m_GraphController->GetSelectedNode()->m_ID;
 
 		return false;
 	}
 
 	void NGraphPanel::UpdateNodeConnectionsPoints(std::shared_ptr<NNode> node)
 	{
-		auto selected = m_GraphController->GetSelectedNode();
+		auto selected = s_Context->m_GraphController->GetSelectedNode();
 		for (auto& inPin : selected->m_InPins)
 		{
 			if (inPin->m_Connected)

@@ -34,16 +34,18 @@ namespace Stimpi
 		void DrawGraphOverlay();
 
 		static void ShowWindow(bool show);
+		static void ShowGraph(const std::string& name);
+		static void ShowGraph(std::shared_ptr<NGraph> graph);
 		static bool IsVisible();
 
 		void AddNodePopup(bool show);
 		ImVec2 GetNodePanelViewMouseLocation();
 
 		// Graph methods
-		void AddGraph(std::shared_ptr<NGraph> graph);
+		static void AddGraph(std::shared_ptr<NGraph> graph);
 		NGraph* GetActiveGraph();
 
-		NGraphController* GetController() { return m_GraphController; }
+		NGraphController* GetController();
 
 		// Controller helpers
 		bool IsMouseHoverNode(NNode* node);
@@ -83,7 +85,5 @@ namespace Stimpi
 		static bool m_ShowNodesPanel;
 		static bool m_ShowDetailsPanel;
 		static bool m_ShowPopup;
-
-		NGraphController* m_GraphController = nullptr;
 	};
 }

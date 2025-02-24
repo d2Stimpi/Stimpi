@@ -92,15 +92,9 @@ namespace Stimpi
 		ST_REGISTER_NODE("Sample Setter", SampleSetter);
 		ST_REGISTER_NODE("Sample Node", SampleNode);
 
-		/* Getters */
-		ST_REGISTER_NODE("GetEntity", GetEntity);
-		ST_REGISTER_NODE("GetPosition", GetPosition);
-
-		/* Modifiers */
-		ST_REGISTER_NODE("Translate", Translate);
-
-		/* Setters */
-		ST_REGISTER_NODE("SetPosition", SetPosition);
+#define DEFINE_NODE_NAME(name)	ST_REGISTER_NODE(#name, name);
+#include "Stimpi/VisualScripting/NNodeNames.h"
+#undef DEFINE_NODE_NAME(name)
 	}
 
 	std::vector<std::string> NNodeRegistry::GetNodeNamesList()
@@ -115,6 +109,9 @@ namespace Stimpi
 		auto found = s_NodeRegistry.find(name);
 		if (found != s_NodeRegistry.end())
 			node = found->second();
+
+		if (node)
+			node->CalcNodeSize();
 
 		return node;
 	}

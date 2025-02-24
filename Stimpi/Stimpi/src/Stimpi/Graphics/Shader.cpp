@@ -9,6 +9,7 @@
 #include "Stimpi/Log.h"
 
 #include "Stimpi/Scene/ResourceManager.h"
+#include "Stimpi/VisualScripting/ExecTree.h"
 
 namespace Stimpi
 {
@@ -24,6 +25,16 @@ namespace Stimpi
 		case GraphicsAPI::OpenGL: return std::make_shared<OpenGLShader>(info, vsd, fsd);
 		case GraphicsAPI::None: ST_CORE_CRITICAL("GraphicsAPI: not supported!"); return nullptr;
 		}
+	}
+
+	void Shader::SetCustomExecTree(std::shared_ptr<ExecTree> execTree)
+	{
+		m_ExecTree = execTree;
+	}
+
+	std::shared_ptr<Stimpi::ExecTree>& Shader::GetCustomExecTree()
+	{
+		return m_ExecTree;
 	}
 
 	void Shader::LogShaderInfo()

@@ -174,9 +174,11 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
     <ClInclude Include="src\Gui\MainManuBar.h" />
     <ClInclude Include="src\Gui\NNode\Exec\ExecTreeBuilder.h" />
     <ClInclude Include="src\Gui\NNode\NGraph.h" />
+    <ClInclude Include="src\Gui\NNode\NGraphBuilder.h" />
     <ClInclude Include="src\Gui\NNode\NGraphComponents.h" />
     <ClInclude Include="src\Gui\NNode\NGraphController.h" />
     <ClInclude Include="src\Gui\NNode\NGraphPanel.h" />
+    <ClInclude Include="src\Gui\NNode\NGraphRegistry.h" />
     <ClInclude Include="src\Gui\NNode\NGraphRenderer.h" />
     <ClInclude Include="src\Gui\NNode\NGraphSerializer.h" />
     <ClInclude Include="src\Gui\NNode\NGraphStyle.h" />
@@ -229,9 +231,11 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
     <ClCompile Include="src\Gui\MainMenuBar.cpp" />
     <ClCompile Include="src\Gui\NNode\Exec\ExecTreeBuilder.cpp" />
     <ClCompile Include="src\Gui\NNode\NGraph.cpp" />
+    <ClCompile Include="src\Gui\NNode\NGraphBuilder.cpp" />
     <ClCompile Include="src\Gui\NNode\NGraphComponents.cpp" />
     <ClCompile Include="src\Gui\NNode\NGraphController.cpp" />
     <ClCompile Include="src\Gui\NNode\NGraphPanel.cpp" />
+    <ClCompile Include="src\Gui\NNode\NGraphRegistry.cpp" />
     <ClCompile Include="src\Gui\NNode\NGraphRenderer.cpp" />
     <ClCompile Include="src\Gui\NNode\NGraphSerializer.cpp" />
     <ClCompile Include="src\Gui\NNode\NGraphStyle.cpp" />
