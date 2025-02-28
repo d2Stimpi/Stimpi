@@ -1,0 +1,39 @@
+Params:
+  Param:
+    Type: glm::vec3
+    Value:
+      - 0
+      - 0
+      - 0
+  Param:
+    Type: glm::vec3
+    Value:
+      - 5
+      - 5
+      - 5
+  Param:
+    Type: glm::vec3
+    Value:
+      - 0
+      - 0
+      - 0
+Methods:
+  Method:
+    InParams:
+      []
+    OutParams:
+      - 0
+    MethodID: 2
+  Method:
+    InParams:
+      - 0
+      - 1
+    OutParams:
+      - 2
+    MethodID: 3
+  Method:
+    InParams:
+      - 2
+    OutParams:
+      []
+    MethodID: 4

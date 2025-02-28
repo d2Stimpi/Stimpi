@@ -1,6 +1,7 @@
 #include "stpch.h"
 #include "Stimpi/VisualScripting/NNodeMethodRegistry.h"
 
+#include "Stimpi/Asset/AssetManager.h"
 #include "Stimpi/VisualScripting/ExecTree.h"
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Log.h"
@@ -89,7 +90,29 @@ namespace Stimpi
 		if (method->m_ExecTree->m_Entity)
 		{
 			Entity e = method->m_ExecTree->m_Entity;
-			e.GetComponent<QuadComponent>().m_Position = pos;
+			if (e.HasComponent<QuadComponent>())
+				e.GetComponent<QuadComponent>().m_Position = pos;
+		}
+	}
+
+	static void SetShaderData(Method* method)
+	{
+		if (method->m_ExecTree->m_Entity)
+		{
+			Entity e = method->m_ExecTree->m_Entity;
+			if (e.HasComponent<AnimatedSpriteComponent>())
+			{
+				AssetHandle handle = e.GetComponent<AnimatedSpriteComponent>().m_Shader;
+				auto shader = AssetManager::GetAsset<Shader>(handle);
+
+				// Go trough all input param index entries
+				for (auto ipi : method->m_InParams)
+				{
+					glm::vec3 data = std::visit([](auto&& arg) { return (glm::vec3)arg; }, method->m_ExecTree->m_Params[ipi]);
+
+					ST_INFO("Set shader data: {}", data);
+				}
+			}
 		}
 	}
 
@@ -112,6 +135,7 @@ namespace Stimpi
 
 		/* Setters */
 		RegisterMethod(MethodName::SetPosition, SetPosition);
+		RegisterMethod(MethodName::SetShaderData, SetShaderData);
 	}
 
 	void NNodeMethodRegistry::RegisterMethod(MethodName name, MethodType method)

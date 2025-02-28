@@ -3,6 +3,7 @@
 
 #include "Gui/NNode/NGraphRenderer.h"
 #include "Gui/NNode/NGraphStyle.h"
+#include "Gui/NNode/NGraphRegistry.h"
 #include "Gui/NNode/NNodeRegistry.h"
 #include "Gui/NNode/Exec/ExecTreeBuilder.h"
 #include "Gui/NNode/NGraphSerializer.h"
@@ -60,6 +61,9 @@ namespace Stimpi
 
 		s_Context->m_GraphController = new NGraphController(this);
 		s_Context->m_GraphController->SetDrawCanvas(&s_Context->m_Canvas);
+
+		// Load available graphs from corresponding resource directory
+		NGraphRegistry::PreloadExistingGraphs();
 
 		AddGraph(std::make_shared<NGraph>());
 	}
@@ -207,27 +211,45 @@ namespace Stimpi
 
 				if (s_Context->m_TempExecTree)
 				{
-					s_Context->m_TempExecTree->ExecuteWalk(scene->GetEntityByHandle((entt::entity)1));
+					//s_Context->m_TempExecTree->ExecuteWalk(scene->GetEntityByHandle((entt::entity)1));
+					s_Context->m_TempExecTree->ExecuteWalk(scene->FindentityByName("Player"));
 				}
 			}
 			Toolbar::Separator();
 
 			if (Toolbar::ToolbarButton("Save##NGraphPanel"))
 			{
-				NGraphSerializer serializer(s_Context->m_ActiveGraph);
-				FilePath path = Project::GetProjectDir() / "NewGraph.txt";
-				serializer.Serialize(path);
+				if (s_Context->m_ActiveGraph)
+				{
+					NGraphSerializer serializer(s_Context->m_ActiveGraph);
+					std::string fileName = s_Context->m_ActiveGraph->m_Name;
+					FilePath path = Project::GetResourcesSubdir(Project::Subdir::VisualScripting) / fileName.append(".ngh");
+					serializer.Serialize(path);
+				}
+				else
+				{
+					ST_INFO("[GraphPanel] No graph to save found!");
+				}
 
-				ExecTreeSerializer execTreeSerializer(s_Context->m_TempExecTree.get());
-				path = Project::GetProjectDir() / "ExecGraph.txt";
-				execTreeSerializer.Serialize(path);
+				if (s_Context->m_TempExecTree && s_Context->m_ActiveGraph)
+				{
+					ExecTreeSerializer execTreeSerializer(s_Context->m_TempExecTree.get());
+					std::string fileName = s_Context->m_ActiveGraph->m_Name;
+					FilePath path = Project::GetResourcesSubdir(Project::Subdir::VisualScripting) / fileName.append(".egh");
+					execTreeSerializer.Serialize(path);
+				}
+				else
+				{
+					ST_INFO("[GraphPanel] No compiled graph to save found!");
+				}
 			}
 			Toolbar::Separator();
 
 			if (Toolbar::ToolbarButton("Load##NGraphPanel"))
 			{
 				NGraphSerializer serializer(s_Context->m_ActiveGraph);
-				FilePath path = Project::GetProjectDir() / "NewGraph.txt";
+				std::string fileName = s_Context->m_ActiveGraph->m_Name;
+				FilePath path = Project::GetResourcesSubdir(Project::Subdir::VisualScripting) / fileName.append(".ngh");
 				serializer.Deseriealize(path);
 
 				s_Context->m_ActiveGraph->RegenerateGraphDataAfterLoad();
@@ -236,7 +258,7 @@ namespace Stimpi
 					s_Context->m_TempExecTree = std::make_shared<ExecTree>();
 
 				ExecTreeSerializer execTreeSerializer(s_Context->m_TempExecTree.get());
-				path = Project::GetProjectDir() / "ExecGraph.txt";
+				Project::GetResourcesSubdir(Project::Subdir::VisualScripting) / fileName.append(".egh");
 				execTreeSerializer.Deseriealize(path);
 			}
 			Toolbar::Separator();
@@ -300,19 +322,22 @@ namespace Stimpi
 		m_Show = show;
 	}
 
-	void NGraphPanel::ShowGraph(const std::string& name)
+	void NGraphPanel::ShowGraph(const std::string& name, bool closeOther)
 	{
 		m_Show = true;
 
 		// TODO:
 	}
 
-	void NGraphPanel::ShowGraph(std::shared_ptr<NGraph> graph)
+	void NGraphPanel::ShowGraph(std::shared_ptr<NGraph> graph, bool closeOther)
 	{
-		m_Show = true;
-
 		if (graph)
 		{
+			m_Show = true;
+		
+			if (closeOther)
+				s_Context->m_Graphs.clear();
+
 			AddGraph(graph);
 			s_Context->m_GraphController->SetActiveGraph(s_Context->m_ActiveGraph);
 		}
@@ -466,12 +491,15 @@ namespace Stimpi
 
 		for (auto it = connection->m_BezierLinePoints.begin(); std::next(it) != connection->m_BezierLinePoints.end(); it++)
 		{
-			ImVec2 p1 = *it;
-			ImVec2 p2 = *(std::next(it));
-
-			if (PointDistance(p1, mousePos) + PointDistance(mousePos, p2) <= PointDistance(p1, p2) + 1.0f)
+			if (std::next(it) != connection->m_BezierLinePoints.end())
 			{
-				return true;
+				ImVec2 p1 = *it;
+				ImVec2 p2 = *(std::next(it));
+
+				if (PointDistance(p1, mousePos) + PointDistance(mousePos, p2) <= PointDistance(p1, p2) + 1.0f)
+				{
+					return true;
+				}
 			}
 		}
 

@@ -10,8 +10,10 @@ namespace Stimpi
 	class NGraphRegistry
 	{
 	public:
+		static void PreloadExistingGraphs();
+
 		static void RegisterGraph(std::shared_ptr<NGraph> graph);
 		static std::shared_ptr<NGraph> GetGraph(const std::string& name);
-		static std::shared_ptr<NGraph> GetGraph(const UUID& id);
+		static UUID GetUUID(const std::string& name);
 	};
 }

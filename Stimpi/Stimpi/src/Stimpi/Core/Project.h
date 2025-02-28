@@ -37,10 +37,15 @@ namespace Stimpi
 	class ST_API Project
 	{
 	public:
+		enum class Subdir { VisualScripting, Icons, Misc, Shaders };
+
+	public:
 		static std::filesystem::path GetProjectDir() { return m_Config.m_ProjectDir; }
 		static std::filesystem::path GetAssestsDir() { return m_Config.m_ProjectDir / m_Config.m_AssestsSubDir; }
 		static std::filesystem::path GetScriptsDir() { return m_Config.m_ProjectDir / m_Config.m_ScriptsSubDir; }
 		static std::filesystem::path GetResourcesDir() { return m_Config.m_ProjectDir / "resources"; }
+		// For editor internal data
+		static std::filesystem::path GetResourcesSubdir(const Subdir& subdir);
 
 		static std::filesystem::path GetStartingScenePath() { return GetAssestsDir() / "scenes" / m_Config.m_StartingScene; }
 

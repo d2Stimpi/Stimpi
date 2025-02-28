@@ -31,7 +31,9 @@ namespace Stimpi
 		bool Exists() const { return std::filesystem::exists(m_FilePath); }
 
 		operator std::string() { return m_FilePath.string(); }
+		operator std::string() const { return m_FilePath.string(); }
 		operator std::filesystem::path() { return m_FilePath; }
+		operator std::filesystem::path() const { return m_FilePath; }
 		operator bool() { return Exists(); }
 
 	private:

@@ -34,8 +34,8 @@ namespace Stimpi
 		void DrawGraphOverlay();
 
 		static void ShowWindow(bool show);
-		static void ShowGraph(const std::string& name);
-		static void ShowGraph(std::shared_ptr<NGraph> graph);
+		static void ShowGraph(const std::string& name, bool closeOther = false);
+		static void ShowGraph(std::shared_ptr<NGraph> graph, bool closeOther = false);
 		static bool IsVisible();
 
 		void AddNodePopup(bool show);

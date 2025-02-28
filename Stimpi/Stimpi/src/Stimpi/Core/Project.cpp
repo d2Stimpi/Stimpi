@@ -8,6 +8,20 @@ namespace Stimpi
 	ProjectConfig Project::m_Config;
 	std::shared_ptr<AssetManagerBase> Project::m_AssetManager;
 
+	std::filesystem::path Project::GetResourcesSubdir(const Subdir& subdir)
+	{
+		switch (subdir)
+		{
+		case Subdir::VisualScripting:	return GetResourcesDir() / "vs";
+		case Subdir::Icons:				return GetResourcesDir() / "icons";
+		case Subdir::Misc:				return GetResourcesDir() / "misc";
+		case Subdir::Shaders:			return GetResourcesDir() / "shaders";
+		default:						return GetResourcesDir() / "resources";
+		}
+
+		return m_Config.m_ProjectDir / "resources";
+	}
+
 	void Project::Save(std::filesystem::path projectFilePath)
 	{
 		ProjectSerializer::Serialize(projectFilePath, m_Config);

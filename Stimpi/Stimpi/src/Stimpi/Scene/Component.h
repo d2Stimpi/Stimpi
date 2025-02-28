@@ -455,7 +455,6 @@ namespace Stimpi
 		// Custom shader asset
 		AssetHandle m_Shader = 0;
 		bool m_UseCustomShader = false;
-		std::vector<float> m_ShaderData;
 
 		AnimatedSpriteComponent(const AnimatedSpriteComponent&) = default;
 		AnimatedSpriteComponent()

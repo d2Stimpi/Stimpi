@@ -12,12 +12,16 @@ namespace Stimpi
 		NGraphSerializer(NGraph* graph);
 
 		void Serialize(const std::string& filePath);
+		void Serialize(const FilePath& filePath);
+
 		bool Deseriealize(const std::string& filePath);
+		bool Deseriealize(const FilePath& filePath);
 
 		// Graph component serialization
 		//void SerializeVariable(YAML::Emitter& out, Variable* var);
 		//bool DeserializeVariable(const YAML::Node& yamlNode, Variable* var);
 
+	private:
 		void SerializeNode(YAML::Emitter& out, NNode* node);
 		bool DeserializeNode(const YAML::Node& yamlNode, NNode* node);
 
@@ -27,7 +31,6 @@ namespace Stimpi
 		void SerializePinConnection(YAML::Emitter& out, NPinConnection* connection);
 		bool DeserializePinConnection(const YAML::Node& node, NPinConnection* connection);
 
-	private:
 		std::shared_ptr<NPin> FindPinByID(NPinId ID);
 		void ResetGraphData();
 

@@ -103,8 +103,16 @@ namespace Stimpi
 
 		for (auto& inPin : node->m_InPins)
 		{
-			uint32_t inIndex = s_PinParamIndexRegistry.at(inPin->m_ConnectedPins[0]->m_ID);
-			inputs.push_back(inIndex);
+			if (inPin->m_Connected)
+			{
+				uint32_t inIndex = s_PinParamIndexRegistry.at(inPin->m_ConnectedPins[0]->m_ID);
+				inputs.push_back(inIndex);
+			}
+			else
+			{
+				s_Context.m_ActiveTree->m_Params.emplace_back(glm::vec3(1.0f));
+				inputs.push_back(s_Context.m_ParamCount++);
+			}
 		}
 
 		auto method = std::shared_ptr<Method>(new Method(inputs, true, node->m_MethodName, s_Context.m_ActiveTree.get()));

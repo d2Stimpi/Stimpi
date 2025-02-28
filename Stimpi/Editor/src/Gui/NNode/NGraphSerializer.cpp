@@ -138,6 +138,11 @@ namespace Stimpi
 		ResourceManager::Instance()->WriteToFile(filePath, out.c_str());
 	}
 
+	void NGraphSerializer::Serialize(const FilePath& filePath)
+	{
+		Serialize(filePath.string());
+	}
+
 	bool NGraphSerializer::Deseriealize(const std::string& filePath)
 	{
 		FilePath path = FilePath(filePath);
@@ -196,7 +201,14 @@ namespace Stimpi
 			dest->m_ConnectedPins.push_back(src);
 		}
 
+		m_Graph->RegenerateGraphDataAfterLoad();
+
 		return loaded;
+	}
+
+	bool NGraphSerializer::Deseriealize(const FilePath& filePath)
+	{
+		return Deseriealize(filePath.string());
 	}
 
 	void NGraphSerializer::SerializeNode(YAML::Emitter& out, NNode* node)

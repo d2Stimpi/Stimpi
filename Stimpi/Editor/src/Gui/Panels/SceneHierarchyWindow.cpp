@@ -819,12 +819,29 @@ namespace Stimpi
 					graph = NGraphRegistry::GetGraph(graphName);
 					if (graph == nullptr)
 					{
-						graph = NGraphBuilder::BuildGraph({ graphName, {MethodName::SetPosition} });
+						graph = NGraphBuilder::BuildGraph({ graphName, {} });
+
+						NGraphBuilder builder;
+						//graph = builder.Create({ graphName, {MethodName::SetPosition} });
+						builder.Create(graphName);
+
+						// TODO: make a NNodeBuilder class
+						auto node = std::make_shared<NNode>("SetShaderData", NNode::Type::Setter);
+						for (auto& item : shader->GetInfo().m_ShaderLayout)
+						{
+							node->AddPin(NPin::Type::In, item.m_Name, NPin::DataType::Float3);
+							// TODO: build a custom "Set" method
+						}
+						node->AddMethod(MethodName::SetShaderData);
+						node->CalcNodeSize();
+
+						graph = builder.AddNode(node);
+
 						NGraphRegistry::RegisterGraph(graph);
 					}
 				}
 
-				NGraphPanel::ShowGraph(graph);
+				NGraphPanel::ShowGraph(graph, true);
 			}
 
 			return showPoput;

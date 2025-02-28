@@ -119,13 +119,14 @@ namespace Stimpi
 
 	bool ShaderImporter::LoadShaderGraph(Shader* shader, const FilePath& filePath)
 	{
-		FilePath graphPath = FilePath(filePath.GetPath().parent_path() / filePath.GetPath().stem());
+		std::string fileName = filePath.GetPath().stem().string();
+		FilePath graphPath = FilePath(Project::GetResourcesSubdir(Project::Subdir::VisualScripting) / fileName.append(".egh"));
 		if (graphPath.Exists())
 		{
 			// Deserialize the ExecTree
 			std::shared_ptr<ExecTree> execTree = std::make_shared<ExecTree>();
 			ExecTreeSerializer serializer(execTree.get());
-			if (serializer.Deseriealize(filePath.string()))
+			if (serializer.Deseriealize(graphPath.string()))
 			{
 				shader->SetCustomExecTree(execTree);
 				return true;
