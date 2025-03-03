@@ -829,8 +829,37 @@ namespace Stimpi
 						auto node = std::make_shared<NNode>("SetShaderData", NNode::Type::Setter);
 						for (auto& item : shader->GetInfo().m_ShaderLayout)
 						{
-							node->AddPin(NPin::Type::In, item.m_Name, NPin::DataType::Float3);
-							// TODO: build a custom "Set" method
+							switch (item.m_Type)
+							{
+							default:
+								break;
+							case ShaderDataType::Int:
+								node->AddPin(NPin::Type::In, item.m_Name, NPin::DataType::Int);
+								break;
+							case ShaderDataType::Int2:
+								node->AddPin(NPin::Type::In, item.m_Name, NPin::DataType::Int2);
+								break;
+							case ShaderDataType::Int3:
+								node->AddPin(NPin::Type::In, item.m_Name, NPin::DataType::Int3);
+								break;
+							case ShaderDataType::Int4:
+								node->AddPin(NPin::Type::In, item.m_Name, NPin::DataType::Int4);
+								break;
+							case ShaderDataType::Float:
+								node->AddPin(NPin::Type::In, item.m_Name, NPin::DataType::Float);
+								break;
+							case ShaderDataType::Float2:
+								node->AddPin(NPin::Type::In, item.m_Name, NPin::DataType::Float2);
+								break;
+							case ShaderDataType::Float3:
+								node->AddPin(NPin::Type::In, item.m_Name, NPin::DataType::Float3);
+								break;
+							case ShaderDataType::Float4:
+								break;
+							case ShaderDataType::Unknown:
+								ST_ERROR("Shader node builder - should not get here, invalid (unsupported) shader layout data type!");
+								break;
+							}
 						}
 						node->AddMethod(MethodName::SetShaderData);
 						node->CalcNodeSize();

@@ -104,13 +104,18 @@ namespace Stimpi
 			{
 				AssetHandle handle = e.GetComponent<AnimatedSpriteComponent>().m_Shader;
 				auto shader = AssetManager::GetAsset<Shader>(handle);
+				ShaderLayout& layout = shader->GetInfo().m_ShaderLayout;
+				size_t layoutIndex = 0;
 
 				// Go trough all input param index entries
 				for (auto ipi : method->m_InParams)
 				{
+					// layout size must match and be in the same order as inParams
 					glm::vec3 data = std::visit([](auto&& arg) { return (glm::vec3)arg; }, method->m_ExecTree->m_Params[ipi]);
+					layout.m_Data[layoutIndex++].m_Data = data;
 
 					ST_INFO("Set shader data: {}", data);
+
 				}
 			}
 		}

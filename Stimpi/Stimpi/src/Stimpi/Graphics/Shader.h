@@ -91,6 +91,8 @@ namespace Stimpi
 	{
 		ShaderDataType m_Type;
 		std::string m_Name;
+		// Data for passing to shader program
+		shader_variant m_Data;
 
 		uint32_t m_Offset;
 		uint32_t m_Size;
@@ -198,6 +200,8 @@ namespace Stimpi
 
 		std::string m_Name;
 		ShaderInfo m_Info;
+
+		//TODO: layer data map just like uniform list, but it will be handled differently in Renderer
 
 		// name : value for buffering Uniforms
 		std::unordered_map<std::string, shader_variant> m_UniformList;
