@@ -13,7 +13,7 @@ namespace Stimpi
 		static std::shared_ptr<Shader> LoadShader(const FilePath& filePath);
 
 	private:
-		static ShaderInfo ParseVertexShaderByLine(const std::string& line, ShaderInfo& shaderInfo);
+		static ShaderInfo ParseShaderByLine(const std::string& line, ShaderInfo& shaderInfo);
 		static bool LoadShaderGraph(Shader* shader, const FilePath& filePath);
 	};
 }

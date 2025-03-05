@@ -45,11 +45,12 @@ namespace Stimpi
 				if (!readingFragmentShader)
 				{
 					// 2. Parse shader layout information
-					ParseVertexShaderByLine(line, shaderInfo);
+					ParseShaderByLine(line, shaderInfo);
 					vertexStream << line << std::endl;
 				}
 				else
 				{
+					ParseShaderByLine(line, shaderInfo);
 					fragmentStream << line << std::endl;
 				}
 			}
@@ -74,7 +75,7 @@ namespace Stimpi
 		return shader;
 	}
 
-	Stimpi::ShaderInfo ShaderImporter::ParseVertexShaderByLine(const std::string& line, ShaderInfo& shaderInfo)
+	Stimpi::ShaderInfo ShaderImporter::ParseShaderByLine(const std::string& line, ShaderInfo& shaderInfo)
 	{
 		size_t pos = line.find("layout(location =");
 		if (pos != std::string::npos)
@@ -112,6 +113,33 @@ namespace Stimpi
 
 				shaderInfo.m_ShaderLayout.m_Data.emplace_back(StringToShaderType(type), name);
 			}
+		}
+
+		// Check for uniform
+		pos = line.find("uniform");
+		if (pos != std::string::npos)
+		{
+			pos += strlen("uniform");
+			std::string substr = line.substr(pos + 1, line.length() - pos - 1);
+			const char* delimiter = " ";
+			char* token = std::strtok(substr.data(), delimiter);
+
+			std::string type = "";
+			std::string name = "";
+
+			if (token)
+			{
+				type = std::string(token);
+				token = std::strtok(nullptr, delimiter);
+			}
+
+			if (token)
+			{
+				name = std::string(token);
+				name.pop_back();	// remove ';' char
+			}
+
+			shaderInfo.m_Uniforms.emplace_back(StringToShaderType(type), name);
 		}
 
 		return shaderInfo;

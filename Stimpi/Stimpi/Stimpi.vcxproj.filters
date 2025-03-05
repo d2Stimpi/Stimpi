@@ -298,6 +298,7 @@
     <ClInclude Include="src\stpch.h" />
     <ClInclude Include="src\Stimpi\VisualScripting\ExecTreeSerializer.h" />
     <ClInclude Include="src\Stimpi\VisualScripting\NNodeNames.h" />
+    <ClInclude Include="src\Stimpi\Platform\OpenGLTypes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Asset\Asset.cpp">

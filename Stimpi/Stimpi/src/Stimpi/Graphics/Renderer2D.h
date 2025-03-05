@@ -51,6 +51,9 @@ namespace Stimpi
 		void SubmitSquare(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec4 color);
 		void SubmitLine(glm::vec3 p0, glm::vec3 p1, glm::vec4 color);
 
+		// Custom shader support
+		void SubmitCustom(glm::vec3 pos, glm::vec2 scale, float rotation, SubTexture* subtexture, AssetHandle shaderHandle);
+
 		void SetLineWidth(float width);
 
 		// Custom Shader

@@ -163,6 +163,7 @@ namespace Stimpi
 
 			SetShaderUniforms(shader);
 		}
+		// TODO: custom shader handling - check if "custom" data changed
 		else
 		{
 			// Batching vertex data
@@ -308,6 +309,54 @@ namespace Stimpi
 
 		currentCmd->PushLineVertex(p0, color);
 		currentCmd->PushLineVertex(p1, color);
+	}
+
+	void Renderer2D::SubmitCustom(glm::vec3 pos, glm::vec2 scale, float rotation, SubTexture* subtexture, AssetHandle shaderHandle)
+	{
+		if (!subtexture || !shaderHandle)
+			return;
+
+		CheckTextureBatching(subtexture->GetTexture());
+		auto currentCmd = (*m_ActiveRenderCmdIter).get();
+		auto shader = AssetManager::GetAsset<Shader>(shaderHandle);
+
+		// Check if some other type was used in active cmd
+		if (currentCmd->m_Type != RenderCommandType::VARIABLE && currentCmd->m_Type != RenderCommandType::NONE)
+		{
+			NewCmd();
+			currentCmd = (*m_ActiveRenderCmdIter).get();
+			currentCmd->m_Texture = subtexture->GetTexture();
+			currentCmd->m_Shader = shader.get();
+
+			SetShaderUniforms(shader.get());
+		}
+
+		CheckCapacity();
+		// First time call Submit after BeginScene
+		if ((currentCmd->m_Texture == nullptr) && ((currentCmd->m_Shader == nullptr)))
+		{
+			PushTransformedVertexData(currentCmd, pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+			currentCmd->m_Texture = subtexture->GetTexture();
+			currentCmd->m_Shader = shader.get();
+
+			SetShaderUniforms(shader.get());
+		}
+		else if ((currentCmd->m_Texture != subtexture->GetTexture()) || (currentCmd->m_Shader != shader.get()))
+		{
+			// If shader or texture changed
+			NewCmd();
+			currentCmd = (*m_ActiveRenderCmdIter).get();
+			PushTransformedVertexData(currentCmd, pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+			currentCmd->m_Texture = subtexture->GetTexture();
+			currentCmd->m_Shader = shader.get();
+
+			SetShaderUniforms(shader.get());
+		}
+		else
+		{
+			// Batching vertex data
+			PushTransformedVertexData(currentCmd, pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+		}
 	}
 
 	void Renderer2D::SubmitSquare(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec4 color)

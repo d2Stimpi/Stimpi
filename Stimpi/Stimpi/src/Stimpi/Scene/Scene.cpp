@@ -259,13 +259,16 @@ namespace Stimpi
 				{
 					auto& anim = m_Registry.get<AnimatedSpriteComponent>(entity);
 					if (anim.IsPlaying() || m_RuntimeState == RuntimeState::STOPPED)
-						Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, anim, m_DefaultShader.get());
+					{
+						if (anim.m_Shader == 0 || !anim.m_UseCustomShader)
+							Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, anim, m_DefaultShader.get());
+						else
+							Renderer2D::Instance()->SubmitCustom(quad.m_Position, quad.m_Size, quad.m_Rotation, anim, anim.m_Shader);
+					}
 				}
 
 				prevLayer = sortGroup.m_LayerIndex;
 			});
-		
-		Renderer2D::Instance()->EndScene();
 
 		// TODO: Move Circle as a part of Renderer component (Circle + Sprite doesn't make much sense)
 		auto circleView = m_Registry.view<CircleComponent>();
@@ -276,6 +279,8 @@ namespace Stimpi
 					Renderer2D::Instance()->SubmitCircle(circle.m_Position, circle.m_Size, circle.m_Color, circle.m_Thickness, circle.m_Fade);
 				});
 		}
+
+		Renderer2D::Instance()->EndScene();
 	}
 
 	void Scene::OnSceneStep()

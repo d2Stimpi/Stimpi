@@ -43,13 +43,38 @@ namespace Stimpi
 		ST_CORE_INFO("LayoutData:");
 		for (auto& item : m_Info.m_ShaderLayout.m_Data)
 		{
-			ST_CORE_INFO("  {} {}", item.m_Name, ShaderDataTypeLength(item.m_Type));
+			ST_CORE_INFO(" layout - {} {}", item.m_Name, ShaderDataTypeLength(item.m_Type));
 		}
 		ST_CORE_INFO("Properties: TODO", m_Name);
-		ST_CORE_INFO("=== Shader {} info end ===", m_Name);
+
+		ST_CORE_INFO("Unifroms:");
+		for (auto& uni : m_Info.m_Uniforms)
+		{
+			ST_CORE_INFO(" uniform - {} {}", uni.m_Name, ShaderDataTypeLength(uni.m_Type));
+		}
+		ST_CORE_INFO("=== Shader {} info end ===\n", m_Name);
 	}
 
-	void Shader::SetUniform(const std::string name, shader_variant value)
+	void Shader::SetLayerData(const std::string& name, shader_variant value)
+	{
+		m_LayerDataList[name] = value;
+	}
+
+	shader_variant Shader::GetLayerData(const std::string& name)
+	{
+		auto found = m_LayerDataList.find(name);
+		if (found != m_LayerDataList.end())
+			return found->second;
+
+		return 0;
+	}
+
+	void Shader::ClearLayerData()
+	{
+		m_LayerDataList.clear();
+	}
+
+	void Shader::SetUniform(const std::string& name, shader_variant value)
 	{
 		m_UniformList.emplace(name, value);
 	}
