@@ -257,13 +257,17 @@ namespace Stimpi
 				}
 				else if (m_Registry.all_of<AnimatedSpriteComponent>(entity))
 				{
-					auto& anim = m_Registry.get<AnimatedSpriteComponent>(entity);
+					AnimatedSpriteComponent& anim = m_Registry.get<AnimatedSpriteComponent>(entity);
 					if (anim.IsPlaying() || m_RuntimeState == RuntimeState::STOPPED)
 					{
-						if (anim.m_Shader == 0 || !anim.m_UseCustomShader)
+						if (anim.m_Material == nullptr || !anim.m_UseCustomShader)
 							Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, anim, m_DefaultShader.get());
 						else
-							Renderer2D::Instance()->SubmitCustom(quad.m_Position, quad.m_Size, quad.m_Rotation, anim, anim.m_Shader);
+						{
+							// For the purpose of CustomShader, texture id is passed to shader
+							Renderer2D::Instance()->SubmitCustom(quad.m_Position, quad.m_Size, quad.m_Rotation, anim, anim.m_Material.get());
+							Renderer2D::Instance()->SubmitCustom(quad.m_Position, quad.m_Size, quad.m_Rotation, anim, anim.m_Material.get());
+						}
 					}
 				}
 

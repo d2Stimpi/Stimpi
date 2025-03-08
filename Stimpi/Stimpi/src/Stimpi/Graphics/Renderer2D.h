@@ -10,7 +10,7 @@
 #include "Stimpi/Graphics/BufferObject.h"
 #include "Stimpi/Graphics/OrthoCamera.h"
 #include "Stimpi/Graphics/FrameBuffer.h"
-#include "Stimpi/Graphics/Shader.h"
+#include "Stimpi/Graphics/Material.h"
 #include "Stimpi/Graphics/Texture.h"
 #include "Stimpi/Graphics/SubTexture.h"
 #include "Stimpi/Graphics/VertexArrayObject.h"
@@ -52,7 +52,7 @@ namespace Stimpi
 		void SubmitLine(glm::vec3 p0, glm::vec3 p1, glm::vec4 color);
 
 		// Custom shader support
-		void SubmitCustom(glm::vec3 pos, glm::vec2 scale, float rotation, SubTexture* subtexture, AssetHandle shaderHandle);
+		void SubmitCustom(glm::vec3 pos, glm::vec2 scale, float rotation, SubTexture* subtexture, Material* material);
 
 		void SetLineWidth(float width);
 
@@ -97,6 +97,7 @@ namespace Stimpi
 		void CheckCapacity();
 		void CheckTextureBatching(Texture* texture);
 		void CheckShaderBatching(Shader* shader);
+		void CheckMaterialBatching(Material* material, Texture* texture);
 		void CheckBatchingByType(RenderCommandType type);
 
 		void ClearRenderCommands();

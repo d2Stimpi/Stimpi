@@ -22,9 +22,18 @@ in vec2 TexCoord;
 // texture samplers
 uniform sampler2D u_texture;
 
+uniform float u_TilingFactor;
+
 void main()
 {
 	{
-		FragColor = texture(u_texture, TexCoord);
+		vec2 uv;
+
+		if (u_TilingFactor == 0)
+			uv = TexCoord;
+		else
+			uv = TexCoord / vec2(u_TilingFactor, 1.0);
+
+		FragColor = texture(u_texture, uv);
 	}
 }

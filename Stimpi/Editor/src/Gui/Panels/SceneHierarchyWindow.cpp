@@ -743,16 +743,17 @@ namespace Stimpi
 			}
 			
 			// Custom shader section
+			ImGui::Separator();
 			ImGui::Checkbox("Use custom shader", &component.m_UseCustomShader);
 
 			if (component.m_UseCustomShader)
 			{
 				static bool showShaderPopup = false;
 				static char shaderName[64] = "";
-				if (component.m_Shader != 0)
+				if (component.m_Material != nullptr)
 				{
-					AssetMetadata metadata = Project::GetEditorAssetManager()->GetAssetMetadata(component.m_Shader);
-					strcpy(shaderName, metadata.m_FilePath.GetFileName().c_str());
+					std::string name = component.m_Material->GetShader()->GetName();
+					strcpy(shaderName, name.c_str());
 				}
 
 				ImGui::Spacing();
@@ -771,7 +772,8 @@ namespace Stimpi
 					auto& filterData = ShaderRegistry::GetShaderNames();
 					if (SearchPopup::OnImGuiRender("ShaderSearch##AnimatedSpriteComponent", filterData))
 					{
-						component.m_Shader = ShaderRegistry::GetShaderHandle(SearchPopup::GetSelection());
+						auto shader = ShaderRegistry::GetShaderHandle(SearchPopup::GetSelection());
+						component.m_Material = std::make_shared<Material>(shader);
 						showShaderPopup = false;
 					}
 				}
@@ -781,11 +783,25 @@ namespace Stimpi
 					AssetHandle shaderHandle = *((AssetHandle*)data);
 					AssetMetadata metadata = Project::GetEditorAssetManager()->GetAssetMetadata(shaderHandle);
 					ST_CORE_INFO("Shader data dropped: {}", metadata.m_FilePath.string());
-					component.m_Shader = shaderHandle;
+					component.m_Material = std::make_shared<Material>(shaderHandle);
 					});
 
 				ImGui::SameLine();
 				ImGui::Text("Shader");
+
+				// Shader uniforms / properties will go here
+				if (component.m_Material != nullptr)
+				{
+					auto& uniforms = component.m_Material->GetShader()->GetInfo().m_Uniforms;
+					auto& values = component.m_Material->GetUniformValues();
+					for (auto& uniform : uniforms)
+					{
+						//ImGui::Text(uniform.m_Name.c_str());
+						float val = std::get<float>(values.at(uniform.m_Name));
+						ImGui::DragFloat(uniform.m_Name.c_str(), &val, 0.01f, 0.01, 1.0f);
+						values[uniform.m_Name] = val;
+					}
+				}
 			}
 
 			ImGui::Spacing();
@@ -811,9 +827,9 @@ namespace Stimpi
 				std::shared_ptr<NGraph> graph = nullptr;
 				showPoput = false;
 
-				if (component.m_Shader)
+				if (component.m_Material)
 				{
-					auto shader = AssetManager::GetAsset<Shader>(component.m_Shader);
+					auto shader = component.m_Material->GetShader();
 					std::string graphName = shader->GetName();
 
 					graph = NGraphRegistry::GetGraph(graphName);

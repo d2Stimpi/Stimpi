@@ -203,6 +203,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Graphics\BufferObject.h" />
     <ClInclude Include="src\Stimpi\Graphics\FrameBuffer.h" />
     <ClInclude Include="src\Stimpi\Graphics\Graphics.h" />
+    <ClInclude Include="src\Stimpi\Graphics\Material.h" />
     <ClInclude Include="src\Stimpi\Graphics\OpenGL.h" />
     <ClInclude Include="src\Stimpi\Graphics\OrthoCamera.h" />
     <ClInclude Include="src\Stimpi\Graphics\RenderAPI.h" />
@@ -281,6 +282,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClCompile Include="src\Stimpi\Graphics\BufferObject.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\FrameBuffer.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\Graphics.cpp" />
+    <ClCompile Include="src\Stimpi\Graphics\Material.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\OpenGL.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\OrthoCamera.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\RenderAPI.cpp" />

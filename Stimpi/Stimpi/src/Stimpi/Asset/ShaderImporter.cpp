@@ -8,6 +8,9 @@
 
 namespace Stimpi
 {
+	// internal only uniforms that are skipped
+	std::vector<std::string> s_FilterUnifromNames = {"u_ViewProjection", "u_texture"};
+
 
 	std::shared_ptr<Stimpi::Asset> ShaderImporter::ImportShader(AssetHandle handle, const AssetMetadata& metadata)
 	{
@@ -139,7 +142,9 @@ namespace Stimpi
 				name.pop_back();	// remove ';' char
 			}
 
-			shaderInfo.m_Uniforms.emplace_back(StringToShaderType(type), name);
+			// Filter out "internal" uniforms
+			if (std::find(s_FilterUnifromNames.begin(), s_FilterUnifromNames.end(), name) == s_FilterUnifromNames.end())
+				shaderInfo.m_Uniforms.emplace_back(StringToShaderType(type), name);
 		}
 
 		return shaderInfo;

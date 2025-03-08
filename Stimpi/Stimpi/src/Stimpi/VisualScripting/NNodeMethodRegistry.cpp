@@ -1,7 +1,7 @@
 #include "stpch.h"
 #include "Stimpi/VisualScripting/NNodeMethodRegistry.h"
 
-#include "Stimpi/Asset/AssetManager.h"
+//#include "Stimpi/Asset/AssetManager.h"
 #include "Stimpi/VisualScripting/ExecTree.h"
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Log.h"
@@ -102,8 +102,8 @@ namespace Stimpi
 			Entity e = method->m_ExecTree->m_Entity;
 			if (e.HasComponent<AnimatedSpriteComponent>())
 			{
-				AssetHandle handle = e.GetComponent<AnimatedSpriteComponent>().m_Shader;
-				auto shader = AssetManager::GetAsset<Shader>(handle);
+				AnimatedSpriteComponent anim = e.GetComponent<AnimatedSpriteComponent>();
+				auto shader = anim.m_Material->GetShader();
 				ShaderLayout& layout = shader->GetInfo().m_ShaderLayout;
 				size_t i = 0;
 

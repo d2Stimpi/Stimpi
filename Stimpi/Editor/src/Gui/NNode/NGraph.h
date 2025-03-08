@@ -23,5 +23,8 @@ namespace Stimpi
 
 		std::vector<std::shared_ptr<NNode>> m_Nodes;
 		std::vector<std::shared_ptr<NPinConnection>> m_PinConnections;
+
+		// Internal - for active tab tracking (setting)
+		ImGuiID m_ImGuiId;
 	};
 }

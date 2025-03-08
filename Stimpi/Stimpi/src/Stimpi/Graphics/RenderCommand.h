@@ -3,7 +3,7 @@
 #include "Stimpi/Graphics/VertexArrayObject.h"
 #include "Stimpi/Graphics/BufferObject.h"
 #include "Stimpi/Graphics/Texture.h"
-#include "Stimpi/Graphics/Shader.h"
+#include "Stimpi/Graphics/Material.h"
 #include "Stimpi/Graphics/OrthoCamera.h"
 #include "Stimpi/Graphics/FrameBuffer.h"
 
@@ -72,6 +72,7 @@ namespace Stimpi
 	{
 		RenderCommandType m_Type;
 		Shader* m_Shader;
+		Material* m_Material;
 		Texture* m_Texture;
 		std::vector<VariableVertexData> m_VariableVertexData;
 		std::vector<VertexData> m_VertexData;
@@ -84,6 +85,7 @@ namespace Stimpi
 		RenderCommand(uint32_t vertexSize) :
 			m_Type(RenderCommandType::NONE),
 			m_Shader(nullptr),
+			m_Material(nullptr),
 			m_Texture(nullptr),
 			m_VertexData({}),
 			m_CircleVertexData({}),

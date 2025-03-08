@@ -63,6 +63,13 @@ namespace Stimpi
 			//ST_CORE_INFO("Elapsed {}, FrameTime {}", m_TimeElapsed, m_FrameTime);
 		}
 
+		// Cap the index before access
+		if (m_CurrentFrame > m_Animation->GetFrames().size())
+		{
+			m_CurrentFrame = m_Animation->GetFrames().size() - 1;
+			ST_CORE_WARN("[AnimatedSprite] Current frame exceeded frame count ({})", m_Animation->GetName());
+		}
+
 		auto& currentFrame = m_Animation->GetFrames().at(m_CurrentFrame);
 		m_Animation->GetSubTexture()->SetSubTextureSize({ 0.0f, 0.0f }, { currentFrame.m_FrameSize.x, currentFrame.m_FrameSize.y });
 		m_Animation->GetSubTexture()->SetSubRegion(m_CurrentFrame);

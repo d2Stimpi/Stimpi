@@ -13,24 +13,29 @@
 #include "Gui/Components/Toolbar.h"
 #include "Gui/Components/SearchPopup.h"
 
+#include "ImGui/src/imgui_internal.h"
+
 //temp
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Core/Project.h"
 #include "Stimpi/VisualScripting/ExecTreeSerializer.h"
 
+
 namespace Stimpi
 {
 
 	bool NGraphPanel::m_Show = false;
-	bool NGraphPanel::m_ShowNodesPanel = true;
+	bool NGraphPanel::m_ShowInspectorPanel = true;
 	bool NGraphPanel::m_ShowDetailsPanel = true;
 	bool NGraphPanel::m_ShowPopup = false;
+
+	enum class SelectionType { None = 0, Graph, Variable, LocalVariable };
 
 	struct NGraphPanelContext
 	{
 		NGraphPanelCanvas m_Canvas;
-		ImDrawList* m_DrawList;
-		NGraphController* m_GraphController;
+		ImDrawList* m_DrawList = nullptr;
+		NGraphController* m_GraphController = nullptr;
 
 		bool m_IsHovered = false;
 		bool m_IsActive = false;
@@ -42,10 +47,17 @@ namespace Stimpi
 		bool m_DebugTooltip = false;
 
 		std::unordered_map<UUID, std::shared_ptr<NGraph>> m_Graphs;
-		NGraph* m_ActiveGraph;
+		NGraph* m_ActiveGraph = nullptr;
 
 		// Temp execution tree
 		std::shared_ptr<ExecTree> m_TempExecTree;
+
+		// Tab tracking helper data
+		ImGuiTabBar* m_TabBar = nullptr;
+
+		// Inspector panel data
+		SelectionType m_SelectionType = SelectionType::None;
+		NGraph* m_SelectedGraph = nullptr;
 	};
 
 	static NGraphPanelContext* s_Context;
@@ -95,9 +107,9 @@ namespace Stimpi
 			{
 				if (ImGui::BeginMenu("View##NGraphPanel"))
 				{
-					if (ImGui::MenuItem("Nodes##NGraphPanel", nullptr, m_ShowNodesPanel))
+					if (ImGui::MenuItem("Inspector##NGraphPanel", nullptr, m_ShowInspectorPanel))
 					{
-						m_ShowNodesPanel = !m_ShowNodesPanel;
+						m_ShowInspectorPanel = !m_ShowInspectorPanel;
 					}
 					if (ImGui::MenuItem("Details##NGraphPanel", nullptr, m_ShowDetailsPanel))
 					{
@@ -125,14 +137,14 @@ namespace Stimpi
 			// Main panel components
 			if (ImGui::BeginTable("##NGraphPanelTable", 3, ImGuiTableFlags_Resizable))
 			{
-				ImGui::TableSetupColumn("ColNodePanel##NGraphPanelTable", !m_ShowNodesPanel ? ImGuiTableColumnFlags_Disabled : 0);
+				ImGui::TableSetupColumn("ColInspectorPanel##NGraphPanelTable", !m_ShowInspectorPanel ? ImGuiTableColumnFlags_Disabled : 0);
 				ImGui::TableSetupColumn("ColGraph##NGraphPanelTable");
 				ImGui::TableSetupColumn("ColDetailsPanel##NGraphPanelTable", !m_ShowDetailsPanel ? ImGuiTableColumnFlags_Disabled : 0);
 
 				ImGui::TableNextColumn();
-				if (m_ShowNodesPanel)
+				if (m_ShowInspectorPanel)
 				{
-					DrawNodesPanel();
+					DrawInspectorPanel();
 				}
 
 				ImGui::TableSetColumnIndex(1);
@@ -151,23 +163,96 @@ namespace Stimpi
 		}
 	}
 
-	void NGraphPanel::DrawNodesPanel()
+	ImGuiTabBar* s_tabbar;
+
+	void NGraphPanel::DrawInspectorPanel()
 	{
 		ImGui::BeginChild("NodesInspector##NGraphPanel", ImVec2(0.0f, 0.0f), false);
 
 		if (ImGui::BeginTabBar("NodesInspectorTabBar##NGraphPanel", ImGuiTabBarFlags_AutoSelectNewTabs))
 		{
-			if (ImGui::BeginTabItem("Graph_Name_here", &m_ShowNodesPanel, ImGuiTabItemFlags_None))
+			if (ImGui::BeginTabItem("Inspector", &m_ShowInspectorPanel, ImGuiTabItemFlags_None))
 			{
-				ImVec2 cursor = ImGui::GetCursorPos(); // For positioning AddButton icon
+				ImVec2 cursor; // For positioning AddButton icon
+
+				// Graphs
+
+				cursor = ImGui::GetCursorPos();
+				if (ImGui::CollapsingHeader("Graphs##NGraphPanelNodesInspector", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
+				{
+					auto& graphs = NGraphRegistry::GetGraphs();
+					for (auto& graph : graphs)
+					{
+						ImGui::PushID(&graph);
+						if (ImGui::TreeNodeEx((void*)&graph, ImGuiTreeNodeFlags_Leaf, graph->m_Name.c_str()))
+						{
+							if (ImGui::IsItemClicked(ImGuiMouseButton_Left) || ImGui::IsItemClicked(ImGuiMouseButton_Right))
+							{
+								s_Context->m_SelectedGraph = graph.get();
+								s_Context->m_SelectionType = SelectionType::Graph;
+
+								if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+								{
+									ShowGraph(graph, false);
+									// Try to set it as active / visible
+									ImGuiWindow* rootWindow = ImGui::GetCurrentWindow()->RootWindow;
+									if (s_Context->m_TabBar && ImGui::TabBarFindTabByID(s_Context->m_TabBar, graph->m_ImGuiId) != NULL)
+									{
+										s_Context->m_TabBar->SelectedTabId = graph->m_ImGuiId;
+									}
+								}
+
+								ItemRightClickPopup();
+							}
+
+						}
+
+						ImGui::PopID();
+						ImGui::TreePop();
+					}
+				}
+				ImGui::Separator();
+
+				AddItemPopupButton(cursor, "##AddNewGraph", []()
+					{
+						std::shared_ptr<NGraph> newGraph = std::make_shared<NGraph>();
+						AddGraph(newGraph);
+
+						NGraphRegistry::RegisterGraph(newGraph);
+					});
+
+				// Variables
+
+				cursor = ImGui::GetCursorPos();
 				if (ImGui::CollapsingHeader("Variables##NGraphPanelNodesInspector", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 				{
 					// Draw content here
 				}
 				ImGui::Separator();
 
+				AddItemPopupButton(cursor, "##AddNewVariable", []()
+					{
+						
+					});
+
+
+				// Local Variables
+
+				cursor = ImGui::GetCursorPos();
+				if (ImGui::CollapsingHeader("Local Variables##NGraphPanelNodesInspector", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
+				{
+					// Draw content here
+				}
+				ImGui::Separator();
+
+				AddItemPopupButton(cursor, "##AddNewLocalVariable", []()
+					{
+
+					});
+
 				ImGui::EndTabItem();
 			}
+
 			ImGui::EndTabBar();
 		}
 
@@ -247,19 +332,22 @@ namespace Stimpi
 
 			if (Toolbar::ToolbarButton("Load##NGraphPanel"))
 			{
-				NGraphSerializer serializer(s_Context->m_ActiveGraph);
-				std::string fileName = s_Context->m_ActiveGraph->m_Name;
-				FilePath path = Project::GetResourcesSubdir(Project::Subdir::VisualScripting) / fileName.append(".ngh");
-				serializer.Deseriealize(path);
+				if (s_Context->m_ActiveGraph)
+				{
+					NGraphSerializer serializer(s_Context->m_ActiveGraph);
+					std::string fileName = s_Context->m_ActiveGraph->m_Name;
+					FilePath path = Project::GetResourcesSubdir(Project::Subdir::VisualScripting) / fileName.append(".ngh");
+					serializer.Deseriealize(path);
 
-				s_Context->m_ActiveGraph->RegenerateGraphDataAfterLoad();
+					s_Context->m_ActiveGraph->RegenerateGraphDataAfterLoad();
 
-				if (s_Context->m_TempExecTree == nullptr)
-					s_Context->m_TempExecTree = std::make_shared<ExecTree>();
+					if (s_Context->m_TempExecTree == nullptr)
+						s_Context->m_TempExecTree = std::make_shared<ExecTree>();
 
-				ExecTreeSerializer execTreeSerializer(s_Context->m_TempExecTree.get());
-				Project::GetResourcesSubdir(Project::Subdir::VisualScripting) / fileName.append(".egh");
-				execTreeSerializer.Deseriealize(path);
+					ExecTreeSerializer execTreeSerializer(s_Context->m_TempExecTree.get());
+					Project::GetResourcesSubdir(Project::Subdir::VisualScripting) / fileName.append(".egh");
+					execTreeSerializer.Deseriealize(path);
+				}
 			}
 			Toolbar::Separator();
 
@@ -276,14 +364,25 @@ namespace Stimpi
 
 		if (ImGui::BeginTabBar("NodePanelNewTabBar##NGraphPanel", tabBarFlags))
 		{
+			s_Context->m_TabBar = ImGui::GetCurrentTabBar();
+			s_tabbar = s_Context->m_TabBar;
+
 			// Render all graphs as TabItems
 			for (auto& item : s_Context->m_Graphs)
 			{
 				auto& graph = item.second;
+				// TODO: support same name graphs
 				if (ImGui::BeginTabItem(graph->m_Name.c_str(), &graph->m_Show, ImGuiTabItemFlags_None))
 				{
+					graph->m_ImGuiId = ImGui::GetItemID();
+
+					ImGuiWindow* rootWindow = ImGui::GetCurrentWindow();
+					if (s_Context->m_TabBar && ImGui::TabBarFindTabByID(s_Context->m_TabBar, graph->m_ImGuiId) != NULL)
+						s_Context->m_TabBar->VisibleTabId = graph->m_ImGuiId;
+
 					//Set active graph to selected tab item
 					s_Context->m_ActiveGraph = graph.get();
+					s_Context->m_GraphController->SetActiveGraph(s_Context->m_ActiveGraph);
 
 					SetCanvasData();
 
@@ -334,7 +433,7 @@ namespace Stimpi
 		if (graph)
 		{
 			m_Show = true;
-		
+
 			if (closeOther)
 				s_Context->m_Graphs.clear();
 
@@ -384,10 +483,16 @@ namespace Stimpi
 		if (found == s_Context->m_Graphs.end())
 			s_Context->m_Graphs[graph->m_ID] = graph;
 
-		graph->m_Show = true;
 		s_Context->m_ActiveGraph = graph.get();
 
 		s_Context->m_GraphController->SetActiveGraph(s_Context->m_ActiveGraph);
+	}
+
+	void NGraphPanel::RemoveGraph(UUID graphID)
+	{
+		auto found = s_Context->m_Graphs.find(graphID);
+		if (found == s_Context->m_Graphs.end())
+			s_Context->m_Graphs.erase(found);
 	}
 
 	void NGraphPanel::SetCanvasData()
@@ -452,6 +557,46 @@ namespace Stimpi
 	float NGraphPanel::PointDistance(ImVec2 p1, ImVec2 p2)
 	{
 		return sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
+	}
+
+	void NGraphPanel::AddItemPopupButton(ImVec2 cursorPos, std::string name, std::function<void()> onClickAction)
+	{
+		// Save cursor position
+		ImVec2 temp = ImGui::GetCursorPos();
+		cursorPos.x += ImGui::GetWindowContentRegionWidth() - ImGuiEx::GetStyle().m_IconOffset * 1.4f;
+		ImGui::SetCursorPos(cursorPos);
+		static bool showSettings = false;
+
+		std::string btnID = name.append("_IconButton");
+		if (ImGuiEx::IconButton(btnID.c_str(), EDITOR_ICON_CROSS))
+		{
+			onClickAction();
+		}
+
+		// Restore cursor position
+		ImGui::SetCursorPos(temp);
+	}
+
+	void NGraphPanel::ItemRightClickPopup()
+	{
+		if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+		{
+			ImGui::OpenPopup("ItemClickPopup##NGraphPanel");
+		}
+
+		if (ImGui::BeginPopup("ItemClickPopup##NGraphPanel"))
+		{
+			if (ImGui::Selectable("Delete"))
+			{
+				// Remove selected item
+				if (s_Context->m_SelectionType == SelectionType::Graph)
+				{
+					RemoveGraph(s_Context->m_SelectedGraph->m_ID);
+					//TODO: handle removal from the GraphRegistry
+				}
+			}
+			ImGui::EndPopup();
+		}
 	}
 
 	NGraph* NGraphPanel::GetActiveGraph()

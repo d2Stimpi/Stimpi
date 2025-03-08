@@ -4,7 +4,7 @@
 #include "Stimpi/Core/Project.h"
 #include "Stimpi/Core/UUID.h"
 #include "Stimpi/Graphics/Texture.h"
-#include "Stimpi/Graphics/Shader.h"
+#include "Stimpi/Graphics/Material.h"
 #include "Stimpi/Graphics/Animation/AnimatedSprite.h"
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Scene/ScriptableEntity.h"
@@ -453,7 +453,8 @@ namespace Stimpi
 		bool m_AutoPlay = false; // Auto play the default anim on start
 
 		// Custom shader asset
-		AssetHandle m_Shader = 0;
+		//AssetHandle m_Shader = 0;
+		std::shared_ptr<Material> m_Material;
 		bool m_UseCustomShader = false;
 
 		AnimatedSpriteComponent(const AnimatedSpriteComponent&) = default;
@@ -595,9 +596,9 @@ namespace Stimpi
 				out << YAML::EndMap;
 				out << YAML::Key << "AutoPlay" << YAML::Value << m_AutoPlay;
 				// If custom shader is used only
-				if (m_Shader != 0)
+				if (m_Material != nullptr)
 				{
-					out << YAML::Key << "Shader" << YAML::Value << m_Shader;
+					out << YAML::Key << "Shader" << YAML::Value << m_Material->GetShaderHandle();
 				}
 			}
 			out << YAML::EndMap;
@@ -633,10 +634,17 @@ namespace Stimpi
 			}
 			if (node["Shader"])
 			{
-				m_Shader = node["Shader"].as<UUIDType>();
+				AssetHandle shaderHandle = node["Shader"].as<UUIDType>();
+				m_Material = std::make_shared<Material>(shaderHandle);
 				m_UseCustomShader = true;
 			}
 		}
+	};
+
+	struct RendererComponent
+	{
+		RendererComponent() = default;
+		RendererComponent(const RendererComponent&) = default;
 	};
 
 	struct CameraComponent

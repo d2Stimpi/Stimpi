@@ -311,51 +311,56 @@ namespace Stimpi
 		currentCmd->PushLineVertex(p1, color);
 	}
 
-	void Renderer2D::SubmitCustom(glm::vec3 pos, glm::vec2 scale, float rotation, SubTexture* subtexture, AssetHandle shaderHandle)
+	void Renderer2D::SubmitCustom(glm::vec3 pos, glm::vec2 scale, float rotation, SubTexture* subtexture, Material* material)
 	{
-		if (!subtexture || !shaderHandle)
+		if (!subtexture || !material)
 			return;
 
-		CheckTextureBatching(subtexture->GetTexture());
-		auto currentCmd = (*m_ActiveRenderCmdIter).get();
-		auto shader = AssetManager::GetAsset<Shader>(shaderHandle);
+		CheckMaterialBatching(material, subtexture->GetTexture());
+		auto currentCmd = *m_ActiveRenderCmdIter;
+		auto shader = material->GetShader();
 
 		// Check if some other type was used in active cmd
-		if (currentCmd->m_Type != RenderCommandType::VARIABLE && currentCmd->m_Type != RenderCommandType::NONE)
+		if (currentCmd->m_Type != RenderCommandType::QUAD && currentCmd->m_Type != RenderCommandType::NONE)
 		{
 			NewCmd();
-			currentCmd = (*m_ActiveRenderCmdIter).get();
+			currentCmd = *m_ActiveRenderCmdIter;
 			currentCmd->m_Texture = subtexture->GetTexture();
 			currentCmd->m_Shader = shader.get();
+			currentCmd->m_Material = material;
 
+			// Sets texture index for shader to use
 			SetShaderUniforms(shader.get());
 		}
 
 		CheckCapacity();
+
 		// First time call Submit after BeginScene
-		if ((currentCmd->m_Texture == nullptr) && ((currentCmd->m_Shader == nullptr)))
+		if ((currentCmd->m_Texture == nullptr) && ((currentCmd->m_Material == nullptr)))
 		{
-			PushTransformedVertexData(currentCmd, pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 			currentCmd->m_Texture = subtexture->GetTexture();
 			currentCmd->m_Shader = shader.get();
+			currentCmd->m_Material = material;
 
 			SetShaderUniforms(shader.get());
 		}
-		else if ((currentCmd->m_Texture != subtexture->GetTexture()) || (currentCmd->m_Shader != shader.get()))
+		else if ((currentCmd->m_Texture != subtexture->GetTexture()) || (currentCmd->m_Material != material))
 		{
 			// If shader or texture changed
 			NewCmd();
-			currentCmd = (*m_ActiveRenderCmdIter).get();
-			PushTransformedVertexData(currentCmd, pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+			currentCmd = *m_ActiveRenderCmdIter;
+			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 			currentCmd->m_Texture = subtexture->GetTexture();
 			currentCmd->m_Shader = shader.get();
+			currentCmd->m_Material = material;
 
 			SetShaderUniforms(shader.get());
 		}
 		else
 		{
 			// Batching vertex data
-			PushTransformedVertexData(currentCmd, pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 		}
 	}
 
@@ -430,18 +435,6 @@ namespace Stimpi
 			return;
 
 		shader->SetUniform("u_texture", 0);
-		
-		/*if (currnetCmd->m_Texture != nullptr)
-		{
-			auto width = currnetCmd->m_Texture->GetWidth();
-			auto height = currnetCmd->m_Texture->GetHeight();
-			shader->SetUniform("u_TexelSize", glm::vec4(1.0f/width, 1.0f/height, (float)width, (float)height));
-		}
-
-		auto camView = m_ActiveCamera->GetViewQuad();
-		auto zoom = m_ActiveCamera->GetZoom();
-		float texelPerPixel = camView.w / m_FrameBuffer->GetHeight() / zoom;  // camView.y - width
-		shader->SetUniform("u_TexelsPerPixel", texelPerPixel);*/
 	}
 
 	void Renderer2D::ResizeCanvas(uint32_t width, uint32_t height)
@@ -550,6 +543,16 @@ namespace Stimpi
 	void Renderer2D::DrawQuadRenderCmd(std::shared_ptr<RenderCommand>& renderCmd)
 	{
 		auto shader = renderCmd->m_Shader;
+		// In case we are using Material
+		if (renderCmd->m_Material != nullptr)
+		{
+			// We need to set uniforms now
+			for (auto& uni : shader->GetInfo().m_Uniforms)
+			{
+				auto values = renderCmd->m_Material->GetUniformValues();
+				shader->SetUniform(uni.m_Name, values.at(uni.m_Name));
+			}
+		}
 
 		shader->Use();
 		shader->SetBufferedUniforms();
@@ -709,6 +712,36 @@ namespace Stimpi
 		}
 	}
 
+	void Renderer2D::CheckMaterialBatching(Material* material, Texture* texture)
+	{
+		auto found = std::find_if(std::begin(m_RenderCmds), std::end(m_RenderCmds), [&material, &texture](auto elem) -> bool {
+			// 1. Has the texture changed?
+			if (texture != elem->m_Texture)
+				return false;
+
+			// 2. Has the shader changed?
+			if (material != elem->m_Material)
+				return false;
+			else
+			{
+				// 3. Has any of the shader uniforms changed?
+				for (auto& it : material->GetUniformValues())
+				{
+					if (it.second != elem->m_Material->GetUniformValues().at(it.first))
+						return false;
+				}
+
+				return true;
+			}
+
+			});
+
+		if (found != std::end(m_RenderCmds))
+		{
+			m_ActiveRenderCmdIter = found;
+		}
+	}
+
 	// TODO: when looking for valid batching cmd, consider max vertex capacity
 	void Renderer2D::CheckBatchingByType(RenderCommandType type)
 	{
@@ -758,4 +791,5 @@ namespace Stimpi
 		cmd->PushQuadVertex(transform * s_QuadVertexPosition[3], color, { min.x, max.y });
 		cmd->PushQuadVertex(transform * s_QuadVertexPosition[0], color, { min.x, min.y });
 	}
+
 }

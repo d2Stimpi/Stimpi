@@ -102,14 +102,11 @@ namespace Stimpi
 	{
 		ShaderDataType m_Type = ShaderDataType::Unknown;
 		std::string m_Name = "";
-		UniformType m_Value;
 
 		Uniform() = default;
 		Uniform(const Uniform&) = default;
-		Uniform(ShaderDataType type, const std::string & name, UniformType value)
-			: m_Type(type), m_Name(name), m_Value(value) {}
-		Uniform(ShaderDataType type, const std::string& name)
-			: Uniform(type, name, 0) {}
+		Uniform(ShaderDataType type, const std::string & name)
+			: m_Type(type), m_Name(name) {}
 	};
 
 	struct ST_API LayoutData
@@ -158,6 +155,7 @@ namespace Stimpi
 			: m_Name(name), m_ShaderLayout(layout), m_VAOHandle(0) {}
 	};
 
+	// TODO: move something like this to Material
 	/* Storage of shader data for extra layout values, per entity that uses the shader
 	 * Assumption:
 	 *	first 3 layers of custom shader have to be Pos/Color/TexCoord 3/3/2

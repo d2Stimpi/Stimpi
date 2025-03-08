@@ -28,7 +28,7 @@ namespace Stimpi
 		void SetDrawList(ImDrawList* drawList);
 		void OnImGuiRender();
 
-		void DrawNodesPanel();
+		void DrawInspectorPanel();
 		void DrawDetailsPanel();
 		void DrawGraph();
 		void DrawGraphOverlay();
@@ -43,6 +43,7 @@ namespace Stimpi
 
 		// Graph methods
 		static void AddGraph(std::shared_ptr<NGraph> graph);
+		static void RemoveGraph(UUID graphID);
 		NGraph* GetActiveGraph();
 
 		NGraphController* GetController();
@@ -80,9 +81,12 @@ namespace Stimpi
 
 		float PointDistance(ImVec2 p1, ImVec2 p2);
 
+		void AddItemPopupButton(ImVec2 cursorPos, std::string name, std::function<void()> onClickAction);
+		void ItemRightClickPopup();
+
 	private:
 		static bool m_Show;		// Easier use in menu if static - to toggle window visibility
-		static bool m_ShowNodesPanel;
+		static bool m_ShowInspectorPanel;
 		static bool m_ShowDetailsPanel;
 		static bool m_ShowPopup;
 	};

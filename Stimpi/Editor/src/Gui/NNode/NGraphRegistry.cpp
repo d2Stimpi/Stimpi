@@ -8,6 +8,7 @@ namespace Stimpi
 {
 	NGraphRegistryType s_GraphRegistry;
 	NGraphUUIDRegistryType s_UUIDRegistry;
+	NGraphCache s_GraphCache;
 
 	void NGraphRegistry::PreloadExistingGraphs()
 	{
@@ -23,15 +24,33 @@ namespace Stimpi
 				if (serializer.Deseriealize(path))
 				{
 					RegisterGraph(graph);
+					// For easy graph array lookup
+					s_GraphCache.push_back(graph);
 				}
 			}
 		}
+	}
+
+	NGraphCache NGraphRegistry::GetGraphs()
+	{
+		return s_GraphCache;
 	}
 
 	void NGraphRegistry::RegisterGraph(std::shared_ptr<NGraph> graph)
 	{
 		s_GraphRegistry[graph->m_Name] = graph;
 		s_UUIDRegistry[graph->m_Name] = graph->m_ID;
+	}
+
+	void NGraphRegistry::UnregisterGraph(const std::string& name)
+	{
+		auto found = s_GraphRegistry.find(name);
+		if (found != s_GraphRegistry.end())
+		{
+			s_GraphRegistry.erase(found);
+			// Update local graph cache
+			std::remove_if(s_GraphCache.begin(), s_GraphCache.end(), [&](std::shared_ptr<NGraph>& graph) { return graph->m_Name == name; });
+		}
 	}
 
 	std::shared_ptr<Stimpi::NGraph> NGraphRegistry::GetGraph(const std::string& name)
