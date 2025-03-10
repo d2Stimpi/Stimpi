@@ -20,7 +20,10 @@ namespace Stimpi
 	class NGraphRegistry
 	{
 	public:
-		static void PreloadExistingGraphs();
+		static void SerializeGraphRegistry(const FilePath& filePath);
+		static void DeserializeGraphRegistry(const FilePath& filePath);
+
+		static void PreloadExistingGraphs(); // TODO: use load registry instead
 		static NGraphCache GetGraphs();
 
 		static void RegisterGraph(std::shared_ptr<NGraph> graph);

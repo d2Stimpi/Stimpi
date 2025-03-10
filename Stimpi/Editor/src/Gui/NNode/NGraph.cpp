@@ -108,4 +108,9 @@ namespace Stimpi
 		}
 	}
 
+	std::string NGraph::GetLabel()
+	{
+		return fmt::format("{}##{}", m_Name, m_ID);
+	}
+
 }

@@ -15,6 +15,8 @@ namespace Stimpi
 		std::shared_ptr<NPinConnection> FindPinToPinConnection(std::shared_ptr<NPin> src, std::shared_ptr<NPin> dest);
 		void RegenerateGraphDataAfterLoad();
 
+		std::string GetLabel();
+
 		UUID m_ID;
 		std::string m_Name = "Unnamed";
 

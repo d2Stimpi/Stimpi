@@ -171,7 +171,7 @@ namespace Stimpi
 
 		if (ImGui::BeginTabBar("NodesInspectorTabBar##NGraphPanel", ImGuiTabBarFlags_AutoSelectNewTabs))
 		{
-			if (ImGui::BeginTabItem("Inspector", &m_ShowInspectorPanel, ImGuiTabItemFlags_None))
+			if (ImGui::BeginTabItem("Inspector##NGraphPanel", &m_ShowInspectorPanel, ImGuiTabItemFlags_None))
 			{
 				ImVec2 cursor; // For positioning AddButton icon
 
@@ -183,8 +183,8 @@ namespace Stimpi
 					auto& graphs = NGraphRegistry::GetGraphs();
 					for (auto& graph : graphs)
 					{
-						ImGui::PushID(&graph);
-						if (ImGui::TreeNodeEx((void*)&graph, ImGuiTreeNodeFlags_Leaf, graph->m_Name.c_str()))
+						ImGui::PushID(&graph->m_ID);
+						if (ImGui::TreeNodeEx((void*)&graph->m_ID, ImGuiTreeNodeFlags_Leaf, graph->m_Name.c_str()))
 						{
 							if (ImGui::IsItemClicked(ImGuiMouseButton_Left) || ImGui::IsItemClicked(ImGuiMouseButton_Right))
 							{
@@ -194,6 +194,7 @@ namespace Stimpi
 								if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 								{
 									ShowGraph(graph, false);
+									graph->m_Show = true;
 									// Try to set it as active / visible
 									ImGuiWindow* rootWindow = ImGui::GetCurrentWindow()->RootWindow;
 									if (s_Context->m_TabBar && ImGui::TabBarFindTabByID(s_Context->m_TabBar, graph->m_ImGuiId) != NULL)
@@ -201,10 +202,9 @@ namespace Stimpi
 										s_Context->m_TabBar->SelectedTabId = graph->m_ImGuiId;
 									}
 								}
-
-								ItemRightClickPopup();
 							}
 
+							ItemRightClickPopup();
 						}
 
 						ImGui::PopID();
@@ -368,39 +368,42 @@ namespace Stimpi
 			s_tabbar = s_Context->m_TabBar;
 
 			// Render all graphs as TabItems
+			auto& bla = s_Context->m_Graphs;
 			for (auto& item : s_Context->m_Graphs)
 			{
 				auto& graph = item.second;
-				// TODO: support same name graphs
-				if (ImGui::BeginTabItem(graph->m_Name.c_str(), &graph->m_Show, ImGuiTabItemFlags_None))
+				if (graph != nullptr)
 				{
-					graph->m_ImGuiId = ImGui::GetItemID();
+					if (ImGui::BeginTabItem(graph->GetLabel().c_str(), &graph->m_Show, ImGuiTabItemFlags_None))
+					{
+						graph->m_ImGuiId = ImGui::GetItemID();
 
-					ImGuiWindow* rootWindow = ImGui::GetCurrentWindow();
-					if (s_Context->m_TabBar && ImGui::TabBarFindTabByID(s_Context->m_TabBar, graph->m_ImGuiId) != NULL)
-						s_Context->m_TabBar->VisibleTabId = graph->m_ImGuiId;
+						ImGuiWindow* rootWindow = ImGui::GetCurrentWindow();
+						if (s_Context->m_TabBar && ImGui::TabBarFindTabByID(s_Context->m_TabBar, graph->m_ImGuiId) != NULL)
+							s_Context->m_TabBar->VisibleTabId = graph->m_ImGuiId;
 
-					//Set active graph to selected tab item
-					s_Context->m_ActiveGraph = graph.get();
-					s_Context->m_GraphController->SetActiveGraph(s_Context->m_ActiveGraph);
+						//Set active graph to selected tab item
+						s_Context->m_ActiveGraph = graph.get();
+						s_Context->m_GraphController->SetActiveGraph(s_Context->m_ActiveGraph);
 
-					SetCanvasData();
+						SetCanvasData();
 
-					// Process mouse control before any drawing calls
-					s_Context->m_GraphController->UpdateMouseControls();
-					s_Context->m_GraphController->HandleKeyPresses();
+						// Process mouse control before any drawing calls
+						s_Context->m_GraphController->UpdateMouseControls();
+						s_Context->m_GraphController->HandleKeyPresses();
 
-					DrawCanvasGrid();
-					NGraphRenderer::OnImGuiRender();
+						DrawCanvasGrid();
+						NGraphRenderer::OnImGuiRender();
 
-					// Rect pushed in drawing of the Grid (start of the draw commands)
-					s_Context->m_DrawList->PopClipRect();
-					// Draw border
-					s_Context->m_DrawList->AddRect(s_Context->m_Canvas.m_PosMin, s_Context->m_Canvas.m_PosMax, IM_COL32(255, 255, 255, 255));
+						// Rect pushed in drawing of the Grid (start of the draw commands)
+						s_Context->m_DrawList->PopClipRect();
+						// Draw border
+						s_Context->m_DrawList->AddRect(s_Context->m_Canvas.m_PosMin, s_Context->m_Canvas.m_PosMax, IM_COL32(255, 255, 255, 255));
 
-					DrawGraphOverlay();
+						DrawGraphOverlay();
 
-					ImGui::EndTabItem();
+						ImGui::EndTabItem();
+					}
 				}
 			}
 
@@ -491,8 +494,10 @@ namespace Stimpi
 	void NGraphPanel::RemoveGraph(UUID graphID)
 	{
 		auto found = s_Context->m_Graphs.find(graphID);
-		if (found == s_Context->m_Graphs.end())
+		if (found != s_Context->m_Graphs.end())
+		{
 			s_Context->m_Graphs.erase(found);
+		}
 	}
 
 	void NGraphPanel::SetCanvasData()

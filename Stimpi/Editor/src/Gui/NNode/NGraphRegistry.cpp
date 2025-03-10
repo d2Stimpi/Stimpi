@@ -3,12 +3,72 @@
 
 #include "Gui/NNode/NGraphSerializer.h"
 #include "Stimpi/Core/Project.h"
+#include "Stimpi/Scene/ResourceManager.h"
+
+#include <yaml-cpp/yaml.h>
 
 namespace Stimpi
 {
 	NGraphRegistryType s_GraphRegistry;
 	NGraphUUIDRegistryType s_UUIDRegistry;
 	NGraphCache s_GraphCache;
+
+	void NGraphRegistry::SerializeGraphRegistry(const FilePath& filePath)
+	{
+		YAML::Emitter out;
+
+		out << YAML::Block;
+		out << YAML::BeginMap;
+		{
+			out << YAML::Key << "NodeGraphRegistry" << YAML::Value;
+			out << YAML::BeginMap;
+			{
+				for (auto& item : s_UUIDRegistry)
+				{
+					out << YAML::Key << "NodeGraph" << YAML::Value;
+					out << YAML::BeginMap;
+					{
+						out << YAML::Key << "Name" << YAML::Value << item.first;
+						out << YAML::Key << "UUID" << YAML::Value << item.second;
+					}
+					out << YAML::EndMap;
+				}
+			}
+			out << YAML::EndMap;
+		}
+		out << YAML::EndMap;
+
+		ResourceManager::Instance()->WriteToFile(filePath.string(), out.c_str());
+	}
+
+	void NGraphRegistry::DeserializeGraphRegistry(const FilePath& filePath)
+	{
+		if (!std::filesystem::exists(filePath.GetPath()))
+		{
+			ST_CORE_INFO("First time load project, no valid NodeGraph Registry found");
+			return;
+		}
+
+		YAML::Node loadData = YAML::LoadFile(filePath.string());
+		YAML::Node registry = loadData["NodeGraphRegistry"];
+		ST_CORE_ASSERT_MSG(!registry, "Invalid NodeGraphRegistry file!");
+
+		for (YAML::const_iterator it = registry.begin(); it != registry.end(); it++)
+		{
+			YAML::Node node = it->second;
+			if (node["Name"] && node["UUID"])
+			{
+				std::string name = node["Name"].as<std::string>();
+				UUID uuid = node["UUID"].as<UUIDType>();
+				s_UUIDRegistry[name] = uuid;
+			}
+			else
+			{
+				if (!node["Name"]) ST_CORE_ERROR("DeserializeGraphRegistry: missing graph Name!");
+				if (!node["UUID"]) ST_CORE_ERROR("DeserializeGraphRegistry: missing graph UUID!");
+			}
+		}
+	}
 
 	void NGraphRegistry::PreloadExistingGraphs()
 	{
