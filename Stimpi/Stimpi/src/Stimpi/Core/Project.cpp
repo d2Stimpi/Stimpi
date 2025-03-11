@@ -79,4 +79,12 @@ namespace Stimpi
 		return registryName.append("_Registry.d2ar");
 	}
 
+	std::string Project::GetGraphsRegistryPath()
+	{
+		std::string registryName = m_Config.m_Name;
+		registryName.append("_GraphsRegistry.d2ar");
+		std::filesystem::path registryPath = GetResourcesDir() / registryName;
+		return registryPath.string();
+	}
+
 }

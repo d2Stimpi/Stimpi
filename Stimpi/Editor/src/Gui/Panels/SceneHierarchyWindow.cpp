@@ -832,7 +832,7 @@ namespace Stimpi
 					auto shader = component.m_Material->GetShader();
 					std::string graphName = shader->GetName();
 
-					graph = NGraphRegistry::GetGraph(graphName);
+					graph = NGraphRegistry::GetGraph(shader->m_Handle);
 					if (graph == nullptr)
 					{
 						graph = NGraphBuilder::BuildGraph({ graphName, {} });

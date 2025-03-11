@@ -10,10 +10,10 @@ namespace Stimpi
 	{
 	public:
 		static std::shared_ptr<Asset> ImportShader(AssetHandle handle, const AssetMetadata& metadata);
-		static std::shared_ptr<Shader> LoadShader(const FilePath& filePath);
+		static std::shared_ptr<Shader> LoadShader(const FilePath& filePath, AssetHandle handle = 0);
 
 	private:
 		static ShaderInfo ParseShaderByLine(const std::string& line, ShaderInfo& shaderInfo);
-		static bool LoadShaderGraph(Shader* shader, const FilePath& filePath);
+		static bool LoadShaderGraph(Shader* shader, const FilePath& filePath, AssetHandle handle);
 	};
 }

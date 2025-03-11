@@ -15,10 +15,10 @@ namespace Stimpi
 	std::shared_ptr<Stimpi::Asset> ShaderImporter::ImportShader(AssetHandle handle, const AssetMetadata& metadata)
 	{
 		FilePath assetPath = Project::GetAssestsDir() / metadata.m_FilePath.string();
-		return std::static_pointer_cast<Shader>(LoadShader(assetPath));
+		return std::static_pointer_cast<Shader>(LoadShader(assetPath, handle));
 	}
 
-	std::shared_ptr<Stimpi::Shader> ShaderImporter::LoadShader(const FilePath& filePath)
+	std::shared_ptr<Stimpi::Shader> ShaderImporter::LoadShader(const FilePath& filePath, AssetHandle handle)
 	{
 		// 1. Read shader file
 		std::string vertexShaderCode;
@@ -73,7 +73,7 @@ namespace Stimpi
 		auto shader = Shader::Create(shaderInfo, vertexShaderCode, fragmentShaderCode);
 
 		// 4. Try to parse the shader Graph if available
-		LoadShaderGraph(shader.get(), filePath);
+		LoadShaderGraph(shader.get(), filePath, handle);
 
 		return shader;
 	}
@@ -150,10 +150,10 @@ namespace Stimpi
 		return shaderInfo;
 	}
 
-	bool ShaderImporter::LoadShaderGraph(Shader* shader, const FilePath& filePath)
+	bool ShaderImporter::LoadShaderGraph(Shader* shader, const FilePath& filePath, AssetHandle handle)
 	{
-		std::string fileName = filePath.GetPath().stem().string();
-		FilePath graphPath = FilePath(Project::GetResourcesSubdir(Project::Subdir::VisualScripting) / fileName.append(".egh"));
+		std::string fileName = fmt::format("{}.egh", handle);
+		FilePath graphPath = FilePath(Project::GetResourcesSubdir(Project::Subdir::VisualScripting) / fileName);
 		if (graphPath.Exists())
 		{
 			// Deserialize the ExecTree

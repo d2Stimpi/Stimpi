@@ -28,6 +28,7 @@
 // Window show toggle includes
 #include "Gui/Nodes/GraphPanel.h"
 #include "Gui/NNode/NGraphPanel.h"
+#include "Gui/NNode/NGraphRegistry.h"
 
 #include <SDL.h>
 
@@ -84,6 +85,9 @@ namespace Stimpi
 						if (!filePath.empty())
 						{
 							Project::Load(filePath);
+							// Load NodeGraph registry from assets folder
+							auto registryPath = Project::GetGraphsRegistryPath();
+							NGraphRegistry::DeserializeGraphRegistry(registryPath);
 						}
 					}
 
@@ -104,10 +108,12 @@ namespace Stimpi
 					if (ImGui::MenuItem("Project...##FileSave"))
 					{
 						std::string projectFilePath = FileDialogs::SaveFile("d2S Project (*.d2sproj)\0*.d2sproj\0");
-						//projectFilePath.append(".d2sproj");
 						if (!projectFilePath.empty())
 						{
 							Project::Save(projectFilePath);
+							// Save NodeGraph registry in assets folder
+							auto registryPath = Project::GetGraphsRegistryPath();
+							NGraphRegistry::SerializeGraphRegistry(registryPath);
 						}
 					}
 

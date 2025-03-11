@@ -58,6 +58,7 @@ namespace Stimpi
 		// Inspector panel data
 		SelectionType m_SelectionType = SelectionType::None;
 		NGraph* m_SelectedGraph = nullptr;
+		std::vector<UUID> m_GraphsToBeRemoved;
 	};
 
 	static NGraphPanelContext* s_Context;
@@ -175,14 +176,18 @@ namespace Stimpi
 			{
 				ImVec2 cursor; // For positioning AddButton icon
 
+				// Process item removals before iterating collections
+				ProcessCollectionRemovals();
+
 				// Graphs
 
 				cursor = ImGui::GetCursorPos();
 				if (ImGui::CollapsingHeader("Graphs##NGraphPanelNodesInspector", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 				{
-					auto& graphs = NGraphRegistry::GetGraphs();
-					for (auto& graph : graphs)
+					auto& graphs = NGraphRegistry::GetData();
+					for (auto& item : graphs)
 					{
+						auto graph = item.second;
 						ImGui::PushID(&graph->m_ID);
 						if (ImGui::TreeNodeEx((void*)&graph->m_ID, ImGuiTreeNodeFlags_Leaf, graph->m_Name.c_str()))
 						{
@@ -306,10 +311,7 @@ namespace Stimpi
 			{
 				if (s_Context->m_ActiveGraph)
 				{
-					NGraphSerializer serializer(s_Context->m_ActiveGraph);
-					std::string fileName = s_Context->m_ActiveGraph->m_Name;
-					FilePath path = Project::GetResourcesSubdir(Project::Subdir::VisualScripting) / fileName.append(".ngh");
-					serializer.Serialize(path);
+					NGraphRegistry::SaveGraph(s_Context->m_ActiveGraph);
 				}
 				else
 				{
@@ -319,8 +321,8 @@ namespace Stimpi
 				if (s_Context->m_TempExecTree && s_Context->m_ActiveGraph)
 				{
 					ExecTreeSerializer execTreeSerializer(s_Context->m_TempExecTree.get());
-					std::string fileName = s_Context->m_ActiveGraph->m_Name;
-					FilePath path = Project::GetResourcesSubdir(Project::Subdir::VisualScripting) / fileName.append(".egh");
+					std::string fileName = fmt::format("{}.egh", s_Context->m_ActiveGraph->m_ID);
+					FilePath path = Project::GetResourcesSubdir(Project::Subdir::VisualScripting) / fileName;
 					execTreeSerializer.Serialize(path);
 				}
 				else
@@ -334,10 +336,7 @@ namespace Stimpi
 			{
 				if (s_Context->m_ActiveGraph)
 				{
-					NGraphSerializer serializer(s_Context->m_ActiveGraph);
-					std::string fileName = s_Context->m_ActiveGraph->m_Name;
-					FilePath path = Project::GetResourcesSubdir(Project::Subdir::VisualScripting) / fileName.append(".ngh");
-					serializer.Deseriealize(path);
+					NGraphRegistry::LoadGraph(s_Context->m_ActiveGraph);
 
 					s_Context->m_ActiveGraph->RegenerateGraphDataAfterLoad();
 
@@ -345,7 +344,8 @@ namespace Stimpi
 						s_Context->m_TempExecTree = std::make_shared<ExecTree>();
 
 					ExecTreeSerializer execTreeSerializer(s_Context->m_TempExecTree.get());
-					Project::GetResourcesSubdir(Project::Subdir::VisualScripting) / fileName.append(".egh");
+					std::string fileName = fmt::format("{}.egh", s_Context->m_ActiveGraph->m_ID);
+					FilePath path = Project::GetResourcesSubdir(Project::Subdir::VisualScripting) / fileName;
 					execTreeSerializer.Deseriealize(path);
 				}
 			}
@@ -596,12 +596,22 @@ namespace Stimpi
 				// Remove selected item
 				if (s_Context->m_SelectionType == SelectionType::Graph)
 				{
-					RemoveGraph(s_Context->m_SelectedGraph->m_ID);
-					//TODO: handle removal from the GraphRegistry
+					s_Context->m_GraphsToBeRemoved.push_back(s_Context->m_SelectedGraph->m_ID);
 				}
 			}
 			ImGui::EndPopup();
 		}
+	}
+
+	void NGraphPanel::ProcessCollectionRemovals()
+	{
+		for (auto& uuid : s_Context->m_GraphsToBeRemoved)
+		{
+			NGraphRegistry::UnregisterGraph(uuid);
+			RemoveGraph(uuid);
+		}
+
+		s_Context->m_GraphsToBeRemoved.clear();
 	}
 
 	NGraph* NGraphPanel::GetActiveGraph()

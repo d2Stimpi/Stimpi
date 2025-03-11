@@ -10,16 +10,6 @@ AssetRegistry:
       AssetType: SCENE
       FilePath: scenes\asd.d2s
   Asset:
-    Handle: 2014243253108975485
-    Metadata:
-      AssetType: TEXTURE
-      FilePath: textures\scene.png
-  Asset:
-    Handle: 789439655156026686
-    Metadata:
-      AssetType: SCENE
-      FilePath: scenes\Jump.d2s
-  Asset:
     Handle: 813177034974515937
     Metadata:
       AssetType: TEXTURE
@@ -29,6 +19,16 @@ AssetRegistry:
     Metadata:
       AssetType: SCENE
       FilePath: scenes\Demo\DemoScene.d2s
+  Asset:
+    Handle: 2014243253108975485
+    Metadata:
+      AssetType: TEXTURE
+      FilePath: textures\scene.png
+  Asset:
+    Handle: 789439655156026686
+    Metadata:
+      AssetType: SCENE
+      FilePath: scenes\Jump.d2s
   Asset:
     Handle: 11084975744725160239
     Metadata:
@@ -40,85 +40,85 @@ AssetRegistry:
       AssetType: SCENE
       FilePath: scenes\StartScene.d2s
   Asset:
-    Handle: 5429349240537450947
+    Handle: 2059722202803167377
     Metadata:
-      AssetType: TEXTURE
-      FilePath: textures\viber_image.png
+      AssetType: SCENE
+      FilePath: scenes\Demo\DemoSceneTest.d2s
   Asset:
     Handle: 3820298104029216440
     Metadata:
       AssetType: TEXTURE
       FilePath: textures\Capture.JPG
   Asset:
-    Handle: 2059722202803167377
+    Handle: 5429349240537450947
     Metadata:
-      AssetType: SCENE
-      FilePath: scenes\Demo\DemoSceneTest.d2s
+      AssetType: TEXTURE
+      FilePath: textures\viber_image.png
   Asset:
     Handle: 9793356278668189821
     Metadata:
       AssetType: SCENE
       FilePath: scenes\TestSave.d2s
   Asset:
-    Handle: 7453659240601947376
+    Handle: 11654089304720073208
     Metadata:
-      AssetType: TEXTURE
-      FilePath: sprite_sheets\sonic-sprite-sheet.png
+      AssetType: SCENE
+      FilePath: scenes\script_test_scene.d2s
   Asset:
     Handle: 4427121962745344406
     Metadata:
       AssetType: TEXTURE
       FilePath: sprite_sheets\char\Unarmed_Walk_front.png
   Asset:
-    Handle: 11654089304720073208
+    Handle: 7453659240601947376
     Metadata:
-      AssetType: SCENE
-      FilePath: scenes\script_test_scene.d2s
+      AssetType: TEXTURE
+      FilePath: sprite_sheets\sonic-sprite-sheet.png
   Asset:
     Handle: 11896526969309057907
     Metadata:
       AssetType: SCENE
       FilePath: scenes\PhysicsTest.d2s
   Asset:
-    Handle: 14265222945389061627
-    Metadata:
-      AssetType: TEXTURE
-      FilePath: textures\sovingradient.png
-  Asset:
     Handle: 14652723998106920456
     Metadata:
       AssetType: SCENE
       FilePath: scenes\TestScene.d2s
   Asset:
-    Handle: 15336791234135875067
+    Handle: 14265222945389061627
     Metadata:
-      AssetType: SHADER
-      FilePath: shaders\framebuffer.shader
+      AssetType: TEXTURE
+      FilePath: textures\sovingradient.png
   Asset:
     Handle: 15260443765249389606
     Metadata:
       AssetType: SHADER
       FilePath: shaders\circle.shader
   Asset:
+    Handle: 15336791234135875067
+    Metadata:
+      AssetType: SHADER
+      FilePath: shaders\framebuffer.shader
+  Asset:
     Handle: 2854943151399358220
     Metadata:
       AssetType: SHADER
       FilePath: shaders\pixelart.shader
   Asset:
-    Handle: 7287444439292230160
+    Handle: 14595518610010955885
     Metadata:
-      AssetType: TEXTURE
-      FilePath: textures\Level_01_004.png
+      AssetType: SHADER
+      FilePath: shaders\shader.shader
   Asset:
     Handle: 6121712364586313475
     Metadata:
       AssetType: TEXTURE
       FilePath: textures\Highlight.png
   Asset:
-    Handle: 14595518610010955885
+    Handle: 7287444439292230160
     Metadata:
-      AssetType: SHADER
-      FilePath: shaders\shader.shader
+      AssetType: TEXTURE
+      FilePath: textures\Level_01_004.png
   Asset:
     Handle: 8449217666332328825
     Metadata:
@@ -140,60 +140,60 @@ AssetRegistry:
       AssetType: TEXTURE
       FilePath: sprite_sheets\char\Sword_attack_side_left.png
   Asset:
-    Handle: 4558684263159447201
-    Metadata:
-      AssetType: TEXTURE
-      FilePath: sprite_sheets\char\Sword_Death_back.png
-  Asset:
     Handle: 9340013567212826287
     Metadata:
       AssetType: TEXTURE
       FilePath: sprite_sheets\char\Sword_attack_side_right.png
   Asset:
-    Handle: 2547026823462807659
+    Handle: 4558684263159447201
     Metadata:
       AssetType: TEXTURE
-      FilePath: textures\camera.png
-  Asset:
-    Handle: 13740980398473675591
-    Metadata:
-      AssetType: TEXTURE
-      FilePath: sprite_sheets\char\Sword_Walk_front.png
+      FilePath: sprite_sheets\char\Sword_Death_back.png
   Asset:
     Handle: 4761166711683973403
     Metadata:
       AssetType: TEXTURE
       FilePath: sprite_sheets\char\Sword_Death_front.png
   Asset:
-    Handle: 7586530109836976863
+    Handle: 13740980398473675591
     Metadata:
       AssetType: TEXTURE
-      FilePath: sprite_sheets\char\Unarmed_Walk_side_left.png
+      FilePath: sprite_sheets\char\Sword_Walk_front.png
+  Asset:
+    Handle: 2547026823462807659
+    Metadata:
+      AssetType: TEXTURE
+      FilePath: textures\camera.png
   Asset:
     Handle: 189319217587889210
     Metadata:
       AssetType: TEXTURE
       FilePath: sprite_sheets\char\Sword_Death_side_left.png
   Asset:
+    Handle: 7586530109836976863
+    Metadata:
+      AssetType: TEXTURE
+      FilePath: sprite_sheets\char\Unarmed_Walk_side_left.png
+  Asset:
     Handle: 16233581287641607986
     Metadata:
       AssetType: TEXTURE
       FilePath: sprite_sheets\char\Sword_Death_side_right.png
   Asset:
-    Handle: 5411780716160852978
+    Handle: 6453958303717108464
     Metadata:
       AssetType: TEXTURE
-      FilePath: sprite_sheets\char\Unarmed_Idle_front.png
+      FilePath: sprite_sheets\char\Sword_Idle_front.png
   Asset:
     Handle: 16833263325198961521
     Metadata:
       AssetType: TEXTURE
       FilePath: sprite_sheets\char\Sword_Walk_side_right.png
   Asset:
-    Handle: 6453958303717108464
+    Handle: 5411780716160852978
     Metadata:
       AssetType: TEXTURE
-      FilePath: sprite_sheets\char\Sword_Idle_front.png
+      FilePath: sprite_sheets\char\Unarmed_Idle_front.png
   Asset:
     Handle: 2788609829265388324
     Metadata:
@@ -255,17 +255,32 @@ AssetRegistry:
       AssetType: TEXTURE
       FilePath: textures\Gradient.png
   Asset:
-    Handle: 7032142600375020969
-    Metadata:
-      AssetType: TEXTURE
-      FilePath: textures\Picture1.jpg
-  Asset:
     Handle: 448644273809650418
     Metadata:
       AssetType: TEXTURE
       FilePath: textures\Gradient2.png
   Asset:
+    Handle: 7032142600375020969
+    Metadata:
+      AssetType: TEXTURE
+      FilePath: textures\Picture1.jpg
+  Asset:
+    Handle: 9961002747227842712
+    Metadata:
+      AssetType: TEXTURE
+      FilePath: D:/GitHub/Stimpi\assets\sprite_sheets/nero_slap_anim-sheet.png
+  Asset:
     Handle: 17068510921281816171
     Metadata:
       AssetType: TEXTURE
       FilePath: textures\shader.png
+  Asset:
+    Handle: 5007713170056045969
+    Metadata:
+      AssetType: TEXTURE
+      FilePath: D:/GitHub/Stimpi\assets\sprite_sheets/nero_slap_anim-sheet.png
+  Asset:
+    Handle: 2243333166184877765
+    Metadata:
+      AssetType: TEXTURE
+      FilePath: D:/GitHub/Stimpi\assets\sprite_sheets/nero_slap_anim-sheet.png

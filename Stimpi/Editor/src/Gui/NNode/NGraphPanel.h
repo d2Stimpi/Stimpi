@@ -83,6 +83,7 @@ namespace Stimpi
 
 		void AddItemPopupButton(ImVec2 cursorPos, std::string name, std::function<void()> onClickAction);
 		void ItemRightClickPopup();
+		void ProcessCollectionRemovals();
 
 	private:
 		static bool m_Show;		// Easier use in menu if static - to toggle window visibility

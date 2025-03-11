@@ -20,7 +20,6 @@
 #include "Gui/Gizmo2D.h"
 #include "Gui/Utils/EditorResources.h"
 
-
 #include <SDL.h>
 #include <SDL_opengl.h>
 

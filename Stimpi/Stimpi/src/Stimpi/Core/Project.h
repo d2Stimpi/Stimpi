@@ -68,6 +68,8 @@ namespace Stimpi
 		static std::shared_ptr<AssetManagerEditor> GetEditorAssetManager() { return std::static_pointer_cast<AssetManagerEditor>(GetAssetManager()); }
 		static std::shared_ptr<AssetManagerRuntime> GetRuntimeAssetManager() { return std::static_pointer_cast<AssetManagerRuntime>(GetAssetManager()); }
 		static std::string GetProjectRegistryName();
+		static std::string GetGraphsRegistryPath();
+
 	private:
 		static ProjectConfig m_Config;
 

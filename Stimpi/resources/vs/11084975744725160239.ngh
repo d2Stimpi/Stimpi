@@ -1,0 +1,104 @@
+Name: checkerboard
+UUID: 11084975744725160239
+Nodes:
+  Node:
+    Position:
+      - 497
+      - 241
+    Size:
+      - 136
+      - 66.5999985
+    UUID: 9624697440055483708
+    Title: SetPosition
+    HasHeader: true
+    NodeType: Setter
+    InputPins:
+      Pin:
+        Type: In
+        DataType: Float3
+        UUID: 10621599569802782677
+        Connected: true
+        SingleConnecton: false
+        Label: Position
+        Position:
+          - 509.600006
+          - 283.600006
+    OutputPins:
+      {}
+    MethodID: 4
+  Node:
+    Position:
+      - 292
+      - 152
+    Size:
+      - 155.600006
+      - 86.1999969
+    UUID: 14312623679718883269
+    Title: Translate
+    HasHeader: true
+    NodeType: Modifier
+    InputPins:
+      Pin:
+        Type: In
+        DataType: Float3
+        UUID: 3408310861191562864
+        Connected: true
+        SingleConnecton: false
+        Label: Position
+        Position:
+          - 304.600006
+          - 194.600006
+      Pin:
+        Type: In
+        DataType: Float3
+        UUID: 18079981307482936769
+        Connected: false
+        SingleConnecton: false
+        Label: Vec3
+        Position:
+          - 304.600006
+          - 214.200012
+    OutputPins:
+      Pin:
+        Type: Out
+        DataType: Float3
+        UUID: 8675311652077243401
+        Connected: true
+        SingleConnecton: false
+        Label: Output
+        Position:
+          - 430.800018
+          - 194.600006
+    MethodID: 3
+  Node:
+    Position:
+      - 108
+      - 261
+    Size:
+      - 102.800003
+      - 26.6000004
+    UUID: 11081991634616468290
+    Title: GetPosition
+    HasHeader: false
+    NodeType: Getter
+    InputPins:
+      {}
+    OutputPins:
+      Pin:
+        Type: Out
+        DataType: Float3
+        UUID: 4372065512408236563
+        Connected: true
+        SingleConnecton: false
+        Label: Position
+        Position:
+          - 194
+          - 273.600006
+    MethodID: 2
+PinConnections:
+  PinConnection:
+    SrcPin: 4372065512408236563
+    DestPin: 3408310861191562864
+  PinConnection:
+    SrcPin: 8675311652077243401
+    DestPin: 10621599569802782677
