@@ -153,4 +153,26 @@ namespace Stimpi
 		return s_MethodRegistry.at(name);
 	}
 
+	std::string NNodeMethodRegistry::MethodNameToString(MethodName name)
+	{
+		switch (name)
+		{
+#define DEFINE_NODE_NAME(name)	case Stimpi::MethodName::name: return #name;
+#include "Stimpi/VisualScripting/NNodeNames.h"
+#undef DEFINE_NODE_NAME(name)
+		default: return "None";
+		}
+
+		return "None";
+	}
+
+	Stimpi::MethodName NNodeMethodRegistry::StringToMethodName(const std::string& str)
+	{
+#define DEFINE_NODE_NAME(name)	if (str == #name) return MethodName::name;
+#include "Stimpi/VisualScripting/NNodeNames.h"
+#undef DEFINE_NODE_NAME(name)
+
+		return MethodName::None;
+	}
+
 }

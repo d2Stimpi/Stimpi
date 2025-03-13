@@ -25,7 +25,7 @@ Nodes:
           - 283.600006
     OutputPins:
       {}
-    MethodID: 4
+    MethodID: SetPosition
   Node:
     Position:
       - 292
@@ -69,7 +69,7 @@ Nodes:
         Position:
           - 430.800018
           - 194.600006
-    MethodID: 3
+    MethodID: Translate
   Node:
     Position:
       - 108
@@ -94,7 +94,7 @@ Nodes:
         Position:
           - 194
           - 273.600006
-    MethodID: 2
+    MethodID: GetPosition
 PinConnections:
   PinConnection:
     SrcPin: 4372065512408236563

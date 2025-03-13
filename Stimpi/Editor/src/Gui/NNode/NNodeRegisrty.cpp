@@ -36,6 +36,16 @@ namespace Stimpi
 		return node;
 	}
 
+	static std::shared_ptr<NNode> GetMaterial(const std::string& title)
+	{
+		auto node = std::make_shared<NNode>(title, NNode::Type::Getter);
+		node->AddPin(NPin::Type::Out, "Material", NPin::DataType::Material);
+		// TODO: AddMethod
+		node->m_HasHeader = false;
+
+		return node;
+	}
+
 	/* Modifiers */
 	static std::shared_ptr<NNode> Translate(const std::string& title)
 	{
@@ -61,6 +71,13 @@ namespace Stimpi
 	static std::shared_ptr<NNode> SetShaderData(const std::string& title)
 	{
 		return nullptr;
+	}
+
+	static std::shared_ptr<NNode> SetMaterialData(const std::string& title)
+	{
+		auto node = std::make_shared<NNode>(title, NNode::Type::Setter);
+
+		return node;
 	}
 
 	/* Node construction methods end */

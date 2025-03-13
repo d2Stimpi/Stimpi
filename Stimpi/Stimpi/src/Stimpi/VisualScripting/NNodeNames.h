@@ -11,6 +11,7 @@
 /* Getters */
 DEFINE_NODE_NAME(GetEntity)
 DEFINE_NODE_NAME(GetPosition)
+//DEFINE_NODE_NAME(GetMaterial)
 
 /* Modifiers */
 DEFINE_NODE_NAME(Translate)

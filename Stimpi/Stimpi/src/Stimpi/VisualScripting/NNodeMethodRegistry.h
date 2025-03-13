@@ -25,5 +25,8 @@ namespace Stimpi
 
 		static void RegisterMethod(MethodName name, MethodType method);
 		static MethodType GetMethod(MethodName name);
+
+		static std::string MethodNameToString(MethodName name);
+		static MethodName StringToMethodName(const std::string& str);
 	};
 }

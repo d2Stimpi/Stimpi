@@ -63,6 +63,8 @@ namespace Stimpi
 
 	static NGraphPanelContext* s_Context;
 
+	static std::vector<std::string> s_NodeNames;
+
 	NGraphPanel::NGraphPanel()
 	{
 		NNodeRegistry::InitializeNodeRegisrty();
@@ -79,6 +81,8 @@ namespace Stimpi
 		NGraphRegistry::PreloadExistingGraphs();
 
 		AddGraph(std::make_shared<NGraph>());
+
+		BuildNodesList();
 	}
 
 	NGraphPanel::~NGraphPanel()
@@ -415,8 +419,20 @@ namespace Stimpi
 	{
 		// Draw zoom level
 		s_Context->m_DrawList->AddText(
-			{ s_Context->m_Canvas.m_PosMax.x - 90, s_Context->m_Canvas.m_PosMin.y + 10 },
+			{ s_Context->m_Canvas.m_PosMax.x - 90, s_Context->m_Canvas.m_PosMin.y + 10.0f },
 			IM_COL32(220, 220, 220, 255), fmt::format("Zoom 1:{:.2f}", 1.0f / s_Context->m_Canvas.m_Scale).c_str());
+
+		// Debug data
+		if (s_Context->m_DebugTooltip)
+		{
+			ImVec2 pos = { s_Context->m_Canvas.m_PosMin.x + 10.0f , s_Context->m_Canvas.m_PosMin.y + 10.0f };
+
+			s_Context->m_DrawList->AddText(pos, IM_COL32(220, 220, 220, 255), "Debug Tooltip: ON");
+			pos.y += ImGui::GetFontSize();
+			s_Context->m_DrawList->AddText(pos, IM_COL32(220, 220, 220, 255), fmt::format("Controller Action: {}", (uint32_t)s_Context->m_GraphController->GetAction()).c_str());
+			pos.y += ImGui::GetFontSize();
+			s_Context->m_DrawList->AddText(pos, IM_COL32(220, 220, 220, 255), fmt::format("Pop-up: {}", m_ShowPopup).c_str());
+		}
 	}
 
 	void NGraphPanel::ShowWindow(bool show)
@@ -461,14 +477,17 @@ namespace Stimpi
 
 		if (m_ShowPopup)
 		{
-			std::vector<std::string>& nodeTypeList = NNodeRegistry::GetNodeNamesList();
+			// Will update data if something changed
+			BuildNodesList();
 
-			if (SearchPopup::OnImGuiRender("AddNodePopup##GraphPanel", nodeTypeList))
+			if (SearchPopup::OnImGuiRender("AddNodePopup##GraphPanel", s_NodeNames))
 			{
 				m_ShowPopup = false;
 				CreateNodeByName(SearchPopup::GetSelection());
 			}
 		}
+		m_ShowPopup = SearchPopup::IsActive();
+		SetZoomEnable(!m_ShowPopup);
 	}
 
 	ImVec2 NGraphPanel::GetNodePanelViewMouseLocation()
@@ -612,6 +631,21 @@ namespace Stimpi
 		}
 
 		s_Context->m_GraphsToBeRemoved.clear();
+	}
+
+	void NGraphPanel::BuildNodesList()
+	{
+		s_NodeNames.clear();
+
+		// Separator - Standard nodes
+		s_NodeNames.emplace_back("#Standard");
+		for(auto name : NNodeRegistry::GetNodeNamesList())
+			s_NodeNames.push_back(name);
+
+		// Separator - Material nodes
+		s_NodeNames.emplace_back("#Materials");
+		s_NodeNames.emplace_back("Mat_Tiling");
+		s_NodeNames.emplace_back("Mat_Something");
 	}
 
 	NGraph* NGraphPanel::GetActiveGraph()

@@ -85,6 +85,8 @@ namespace Stimpi
 		void ItemRightClickPopup();
 		void ProcessCollectionRemovals();
 
+		void BuildNodesList();
+
 	private:
 		static bool m_Show;		// Easier use in menu if static - to toggle window visibility
 		static bool m_ShowInspectorPanel;

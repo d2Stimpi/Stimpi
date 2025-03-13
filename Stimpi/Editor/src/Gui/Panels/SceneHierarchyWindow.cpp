@@ -75,7 +75,7 @@ namespace Stimpi
 								Camera* camera = m_ActiveScene->GetRenderCamera();
 								Entity entity = s_Context.m_SelectedEntity;
 
-								if (entity.HasComponent<QuadComponent>())
+								if (entity && entity.HasComponent<QuadComponent>())
 								{
 									QuadComponent quad = entity.GetComponent<QuadComponent>();
 									glm::vec2 view = { camera->GetViewportWidth(), camera->GetViewportHeight() };

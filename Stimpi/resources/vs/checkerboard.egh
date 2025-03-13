@@ -23,17 +23,17 @@ Methods:
       []
     OutParams:
       - 0
-    MethodID: 2
+    MethodID: GetPosition
   Method:
     InParams:
       - 0
       - 1
     OutParams:
       - 2
-    MethodID: 3
+    MethodID: Translate
   Method:
     InParams:
       - 2
     OutParams:
       []
-    MethodID: 4
+    MethodID: SetPosition

@@ -184,7 +184,7 @@ namespace Stimpi
 			}
 			out << YAML::EndSeq;
 
-			out << YAML::Key << "MethodID" << YAML::Value << (uint32_t)method->m_Name;
+			out << YAML::Key << "MethodID" << YAML::Value << NNodeMethodRegistry::MethodNameToString(method->m_Name);
 		}
 		out << YAML::EndMap;
 	}
@@ -219,7 +219,7 @@ namespace Stimpi
 
 		if (yamlNode["MethodID"])
 		{
-			name = (MethodName)yamlNode["MethodID"].as<uint32_t>();
+			name = NNodeMethodRegistry::StringToMethodName(yamlNode["MethodID"].as<std::string>());
 		}
 
 		if (hasInParams && hasOutParams)

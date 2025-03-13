@@ -16,6 +16,10 @@
  *   Cam.size / FB.siza (canvas) will be rounding factor or fix in shader.
  */
 
+/**
+ * Custom shader shall have default layer data: Pos/Color/TexCoord 3/3/2
+ */
+
 namespace Stimpi
 {
 	// Quad vertex data for rendering by Transforms

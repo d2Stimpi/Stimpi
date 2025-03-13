@@ -10,6 +10,7 @@ namespace Stimpi
 {
 	struct Context
 	{
+		bool m_Active = false;
 		std::string m_SelectedItem = "";
 		ImVec2 m_WinSize = { 200.0f, 160.0f };
 
@@ -28,7 +29,8 @@ namespace Stimpi
 		bool itemSelected = false;
 
 		ImGui::SetNextWindowSize(s_Context.m_WinSize);
-		if (ImGui::BeginPopup(popupName))
+		s_Context.m_Active = ImGui::BeginPopup(popupName);
+		if (s_Context.m_Active)
 		{
 			ImGui::InputText("Search", s_Context.m_SearchText, sizeof(s_Context.m_SearchText));
 			EditorUtils::SetActiveItemCaptureKeyboard(false);
@@ -45,6 +47,13 @@ namespace Stimpi
 				std::string input = s_Context.m_SearchText;
 				if (name.find(input) != -1 || input.empty())
 				{
+					// Check for special data strings
+					if (name._Starts_with("#"))
+					{
+						ImGui::SeparatorText(name.c_str() + 1);
+						continue;
+					}
+
 					if (ImGui::Selectable(name.c_str(), false))
 					{
 						s_Context.m_SelectedItem = name;
@@ -74,6 +83,11 @@ namespace Stimpi
 	void SearchPopup::ClosePopup()
 	{
 		ImGui::CloseCurrentPopup();
+	}
+
+	bool SearchPopup::IsActive()
+	{
+		return s_Context.m_Active;
 	}
 
 }

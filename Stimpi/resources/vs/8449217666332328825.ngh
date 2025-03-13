@@ -45,6 +45,6 @@ Nodes:
           - 261.800018
     OutputPins:
       {}
-    MethodID: 5
+    MethodID: SetShaderData
 PinConnections:
   {}

@@ -18,7 +18,7 @@ namespace Stimpi
 	struct NPin
 	{
 		enum class Type { None = 0, In, Out };
-		enum class DataType { Any = 0, Entity, Bool, Int, Int2, Int3, Int4, Float, Float2, Float3, Float4 };
+		enum class DataType { Any = 0, Entity, Material, Bool, Int, Int2, Int3, Int4, Float, Float2, Float3, Float4 };
 
 		NPin() = delete;
 		NPin(const NPin&) = default;

@@ -244,7 +244,7 @@ namespace Stimpi
 			out << YAML::EndMap;
 
 			// For less clutter of conversion to str method just use enum value
-			out << YAML::Key << "MethodID" << YAML::Value << (uint32_t)node->m_MethodName;
+			out << YAML::Key << "MethodID" << YAML::Value << NNodeMethodRegistry::MethodNameToString(node->m_MethodName);
 		}
 		out << YAML::EndMap;
 	}
@@ -308,7 +308,7 @@ namespace Stimpi
 		}
 		if (yamlNode["MethodID"])
 		{
-			node->m_MethodName = (MethodName)yamlNode["MethodID"].as<uint32_t>();
+			node->m_MethodName = NNodeMethodRegistry::StringToMethodName(yamlNode["MethodID"].as<std::string>());
 		}
 
 		return loaded;
