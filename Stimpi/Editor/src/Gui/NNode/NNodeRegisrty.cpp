@@ -36,6 +36,16 @@ namespace Stimpi
 		return node;
 	}
 
+	static std::shared_ptr<NNode> GetSize(const std::string& title)
+	{
+		auto node = std::make_shared<NNode>(title, NNode::Type::Getter);
+		node->AddPin(NPin::Type::Out, "Size", NPin::DataType::Float2);
+		node->AddMethod(MethodName::GetSize);
+		node->m_HasHeader = false;
+
+		return node;
+	}
+
 	static std::shared_ptr<NNode> GetMaterial(const std::string& title)
 	{
 		auto node = std::make_shared<NNode>(title, NNode::Type::Getter);
@@ -54,6 +64,61 @@ namespace Stimpi
 		node->AddPin(NPin::Type::In, "Vec3", NPin::DataType::Float3);
 		node->AddPin(NPin::Type::Out, "Output", NPin::DataType::Float3);
 		node->AddMethod(MethodName::Translate);
+
+		return node;
+	}
+
+	static std::shared_ptr<NNode> Add(const std::string& title)
+	{
+		auto node = std::make_shared<NNode>(title, NNode::Type::Modifier);
+		node->AddPin(NPin::Type::In, "A", NPin::DataType::Float);
+		node->AddPin(NPin::Type::In, "B", NPin::DataType::Float);
+		node->AddPin(NPin::Type::Out, "", NPin::DataType::Float);
+		node->AddMethod(MethodName::Add);
+
+		return node;
+	}
+
+	static std::shared_ptr<NNode> Subtract(const std::string& title)
+	{
+		auto node = std::make_shared<NNode>(title, NNode::Type::Modifier);
+		node->AddPin(NPin::Type::In, "A", NPin::DataType::Float);
+		node->AddPin(NPin::Type::In, "B", NPin::DataType::Float);
+		node->AddPin(NPin::Type::Out, "", NPin::DataType::Float);
+		node->AddMethod(MethodName::Subtract);
+
+		return node;
+	}
+
+	static std::shared_ptr<NNode> Divide(const std::string& title)
+	{
+		auto node = std::make_shared<NNode>(title, NNode::Type::Modifier);
+		node->AddPin(NPin::Type::In, "A", NPin::DataType::Float);
+		node->AddPin(NPin::Type::In, "B", NPin::DataType::Float);
+		node->AddPin(NPin::Type::Out, "", NPin::DataType::Float);
+		node->AddMethod(MethodName::Divide);
+
+		return node;
+	}
+
+	static std::shared_ptr<NNode> Multiply(const std::string& title)
+	{
+		auto node = std::make_shared<NNode>(title, NNode::Type::Modifier);
+		node->AddPin(NPin::Type::In, "A", NPin::DataType::Float);
+		node->AddPin(NPin::Type::In, "B", NPin::DataType::Float);
+		node->AddPin(NPin::Type::Out, "", NPin::DataType::Float);
+		node->AddMethod(MethodName::Multiply);
+
+		return node;
+	}
+
+	static std::shared_ptr<NNode> Vector2(const std::string& title)
+	{
+		auto node = std::make_shared<NNode>(title, NNode::Type::Modifier);
+		node->AddPin(NPin::Type::In, "Vec2", NPin::DataType::Float2);
+		node->AddPin(NPin::Type::Out, "X", NPin::DataType::Float);
+		node->AddPin(NPin::Type::Out, "Y", NPin::DataType::Float);
+		node->AddMethod(MethodName::Vector2);
 
 		return node;
 	}

@@ -6,15 +6,23 @@
 
 /**
  * When adding new entries here, new method should be implemented in NNodeRegistry file
+ * - NNode construction in NNodeRegistry
+ * - Method implementation in NNodeMethodRegistry
  */
 
 /* Getters */
 DEFINE_NODE_NAME(GetEntity)
 DEFINE_NODE_NAME(GetPosition)
+DEFINE_NODE_NAME(GetSize)
 //DEFINE_NODE_NAME(GetMaterial)
 
 /* Modifiers */
 DEFINE_NODE_NAME(Translate)
+DEFINE_NODE_NAME(Add)
+DEFINE_NODE_NAME(Subtract)
+DEFINE_NODE_NAME(Divide)
+DEFINE_NODE_NAME(Multiply)
+DEFINE_NODE_NAME(Vector2)
 
 /* Setters */
 DEFINE_NODE_NAME(SetPosition)

@@ -836,15 +836,21 @@ namespace Stimpi
 					if (graph == nullptr)
 					{
 						graph = NGraphBuilder::BuildGraph({ graphName, {} });
+						graph->m_ID = shader->m_Handle;
 
 						NGraphBuilder builder;
 						//graph = builder.Create({ graphName, {MethodName::SetPosition} });
 						builder.Create(graphName);
 
+						static std::vector<std::string> s_FilterLayoutNames = { "aPos", "aColor", "aTexCoord" };
 						// TODO: make a NNodeBuilder class
 						auto node = std::make_shared<NNode>("SetShaderData", NNode::Type::Setter);
 						for (auto& item : shader->GetInfo().m_ShaderLayout)
 						{
+							// For now, skip "default" shader layouts
+							if (std::find(s_FilterLayoutNames.begin(), s_FilterLayoutNames.end(), item.m_Name) == s_FilterLayoutNames.end())
+								continue;
+
 							switch (item.m_Type)
 							{
 							default:
@@ -871,6 +877,7 @@ namespace Stimpi
 								node->AddPin(NPin::Type::In, item.m_Name, NPin::DataType::Float3);
 								break;
 							case ShaderDataType::Float4:
+								node->AddPin(NPin::Type::In, item.m_Name, NPin::DataType::Float4);
 								break;
 							case ShaderDataType::Unknown:
 								ST_ERROR("Shader node builder - should not get here, invalid (unsupported) shader layout data type!");
@@ -884,9 +891,13 @@ namespace Stimpi
 
 						NGraphRegistry::RegisterGraph(graph);
 					}
-				}
 
-				NGraphPanel::ShowGraph(graph, true);
+					NGraphPanel::ShowGraph(graph, true);
+					NGraphPanel::SetOnGraphCompiledListener([&](std::shared_ptr<ExecTree> execTree)
+						{
+							component.m_Material->GetShader()->SetCustomExecTree(execTree);
+						});
+				}
 			}
 
 			return showPoput;

@@ -18,7 +18,7 @@ namespace Stimpi
 
 	}
 
-	std::shared_ptr<Stimpi::Shader> Shader::Create(ShaderInfo info, VertexShaderData vsd, FragmentShaderData fsd)
+	std::shared_ptr<Shader> Shader::Create(ShaderInfo info, VertexShaderData vsd, FragmentShaderData fsd)
 	{
 		switch (Graphics::GetAPI())
 		{
@@ -32,7 +32,7 @@ namespace Stimpi
 		m_ExecTree = execTree;
 	}
 
-	std::shared_ptr<Stimpi::ExecTree>& Shader::GetCustomExecTree()
+	std::shared_ptr<ExecTree>& Shader::GetCustomExecTree()
 	{
 		return m_ExecTree;
 	}

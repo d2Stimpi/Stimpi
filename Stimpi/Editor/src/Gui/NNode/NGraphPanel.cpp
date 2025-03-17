@@ -8,8 +8,6 @@
 #include "Gui/NNode/Exec/ExecTreeBuilder.h"
 #include "Gui/NNode/NGraphSerializer.h"
 
-#include "Stimpi/VisualScripting/ExecTree.h"
-
 #include "Gui/Components/Toolbar.h"
 #include "Gui/Components/SearchPopup.h"
 
@@ -28,6 +26,8 @@ namespace Stimpi
 	bool NGraphPanel::m_ShowInspectorPanel = true;
 	bool NGraphPanel::m_ShowDetailsPanel = true;
 	bool NGraphPanel::m_ShowPopup = false;
+
+	OnGraphCompiledListener s_OnGraphCompiledListener = nullptr;
 
 	enum class SelectionType { None = 0, Graph, Variable, LocalVariable };
 
@@ -97,8 +97,11 @@ namespace Stimpi
 
 	void NGraphPanel::OnImGuiRender()
 	{
+		static bool wasShowing = false;
+
 		if (m_Show)
 		{
+			wasShowing = true;
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4.0f, 4.0f));
 			ImGui::Begin("Node Panel v2", &m_Show, ImGuiWindowFlags_MenuBar);
 			ImGui::PopStyleVar();
@@ -166,6 +169,18 @@ namespace Stimpi
 
 			ImGui::End();
 		}
+
+		if (wasShowing && !m_Show)
+		{
+			OnClose();
+		}
+		wasShowing = m_Show;
+	}
+
+	void NGraphPanel::OnClose()
+	{
+		// If GraphPanel is closed, clear OnGraphCompiledListener
+		s_OnGraphCompiledListener = nullptr;
 	}
 
 	ImGuiTabBar* s_tabbar;
@@ -296,6 +311,12 @@ namespace Stimpi
 			{
 				ST_CORE_INFO("Compile button presed");
 				s_Context->m_TempExecTree = ExecTreeBuilder::BuildExecutionTree(s_Context->m_ActiveGraph);
+
+				// TODO: verify that compilation was successful
+				if (s_OnGraphCompiledListener)
+				{
+					s_OnGraphCompiledListener(s_Context->m_TempExecTree);
+				}
 			}
 			Toolbar::Separator();
 
@@ -435,6 +456,11 @@ namespace Stimpi
 		}
 	}
 
+	void NGraphPanel::SetOnGraphCompiledListener(OnGraphCompiledListener listener)
+	{
+		s_OnGraphCompiledListener = listener;
+	}
+
 	void NGraphPanel::ShowWindow(bool show)
 	{
 		m_Show = show;
@@ -484,10 +510,12 @@ namespace Stimpi
 			{
 				m_ShowPopup = false;
 				CreateNodeByName(SearchPopup::GetSelection());
+				SetZoomEnable(true);
 			}
 		}
-		m_ShowPopup = SearchPopup::IsActive();
-		SetZoomEnable(!m_ShowPopup);
+
+		if (m_ShowPopup)
+			SetZoomEnable(!SearchPopup::IsActive());
 	}
 
 	ImVec2 NGraphPanel::GetNodePanelViewMouseLocation()

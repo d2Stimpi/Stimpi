@@ -74,7 +74,7 @@ namespace Stimpi
 		Shader* m_Shader;
 		Material* m_Material;
 		Texture* m_Texture;
-		std::vector<VariableVertexData> m_VariableVertexData;
+		std::vector<float> m_VariableVertexData;
 		std::vector<VertexData> m_VertexData;
 		std::vector<CircleVertexData> m_CircleVertexData;
 		std::vector<LineVertexData> m_LineVertexData;
@@ -107,7 +107,27 @@ namespace Stimpi
 			if (m_Type == RenderCommandType::NONE)
 				m_Type = RenderCommandType::VARIABLE;
 
-			m_VariableVertexData.push_back(vertexData);
+			for(auto& data : vertexData.m_Data)
+				m_VariableVertexData.push_back(data);
+		}
+
+		void PushVariableVertex(glm::vec3 position, glm::vec4 color, glm::vec2 textureCoord)
+		{
+			ST_CORE_ASSERT((m_Type != RenderCommandType::NONE && m_Type != RenderCommandType::VARIABLE));
+
+			if (m_Type == RenderCommandType::NONE)
+				m_Type = RenderCommandType::VARIABLE;
+
+			m_VariableVertexData.push_back(position.x);
+			m_VariableVertexData.push_back(position.y);
+			m_VariableVertexData.push_back(position.z);
+			m_VariableVertexData.push_back(color.x);
+			m_VariableVertexData.push_back(color.y);
+			m_VariableVertexData.push_back(color.z);
+			m_VariableVertexData.push_back(color.w);
+			m_VariableVertexData.push_back(textureCoord.x);
+			m_VariableVertexData.push_back(textureCoord.y);
+
 			m_VertexCount++;
 		}
 

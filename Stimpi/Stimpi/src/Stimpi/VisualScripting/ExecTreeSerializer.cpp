@@ -19,7 +19,9 @@ namespace Stimpi
 	GET_PARAM_TYPE_METHOD(bool)
 	GET_PARAM_TYPE_METHOD(int)
 	GET_PARAM_TYPE_METHOD(float)
+	GET_PARAM_TYPE_METHOD(glm::vec2)
 	GET_PARAM_TYPE_METHOD(glm::vec3)
+	GET_PARAM_TYPE_METHOD(glm::vec4)
 
 	ExecTreeSerializer::ExecTreeSerializer(ExecTree* execTree)
 		: m_ExecTree(execTree)
@@ -117,12 +119,30 @@ namespace Stimpi
 			CHECK_GET_VARIANT_PARAM_DATA(int);
 			CHECK_GET_VARIANT_PARAM_DATA(float);
 
+			// Special case - TODO: define glm::vec4 yaml methods
+			if (std::holds_alternative<glm::vec4>(param))
+			{
+				glm::vec4 val = std::get<glm::vec4>(param);
+				out << YAML::BeginSeq;
+				out << val.x << val.y << val.z << val.w;
+				out << YAML::EndSeq;
+			}
+
 			// Special case - TODO: define glm::vec3 yaml methods
 			if (std::holds_alternative<glm::vec3>(param))
 			{
 				glm::vec3 val = std::get<glm::vec3>(param);
 				out << YAML::BeginSeq;
 				out << val.x << val.y << val.z;
+				out << YAML::EndSeq;
+			}
+
+			// Special case - TODO: define glm::vec2 yaml methods
+			if (std::holds_alternative<glm::vec2>(param))
+			{
+				glm::vec2 val = std::get<glm::vec2>(param);
+				out << YAML::BeginSeq;
+				out << val.x << val.y;
 				out << YAML::EndSeq;
 			}
 
@@ -149,11 +169,25 @@ namespace Stimpi
 			STR_TO_VARIANT_PARAM_DATA(int);
 			STR_TO_VARIANT_PARAM_DATA(float);
 
+			// Special case - TODO: define glm::vec4 yaml methods
+			if (typeStr == "glm::vec4")
+			{
+				YAML::Node vecNode = yamlNode["Value"];
+				*param = glm::vec4(vecNode[0].as<float>(), vecNode[1].as<float>(), vecNode[2].as<float>(), vecNode[3].as<float>());
+			}
+
 			// Special case - TODO: define glm::vec3 yaml methods
 			if (typeStr == "glm::vec3")
 			{
 				YAML::Node vecNode = yamlNode["Value"];
 				*param = glm::vec3(vecNode[0].as<float>(), vecNode[1].as<float>(), vecNode[2].as<float>());
+			}
+
+			// Special case - TODO: define glm::vec2 yaml methods
+			if (typeStr == "glm::vec2")
+			{
+				YAML::Node vecNode = yamlNode["Value"];
+				*param = glm::vec2(vecNode[0].as<float>(), vecNode[1].as<float>());
 			}
 		}
 

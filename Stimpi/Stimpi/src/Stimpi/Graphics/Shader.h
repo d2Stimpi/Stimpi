@@ -155,29 +155,6 @@ namespace Stimpi
 			: m_Name(name), m_ShaderLayout(layout), m_VAOHandle(0) {}
 	};
 
-	// TODO: move something like this to Material
-	/* Storage of shader data for extra layout values, per entity that uses the shader
-	 * Assumption:
-	 *	first 3 layers of custom shader have to be Pos/Color/TexCoord 3/3/2
-	 *  only support float data type
-	 */
-	struct ST_API ShaderData
-	{
-		std::vector<float> m_Data;
-
-		void ResizeData(ShaderInfo info)
-		{
-			size_t dataSize = 0;
-			for (auto& layout : info.m_ShaderLayout)
-			{
-				dataSize += layout.m_Size;
-			}
-			// reduce by 8 floats for Pos/Color/TexCoord
-			dataSize -= 8;
-			m_Data.resize(dataSize);
-		}
-	};
-
 	class ST_API Shader : public Asset
 	{
 	public:

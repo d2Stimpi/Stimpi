@@ -24,6 +24,8 @@
 
 namespace Stimpi
 {
+	class Entity;
+
 	class ST_API Renderer2D
 	{
 	public:
@@ -52,7 +54,7 @@ namespace Stimpi
 		void SubmitLine(glm::vec3 p0, glm::vec3 p1, glm::vec4 color);
 
 		// Custom shader support
-		void SubmitCustom(glm::vec3 pos, glm::vec2 scale, float rotation, SubTexture* subtexture, Material* material);
+		void SubmitCustom(glm::vec3 pos, glm::vec2 scale, float rotation, SubTexture* subtexture, Material* material, Entity entity);
 
 		void SetLineWidth(float width);
 
@@ -89,10 +91,12 @@ namespace Stimpi
 
 		void PushQuadVertexData(RenderCommand* cmd, glm::vec4 quad, glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, glm::vec2 min = { 0.0f, 0.0f }, glm::vec2 max = { 1.0f, 1.0f });
 		void PushTransformedVertexData(RenderCommand* cmd, glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, glm::vec2 min = { 0.0f, 0.0f }, glm::vec2 max = { 1.0f, 1.0f });
+		void PushTransformedCustomVertexData(Entity entity, RenderCommand* cmd, glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, glm::vec2 min = { 0.0f, 0.0f }, glm::vec2 max = { 1.0f, 1.0f });
 		
 		void DrawQuadRenderCmd(std::shared_ptr<RenderCommand>& renderCmd);
 		void DrawCirlceRenderCmd(std::shared_ptr<RenderCommand>& renderCmd);
 		void DrawLineRenderCmd(std::shared_ptr<RenderCommand>& renderCmd);
+		void DrawVariableRenderCmd(std::shared_ptr<RenderCommand>& renderCmd);
 
 		void CheckCapacity();
 		void CheckTextureBatching(Texture* texture);

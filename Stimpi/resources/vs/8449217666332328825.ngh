@@ -3,48 +3,202 @@ UUID: 8449217666332328825
 Nodes:
   Node:
     Position:
-      - 300
-      - 180
+      - 653
+      - 283
     Size:
       - 155
-      - 105.800003
-    UUID: 7042489050782192626
+      - 66.5999985
+    UUID: 16575580682064056690
     Title: SetShaderData
     HasHeader: true
     NodeType: Setter
     InputPins:
       Pin:
         Type: In
-        DataType: Float3
-        UUID: 2725515603578149965
-        Connected: false
+        DataType: Float
+        UUID: 15470124784453665732
+        Connected: true
         SingleConnecton: false
-        Label: aPos
+        Label: aTilingFactor
         Position:
-          - 312.600006
-          - 222.600006
-      Pin:
-        Type: In
-        DataType: Float3
-        UUID: 14750319883594967166
-        Connected: false
-        SingleConnecton: false
-        Label: aColor
-        Position:
-          - 312.600006
-          - 242.200012
-      Pin:
-        Type: In
-        DataType: Float2
-        UUID: 7191699679824403668
-        Connected: false
-        SingleConnecton: false
-        Label: aTexCoord
-        Position:
-          - 312.600006
-          - 261.800018
+          - 665.599976
+          - 325.600006
     OutputPins:
       {}
     MethodID: SetShaderData
+  Node:
+    Position:
+      - 13
+      - 206
+    Size:
+      - 79.8000031
+      - 26.6000004
+    UUID: 13959326708621398695
+    Title: GetSize
+    HasHeader: false
+    NodeType: Getter
+    InputPins:
+      {}
+    OutputPins:
+      Pin:
+        Type: Out
+        DataType: Float2
+        UUID: 14342076221232410789
+        Connected: true
+        SingleConnecton: false
+        Label: Size
+        Position:
+          - 76
+          - 218.600006
+    MethodID: GetSize
+  Node:
+    Position:
+      - 150
+      - 241
+    Size:
+      - 115
+      - 86.1999969
+    UUID: 9248349241078772580
+    Title: Vector2
+    HasHeader: true
+    NodeType: Modifier
+    InputPins:
+      Pin:
+        Type: In
+        DataType: Float2
+        UUID: 1886606856408029929
+        Connected: true
+        SingleConnecton: false
+        Label: Vec2
+        Position:
+          - 162.600006
+          - 283.600006
+    OutputPins:
+      Pin:
+        Type: Out
+        DataType: Float
+        UUID: 7060968821956362968
+        Connected: true
+        SingleConnecton: false
+        Label: X
+        Position:
+          - 248.199997
+          - 283.600006
+      Pin:
+        Type: Out
+        DataType: Float
+        UUID: 17679283446982699035
+        Connected: false
+        SingleConnecton: false
+        Label: Y
+        Position:
+          - 248.199997
+          - 303.200012
+    MethodID: Vector2
+  Node:
+    Position:
+      - 470
+      - 185
+    Size:
+      - 105
+      - 86.1999969
+    UUID: 2891247593714851823
+    Title: Divide
+    HasHeader: true
+    NodeType: Modifier
+    InputPins:
+      Pin:
+        Type: In
+        DataType: Float
+        UUID: 2247362139067531471
+        Connected: true
+        SingleConnecton: false
+        Label: A
+        Position:
+          - 482.600006
+          - 227.600006
+      Pin:
+        Type: In
+        DataType: Float
+        UUID: 11856971614877172763
+        Connected: true
+        SingleConnecton: false
+        Label: B
+        Position:
+          - 482.600006
+          - 247.200012
+    OutputPins:
+      Pin:
+        Type: Out
+        DataType: Float
+        UUID: 16675780440761223960
+        Connected: true
+        SingleConnecton: false
+        Label: ""
+        Position:
+          - 558.200012
+          - 227.600006
+    MethodID: Divide
+  Node:
+    Position:
+      - 327
+      - 334
+    Size:
+      - 93
+      - 86.1999969
+    UUID: 8776715710003913314
+    Title: Add
+    HasHeader: true
+    NodeType: Modifier
+    InputPins:
+      Pin:
+        Type: In
+        DataType: Float
+        UUID: 1332896127513372027
+        Connected: true
+        SingleConnecton: false
+        Label: A
+        Position:
+          - 339.600006
+          - 376.600006
+      Pin:
+        Type: In
+        DataType: Float
+        UUID: 773782131519583043
+        Connected: true
+        SingleConnecton: false
+        Label: B
+        Position:
+          - 339.600006
+          - 396.200012
+    OutputPins:
+      Pin:
+        Type: Out
+        DataType: Float
+        UUID: 3721018966405788551
+        Connected: true
+        SingleConnecton: false
+        Label: ""
+        Position:
+          - 403.200012
+          - 376.600006
+    MethodID: Add
 PinConnections:
-  {}
+  PinConnection:
+    SrcPin: 14342076221232410789
+    DestPin: 1886606856408029929
+  PinConnection:
+    SrcPin: 7060968821956362968
+    DestPin: 1332896127513372027
+  PinConnection:
+    SrcPin: 7060968821956362968
+    DestPin: 773782131519583043
+  PinConnection:
+    SrcPin: 16675780440761223960
+    DestPin: 15470124784453665732
+  PinConnection:
+    SrcPin: 7060968821956362968
+    DestPin: 2247362139067531471
+  PinConnection:
+    SrcPin: 3721018966405788551
+    DestPin: 11856971614877172763

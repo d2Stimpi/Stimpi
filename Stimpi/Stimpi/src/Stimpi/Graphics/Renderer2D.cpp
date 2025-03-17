@@ -6,6 +6,7 @@
 #include "Stimpi/Core/Project.h"
 #include "Stimpi/Asset/ShaderImporter.h"
 #include "Stimpi/Asset/AssetManager.h"
+#include "Stimpi/VisualScripting/ExecTree.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/glm.hpp>
@@ -315,7 +316,7 @@ namespace Stimpi
 		currentCmd->PushLineVertex(p1, color);
 	}
 
-	void Renderer2D::SubmitCustom(glm::vec3 pos, glm::vec2 scale, float rotation, SubTexture* subtexture, Material* material)
+	void Renderer2D::SubmitCustom(glm::vec3 pos, glm::vec2 scale, float rotation, SubTexture* subtexture, Material* material, Entity entity)
 	{
 		if (!subtexture || !material)
 			return;
@@ -325,7 +326,7 @@ namespace Stimpi
 		auto shader = material->GetShader();
 
 		// Check if some other type was used in active cmd
-		if (currentCmd->m_Type != RenderCommandType::QUAD && currentCmd->m_Type != RenderCommandType::NONE)
+		if (currentCmd->m_Type != RenderCommandType::VARIABLE && currentCmd->m_Type != RenderCommandType::NONE)
 		{
 			NewCmd();
 			currentCmd = *m_ActiveRenderCmdIter;
@@ -342,10 +343,10 @@ namespace Stimpi
 		// First time call Submit after BeginScene
 		if ((currentCmd->m_Texture == nullptr) && ((currentCmd->m_Material == nullptr)))
 		{
-			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 			currentCmd->m_Texture = subtexture->GetTexture();
 			currentCmd->m_Shader = shader.get();
 			currentCmd->m_Material = material;
+			PushTransformedCustomVertexData(entity, currentCmd.get(), pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 
 			SetShaderUniforms(shader.get());
 		}
@@ -354,17 +355,17 @@ namespace Stimpi
 			// If shader or texture changed
 			NewCmd();
 			currentCmd = *m_ActiveRenderCmdIter;
-			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 			currentCmd->m_Texture = subtexture->GetTexture();
 			currentCmd->m_Shader = shader.get();
 			currentCmd->m_Material = material;
+			PushTransformedCustomVertexData(entity, currentCmd.get(), pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 
 			SetShaderUniforms(shader.get());
 		}
 		else
 		{
 			// Batching vertex data
-			PushTransformedVertexData(currentCmd.get(), pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+			PushTransformedCustomVertexData(entity, currentCmd.get(), pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 		}
 	}
 
@@ -474,6 +475,8 @@ namespace Stimpi
 					DrawCirlceRenderCmd(renderCmd);
 				else if (renderCmd->m_Type == RenderCommandType::LINE)
 					DrawLineRenderCmd(renderCmd);
+				else if (renderCmd->m_Type == RenderCommandType::VARIABLE)
+					DrawVariableRenderCmd(renderCmd);
 			}
 		}
 		m_RenderedCmdCnt += m_RenderCmds.size() - 1;
@@ -603,6 +606,40 @@ namespace Stimpi
 
 		m_LineVBO->BufferSubData(0, renderCmd->Size(), renderCmd->LineData());
 		m_RenderAPI->DrawArrays(DrawElementsMode::LINES, 0, renderCmd->m_VertexCount);
+		m_DrawCallCnt++;
+
+		shader->ClearBufferedUniforms();
+	}
+
+	void Renderer2D::DrawVariableRenderCmd(std::shared_ptr<RenderCommand>& renderCmd)
+	{
+		auto shader = renderCmd->m_Shader;
+		auto shaderID = shader->GetShaderID();
+		// In case we are using Material
+		if (renderCmd->m_Material != nullptr)
+		{
+			// We need to set uniforms now
+			for (auto& uni : shader->GetInfo().m_Uniforms)
+			{
+				auto values = renderCmd->m_Material->GetUniformValues();
+				shader->SetUniform(uni.m_Name, values.at(uni.m_Name));
+			}
+		}
+
+		shader->Use();
+		shader->SetBufferedUniforms();
+
+		auto customVAO = m_CustomVAOs.at(shaderID);
+		auto customVBO = m_CustomVBOs.at(shaderID);
+
+		customVAO->BindArray();
+		customVBO->BindBuffer();
+
+		if (renderCmd->m_Texture != nullptr)
+			renderCmd->m_Texture->UseTexture();
+
+		customVBO->BufferSubData(0, renderCmd->Size(), renderCmd->VariableData());
+		m_RenderAPI->DrawArrays(DrawElementsMode::TRIANGLES, 0, renderCmd->m_VertexCount);
 		m_DrawCallCnt++;
 
 		shader->ClearBufferedUniforms();
@@ -794,6 +831,58 @@ namespace Stimpi
 		cmd->PushQuadVertex(transform * s_QuadVertexPosition[2], color, { max.x, max.y });
 		cmd->PushQuadVertex(transform * s_QuadVertexPosition[3], color, { min.x, max.y });
 		cmd->PushQuadVertex(transform * s_QuadVertexPosition[0], color, { min.x, min.y });
+	}
+
+	void Renderer2D::PushTransformedCustomVertexData(Entity entity, RenderCommand* cmd, glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec4 color /*= { 1.0f, 1.0f, 1.0f, 1.0f }*/, glm::vec2 min /*= { 0.0f, 0.0f }*/, glm::vec2 max /*= { 1.0f, 1.0f }*/)
+	{
+		VariableVertexData varData;
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) *
+			glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0.0f, 0.0f, 1.0f)) *
+			glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f));
+
+		unsigned int shaderID = cmd->m_Shader->GetShaderID();
+
+		if (cmd->m_VertexSize == 0)
+			cmd->m_VertexSize = m_CustomVAOs.at(shaderID)->VertexSize();
+
+		// 1. Find SetShaderData node
+		auto execTree = cmd->m_Shader->GetCustomExecTree();
+		if (execTree)
+		{
+			auto foundShaderDataNode = std::find_if(execTree->m_Methods.begin(), execTree->m_Methods.end(), [](std::shared_ptr<Method>& item)
+				{ 
+					return item->m_Name == MethodName::SetShaderData;
+				});
+
+			// 2. Execute the tree to calculate outputs
+			if (foundShaderDataNode != execTree->m_Methods.end())
+			{
+				execTree->ExecuteWalk(entity);
+
+				// 3. Read outputs
+				std::shared_ptr<Method> method = *foundShaderDataNode;
+				for (auto& inIndex : method->m_InParams)
+				{
+					varData.m_Data.push_back(std::get<float>(execTree->m_Params[inIndex]));
+				}
+			}
+		}
+			
+		// Vertex count is updated only in this version - TODO: find better solution
+		cmd->PushVariableVertex(transform * s_QuadVertexPosition[0], color, { min.x, min.y });
+		cmd->PushVariableVertex(varData);
+		cmd->PushVariableVertex(transform * s_QuadVertexPosition[1], color, { max.x, min.y });
+		cmd->PushVariableVertex(varData);
+		cmd->PushVariableVertex(transform * s_QuadVertexPosition[2], color, { max.x, max.y });
+		cmd->PushVariableVertex(varData);
+
+		cmd->PushVariableVertex(transform * s_QuadVertexPosition[2], color, { max.x, max.y });
+		cmd->PushVariableVertex(varData);
+		cmd->PushVariableVertex(transform * s_QuadVertexPosition[3], color, { min.x, max.y });
+		cmd->PushVariableVertex(varData);
+		cmd->PushVariableVertex(transform * s_QuadVertexPosition[0], color, { min.x, min.y });
+		cmd->PushVariableVertex(varData);
 	}
 
 }

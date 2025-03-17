@@ -3,8 +3,12 @@
 #include "Gui/NNode/NGraphController.h"
 #include "Gui/NNode/NGraph.h"
 
+#include "Stimpi/VisualScripting/ExecTree.h"
+
 namespace Stimpi
 {
+	using OnGraphCompiledListener = std::function<void(std::shared_ptr<ExecTree> execTree)>;
+
 	// Canvas information for drawing space of the GraphPanel
 	struct NGraphPanelCanvas
 	{
@@ -27,12 +31,14 @@ namespace Stimpi
 
 		void SetDrawList(ImDrawList* drawList);
 		void OnImGuiRender();
+		void OnClose();
 
 		void DrawInspectorPanel();
 		void DrawDetailsPanel();
 		void DrawGraph();
 		void DrawGraphOverlay();
 
+		static void SetOnGraphCompiledListener(OnGraphCompiledListener listener);
 		static void ShowWindow(bool show);
 		static void ShowGraph(const std::string& name, bool closeOther = false);
 		static void ShowGraph(std::shared_ptr<NGraph> graph, bool closeOther = false);

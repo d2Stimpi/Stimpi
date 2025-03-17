@@ -52,7 +52,16 @@ struct fmt::formatter<glm::vec3> : fmt::formatter<std::string>
 {
 	auto format(glm::vec3 vec, format_context& ctx) const -> decltype(ctx.out())
 	{
-		return format_to(ctx.out(), "vec2[{0}, {1}, {2}]", vec.x, vec.y, vec.z);
+		return format_to(ctx.out(), "vec3[{0}, {1}, {2}]", vec.x, vec.y, vec.z);
+	}
+};
+
+template<>
+struct fmt::formatter<glm::vec4> : fmt::formatter<std::string>
+{
+	auto format(glm::vec4 vec, format_context& ctx) const -> decltype(ctx.out())
+	{
+		return format_to(ctx.out(), "vec4[{0}, {1}, {2}, {3}]", vec.x, vec.y, vec.z, vec.w);
 	}
 };
 

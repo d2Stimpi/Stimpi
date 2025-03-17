@@ -9,7 +9,9 @@
 namespace Stimpi
 {
 	// internal only uniforms that are skipped
-	std::vector<std::string> s_FilterUnifromNames = {"u_ViewProjection", "u_texture"};
+	std::vector<std::string> s_FilterUnifromNames = { "u_ViewProjection", "u_texture" };
+	// skip standard layout data
+	std::vector<std::string> s_FilterLayoutNames = { "aPos", "aColor", "aTexCoord" };
 
 
 	std::shared_ptr<Stimpi::Asset> ShaderImporter::ImportShader(AssetHandle handle, const AssetMetadata& metadata)
@@ -115,6 +117,9 @@ namespace Stimpi
 				}
 
 				shaderInfo.m_ShaderLayout.m_Data.emplace_back(StringToShaderType(type), name);
+				// Filter out "internal" uniforms
+				/*if (std::find(s_FilterLayoutNames.begin(), s_FilterLayoutNames.end(), name) == s_FilterLayoutNames.end())
+					shaderInfo.m_ShaderLayout.m_Data.emplace_back(StringToShaderType(type), name);*/
 			}
 		}
 

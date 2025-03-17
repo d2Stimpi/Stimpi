@@ -21,6 +21,22 @@ namespace Stimpi
 	// Used to save pin's uuid - param index pair for easier tracking when visiting nodes
 	PinParamIndexRegistry s_PinParamIndexRegistry;
 
+	// Helper tree builder methods
+	static bool WasNodeVisited(NNode* node)
+	{
+		for (auto& outPin : node->m_OutPins)
+		{
+			if (!outPin->m_Connected)
+				continue;
+
+			auto found = s_PinParamIndexRegistry.find(outPin->m_ID);
+			if (found != s_PinParamIndexRegistry.end())
+				return true;
+		}
+
+		return false;
+	}
+
 	static std::shared_ptr<ExecTree> StartNewTreeBuild()
 	{
 		s_Context.m_ActiveTree = std::make_shared<ExecTree>();
@@ -49,13 +65,13 @@ namespace Stimpi
 				continue;
 
 			// skip pins that are not connected to parent node
-			auto found = std::find_if(outPin->m_ConnectedPins.begin(), outPin->m_ConnectedPins.end(),
+			/*auto found = std::find_if(outPin->m_ConnectedPins.begin(), outPin->m_ConnectedPins.end(),
 				[&](std::shared_ptr<NPin> cpin)
 			{
 				return cpin->m_ParentNode->m_ID == parent->m_ID;
 			});
 			if (found == outPin->m_ConnectedPins.end())
-				continue;
+				continue;*/
 
 			s_Context.m_ActiveTree->m_Params.emplace_back(glm::vec3(0.0f));
 			s_PinParamIndexRegistry[outPin->m_ID] = s_Context.m_ParamCount;
@@ -151,7 +167,12 @@ namespace Stimpi
 				if (in->m_Connected)
 				{
 					NNode* leafNode = in->m_ConnectedPins[0]->m_ParentNode;
-					VisitNode(leafNode, node);
+
+					// Check if node was visited by looking up connected output -> "in" pin
+					if (!WasNodeVisited(leafNode))
+						VisitNode(leafNode, node);
+					else
+						ST_INFO("[VisitNode] *skip* node already visited: {}::{}", node->m_Title, node->m_ID);
 				}
 			}
 

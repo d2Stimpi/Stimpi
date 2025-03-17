@@ -1,0 +1,52 @@
+Params:
+  Param:
+    Type: glm::vec2
+    Value:
+      - 24
+      - 24
+  Param:
+    Type: float
+    Value: 24
+  Param:
+    Type: float
+    Value: 24
+  Param:
+    Type: float
+    Value: 48
+  Param:
+    Type: float
+    Value: 0.5
+Methods:
+  Method:
+    InParams:
+      []
+    OutParams:
+      - 0
+    MethodID: GetSize
+  Method:
+    InParams:
+      - 0
+    OutParams:
+      - 1
+      - 2
+    MethodID: Vector2
+  Method:
+    InParams:
+      - 1
+      - 1
+    OutParams:
+      - 3
+    MethodID: Add
+  Method:
+    InParams:
+      - 1
+      - 3
+    OutParams:
+      - 4
+    MethodID: Divide
+  Method:
+    InParams:
+      - 4
+    OutParams:
+      []
+    MethodID: SetShaderData

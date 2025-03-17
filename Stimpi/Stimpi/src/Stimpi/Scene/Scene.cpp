@@ -265,8 +265,7 @@ namespace Stimpi
 						else
 						{
 							// For the purpose of CustomShader, texture id is passed to shader
-							Renderer2D::Instance()->SubmitCustom(quad.m_Position, quad.m_Size, quad.m_Rotation, anim, anim.m_Material.get());
-							Renderer2D::Instance()->SubmitCustom(quad.m_Position, quad.m_Size, quad.m_Rotation, anim, anim.m_Material.get());
+							Renderer2D::Instance()->SubmitCustom(quad.m_Position, quad.m_Size, quad.m_Rotation, anim, anim.m_Material.get(), { entity, this });
 						}
 					}
 				}
