@@ -27,9 +27,9 @@ namespace Stimpi
 	 * 
 	 * output: Entity
 	 */
-	static void GetEntity(Method* method)
+	static bool GetEntity(Method* method)
 	{
-
+		return true;
 	}
 
 	/**
@@ -37,7 +37,7 @@ namespace Stimpi
 	 * 
 	 * output: glm::vec3 - QuadComponent.Pos
 	 */
-	static void GetPosition(Method* method)
+	static bool GetPosition(Method* method)
 	{
 		uint32_t opi = method->m_OutParams[0];
 
@@ -53,10 +53,11 @@ namespace Stimpi
 		}
 		else
 		{
-			// TODO: error?
 			ST_WARN("[Node::GetPosition] no valid Entity set!");
+			return false;
 		}
 
+		return true;
 	}
 
 	/**
@@ -64,7 +65,7 @@ namespace Stimpi
 	 *
 	 * output: glm::vec2 - QuadComponent.Size
 	 */
-	static void GetSize(Method* method)
+	static bool GetSize(Method* method)
 	{
 		uint32_t opi = method->m_OutParams[0];
 
@@ -80,10 +81,53 @@ namespace Stimpi
 		}
 		else
 		{
-			// TODO: error?
 			ST_WARN("[Node::GetSize] no valid Entity set!");
+			return false;
 		}
+		return true;
+	}
 
+	/**
+	 * Description: Provide source for Entity's AnimatedSpriteComponent data.
+	 *
+	 * output: AnimSprite - AnimatedSpriteComponent.AnimSprite
+	 * output: DefaultAnimation - AnimatedSpriteComponent.DefaultAnimation
+	 * output: Animations - AnimatedSpriteComponent.Animations
+	 * output: Material - AnimatedSpriteComponent.Material
+	 */
+	static bool GetAnimationComponent(Method* method)
+	{
+		uint32_t opi1 = method->m_OutParams[0];
+		uint32_t opi2 = method->m_OutParams[1];
+		uint32_t opi3 = method->m_OutParams[2];
+		uint32_t opi4 = method->m_OutParams[3];
+
+		// Owner entity is the expected source of data
+		if (method->m_ExecTree->m_Entity)
+		{
+			// Node verifier should make sure we have all the components on the entity that are used here
+			Entity e = method->m_ExecTree->m_Entity;
+			if (e.HasComponent<AnimatedSpriteComponent>())
+			{
+				AnimatedSpriteComponent& component = e.GetComponent<AnimatedSpriteComponent>();
+
+				method->m_ExecTree->m_Params[opi1] = component.m_AnimSprite.get();
+				method->m_ExecTree->m_Params[opi2] = component.m_DefaultAnimation.get();
+				method->m_ExecTree->m_Params[opi3] = &component.m_Animations;
+				method->m_ExecTree->m_Params[opi4] = component.m_Material.get();
+			}
+			else
+			{
+				ST_WARN("[Node::GetAnimationComponent] entity has no AnimatedSpriteComponent!");
+				return false;
+			}
+		}
+		else
+		{
+			ST_WARN("[Node::GetSize] no valid Entity set!");
+			return false;
+		}
+		return true;
 	}
 
 #pragma endregion GetterMethods
@@ -97,7 +141,7 @@ namespace Stimpi
 	 * input: glm::vec3 - translation vector
 	 * output: glm::vec3 - translated position result
 	 */
-	static void Translate(Method* method)
+	static bool Translate(Method* method)
 	{
 		uint32_t ipi1 = method->m_InParams[0];
 		uint32_t ipi2 = method->m_InParams[1];
@@ -109,6 +153,8 @@ namespace Stimpi
 		glm::vec3 vector = std::get<glm::vec3>(method->m_ExecTree->m_Params[ipi2]);
 
 		method->m_ExecTree->m_Params[opi] = pos + vector;
+
+		return true;
 	}
 
 	/**
@@ -118,7 +164,7 @@ namespace Stimpi
 	 * input: float - B
 	 * output: float - A + B
 	 */
-	static void Add(Method* method)
+	static bool Add(Method* method)
 	{
 		uint32_t ipi1 = method->m_InParams[0];
 		uint32_t ipi2 = method->m_InParams[1];
@@ -128,6 +174,8 @@ namespace Stimpi
 		float b = std::get<float>(method->m_ExecTree->m_Params[ipi2]);
 
 		method->m_ExecTree->m_Params[opi] = a + b;
+
+		return true;
 	}
 
 	/**
@@ -137,7 +185,7 @@ namespace Stimpi
 	 * input: float - B
 	 * output: float - A - B
 	 */
-	static void Subtract(Method* method)
+	static bool Subtract(Method* method)
 	{
 		uint32_t ipi1 = method->m_InParams[0];
 		uint32_t ipi2 = method->m_InParams[1];
@@ -147,6 +195,8 @@ namespace Stimpi
 		float b = std::get<float>(method->m_ExecTree->m_Params[ipi2]);
 
 		method->m_ExecTree->m_Params[opi] = a - b;
+
+		return true;
 	}
 
 	/**
@@ -156,7 +206,7 @@ namespace Stimpi
 	 * input: float - B
 	 * output: float - A / B
 	 */
-	static void Divide(Method* method)
+	static bool Divide(Method* method)
 	{
 		uint32_t ipi1 = method->m_InParams[0];
 		uint32_t ipi2 = method->m_InParams[1];
@@ -168,8 +218,13 @@ namespace Stimpi
 		if (a != 0)
 			method->m_ExecTree->m_Params[opi] = a / b;
 		else
+		{
 			method->m_ExecTree->m_Params[opi] = 0.0f;
-		// TODO: report error or handle invalid division
+			ST_WARN("[Node::Divide] dividing by 0.0!");
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -179,7 +234,7 @@ namespace Stimpi
 	 * input: float - B
 	 * output: float - A * B
 	 */
-	static void Multiply(Method* method)
+	static bool Multiply(Method* method)
 	{
 		uint32_t ipi1 = method->m_InParams[0];
 		uint32_t ipi2 = method->m_InParams[1];
@@ -189,6 +244,8 @@ namespace Stimpi
 		float b = std::get<float>(method->m_ExecTree->m_Params[ipi2]);
 
 		method->m_ExecTree->m_Params[opi] = a * b;
+
+		return true;
 	}
 
 	/**
@@ -198,7 +255,7 @@ namespace Stimpi
 	 * output: float - X component
 	 * output: float - Y component
 	 */
-	static void Vector2(Method* method)
+	static bool Vector2(Method* method)
 	{
 		uint32_t ipi1 = method->m_InParams[0];
 		uint32_t opi1 = method->m_OutParams[0];
@@ -208,6 +265,66 @@ namespace Stimpi
 		
 		method->m_ExecTree->m_Params[opi1] = pos.x;
 		method->m_ExecTree->m_Params[opi2] = pos.y;
+
+		return true;
+	}
+
+	/**
+	 * Description: Decomposition of AnimSprite type
+	 * 
+	 * input: AnimSprite - Animated sprite asset
+	 * output: Animation - Animation asset ref
+	 * output: float - playback speed
+	 */
+	static bool AnimSpriteMod(Method* method)
+	{
+		uint32_t ipi1 = method->m_InParams[0];
+		uint32_t opi1 = method->m_OutParams[0];
+		uint32_t opi2 = method->m_OutParams[1];
+
+		AnimatedSprite* animSprite = static_cast<AnimatedSprite*>(std::get<void*>(method->m_ExecTree->m_Params[ipi1]));
+
+		method->m_ExecTree->m_Params[opi1] = animSprite->GetAnimation().get();
+		method->m_ExecTree->m_Params[opi2] = animSprite->GetPlaybackSpeed();
+
+		return true;
+	}
+
+	/**
+	 * Description: Decomposition of Animation type
+	 * 
+	 * input: Animation - Animation ref
+	 * output: SubTexture - SubTexture part of animation object
+	 */
+	static bool AnimationMod(Method* method)
+	{
+		uint32_t ipi1 = method->m_InParams[0];
+		uint32_t opi1 = method->m_OutParams[0];
+
+		Animation* animation = static_cast<Animation*>(std::get<void*>(method->m_ExecTree->m_Params[ipi1]));
+		
+		method->m_ExecTree->m_Params[opi1] = animation->GetSubTexture();
+
+		return true;
+	}
+
+	/**
+	 * Description: Decomposition of Animation type
+	 *
+	 * input: SubTexture - SubTexture ref
+	 * output: glm::vec2 - SubTexture frame size (width, height)
+	 */
+	static bool SubTextureMod(Method* method)
+	{
+		uint32_t ipi1 = method->m_InParams[0];
+		uint32_t opi1 = method->m_OutParams[0];
+
+		SubTexture* subTexture = static_cast<SubTexture*>(std::get<void*>(method->m_ExecTree->m_Params[ipi1]));
+
+		//method->m_ExecTree->m_Params[opi1] = glm::vec2(subTexture->GetSubWidht(), subTexture->GetSubHeight());
+		method->m_ExecTree->m_Params[opi1] = glm::vec2(24.0f, 24.0f);
+
+		return true;
 	}
 
 #pragma endregion ModifierMethods
@@ -219,7 +336,7 @@ namespace Stimpi
 	 *
 	 * input: glm::vec3 - input position
 	 */
-	static void SetPosition(Method* method)
+	static bool SetPosition(Method* method)
 	{
 		uint32_t ipi = method->m_InParams[0];
 
@@ -232,9 +349,11 @@ namespace Stimpi
 			if (e.HasComponent<QuadComponent>())
 				e.GetComponent<QuadComponent>().m_Position = pos;
 		}
+
+		return true;
 	}
 
-	static void SetShaderData(Method* method)
+	static bool SetShaderData(Method* method)
 	{
 		if (method->m_ExecTree->m_Entity)
 		{
@@ -268,6 +387,8 @@ namespace Stimpi
 				}
 			}
 		}
+
+		return true;
 	}
 
 #pragma endregion SetterMethods

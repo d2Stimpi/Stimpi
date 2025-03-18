@@ -453,8 +453,7 @@ namespace Stimpi
 		bool m_AutoPlay = false; // Auto play the default anim on start
 
 		// Custom shader asset
-		//AssetHandle m_Shader = 0;
-		std::shared_ptr<Material> m_Material;
+		std::shared_ptr<Material> m_Material; // TOOD: make an asset
 		bool m_UseCustomShader = false;
 
 		AnimatedSpriteComponent(const AnimatedSpriteComponent&) = default;

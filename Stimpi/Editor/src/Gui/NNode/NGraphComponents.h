@@ -18,7 +18,20 @@ namespace Stimpi
 	struct NPin
 	{
 		enum class Type { None = 0, In, Out };
-		enum class DataType { Any = 0, Entity, Material, Bool, Int, Int2, Int3, Int4, Float, Float2, Float3, Float4 };
+		enum class DataType {
+			Any = 0, 
+			Entity, 
+			// Complex object types -> void*
+			AnimSprite,
+			Animation,
+			Materia,
+			SubTexture,
+			// Primitive like types
+			Bool, 
+			Int, Int2, Int3, Int4, 
+			Float, Float2, Float3, Float4
+		};
+		// TODO: Make complex type as unique identifier. Complex type consists of a Name - DataType pair
 
 		NPin() = delete;
 		NPin(const NPin&) = default;

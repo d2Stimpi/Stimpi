@@ -27,6 +27,7 @@ namespace Stimpi
 		~Animation();
 
 		SubTexture* GetSubTexture() { return m_SubTexture.get(); }
+		std::shared_ptr<SubTexture> GetSubTextureRef() { return m_SubTexture; }
 		std::vector<AnimationFrameData>& GetFrames() { return m_Frames; }
 		FilePath GetAssetFilePath() { return m_AssetPath; }
 		std::string& GetName() { return m_Name; }

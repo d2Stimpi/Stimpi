@@ -18,7 +18,7 @@
  */
 
 /**
- * Custom shader shall have default layer data: Pos/Color/TexCoord 3/3/2
+ * Custom shader shall have default layer data: Pos/Color/TexCoord 3/4/2
  */
 
 namespace Stimpi
@@ -858,13 +858,18 @@ namespace Stimpi
 			// 2. Execute the tree to calculate outputs
 			if (foundShaderDataNode != execTree->m_Methods.end())
 			{
-				execTree->ExecuteWalk(entity);
-
-				// 3. Read outputs
-				std::shared_ptr<Method> method = *foundShaderDataNode;
-				for (auto& inIndex : method->m_InParams)
+				if (execTree->ExecuteWalk(entity))
 				{
-					varData.m_Data.push_back(std::get<float>(execTree->m_Params[inIndex]));
+					// 3. Read outputs
+					std::shared_ptr<Method> method = *foundShaderDataNode;
+					for (auto& inIndex : method->m_InParams)
+					{
+						varData.m_Data.push_back(std::get<float>(execTree->m_Params[inIndex]));
+					}
+				}
+				else
+				{
+					varData.m_Data.assign(cmd->m_VertexSize - 36, 0.0f);
 				}
 			}
 		}

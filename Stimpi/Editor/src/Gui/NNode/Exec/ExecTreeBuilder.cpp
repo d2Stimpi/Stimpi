@@ -61,8 +61,8 @@ namespace Stimpi
 			//TODO: reconsider these checks, instead mark visited node to avoid doubling params
 
 			// skip pins that are not connected
-			if (!outPin->m_Connected)
-				continue;
+			/*if (!outPin->m_Connected)
+				continue;*/
 
 			// skip pins that are not connected to parent node
 			/*auto found = std::find_if(outPin->m_ConnectedPins.begin(), outPin->m_ConnectedPins.end(),

@@ -14,8 +14,9 @@ namespace Stimpi
 #undef DEFINE_NODE_NAME(name)
 	};
 
-	using Param = std::variant<uint32_t, bool, int, float, glm::vec2, glm::vec3, glm::vec4>;
-	using MethodType = std::function<void(Method*)>;
+	using ObjectParam = void*;
+	using Param = std::variant<uint32_t, bool, int, float, glm::vec2, glm::vec3, glm::vec4, ObjectParam>;
+	using MethodType = std::function<bool(Method*)>;
 	using MethodRegistry = std::unordered_map<MethodName, MethodType>;
 
 	class ST_API NNodeMethodRegistry

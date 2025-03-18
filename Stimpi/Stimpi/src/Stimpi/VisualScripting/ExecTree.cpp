@@ -35,22 +35,25 @@ namespace Stimpi
 		m_Method = NNodeMethodRegistry::GetMethod(m_Name);
 	}
 
-	void Method::Execute()
+	bool Method::Execute()
 	{
 		if (m_Method)
 		{
-			m_Method(this);
+			return m_Method(this);
 		}
 	}
 
-	void ExecTree::ExecuteWalk(Entity entity)
+	bool ExecTree::ExecuteWalk(Entity entity)
 	{
 		m_Entity = entity;
 
 		for (auto& method : m_Methods)
 		{
-			method->Execute();
+			if (method->Execute() == false)
+				return false;
 		}
+
+		return true;
 	}
 
 }

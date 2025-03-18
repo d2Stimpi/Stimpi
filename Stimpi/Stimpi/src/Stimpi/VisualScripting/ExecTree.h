@@ -24,7 +24,7 @@ namespace Stimpi
 
 		Method(std::vector<uint32_t> inParamIds, std::vector<uint32_t> outParamIds, MethodName name, ExecTree* owner);
 		Method(std::vector<uint32_t> params, bool isInput, MethodName name, ExecTree* owner);
-		void Execute();
+		bool Execute();
 	};
 
 	struct ST_API ExecTree
@@ -35,6 +35,6 @@ namespace Stimpi
 		std::vector<std::shared_ptr<Method>> m_Methods;
 
 		// For reusability of same Tree on multiple Entities
-		void ExecuteWalk(Entity entity);
+		bool ExecuteWalk(Entity entity);
 	};
 }

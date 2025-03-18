@@ -46,12 +46,15 @@ namespace Stimpi
 		return node;
 	}
 
-	static std::shared_ptr<NNode> GetMaterial(const std::string& title)
+	static std::shared_ptr<NNode> GetAnimationComponent(const std::string& title)
 	{
 		auto node = std::make_shared<NNode>(title, NNode::Type::Getter);
-		node->AddPin(NPin::Type::Out, "Material", NPin::DataType::Material);
-		// TODO: AddMethod
-		node->m_HasHeader = false;
+		node->AddPin(NPin::Type::Out, "AnimSprite", NPin::DataType::AnimSprite);
+		node->AddPin(NPin::Type::Out, "DefaultAnimation", NPin::DataType::Animation);
+		node->AddPin(NPin::Type::Out, "Animations", NPin::DataType::Animation);	// TODO: handle arrays
+		node->AddPin(NPin::Type::Out, "Material", NPin::DataType::Materia);
+		node->AddMethod(MethodName::GetAnimationComponent);
+		node->m_HasHeader = true;
 
 		return node;
 	}
@@ -119,6 +122,37 @@ namespace Stimpi
 		node->AddPin(NPin::Type::Out, "X", NPin::DataType::Float);
 		node->AddPin(NPin::Type::Out, "Y", NPin::DataType::Float);
 		node->AddMethod(MethodName::Vector2);
+
+		return node;
+	}
+
+	static std::shared_ptr<NNode> AnimSpriteMod(const std::string& title)
+	{
+		auto node = std::make_shared<NNode>("AnimSprite", NNode::Type::Modifier);
+		node->AddPin(NPin::Type::In, "In", NPin::DataType::AnimSprite);
+		node->AddPin(NPin::Type::Out, "Animation", NPin::DataType::Animation);
+		node->AddPin(NPin::Type::Out, "PlaybackSpeed", NPin::DataType::Float);
+		node->AddMethod(MethodName::AnimSpriteMod);
+
+		return node;
+	}
+
+	static std::shared_ptr<NNode> AnimationMod(const std::string& title)
+	{
+		auto node = std::make_shared<NNode>("Animation", NNode::Type::Modifier);
+		node->AddPin(NPin::Type::In, "In", NPin::DataType::Animation);
+		node->AddPin(NPin::Type::Out, "SubTexture", NPin::DataType::SubTexture);
+		node->AddMethod(MethodName::AnimationMod);
+
+		return node;
+	}
+
+	static std::shared_ptr<NNode> SubTextureMod(const std::string& title)
+	{
+		auto node = std::make_shared<NNode>("SubTexture", NNode::Type::Modifier);
+		node->AddPin(NPin::Type::In, "In", NPin::DataType::SubTexture);
+		node->AddPin(NPin::Type::Out, "UV", NPin::DataType::Float2);
+		node->AddMethod(MethodName::SubTextureMod);
 
 		return node;
 	}
