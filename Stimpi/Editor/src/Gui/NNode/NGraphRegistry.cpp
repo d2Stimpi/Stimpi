@@ -105,6 +105,10 @@ namespace Stimpi
 
 		NGraphSerializer serializer(graph);
 		serializer.Serialize(filePath);
+
+		// Update graph registry file when saving a graph
+		auto registryPath = Project::GetGraphsRegistryPath();
+		SerializeGraphRegistry(registryPath);
 	}
 
 	void NGraphRegistry::PreloadExistingGraphs()
@@ -125,6 +129,10 @@ namespace Stimpi
 		{
 			s_GraphRegistry.erase(found);
 		}
+
+		// Update graph registry file when saving a graph
+		auto registryPath = Project::GetGraphsRegistryPath();
+		SerializeGraphRegistry(registryPath);
 	}
 
 	std::shared_ptr<Stimpi::NGraph> NGraphRegistry::GetGraph(const UUID& uuid)
