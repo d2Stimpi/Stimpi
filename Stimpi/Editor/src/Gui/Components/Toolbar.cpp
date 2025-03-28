@@ -84,16 +84,13 @@ namespace Stimpi
 		s_Context.m_CurrentToolbar->m_RegionWidth = windowSize.x;
 
 		ImVec2 min = cursorPos;
-		ImVec2 max = {min.x + windowSize.x, min.y + s_Context.m_CurrentStyle.m_Height}; // TODO: style it!
+		ImVec2 max = {min.x + windowSize.x, min.y + s_Context.m_CurrentStyle.m_Size.y};
 
 		s_Context.m_DrawList->AddRectFilled(min, max, ImGui::GetColorU32(ImGui::GetStyleColorVec4(ImGuiCol_FrameBg)));
 
 		std::string btnName = fmt::format("{}##InvButton", s_Context.m_CurrentToolbar->m_Name);
-		/*ImGui::InvisibleButton(btnName.c_str(), { windowSize.x, s_Style.m_Height }, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
-		s_Context.m_CurrentToolbar->m_IsHovered = ImGui::IsItemHovered(); // Hovered
-		s_Context.m_CurrentToolbar->m_IsActive = ImGui::IsItemActive();   // Held*/
 
-		ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + s_Context.m_CurrentStyle.m_Height + 3 });
+		ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + s_Context.m_CurrentStyle.m_Size.y + 3 });
 	}
 
 	bool Toolbar::ToolbarButton(const char* name)
@@ -101,44 +98,70 @@ namespace Stimpi
 		IM_ASSERT_USER_ERROR(s_Context.m_CurrentToolbar != nullptr, "Toolbar Begin() not called!");
 
 		bool ret = false;
+		// Save current cursor position
 		ImVec2 cursor = ImGui::GetCursorScreenPos();
 
 		ImGui::SetCursorScreenPos(s_Context.m_CurrentToolbar->m_Pos);
-		ret = ImGui::Button(name, { 0.0f, s_Context.m_CurrentStyle.m_Height });
+		ret = ImGui::Button(name, { 0.0f, s_Context.m_CurrentStyle.m_Size.x });
 		ImVec2 btnSize = ImGui::GetItemRectSize();
 
+		// Restore saved cursor position
 		ImGui::SetCursorScreenPos(cursor);
-		// Updated local cursor position
+		// Updated local cursor position for next toolbar element
 		s_Context.m_CurrentToolbar->m_Pos.x += btnSize.x;
 		return ret;
 	}
 
-	bool Toolbar::ToolbarIconButton(const char* name, const char* iconName, float width)
+	bool Toolbar::ToolbarIconButton(const char* name, const char* iconName, ImVec2 size /*= { -1.0f, -1.0f }*/)
+	{
+		IM_ASSERT_USER_ERROR(s_Context.m_CurrentToolbar != nullptr, "Toolbar Begin() not called!");
+
+		bool ret = false;
+		// Save current cursor position
+		ImVec2 cursor = ImGui::GetCursorScreenPos();
+
+		// If size param was not used, use style size
+		ImVec2 buttonSize = s_Context.m_CurrentStyle.m_Size;
+		if (size.x != -1.0f && size.y != -1.0f)
+			buttonSize = size;
+
+		// Push toolbar style over to ImGuiEx style
+		ImGuiExStyle exStyle;
+		exStyle.m_IconSize = s_Context.m_CurrentStyle.m_IconSize;
+		
+		ImGui::SetCursorScreenPos(s_Context.m_CurrentToolbar->m_Pos);
+		ImGuiEx::PushStyle(exStyle);
+		ret = ImGuiEx::IconButton(name, iconName, buttonSize);
+		ImGuiEx::PopStyle();
+		ImVec2 btnSize = ImGui::GetItemRectSize();
+
+		// Restore saved cursor position
+		ImGui::SetCursorScreenPos(cursor);
+		// Updated local cursor position for next toolbar element
+		s_Context.m_CurrentToolbar->m_Pos.x += btnSize.x;
+		return ret;
+	}
+
+	bool Toolbar::ToolbarToggleIconButton(const char* name, const char* iconName, bool active, ImVec2 size /*= { -1.0f, -1.0f }*/)
 	{
 		IM_ASSERT_USER_ERROR(s_Context.m_CurrentToolbar != nullptr, "Toolbar Begin() not called!");
 
 		bool ret = false;
 		ImVec2 cursor = ImGui::GetCursorScreenPos();
 
-		ImGui::SetCursorScreenPos(s_Context.m_CurrentToolbar->m_Pos);
-		ret = ImGuiEx::IconButton(name, iconName, { width, s_Context.m_CurrentStyle.m_Height });
-		ImVec2 btnSize = ImGui::GetItemRectSize();
+		// If size param was not used, use style size
+		ImVec2 buttonSize = s_Context.m_CurrentStyle.m_Size;
+		if (size.x != -1.0f && size.y != -1.0f)
+			buttonSize = size;
 
-		ImGui::SetCursorScreenPos(cursor);
-		// Updated local cursor position
-		s_Context.m_CurrentToolbar->m_Pos.x += btnSize.x;
-		return ret;
-	}
-
-	bool Toolbar::ToolbarToggleIconButton(const char* name, const char* iconName, bool active, float width /*= s_DefaultIconButtonSize.x*/)
-	{
-		IM_ASSERT_USER_ERROR(s_Context.m_CurrentToolbar != nullptr, "Toolbar Begin() not called!");
-
-		bool ret = false;
-		ImVec2 cursor = ImGui::GetCursorScreenPos();
+		// Push toolbar style over to ImGuiEx style
+		ImGuiExStyle exStyle;
+		exStyle.m_IconSize = s_Context.m_CurrentStyle.m_IconSize;
 
 		ImGui::SetCursorScreenPos(s_Context.m_CurrentToolbar->m_Pos);
-		ret = ImGuiEx::ToggleIconButton(name, iconName, active, { width, s_Context.m_CurrentStyle.m_Height });
+		ImGuiEx::PushStyle(exStyle);
+		ret = ImGuiEx::ToggleIconButton(name, iconName, active, buttonSize);
+		ImGuiEx::PopStyle();
 		ImVec2 btnSize = ImGui::GetItemRectSize();
 
 		ImGui::SetCursorScreenPos(cursor);
@@ -150,7 +173,7 @@ namespace Stimpi
 	void Toolbar::Separator()
 	{
 		ImVec2 min = s_Context.m_CurrentToolbar->m_Pos;
-		ImVec2 max = { min.x + s_Context.m_CurrentStyle.m_SeparatorWidth, min.y + s_Context.m_CurrentStyle.m_Height };
+		ImVec2 max = { min.x + s_Context.m_CurrentStyle.m_SeparatorWidth, min.y + s_Context.m_CurrentStyle.m_Size.x };
 
 		s_Context.m_DrawList->AddRectFilled(min, max, ImGui::GetColorU32(ImGui::GetStyleColorVec4(ImGuiCol_WindowBg)));
 

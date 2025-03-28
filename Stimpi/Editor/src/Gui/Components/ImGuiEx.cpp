@@ -48,8 +48,8 @@ namespace Stimpi
 		{
 			ImGuiWindow* window = ImGui::GetCurrentWindow();
 
-			ImVec2 icon_pos_min = { cursor.x + size.x / 2.0f - s_Style.m_SmallIconSize.x / 2.0f, cursor.y + style.FramePadding.y };
-			ImVec2 icon_pos_max = { icon_pos_min.x + s_Style.m_SmallIconSize.x, icon_pos_min.y + s_Style.m_SmallIconSize.y };
+			ImVec2 icon_pos_min = { cursor.x + size.x / 2.0f - s_Style.m_IconSize.x / 2.0f, cursor.y + size.y / 2.0f - s_Style.m_IconSize.y / 2.0f };
+			ImVec2 icon_pos_max = { icon_pos_min.x + s_Style.m_IconSize.x, icon_pos_min.y + s_Style.m_IconSize.y };
 			window->DrawList->AddImage((void*)(intptr_t)iconTexture->GetTextureID(), icon_pos_min, icon_pos_max, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImGui::ColorConvertFloat4ToU32(ImVec4(0.785f, 0.785f, 0.785f, 1.0f)));
 		}
 
@@ -81,8 +81,8 @@ namespace Stimpi
 		{
 			ImGuiWindow* window = ImGui::GetCurrentWindow();
 
-			ImVec2 icon_pos_min = { cursor.x + size.x / 2.0f - s_Style.m_SmallIconSize.x / 2.0f, cursor.y + style.FramePadding.y };
-			ImVec2 icon_pos_max = { icon_pos_min.x + s_Style.m_SmallIconSize.x, icon_pos_min.y + s_Style.m_SmallIconSize.y };
+			ImVec2 icon_pos_min = { cursor.x + size.x / 2.0f - s_Style.m_IconSize.x / 2.0f, cursor.y + size.y / 2.0f - s_Style.m_IconSize.y / 2.0f };
+			ImVec2 icon_pos_max = { icon_pos_min.x + s_Style.m_IconSize.x, icon_pos_min.y + s_Style.m_IconSize.y };
 			window->DrawList->AddImage((void*)(intptr_t)iconTexture->GetTextureID(), icon_pos_min, icon_pos_max, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImGui::ColorConvertFloat4ToU32(ImVec4(0.785f, 0.785f, 0.785f, 1.0f)));
 		}
 
@@ -159,7 +159,7 @@ namespace Stimpi
 		if (iconTexture)
 		{
 			ImVec2 icon_pos_min = { cursor.x + 5, cursor.y + style.FramePadding.y };
-			ImVec2 icon_pos_max = { icon_pos_min.x + s_Style.m_SmallIconSize.x, icon_pos_min.y + s_Style.m_SmallIconSize.y };
+			ImVec2 icon_pos_max = { icon_pos_min.x + s_Style.m_IconSize.x, icon_pos_min.y + s_Style.m_IconSize.y };
 			window->DrawList->AddImage((void*)(intptr_t)iconTexture->GetTextureID(), icon_pos_min, icon_pos_max, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImGui::ColorConvertFloat4ToU32(ImVec4(0.785f, 0.785f, 0.785f, 1.0f)));
 		}
 
@@ -183,7 +183,7 @@ namespace Stimpi
 			bool released = false;
 
 			ImGuiContext& g = *GImGui;
-			ImVec2 center = ImVec2(cursor.x + inputRectSize.x - s_Style.m_SmallIconSize.x + 3.0f, cursor.y + inputRectSize.y / 2.0f);
+			ImVec2 center = ImVec2(cursor.x + inputRectSize.x - s_Style.m_IconSize.x + 3.0f, cursor.y + inputRectSize.y / 2.0f);
 			float radius = inputRectSize.y / 2.0f - 2.0f;
 			bool hovered = ImGui::IsMouseHoveringRect(ImVec2(center.x - radius, center.y - radius), ImVec2(center.x + radius, center.y + radius));
 

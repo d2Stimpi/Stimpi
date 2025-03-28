@@ -1,6 +1,7 @@
 #include "stpch.h"
 #include "Stimpi/VisualScripting/ExecTree.h"
 
+#include "Stimpi/Log.h"
 #include "Stimpi/VisualScripting/NNodeMethodRegistry.h"
 
 namespace Stimpi
@@ -50,7 +51,10 @@ namespace Stimpi
 		for (auto& method : m_Methods)
 		{
 			if (method->Execute() == false)
+			{
+				ST_ERROR("Failed to execute graph: {}", m_Name);
 				return false;
+			}
 		}
 
 		return true;

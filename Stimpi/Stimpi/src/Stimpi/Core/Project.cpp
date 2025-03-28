@@ -1,7 +1,8 @@
 #include "stpch.h"
 #include "Stimpi/Core/Project.h"
-#include "Stimpi/Core/ProjectSerializer.h"
 
+#include "Stimpi/Core/ProjectSerializer.h"
+#include "Stimpi/VisualScripting/ExecTreeRegistry.h"
 
 namespace Stimpi
 {
@@ -44,6 +45,9 @@ namespace Stimpi
 			std::filesystem::path registry = GetResourcesDir() / GetProjectRegistryName();
 			GetEditorAssetManager()->DeserializeAssetRegistry(registry);
 		}
+
+		// Load Project specific ExecTrees
+		ExecTreeRegistry::LoadProjectExecTrees(GetResourcesSubdir(Subdir::VisualScripting));
 	}
 
 	void Project::UpdateDefaultSortingLayerIndex()

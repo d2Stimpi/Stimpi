@@ -402,6 +402,10 @@ namespace Stimpi
 
 	void NNodeMethodRegistry::PopulateMethods()
 	{
+		// Load methods if it was not done already - App vs Project loading
+		if (!s_MethodRegistry.empty())
+			return;
+
 #define DEFINE_NODE_NAME(name)	RegisterMethod(MethodName::name, name);
 #include "Stimpi/VisualScripting/NNodeNames.h"
 #undef DEFINE_NODE_NAME(name)

@@ -51,7 +51,7 @@ namespace Stimpi
 				glm::vec3 prevValue = s_Context.m_TempVec3;
 				if (prevValue != val)
 				{
-					ST_CORE_INFO("Input finished, previous value: {}", prevValue);
+					//ST_CORE_INFO("Input finished, previous value: {}", prevValue);
 					// Create cmd here
 					if (s_Context.m_UndoCmdType == UndoCmdType::ENTITY)
 					{
@@ -86,7 +86,7 @@ namespace Stimpi
 				glm::vec2 prevValue = s_Context.m_TempVec2;
 				if (prevValue != val)
 				{
-					ST_CORE_INFO("Input finished, previous value: {}", prevValue);
+					//ST_CORE_INFO("Input finished, previous value: {}", prevValue);
 					// Create cmd here
 					if (s_Context.m_UndoCmdType == UndoCmdType::ENTITY)
 					{

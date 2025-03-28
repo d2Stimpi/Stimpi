@@ -26,6 +26,9 @@ namespace Stimpi
 		LOAD_ICON(EDITOR_ICON_HAND);
 		LOAD_ICON(EDITOR_ICON_MOVE);
 		LOAD_ICON(EDITOR_ICON_SCALE);
+		LOAD_ICON(EDITOR_ICON_COMPILE);
+		LOAD_ICON(EDITOR_ICON_SAVE);
+		LOAD_ICON(EDITOR_ICON_SAVE_WRN);
 	}
 
 	Stimpi::Texture* EditorResources::GetIconTexture(std::string name)

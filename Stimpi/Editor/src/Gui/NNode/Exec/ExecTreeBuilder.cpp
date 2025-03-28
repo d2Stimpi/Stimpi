@@ -37,9 +37,9 @@ namespace Stimpi
 		return false;
 	}
 
-	static std::shared_ptr<ExecTree> StartNewTreeBuild()
+	static std::shared_ptr<ExecTree> StartNewTreeBuild(const std::string& name)
 	{
-		s_Context.m_ActiveTree = std::make_shared<ExecTree>();
+		s_Context.m_ActiveTree = std::make_shared<ExecTree>(name);
 
 		// Reset counters
 		s_Context.m_InParamIndex = 0;
@@ -58,21 +58,6 @@ namespace Stimpi
 		// Output pin data
 		for (auto& outPin : node->m_OutPins)
 		{
-			//TODO: reconsider these checks, instead mark visited node to avoid doubling params
-
-			// skip pins that are not connected
-			/*if (!outPin->m_Connected)
-				continue;*/
-
-			// skip pins that are not connected to parent node
-			/*auto found = std::find_if(outPin->m_ConnectedPins.begin(), outPin->m_ConnectedPins.end(),
-				[&](std::shared_ptr<NPin> cpin)
-			{
-				return cpin->m_ParentNode->m_ID == parent->m_ID;
-			});
-			if (found == outPin->m_ConnectedPins.end())
-				continue;*/
-
 			s_Context.m_ActiveTree->m_Params.emplace_back(glm::vec3(0.0f));
 			s_PinParamIndexRegistry[outPin->m_ID] = s_Context.m_ParamCount;
 			outputs.push_back(s_Context.m_ParamCount++);
@@ -194,7 +179,8 @@ namespace Stimpi
 
 	std::shared_ptr<Stimpi::ExecTree> ExecTreeBuilder::BuildExecutionTree(NGraph* graph)
 	{
-		std::shared_ptr<ExecTree> tree = StartNewTreeBuild();
+		std::string fileName = fmt::format("{}.egh", graph->m_ID);
+		std::shared_ptr<ExecTree> tree = StartNewTreeBuild(fileName);
 
 		// 1. Find final source node - "tree root"
 		for (auto& node : graph->m_Nodes)

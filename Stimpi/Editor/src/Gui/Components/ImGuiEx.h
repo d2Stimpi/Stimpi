@@ -10,7 +10,7 @@ namespace Stimpi
 	struct ImGuiExStyle
 	{
 		ImVec2 m_IconButtonSize = s_DefaultIconButtonSize;
-		ImVec2 m_SmallIconSize = s_DefaultSmallIconSize;
+		ImVec2 m_IconSize = s_DefaultSmallIconSize;
 		float m_IconOffset = 17.0f;	// Button width + 4
 
 		ImGuiExStyle() = default;

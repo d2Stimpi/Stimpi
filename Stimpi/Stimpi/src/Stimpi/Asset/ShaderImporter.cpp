@@ -117,9 +117,6 @@ namespace Stimpi
 				}
 
 				shaderInfo.m_ShaderLayout.m_Data.emplace_back(StringToShaderType(type), name);
-				// Filter out "internal" uniforms
-				/*if (std::find(s_FilterLayoutNames.begin(), s_FilterLayoutNames.end(), name) == s_FilterLayoutNames.end())
-					shaderInfo.m_ShaderLayout.m_Data.emplace_back(StringToShaderType(type), name);*/
 			}
 		}
 
@@ -162,7 +159,7 @@ namespace Stimpi
 		if (graphPath.Exists())
 		{
 			// Deserialize the ExecTree
-			std::shared_ptr<ExecTree> execTree = std::make_shared<ExecTree>();
+			std::shared_ptr<ExecTree> execTree = std::make_shared<ExecTree>(fileName);
 			ExecTreeSerializer serializer(execTree.get());
 			if (serializer.Deseriealize(graphPath.string()))
 			{

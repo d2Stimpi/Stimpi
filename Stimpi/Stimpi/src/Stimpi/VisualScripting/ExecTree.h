@@ -36,5 +36,12 @@ namespace Stimpi
 
 		// For reusability of same Tree on multiple Entities
 		bool ExecuteWalk(Entity entity);
+
+		// For internal and logging use
+		std::string m_Name = "Unnamed";
+
+		ExecTree(const std::string& name)
+			: m_Name(name)
+		{}
 	};
 }

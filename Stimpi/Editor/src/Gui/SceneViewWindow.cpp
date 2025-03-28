@@ -69,25 +69,26 @@ namespace Stimpi
 		ImGui::Begin("Scene View", &m_Show, m_Flags);
 		ImGui::PopStyleVar();
 
-		auto& toolbarStyle = Toolbar::GetStyle();
-		toolbarStyle.m_Height = 22.0f;
+		ToolbarStyle toolbarStyle;
+		toolbarStyle.m_Size = { 30.0f, 21.0f };
+		toolbarStyle.m_IconSize = s_DefaultSmallIconSize;
 
 		Toolbar::PushStyle(toolbarStyle);
 		Toolbar::Begin("SceneViewToolbar");
 		{
-			if (Toolbar::ToolbarToggleIconButton("##Free_SceneViewToolbar", EDITOR_ICON_HAND, action == GizmoAction::NONE, 30.0f))
+			if (Toolbar::ToolbarToggleIconButton("##Free_SceneViewToolbar", EDITOR_ICON_HAND, action == GizmoAction::NONE))
 			{
 				action = GizmoAction::NONE;
 			}
 			Toolbar::Separator();
 
-			if (Toolbar::ToolbarToggleIconButton("##Translate_SceneViewToolbar", EDITOR_ICON_MOVE, action == GizmoAction::TRANSLATE, 30.0f))
+			if (Toolbar::ToolbarToggleIconButton("##Translate_SceneViewToolbar", EDITOR_ICON_MOVE, action == GizmoAction::TRANSLATE))
 			{
 				action = GizmoAction::TRANSLATE;
 			}
 			Toolbar::Separator();
 
-			if (Toolbar::ToolbarToggleIconButton("##Scale_SceneViewToolbar", EDITOR_ICON_SCALE, action == GizmoAction::SCALE, 30.0f))
+			if (Toolbar::ToolbarToggleIconButton("##Scale_SceneViewToolbar", EDITOR_ICON_SCALE, action == GizmoAction::SCALE))
 			{
 				action = GizmoAction::SCALE;
 			}

@@ -16,7 +16,8 @@
 //temp
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Core/Project.h"
-#include "Stimpi/VisualScripting/ExecTreeSerializer.h"
+//#include "Stimpi/VisualScripting/ExecTreeSerializer.h"
+#include "Stimpi/VisualScripting/ExecTreeRegistry.h"
 
 
 namespace Stimpi
@@ -305,9 +306,10 @@ namespace Stimpi
 	void NGraphPanel::DrawGraph()
 	{
 		// Main Toolbar
+		Toolbar::PushStyle({ 2.0f, ImVec2{35.0f, 35.0f}, ImVec2{32.0f, 32.0f} });
 		Toolbar::Begin("NodePanelToolbar##NGraphPanel");
 		{
-			if (Toolbar::ToolbarButton("Compile##NGraphPanel"))
+			if (Toolbar::ToolbarIconButton("##Compile##NGraphPanel", EDITOR_ICON_COMPILE))
 			{
 				ST_CORE_INFO("Compile button presed");
 				s_Context->m_TempExecTree = ExecTreeBuilder::BuildExecutionTree(s_Context->m_ActiveGraph);
@@ -315,6 +317,7 @@ namespace Stimpi
 				// TODO: verify that compilation was successful
 				if (s_OnGraphCompiledListener)
 				{
+					ExecTreeRegistry::RegisterExecTree(s_Context->m_ActiveGraph->m_ID, s_Context->m_TempExecTree);
 					s_OnGraphCompiledListener(s_Context->m_TempExecTree);
 				}
 			}
@@ -326,13 +329,12 @@ namespace Stimpi
 
 				if (s_Context->m_TempExecTree)
 				{
-					//s_Context->m_TempExecTree->ExecuteWalk(scene->GetEntityByHandle((entt::entity)1));
 					s_Context->m_TempExecTree->ExecuteWalk(scene->FindentityByName("Player"));
 				}
 			}
 			Toolbar::Separator();
 
-			if (Toolbar::ToolbarButton("Save##NGraphPanel"))
+			if (Toolbar::ToolbarIconButton("##Save##NGraphPanel", EDITOR_ICON_SAVE))
 			{
 				if (s_Context->m_ActiveGraph)
 				{
@@ -342,18 +344,6 @@ namespace Stimpi
 				{
 					ST_INFO("[GraphPanel] No graph to save found!");
 				}
-
-				if (s_Context->m_TempExecTree && s_Context->m_ActiveGraph)
-				{
-					ExecTreeSerializer execTreeSerializer(s_Context->m_TempExecTree.get());
-					std::string fileName = fmt::format("{}.egh", s_Context->m_ActiveGraph->m_ID);
-					FilePath path = Project::GetResourcesSubdir(Project::Subdir::VisualScripting) / fileName;
-					execTreeSerializer.Serialize(path);
-				}
-				else
-				{
-					ST_INFO("[GraphPanel] No compiled graph to save found!");
-				}
 			}
 			Toolbar::Separator();
 
@@ -361,17 +351,10 @@ namespace Stimpi
 			{
 				if (s_Context->m_ActiveGraph)
 				{
-					NGraphRegistry::LoadGraph(s_Context->m_ActiveGraph);
-
-					s_Context->m_ActiveGraph->RegenerateGraphDataAfterLoad();
-
-					if (s_Context->m_TempExecTree == nullptr)
-						s_Context->m_TempExecTree = std::make_shared<ExecTree>();
-
-					ExecTreeSerializer execTreeSerializer(s_Context->m_TempExecTree.get());
 					std::string fileName = fmt::format("{}.egh", s_Context->m_ActiveGraph->m_ID);
-					FilePath path = Project::GetResourcesSubdir(Project::Subdir::VisualScripting) / fileName;
-					execTreeSerializer.Deseriealize(path);
+
+					NGraphRegistry::LoadGraph(s_Context->m_ActiveGraph);
+					s_Context->m_ActiveGraph->RegenerateGraphDataAfterLoad();
 				}
 			}
 			Toolbar::Separator();
@@ -383,6 +366,7 @@ namespace Stimpi
 			Toolbar::Separator();
 		}
 		Toolbar::End();
+		Toolbar::PopStyle();
 
 		// Tabs start here
 		static ImGuiTabBarFlags tabBarFlags = ImGuiTabBarFlags_Reorderable | ImGuiTabBarFlags_AutoSelectNewTabs;
