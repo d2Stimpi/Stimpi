@@ -49,6 +49,9 @@ namespace Stimpi
 					std::shared_ptr<NPinConnection> newConnection = std::make_shared<NPinConnection>(src, dest);
 					newConnection->CalculateBezierPoints(s_PanelStyle.m_ConnectionSegments);
 					m_PinConnections.push_back(newConnection);
+
+					// Update "changed" flag
+					m_Recompile = true;
 				}
 			}
 		}
@@ -72,6 +75,9 @@ namespace Stimpi
 
 		// Remove PinConnection
 		m_PinConnections.erase(std::find(m_PinConnections.begin(), m_PinConnections.end(), connection));
+
+		// Update "changed" flag
+		m_Recompile = true;
 	}
 
 	void NGraph::UpdateConnectionPoints(std::shared_ptr<NPinConnection> connection)

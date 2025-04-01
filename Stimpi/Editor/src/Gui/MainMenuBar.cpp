@@ -172,12 +172,8 @@ namespace Stimpi
 #pragma region WINDOW
 			if (ImGui::BeginMenu("Window"))
 			{
-				if (ImGui::MenuItem("Node Panel", nullptr, GraphPanel::IsVisible()))
-				{
-					GraphPanel::ShowWindow(!GraphPanel::IsVisible());
-				}
-
-				if (ImGui::MenuItem("Node Panel v2", nullptr, NGraphPanel::IsVisible()))
+				// TODO: remove old node graph files
+				if (ImGui::MenuItem("Node Panel", nullptr, NGraphPanel::IsVisible()))
 				{
 					NGraphPanel::ShowWindow(!NGraphPanel::IsVisible());
 				}

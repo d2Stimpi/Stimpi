@@ -626,19 +626,33 @@ namespace Stimpi
 			if (ImGui::Button(">##AnimatedSpriteComponent"))
 			{
 				if (component.m_AnimSprite)
+					component.m_AnimSprite->Stop();
 					component.m_AnimSprite->Start();
 			}
 			ImGui::SameLine();
 			if (ImGui::Button("=##AnimatedSpriteComponent"))
 			{
 				if (component.m_AnimSprite)
-					component.m_AnimSprite->Pause();
+				{
+					if (component.m_AnimSprite->GetAnimationState() == AnimationState::RUNNING)
+						component.m_AnimSprite->Pause();
+					else if(component.m_AnimSprite->GetAnimationState() == AnimationState::PAUSED)
+						component.m_AnimSprite->Start();
+				}
 			}
 			ImGui::SameLine();
 			if (ImGui::Button("x##AnimatedSpriteComponent"))
 			{
 				if (component.m_AnimSprite)
 					component.m_AnimSprite->Stop();
+			}
+			if (component.m_AnimSprite->GetAnimation().get() != nullptr)
+			{
+				if (component.m_AnimSprite->GetAnimationState() == AnimationState::PAUSED)
+				{
+					ImGui::SameLine();
+					ImGui::Text("Paused");
+				}
 			}
 
 			static bool looping = false;
@@ -839,7 +853,6 @@ namespace Stimpi
 						graph->m_ID = shader->m_Handle;
 
 						NGraphBuilder builder;
-						//graph = builder.Create({ graphName, {MethodName::SetPosition} });
 						builder.Create(graphName);
 
 						static std::vector<std::string> s_FilterLayoutNames = { "aPos", "aColor", "aTexCoord" };

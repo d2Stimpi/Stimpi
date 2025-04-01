@@ -64,7 +64,7 @@ namespace Stimpi
 		}
 
 		// Cap the index before access
-		if (m_CurrentFrame > m_Animation->GetFrames().size())
+		if (m_CurrentFrame >= m_Animation->GetFrames().size())
 		{
 			m_CurrentFrame = m_Animation->GetFrames().size() - 1;
 			ST_CORE_WARN("[AnimatedSprite] Current frame exceeded frame count ({})", m_Animation->GetName());
@@ -72,7 +72,9 @@ namespace Stimpi
 
 		auto& currentFrame = m_Animation->GetFrames().at(m_CurrentFrame);
 		m_Animation->GetSubTexture()->SetSubTextureSize({ 0.0f, 0.0f }, { currentFrame.m_FrameSize.x, currentFrame.m_FrameSize.y });
-		m_Animation->GetSubTexture()->SetSubRegion(m_CurrentFrame);
+		//m_Animation->GetSubTexture()->SetSubRegion(m_CurrentFrame);
+		m_Animation->GetSubTexture()->SetSubRegion({ currentFrame.m_FramePosition.x, currentFrame.m_FramePosition.y },
+			{ currentFrame.m_FramePosition.x + currentFrame.m_FrameSize.x, currentFrame.m_FramePosition.y + currentFrame.m_FrameSize.y } );
 	}
 
 	void AnimatedSprite::SetCurrentFrame(uint32_t frame)
@@ -80,7 +82,9 @@ namespace Stimpi
 		m_CurrentFrame = frame;
 		auto& currentFrame = m_Animation->GetFrames().at(m_CurrentFrame);
 		m_Animation->GetSubTexture()->SetSubTextureSize({ 0.0f, 0.0f }, { currentFrame.m_FrameSize.x, currentFrame.m_FrameSize.y });
-		m_Animation->GetSubTexture()->SetSubRegion(m_CurrentFrame);
+		//m_Animation->GetSubTexture()->SetSubRegion(m_CurrentFrame);
+		m_Animation->GetSubTexture()->SetSubRegion({ currentFrame.m_FramePosition.x, currentFrame.m_FramePosition.y },
+			{ currentFrame.m_FramePosition.x + currentFrame.m_FrameSize.x, currentFrame.m_FramePosition.y + currentFrame.m_FrameSize.y });
 	}
 
 }

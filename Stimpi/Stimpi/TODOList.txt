@@ -1,28 +1,9 @@
 TODO Next:
-- Add GUID component
-	- Update HierarchyWindow
-- Rename _Window -> _Panel
-
-[Material]
-- Create material that wraps shader and uniforms
-
-[EditorLayer]
-- (Maybe?) Add Scene ref to Windows/Panes as Context
-
-[UI]
-- C# Script component (Much later)
-
-[Events]
-- Move Events to separate files by type
-- Refine event types and sub-classes for easeir use
-
-[Components]
-
+- Fix animatio files, frame position is now used
+- Make sure ExecTree is set when Scene is loaded
+- Save local changes to active Scene while editing - AutoSave
 
 
 
 [Bugs/Issue]
-- Removing CameraComponent when Scene is running -> Crash
-
-- Premake: figure out how to get _DEBUG in preprocessor
 

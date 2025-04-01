@@ -181,6 +181,11 @@ namespace Stimpi
 		s_Context.m_CurrentToolbar->m_Pos.x += s_Context.m_CurrentStyle.m_SeparatorWidth;
 	}
 
+	void Toolbar::SetButtonTooltip(const char* tooltip)
+	{
+		ImGui::SetItemTooltip(tooltip);
+	}
+
 	Stimpi::ToolbarStyle Toolbar::GetStyle()
 	{
 		return s_Context.m_CurrentStyle;

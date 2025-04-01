@@ -22,6 +22,7 @@
 
 // Node panel toolbar icons
 #define EDITOR_ICON_COMPILE		"compile.png"
+#define EDITOR_ICON_COMPILE_WRN "compile_wrn.png"
 #define EDITOR_ICON_SAVE		"save.png"
 #define EDITOR_ICON_SAVE_WRN	"save_wrn.png"
 

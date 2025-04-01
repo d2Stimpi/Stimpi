@@ -28,5 +28,6 @@ namespace Stimpi
 
 		// Internal - for active tab tracking (setting)
 		ImGuiID m_ImGuiId;
+		bool m_Recompile = false;	// For recompilation tracking
 	};
 }

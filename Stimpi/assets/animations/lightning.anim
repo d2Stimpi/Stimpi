@@ -1,0 +1,67 @@
+Animation:
+  Texture: sprite_sheets\lightning-ray-sheet.png
+  Frames:
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 32
+      FramePosition:
+        - 0
+        - 224
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 32
+      FramePosition:
+        - 0
+        - 192
+    Frame:
+      Duration: 0.15
+      FrameSize:
+        - 64
+        - 32
+      FramePosition:
+        - 0
+        - 160
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 32
+      FramePosition:
+        - 0
+        - 128
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 32
+      FramePosition:
+        - 0
+        - 96
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 32
+      FramePosition:
+        - 0
+        - 64
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 32
+      FramePosition:
+        - 0
+        - 32
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 32
+      FramePosition:
+        - 0
+        - 0

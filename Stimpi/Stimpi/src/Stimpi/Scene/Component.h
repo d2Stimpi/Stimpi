@@ -539,11 +539,19 @@ namespace Stimpi
 			return false;
 		}
 
-		bool IsPlaying()
+		bool ShouldRender()
 		{
 			if (m_AnimSprite)
 				return m_AnimSprite->GetAnimationState() == AnimationState::PAUSED ||
 					m_AnimSprite->GetAnimationState() == AnimationState::RUNNING;
+
+			return false;
+		}
+
+		bool IsPlaying()
+		{
+			if (m_AnimSprite)
+				return m_AnimSprite->GetAnimationState() == AnimationState::RUNNING;
 
 			return false;
 		}

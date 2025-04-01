@@ -258,7 +258,7 @@ namespace Stimpi
 				else if (m_Registry.all_of<AnimatedSpriteComponent>(entity))
 				{
 					AnimatedSpriteComponent& anim = m_Registry.get<AnimatedSpriteComponent>(entity);
-					if (anim.IsPlaying() || m_RuntimeState == RuntimeState::STOPPED)
+					if (anim.ShouldRender() || m_RuntimeState == RuntimeState::STOPPED)
 					{
 						if (anim.m_Material == nullptr || !anim.m_UseCustomShader)
 							Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, anim, m_DefaultShader.get());

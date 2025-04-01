@@ -309,7 +309,11 @@ namespace Stimpi
 		Toolbar::PushStyle({ 2.0f, ImVec2{35.0f, 35.0f}, ImVec2{32.0f, 32.0f} });
 		Toolbar::Begin("NodePanelToolbar##NGraphPanel");
 		{
-			if (Toolbar::ToolbarIconButton("##Compile##NGraphPanel", EDITOR_ICON_COMPILE))
+			bool recompileGraph = false;
+			if (s_Context->m_ActiveGraph)
+				recompileGraph = s_Context->m_ActiveGraph->m_Recompile;
+
+			if (Toolbar::ToolbarIconButton("##Compile##NGraphPanel", recompileGraph ? EDITOR_ICON_COMPILE_WRN : EDITOR_ICON_COMPILE))
 			{
 				ST_CORE_INFO("Compile button presed");
 				s_Context->m_TempExecTree = ExecTreeBuilder::BuildExecutionTree(s_Context->m_ActiveGraph);
@@ -320,7 +324,11 @@ namespace Stimpi
 					ExecTreeRegistry::RegisterExecTree(s_Context->m_ActiveGraph->m_ID, s_Context->m_TempExecTree);
 					s_OnGraphCompiledListener(s_Context->m_TempExecTree);
 				}
+
+				// Mark that the graph was compiled
+				s_Context->m_ActiveGraph->m_Recompile = false;
 			}
+			Toolbar::SetButtonTooltip(recompileGraph ? "Graph not compiled!" : "Compile");
 			Toolbar::Separator();
 
 			if (Toolbar::ToolbarButton("TestExec##NGraphPanel"))
@@ -345,6 +353,7 @@ namespace Stimpi
 					ST_INFO("[GraphPanel] No graph to save found!");
 				}
 			}
+			Toolbar::SetButtonTooltip("Save");
 			Toolbar::Separator();
 
 			if (Toolbar::ToolbarButton("Load##NGraphPanel"))
