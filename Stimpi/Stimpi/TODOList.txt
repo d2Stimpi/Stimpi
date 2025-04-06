@@ -3,6 +3,11 @@ TODO Next:
 - Make sure ExecTree is set when Scene is loaded
 - Save local changes to active Scene while editing - AutoSave
 
+** Script Engine **
+- Expose C# properties to editor inspector
+
+- Script component => asset that holds serializable field/attribute data 
+
 
 
 [Bugs/Issue]

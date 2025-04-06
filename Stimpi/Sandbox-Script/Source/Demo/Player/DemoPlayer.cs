@@ -33,7 +33,7 @@ namespace Demo
         public float Velocity = 20.0f;
         public Entity Camera;
         public Entity Cursor;
-        public float Projectiles = 2.0f;
+        public float Projectiles = 0.0f;
 
         public override void OnCreate()
         {
@@ -167,7 +167,7 @@ namespace Demo
                     ProjectileType projType = ProjectileType.FIREBALL;
                     Vector2 projSize = new Vector2(9.0f, 9.0f);
                     string pattern = _spellBar.ConsumeRegiseredKeyPattern();
-                    if (pattern.Length >= 0)
+                    if (pattern.Length >= 1)
                     {
                         Vector2 mousePos = Input.GetMousePosition();
 

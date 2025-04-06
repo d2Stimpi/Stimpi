@@ -816,8 +816,10 @@ namespace Stimpi
 		{
 			if (entity.HasComponent<ScriptComponent>())
 			{
-				auto scriptComponent = entity.GetComponent<ScriptComponent>();
+				auto& scriptComponent = entity.GetComponent<ScriptComponent>();
 				auto scriptInstance = CreateScriptInstance(scriptComponent.m_ScriptName, entity);
+				scriptComponent.m_ScriptInstance = scriptInstance;
+				// Reload and populate script instance field data
 			}
 		}
 	}

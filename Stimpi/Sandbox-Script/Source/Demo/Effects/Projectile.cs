@@ -18,12 +18,17 @@ namespace Demo
         private bool _enableUpdate = true;
         private float _fileSpan = 0.0f;
         private Vector2 _velocity;
+        private Vector2 _velocityUnit;
 
         public float Velocity = 100.0f;
         public float LifeSpan = 1.0f; // in seconds
 
         public void Initialize(Entity owner, Vector2 target, Vector2 size)
         {
+            // Field defaults (Pool reuse objects)
+            Velocity = 100.0f;
+            LifeSpan = 1.0f;
+
             _enableUpdate = true;
             _fileSpan = LifeSpan;
             _owner = owner;
@@ -56,6 +61,7 @@ namespace Demo
             _rb2d.Enabled = true;
             _rb2d.SetTransform(_quad.Position, _quad.Rotation);
             _velocity = vecVec;
+            _velocityUnit = dir.Unit;
             Physics.SetLinearVelocity(ID, _velocity);
 
             Physics.GetLinearVelocity(ID, out Vector2 outVel);
@@ -107,7 +113,7 @@ namespace Demo
         {
             if (_enableUpdate)
             {
-                Physics.SetLinearVelocity(ID, _velocity);
+                Physics.SetLinearVelocity(ID, _velocityUnit * Velocity);
                 _fileSpan -= ts;
                 if (_fileSpan <= 0)
                 {

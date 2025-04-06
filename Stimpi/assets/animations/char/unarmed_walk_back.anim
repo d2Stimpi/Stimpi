@@ -15,37 +15,37 @@ Animation:
         - 64
         - 64
       FramePosition:
-        - 0
         - 64
+        - 0
     Frame:
       Duration: 0.1
       FrameSize:
         - 64
         - 64
       FramePosition:
-        - 0
         - 128
+        - 0
     Frame:
       Duration: 0.1
       FrameSize:
         - 64
         - 64
       FramePosition:
-        - 0
         - 192
+        - 0
     Frame:
       Duration: 0.1
       FrameSize:
         - 64
         - 64
       FramePosition:
-        - 0
         - 256
+        - 0
     Frame:
       Duration: 0.1
       FrameSize:
         - 64
         - 64
       FramePosition:
-        - 0
         - 320
+        - 0
