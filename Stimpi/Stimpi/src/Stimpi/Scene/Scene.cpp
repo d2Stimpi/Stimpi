@@ -342,6 +342,20 @@ namespace Stimpi
 		return {};
 	}
 
+	std::vector<Entity> Scene::FindAllEntitiesByName(std::string_view name)
+	{
+		std::vector<Entity> entities;
+
+		auto view = m_Registry.view<TagComponent>();
+		for (auto entity : view)
+		{
+			const TagComponent& tag = view.get<TagComponent>(entity);
+			if (tag.m_Tag == name)
+				entities.emplace_back(entity, this);
+		}
+		return entities;
+	}
+
 	bool Scene::RemoveEntity(Entity entity)
 	{
 		bool valid = IsEntityValid(entity);

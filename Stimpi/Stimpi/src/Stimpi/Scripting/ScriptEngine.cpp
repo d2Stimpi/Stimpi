@@ -745,7 +745,7 @@ namespace Stimpi
 
 		if (klass == nullptr)
 		{
-			ST_CORE_ERROR("GetClassInAssembly error loading class {}.{}", namespaceName, className);
+			ST_CORE_WARN("GetClassInAssembly error loading class {}.{}", namespaceName, className);
 			return nullptr;
 		}
 

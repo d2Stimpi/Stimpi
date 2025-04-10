@@ -38,6 +38,7 @@ namespace Stimpi
 		Entity CreateEntity(const std::string& name = "", const uint64_t& uuid = 0);
 		Entity GetEntityByHandle(entt::entity handle);
 		Entity FindentityByName(std::string_view name);
+		std::vector<Entity> FindAllEntitiesByName(std::string_view name);
 		bool RemoveEntity(Entity entity);
 		bool RemoveEntity(entt::entity handle);
 		bool IsEntityValid(Entity entity);

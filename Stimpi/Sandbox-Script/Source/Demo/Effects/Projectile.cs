@@ -91,6 +91,7 @@ namespace Demo
 
             _anim = AddComponent<AnimatedSpriteComponent>();
             _anim.AddAnimation("animations\\fireball01.anim");
+            _anim.AddAnimation("animations\\lightning.anim");
             _anim.AddAnimation("animations\\lightning_proj_start.anim");
             _anim.AddAnimation("animations\\lightning_proj_loop.anim");
             //_anim.Play("fireball01.anim");

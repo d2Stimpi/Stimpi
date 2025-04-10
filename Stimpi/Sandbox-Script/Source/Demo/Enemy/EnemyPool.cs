@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,6 +39,23 @@ namespace Demo
         public static void Clear()
         {
             s_EnemyPool.Clear();
+        }
+
+        public static Entity[] GetActiveEnemies()
+        {
+            Console.WriteLine($"=== GetActiveEnemies ===");
+            Entity[] entities = Entity.FindAllEntitiesByName("Demo.Enemy");
+            if (entities.Length != 0)
+            {
+                foreach (Entity entity in entities)
+                {
+                    Console.WriteLine($"<< Entitiy {entity.ID} found as Enemy");
+                    Enemy enemy = entity.As<Enemy>();
+                    if (enemy.IsActive())
+                        Console.WriteLine($"     Entitiy {entity.ID} is active");
+                }
+            }
+            return entities;
         }
     }
 }

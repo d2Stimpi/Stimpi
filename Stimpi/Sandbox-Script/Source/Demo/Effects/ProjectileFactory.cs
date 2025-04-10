@@ -66,7 +66,7 @@ namespace Demo
                     projectile.SetAndPlayAnimation("fireball01.anim", true);
                     break;
                 case ProjectileType.LIGHTNING_BOLT:
-                    projectile.SetAndPlayAnimation("lightning_proj_loop.anim", true);
+                    projectile.SetAndPlayAnimation("lightning.anim", true);
                     projectile.Velocity = 50.0f;
                     break;
                 default:

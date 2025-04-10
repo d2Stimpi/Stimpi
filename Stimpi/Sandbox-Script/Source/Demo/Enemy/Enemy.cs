@@ -52,6 +52,11 @@ namespace Demo
 
         public float ChangeDirFrequency = 1.5f;
 
+        public bool IsActive()
+        {
+            return _enableUpdate;
+        }
+
         private bool SimpleActionTimer(float ts, ref float timer, float value)
         {
             timer += ts;

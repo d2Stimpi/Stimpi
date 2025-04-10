@@ -106,6 +106,43 @@ namespace Stimpi
 		return entity;
 	}
 
+	static MonoArray* Entity_FindAllEntitiesByName(MonoString* name)
+	{
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+
+		char* nameCStr = mono_string_to_utf8(name);
+		auto entites = scene->FindAllEntitiesByName(nameCStr);
+		mono_free(nameCStr);
+
+		MonoType* monoType = mono_reflection_type_from_name("Stimpi.Entity", ScriptEngine::GetCoreAssemblyImage());
+		if (monoType)
+		{
+			uint32_t size = entites.size();
+			MonoClass* klass = mono_class_from_mono_type(monoType); // C# - Entity class
+			MonoArray* monoArray = mono_array_new(ScriptEngine::GetAppDomain(), klass, size);
+			MonoReflectionType* monoReflectionType = mono_type_get_object(ScriptEngine::GetAppDomain(), monoType);
+			uint32_t i = 0;
+			for (auto& entity : entites)
+			{
+				MonoObject* exception = nullptr;
+				MonoObject* returnObj = nullptr;
+				MonoObject* object = mono_object_new(ScriptEngine::GetAppDomain(), mono_class_from_mono_type(monoType));
+				mono_runtime_object_init(object);
+				// Find constructor method to initialize Entity ID
+				MonoMethod* monoMethod = mono_class_get_method_from_name(klass, ".ctor", 1);
+				void* param = &entity;
+				returnObj = mono_runtime_invoke(monoMethod, object, &param, &exception);
+				if (exception)
+				{
+					mono_print_unhandled_exception(exception);
+				}
+				mono_array_set(monoArray, MonoObject*, i++, object);
+			}
+			return monoArray;
+		}
+	}
+
 	static bool Entity_Remove(uint32_t entityID)
 	{
 		bool removed = false;
@@ -1473,6 +1510,7 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(Entity_AddComponent);
 		ST_ADD_INTERNAL_CALL(Entity_RemoveComponent);
 		ST_ADD_INTERNAL_CALL(Entity_FindEntityByName);
+		ST_ADD_INTERNAL_CALL(Entity_FindAllEntitiesByName);
 		ST_ADD_INTERNAL_CALL(Entity_Remove);
 		ST_ADD_INTERNAL_CALL(Entity_IsValidEntityID);
 		ST_ADD_INTERNAL_CALL(GetScriptInstace);

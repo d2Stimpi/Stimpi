@@ -130,8 +130,9 @@ namespace Stimpi
 				// Filter Entities
 				if (ImGuiEx::SearchInput("##SceneHierarchySearchInput", s_Context.m_SearchTextBuffer, sizeof(s_Context.m_SearchTextBuffer), "All"))
 				{
-					GroupFilteredEntities();
 				}
+				// Update filtered entities regardless if search input has changed
+				GroupFilteredEntities();
 
 				// Remove Entity button
 				ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 12);

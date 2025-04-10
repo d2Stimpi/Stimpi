@@ -74,6 +74,11 @@ namespace Stimpi
             return null;
         }
 
+        static public Entity[] FindAllEntitiesByName(string name)
+        {
+            return InternalCalls.Entity_FindAllEntitiesByName(name);
+        }
+
         static public Entity FindByName(string name)
         {
             uint entityID = InternalCalls.Entity_FindEntityByName(name);

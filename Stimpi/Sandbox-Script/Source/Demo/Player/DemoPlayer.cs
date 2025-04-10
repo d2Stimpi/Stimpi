@@ -173,6 +173,8 @@ namespace Demo
 
                         if (pattern.Contains("W"))
                         {
+                            EnemyPool.GetActiveEnemies();
+
                             projType = ProjectileType.LIGHTNING_BOLT;
                             projSize = new Vector2(16.0f, 9.0f);
                             ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, mousePos, projSize));

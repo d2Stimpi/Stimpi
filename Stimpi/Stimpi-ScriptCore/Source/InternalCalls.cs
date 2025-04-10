@@ -19,6 +19,8 @@ namespace Stimpi
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static uint Entity_FindEntityByName(string name);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static Entity[] Entity_FindAllEntitiesByName(string name);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool Entity_Remove(uint entityID);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool Entity_IsValidEntityID(uint entityID);
