@@ -46,6 +46,9 @@ namespace Demo
                 Enemy enemy = EnemyPool.GetObject();
                 enemy.Initialize(this, _spawnLocation);
 
+                // Add only initialized obj to Grid - with correct position
+                EnemyTracker.AddToGrid(enemy);
+
                 _enemyCount++;
             }
         }

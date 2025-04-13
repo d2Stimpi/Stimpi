@@ -564,8 +564,12 @@ namespace Stimpi
 
 		float GetPlaybackSpeed()
 		{
+			float speed = -1.0f;
+
 			if (m_AnimSprite)
 				m_AnimSprite->GetPlaybackSpeed();
+
+			return speed;
 		}
 
 		operator SubTexture* () const { return m_AnimSprite->GetSubTexture(); }

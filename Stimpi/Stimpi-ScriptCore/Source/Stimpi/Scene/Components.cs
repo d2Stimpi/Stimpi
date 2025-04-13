@@ -239,6 +239,22 @@ namespace Stimpi
 
             return isPlaying;
         }
+
+        public float PlaybackSpeed
+        {
+            get
+            {
+                if (!InternalCalls.AnimatedSpriteComponent_GetPlaybackSpeed(Entity.ID, out float playbackSpeed))
+                    Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (get PlaybackSpeed)");
+
+                return playbackSpeed;
+            }
+            set
+            {
+                if (!InternalCalls.AnimatedSpriteComponent_SetPlaybackSpeed(Entity.ID, value))
+                    Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (set PlaybackSpeed)");
+            }
+        }
     }
 
     public enum BodyType

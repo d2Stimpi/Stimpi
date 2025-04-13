@@ -135,7 +135,7 @@ namespace Demo
         public string ConsumeRegiseredKeyPattern()
         {
             string ret = _keysRegisterString;
-            Console.WriteLine("Registered key pattern str: " + _keysRegisterString);
+            //Console.WriteLine("Registered key pattern str: " + _keysRegisterString);
 
             _elementCount = 0;
             UpdateIconsVisibility(_elementCount);

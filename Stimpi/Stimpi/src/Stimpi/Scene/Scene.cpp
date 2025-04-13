@@ -782,8 +782,11 @@ namespace Stimpi
 			RigidBody2DComponent& rb2d = entity.GetComponent<RigidBody2DComponent>();
 			if (m_PhysicsWorld)
 			{
-				m_PhysicsWorld->DestroyBody((b2Body*)rb2d.m_RuntimeBody);
-				rb2d.m_RuntimeBody = nullptr;
+				if (rb2d.m_RuntimeBody)
+				{
+					m_PhysicsWorld->DestroyBody((b2Body*)rb2d.m_RuntimeBody);
+					rb2d.m_RuntimeBody = nullptr;
+				}
 			}
 		}
 	}
@@ -999,7 +1002,7 @@ namespace Stimpi
 					else if (bc2d.m_ColliderShape == BoxCollider2DComponent::Collider2DShape::CIRLCE)
 					{
 						glm::vec2 circleOutlineSize(bc2d.m_Size.x * quad.m_Size.x * 2.0f, bc2d.m_Size.x * quad.m_Size.x * 2.0f);
-						Renderer2D::Instance()->SubmitCircle(outlinePos, circleOutlineSize, outlineColor, 0.06f, 0.0f);
+						Renderer2D::Instance()->SubmitCircle(outlinePos, circleOutlineSize, outlineColor, 0.26f, 0.0f);
 					}
 				}
 				else if (entity.HasComponent<CircleComponent>())

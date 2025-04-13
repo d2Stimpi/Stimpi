@@ -52,9 +52,22 @@ namespace Demo
 
         public float ChangeDirFrequency = 1.5f;
 
+        override public string ToString()
+        {
+            return $"Enemy ID: {ID}";
+        }
+
+        public Vector2 GetPosition()
+        {
+            return _quad.Position;
+        }
+
+        /*
+         * Enemy is considered active if it is enabled and if enemy is alive (hp > 0)
+         */
         public bool IsActive()
         {
-            return _enableUpdate;
+            return _enableUpdate && _health > 0;
         }
 
         private bool SimpleActionTimer(float ts, ref float timer, float value)
@@ -141,6 +154,9 @@ namespace Demo
         {
             if (_enableUpdate)
             {
+                if (_enemyState != EnemyState.IDLE)
+                    EnemyTracker.Update(this);
+
                 if (_healthBar != null)
                     _healthBar.UpdatePosition();
                 // Maintain correct velocity

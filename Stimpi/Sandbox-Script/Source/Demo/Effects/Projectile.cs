@@ -14,17 +14,20 @@ namespace Demo
         private QuadComponent _quad;
         private SortingGroupComponent _sortingGroup;
         private RigidBody2DComponent _rb2d;
+        private BoxCollider2DComponent _bc2d;
         private AnimatedSpriteComponent _anim;
         private bool _enableUpdate = true;
         private float _fileSpan = 0.0f;
         private Vector2 _velocity;
         private Vector2 _velocityUnit;
+        private ProjectileType _type;
 
         public float Velocity = 100.0f;
         public float LifeSpan = 1.0f; // in seconds
 
-        public void Initialize(Entity owner, Vector2 target, Vector2 size)
+        public void Initialize(ProjectileType type, Entity owner, Vector2 target, Vector2 size)
         {
+            _type = type;
             // Field defaults (Pool reuse objects)
             Velocity = 100.0f;
             LifeSpan = 1.0f;
@@ -40,10 +43,19 @@ namespace Demo
                 ownerPos = ownerQuad.Position;
 
             // Calculate where to spawn Projectile
-            Vector2 firePos = ownerPos + (target - ownerPos).Unit * (size.X / 3 + size.Y / 3);
+            Vector2 firePos;
+            if (_type == ProjectileType.LIGHTNING_BOLT)
+            {
+                ownerPos += (target - ownerPos).Unit * 2.0f;
+                // Rather a position of sprite than a fire pos in this case (full length "proj")
+                firePos = ownerPos + (target - ownerPos) / 2.0f;
+            }
+            else
+                firePos = ownerPos + (target - ownerPos).Unit * (size.X / 3 + size.Y / 3);
+
             // Calculate angle
             Vector2 dir = target - ownerPos;
-            Vector2 vecVec = dir.Unit * Velocity;
+            Vector2 velVec = dir.Unit * Velocity;
             Vector2 angleDir = target - ownerPos;
             // Calculate rotation angle between X-Axis and Target vector
             float angle = Vector2.AxisX.Angle(angleDir.Unit);
@@ -56,15 +68,34 @@ namespace Demo
             else
                 _quad.Rotation = -angle;
 
+            // Type based collider init
+            if (_type == ProjectileType.LIGHTNING_BOLT)
+            {
+                _bc2d.Shape = Collider2DShape.BOX;
+                // Use full width of the texture as a collider
+                _bc2d.Size = new Vector2(0.5f, 0.25f);
+
+                // Set with to be the distance to target
+                float distance = (target - ownerPos).Length;
+                size.X = distance;
+                _quad.Size = size;
+
+                _rb2d.Enabled = false;
+            }
+            else
+            {
+                _bc2d.Shape = Collider2DShape.CIRCLE;
+                _bc2d.Size = new Vector2(0.25f, 0.25f);
+                _rb2d.Enabled = true;
+            }
+
             Physics.InitializePhysics2DBody(ID);    // Will only create the body if it does not already exist
 
-            _rb2d.Enabled = true;
+            //_rb2d.Enabled = true;
             _rb2d.SetTransform(_quad.Position, _quad.Rotation);
-            _velocity = vecVec;
+            _velocity = velVec;
             _velocityUnit = dir.Unit;
             Physics.SetLinearVelocity(ID, _velocity);
-
-            Physics.GetLinearVelocity(ID, out Vector2 outVel);
         }
 
         public void Invalidate(Vector2 pos)
@@ -84,6 +115,12 @@ namespace Demo
             _anim.Looping = loop;
         }
 
+        public void SetAnimationPlaybackSpeed(float playbackSpeed)
+        {
+            if (_anim != null)
+                _anim.PlaybackSpeed = playbackSpeed;
+        }
+
         public override void OnCreate()
         {
             _quad = AddComponent<QuadComponent>();
@@ -97,10 +134,10 @@ namespace Demo
             //_anim.Play("fireball01.anim");
             _anim.Looping = false;
 
-            BoxCollider2DComponent bc2d = AddComponent<BoxCollider2DComponent>();
-            bc2d.Shape = Collider2DShape.CIRCLE;
-            bc2d.Size = new Vector2(0.25f, 0.25f);  // Weird, but it means 2 times smaller collider than sprite
-            bc2d.GroupIndex = -1;
+            _bc2d = AddComponent<BoxCollider2DComponent>();
+            _bc2d.Shape = Collider2DShape.CIRCLE;
+            _bc2d.Size = new Vector2(0.25f, 0.25f);  // Weird, but it means 2 times smaller collider than sprite
+            _bc2d.GroupIndex = -1;
 
             _rb2d = AddComponent<RigidBody2DComponent>();
             _rb2d.Type = BodyType.DYNAMIC;
@@ -118,8 +155,13 @@ namespace Demo
                 _fileSpan -= ts;
                 if (_fileSpan <= 0)
                 {
-                    //Entity.Destroy(ID);
                     Console.WriteLine($"Projectile's lifespan elapsed");
+                    ProjectileFactory.Release(this);
+                }
+
+                // Lightning will stop when animation completes
+                if (_type == ProjectileType.LIGHTNING_BOLT && _anim.IsPlaying("lightning.anim") == false)
+                {
                     ProjectileFactory.Release(this);
                 }
             }
@@ -150,7 +192,6 @@ namespace Demo
                 explosion.Initialize(impact);
                 explosion.Play();
 
-                //Entity.Destroy(ID);
                 ProjectileFactory.Release(this);
             }
         }

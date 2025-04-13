@@ -709,6 +709,47 @@ namespace Stimpi
 		return hasComponent;
 	}
 
+	static bool AnimatedSpriteComponent_GetPlaybackSpeed(uint32_t entityID, float* playbackSpeed)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		// Default 'failed' value
+		*playbackSpeed = -1.0f;
+
+		hasComponent = entity.HasComponent<AnimatedSpriteComponent>();
+		if (hasComponent)
+		{
+			auto& anim = entity.GetComponent<AnimatedSpriteComponent>();
+			if (anim.IsAnimationSet())
+				*playbackSpeed = anim.GetPlaybackSpeed();
+		}
+
+		return hasComponent;
+	}
+
+	static bool AnimatedSpriteComponent_SetPlaybackSpeed(uint32_t entityID, float playbackSpeed)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<AnimatedSpriteComponent>();
+		if (hasComponent)
+		{
+			auto& anim = entity.GetComponent<AnimatedSpriteComponent>();
+			if (anim.IsAnimationSet())
+				anim.SetPlaybackSpeed(playbackSpeed);
+		}
+
+		return hasComponent;
+	}
+
 #pragma endregion AnimatedSpriteComponent
 
 #pragma region Input
@@ -896,10 +937,11 @@ namespace Stimpi
 		if (hasComponent)
 		{
 			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
-			if (rb2d.m_RuntimeBody == nullptr)
+			if (rb2d.m_RuntimeBody != nullptr)
 			{
-				scene->CreatePhysicsBody(entity);
+				scene->DestroyPhysicsBody(entity);
 			}
+			scene->CreatePhysicsBody(entity);
 		}
 
 		return hasComponent;
@@ -1550,6 +1592,9 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_IsPlaying);
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_GetWrapMode);
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_SetWrapMode);
+		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_GetPlaybackSpeed);
+		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_SetPlaybackSpeed);
+		
 
 		// RigidBody2DComponent
 		ST_ADD_INTERNAL_CALL(RigidBody2DComponent_GetRigidBodyType);

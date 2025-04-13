@@ -42,6 +42,7 @@ namespace Demo
             EffectsPool.Clear();
             ProjectileFactory.Clear();
             EnemyPool.Clear();
+            EnemyTracker.Initialize();
 
             _quad = GetComponent<QuadComponent>();
             if (Cursor != null)
@@ -169,15 +170,19 @@ namespace Demo
                     string pattern = _spellBar.ConsumeRegiseredKeyPattern();
                     if (pattern.Length >= 1)
                     {
-                        Vector2 mousePos = Input.GetMousePosition();
+                        Vector2 targetPos = Input.GetMousePosition();
 
                         if (pattern.Contains("W"))
                         {
-                            EnemyPool.GetActiveEnemies();
+                            EnemyTracker.LogStuff();
+
+                            Enemy closest = EnemyTracker.GetClosestEnemy(targetPos);
+                            if (closest != null)
+                                targetPos = closest.GetPosition();
 
                             projType = ProjectileType.LIGHTNING_BOLT;
-                            projSize = new Vector2(16.0f, 9.0f);
-                            ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, mousePos, projSize));
+                            projSize = new Vector2(48.0f, 9.0f);
+                            ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, targetPos, projSize));
                             return;
                         }
 
@@ -198,10 +203,10 @@ namespace Demo
                         }
 
                         for (int i = 1; i < Projectiles; i++)
-                            ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, MathUtils.RotatePointAroundCenter(mousePos, _quad.Position, -0.2617 * i), projSize));
-                        ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, mousePos, projSize));
+                            ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, MathUtils.RotatePointAroundCenter(targetPos, _quad.Position, -0.2617 * i), projSize));
+                        ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, targetPos, projSize));
                         for (int i = 1; i < Projectiles; i++)
-                            ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, MathUtils.RotatePointAroundCenter(mousePos, _quad.Position, 0.2617 * i), projSize));
+                            ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, MathUtils.RotatePointAroundCenter(targetPos, _quad.Position, 0.2617 * i), projSize));
                     }
                 }
             }

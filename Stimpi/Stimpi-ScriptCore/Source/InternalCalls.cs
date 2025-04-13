@@ -87,6 +87,11 @@ namespace Stimpi
         public extern static bool AnimatedSpriteComponent_GetWrapMode(uint entityID, out int outWrapMode);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool AnimatedSpriteComponent_SetWrapMode(uint entityID, int wrapMode);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool AnimatedSpriteComponent_GetPlaybackSpeed(uint entityID, out float playbackSpeed);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool AnimatedSpriteComponent_SetPlaybackSpeed(uint entityID, float playbackSpeed);
+
 
         /* RigidBody2DComponent */
         [MethodImplAttribute(MethodImplOptions.InternalCall)]

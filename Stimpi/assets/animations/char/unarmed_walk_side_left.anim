@@ -7,7 +7,7 @@ Animation:
         - 64
         - 64
       FramePosition:
-        - 64
+        - 0
         - 0
     Frame:
       Duration: 0.1

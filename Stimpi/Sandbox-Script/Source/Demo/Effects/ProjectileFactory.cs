@@ -58,7 +58,7 @@ namespace Demo
             // - Velocity
             // - Damage and other data
 
-            projectile.Initialize(param.OwnerEntity, param.TargetPosition, param.Size);
+            projectile.Initialize(type, param.OwnerEntity, param.TargetPosition, param.Size);
 
             switch(type)
             {
@@ -66,7 +66,8 @@ namespace Demo
                     projectile.SetAndPlayAnimation("fireball01.anim", true);
                     break;
                 case ProjectileType.LIGHTNING_BOLT:
-                    projectile.SetAndPlayAnimation("lightning.anim", true);
+                    projectile.SetAndPlayAnimation("lightning.anim", false);
+                    projectile.SetAnimationPlaybackSpeed(3.0f);
                     projectile.Velocity = 50.0f;
                     break;
                 default:

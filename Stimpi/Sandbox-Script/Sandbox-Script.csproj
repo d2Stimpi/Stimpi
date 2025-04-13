@@ -21,7 +21,8 @@
     <OutputPath>..\resources\scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\resources\scripts\intermediates\Debug\Sandbox-Script\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -33,7 +34,8 @@
     <OutputPath>..\resources\scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\resources\scripts\intermediates\Release\Sandbox-Script\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -45,7 +47,8 @@
     <OutputPath>..\resources\scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\resources\scripts\intermediates\Dist\Sandbox-Script\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -65,6 +68,7 @@
     <Compile Include="Source\Demo\Enemy\Enemy.cs" />
     <Compile Include="Source\Demo\Enemy\EnemyPool.cs" />
     <Compile Include="Source\Demo\Enemy\EnemySpawn.cs" />
+    <Compile Include="Source\Demo\Enemy\EnemyTracker.cs" />
     <Compile Include="Source\Demo\Player\DemoPlayer.cs" />
     <Compile Include="Source\Demo\UI\HealthBar.cs" />
     <Compile Include="Source\Demo\UI\Icon.cs" />
