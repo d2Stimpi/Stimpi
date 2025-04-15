@@ -29,7 +29,7 @@ namespace Stimpi
 			out << YAML::Key << "Animation" << YAML::Value;
 			out << YAML::BeginMap;
 			{
-				out << YAML::Key << "TextureAssetHandle" << YAML::Value << m_Animation->GetSubTexture()->GetAssetHandle();
+				out << YAML::Key << "TextureAssetHandle" << YAML::Value << m_Animation->m_TextureHandle;
 
 				out << YAML::Key << "Frames" << YAML::Value;
 				out << YAML::BeginMap;
@@ -92,7 +92,7 @@ namespace Stimpi
 					ST_CORE_ASSERT_MSG(metadata.m_Type != AssetType::TEXTURE, "Animation: wrong asset type used!");
 				}
 			}
-			m_Animation->m_SubTexture = std::make_shared<SubTexture>(handle, glm::vec2{ 0.0f, 0.0f }, glm::vec2{ 0.0f, 0.0f });;
+			m_Animation->m_TextureHandle = handle;
 
 			if (animation["Frames"])
 			{

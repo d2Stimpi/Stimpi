@@ -5,11 +5,14 @@
 #include "Stimpi/Core/InputManager.h"
 #include "Stimpi/Core/WindowManager.h"
 #include "Stimpi/Core/KeyCodes.h"
+#include "Stimpi/Core/Project.h"
 
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/EntityManager.h"
 #include "Stimpi/Scene/Utils/SceneUtils.h"
+
+#include "Stimpi/Asset/AssetManager.h"
 
 #include "box2d/b2_body.h"
 #include "box2d/b2_math.h"
@@ -599,10 +602,10 @@ namespace Stimpi
 			auto& anim = entity.GetComponent<AnimatedSpriteComponent>();
 			char* nameCStr = mono_string_to_utf8(assetName);
 
-			auto assetsPath = Project::GetAssestsDir();
-			auto asset = assetsPath / nameCStr;
+			AssetHandle animHandle = AssetManager::GetAssetHandle({ AssetType::ANIMATION, nameCStr });
+			// TODO: log error if no asset with assetName was found
 
-			anim.AddAnimation(asset.string());
+			anim.AddAnimation(animHandle);
 			mono_free(nameCStr);
 		}
 

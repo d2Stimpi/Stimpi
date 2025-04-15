@@ -99,13 +99,8 @@ Methods:
     OutParams:
       - 4
       - 5
-    MethodID: AnimSpriteMod
-  Method:
-    InParams:
-      - 4
-    OutParams:
       - 6
-    MethodID: AnimationMod
+    MethodID: AnimSpriteMod
   Method:
     InParams:
       - 6

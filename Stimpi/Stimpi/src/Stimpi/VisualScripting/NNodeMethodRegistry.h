@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Stimpi/Core/Core.h"
+#include "Stimpi/Core/UUID.h"
 
 namespace Stimpi
 {
@@ -15,7 +16,7 @@ namespace Stimpi
 	};
 
 	using ObjectParam = void*;
-	using Param = std::variant<uint32_t, bool, int, float, glm::vec2, glm::vec3, glm::vec4, ObjectParam>;
+	using Param = std::variant<uint32_t, bool, int, float, glm::vec2, glm::vec3, glm::vec4, UUID, ObjectParam>;
 	using MethodType = std::function<bool(Method*)>;
 	using MethodRegistry = std::unordered_map<MethodName, MethodType>;
 

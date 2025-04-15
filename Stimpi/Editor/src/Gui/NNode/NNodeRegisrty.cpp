@@ -132,6 +132,7 @@ namespace Stimpi
 		node->AddPin(NPin::Type::In, "In", NPin::DataType::AnimSprite);
 		node->AddPin(NPin::Type::Out, "Animation", NPin::DataType::Animation);
 		node->AddPin(NPin::Type::Out, "PlaybackSpeed", NPin::DataType::Float);
+		node->AddPin(NPin::Type::Out, "SubTexture", NPin::DataType::SubTexture);
 		node->AddMethod(MethodName::AnimSpriteMod);
 
 		return node;
@@ -141,7 +142,6 @@ namespace Stimpi
 	{
 		auto node = std::make_shared<NNode>("Animation", NNode::Type::Modifier);
 		node->AddPin(NPin::Type::In, "In", NPin::DataType::Animation);
-		node->AddPin(NPin::Type::Out, "SubTexture", NPin::DataType::SubTexture);
 		node->AddMethod(MethodName::AnimationMod);
 
 		return node;

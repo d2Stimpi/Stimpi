@@ -2,6 +2,7 @@
 
 #include "Stimpi/Core/Core.h"
 #include "Stimpi/Graphics/SubTexture.h"
+#include "Stimpi/Asset/Asset.h"
 
 #include <glm/glm.hpp>
 
@@ -20,25 +21,27 @@ namespace Stimpi
 		{}
 	};
 
-	class ST_API Animation
+	class ST_API Animation : public Asset
 	{
 	public:
 		Animation();
 		~Animation();
 
-		SubTexture* GetSubTexture() { return m_SubTexture.get(); }
-		std::shared_ptr<SubTexture> GetSubTextureRef() { return m_SubTexture; }
+		AssetHandle GetTexture();
 		std::vector<AnimationFrameData>& GetFrames() { return m_Frames; }
 		FilePath GetAssetFilePath() { return m_AssetPath; }
 		std::string& GetName() { return m_Name; }
 
 		// AssetManager resource
-		static Animation* Create(std::string file);
+		static std::shared_ptr<Animation> Create(std::string file);
+
+		static AssetType GetTypeStatic() { return AssetType::ANIMATION; }
+		AssetType GetType() override { return GetTypeStatic(); }
 
 	private:
 		FilePath m_AssetPath;
 		std::string m_Name;
-		std::shared_ptr<SubTexture> m_SubTexture;
+		AssetHandle m_TextureHandle;
 		std::vector<AnimationFrameData> m_Frames;
 
 		friend class AnimationSerializer;

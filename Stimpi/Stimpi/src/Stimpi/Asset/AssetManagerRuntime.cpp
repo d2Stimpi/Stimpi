@@ -12,6 +12,12 @@ namespace Stimpi
 		return nullptr;
 	}
 
+	AssetHandle AssetManagerRuntime::GetAssetHandle(const AssetMetadata& metadata)
+	{
+		ST_CORE_WARN("AssetManagerRuntime::GetAssetHandle - not implemented!");
+		return 0;
+	}
+
 	bool AssetManagerRuntime::IsAssetHandleValid(AssetHandle handle)
 	{
 		ST_CORE_WARN("AssetManagerRuntime::IsHandleValid - not implemented!");

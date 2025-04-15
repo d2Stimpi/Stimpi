@@ -112,7 +112,7 @@ namespace Stimpi
 				AnimatedSpriteComponent& component = e.GetComponent<AnimatedSpriteComponent>();
 
 				method->m_ExecTree->m_Params[opi1] = component.m_AnimSprite.get();
-				method->m_ExecTree->m_Params[opi2] = component.m_DefaultAnimation.get();
+				method->m_ExecTree->m_Params[opi2] = component.m_DefaultAnimation;
 				method->m_ExecTree->m_Params[opi3] = &component.m_Animations;
 				method->m_ExecTree->m_Params[opi4] = component.m_Material.get();
 			}
@@ -281,11 +281,13 @@ namespace Stimpi
 		uint32_t ipi1 = method->m_InParams[0];
 		uint32_t opi1 = method->m_OutParams[0];
 		uint32_t opi2 = method->m_OutParams[1];
+		uint32_t opi3 = method->m_OutParams[2];
 
 		AnimatedSprite* animSprite = static_cast<AnimatedSprite*>(std::get<void*>(method->m_ExecTree->m_Params[ipi1]));
 
 		method->m_ExecTree->m_Params[opi1] = animSprite->GetAnimation().get();
 		method->m_ExecTree->m_Params[opi2] = animSprite->GetPlaybackSpeed();
+		method->m_ExecTree->m_Params[opi3] = animSprite->GetSubTexture();
 
 		return true;
 	}
@@ -294,16 +296,16 @@ namespace Stimpi
 	 * Description: Decomposition of Animation type
 	 * 
 	 * input: Animation - Animation ref
-	 * output: SubTexture - SubTexture part of animation object
+	 * output:  TODO
 	 */
 	static bool AnimationMod(Method* method)
 	{
 		uint32_t ipi1 = method->m_InParams[0];
-		uint32_t opi1 = method->m_OutParams[0];
+		//uint32_t opi1 = method->m_OutParams[0];
 
 		Animation* animation = static_cast<Animation*>(std::get<void*>(method->m_ExecTree->m_Params[ipi1]));
 		
-		method->m_ExecTree->m_Params[opi1] = animation->GetSubTexture();
+		//method->m_ExecTree->m_Params[opi1] = animation->GetSubTexture();
 
 		return true;
 	}

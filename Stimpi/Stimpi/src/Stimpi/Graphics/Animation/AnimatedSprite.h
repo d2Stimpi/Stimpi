@@ -22,11 +22,10 @@ namespace Stimpi
 	{
 	public:
 		AnimatedSprite();
-		AnimatedSprite(FilePath path);
+		AnimatedSprite(AssetHandle animationHandle);
 
-		void SetAnimation(FilePath path);
-		void SetAnimation(std::shared_ptr<Animation> animation);
-		std::shared_ptr<Animation> GetAnimation() { return m_Animation; }
+		void SetAnimation(AssetHandle animationHandle);
+		std::shared_ptr<Animation> GetAnimation();
 		
 		void Update(Timestep ts);
 		void SetCurrentFrame(uint32_t frame);
@@ -44,10 +43,12 @@ namespace Stimpi
 		AnimationWrapMode GetWrapMode() { return m_WrapMode; }
 		void SetWrapMode(AnimationWrapMode wrapMode) { m_WrapMode = wrapMode; }
 
-		SubTexture* GetSubTexture() { return m_Animation->GetSubTexture(); }
+		SubTexture* GetSubTexture();
 
 	private:
-		std::shared_ptr<Animation> m_Animation;
+		AssetHandle m_AnimationHandle;
+		std::shared_ptr<SubTexture> m_SubTexture;
+
 		AnimationState m_State = AnimationState::STOPPED;
 		AnimationWrapMode m_WrapMode = AnimationWrapMode::ONCE;
 		float m_PlaybackSpeed = 1.0f;

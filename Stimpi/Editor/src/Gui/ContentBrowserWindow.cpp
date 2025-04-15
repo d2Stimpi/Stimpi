@@ -253,7 +253,8 @@ namespace Stimpi
 			}
 			if (relativePath.extension().string() == ".anim")
 			{
-				UIPayload::BeginSource(PAYLOAD_ANIMATION, path.string().c_str(), path.string().length(), filenameStr.c_str());
+				AssetHandle animHandle = Project::GetEditorAssetManager()->GetAssetHandle(relativePath);
+				UIPayload::BeginSource(PAYLOAD_ANIMATION, &animHandle, sizeof(AssetHandle), filenameStr.c_str());
 			}
 			if (relativePath.extension().string() == ".shader")
 			{

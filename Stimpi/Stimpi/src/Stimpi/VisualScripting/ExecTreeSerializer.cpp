@@ -22,6 +22,7 @@ namespace Stimpi
 	GET_PARAM_TYPE_METHOD(glm::vec2)
 	GET_PARAM_TYPE_METHOD(glm::vec3)
 	GET_PARAM_TYPE_METHOD(glm::vec4)
+	GET_PARAM_TYPE_METHOD(UUID)
 
 	ExecTreeSerializer::ExecTreeSerializer(ExecTree* execTree)
 		: m_ExecTree(execTree)
@@ -118,6 +119,7 @@ namespace Stimpi
 			CHECK_GET_VARIANT_PARAM_DATA(bool);
 			CHECK_GET_VARIANT_PARAM_DATA(int);
 			CHECK_GET_VARIANT_PARAM_DATA(float);
+			CHECK_GET_VARIANT_PARAM_DATA(UUID);
 
 			// Special case - TODO: define glm::vec4 yaml methods
 			if (std::holds_alternative<glm::vec4>(param))

@@ -5,6 +5,7 @@
 #include "Stimpi/Asset/TextureImporter.h"
 #include "Stimpi/Asset/SceneImporter.h"
 #include "Stimpi/Asset/ShaderImporter.h"
+#include "Stimpi/Asset/AnimationImporter.h"
 #include "Stimpi/Utils/ThreadPool.h"
 
 #include <chrono>
@@ -19,7 +20,8 @@ namespace Stimpi
 	{
 		{ AssetType::SHADER, ShaderImporter::ImportShader },
 		{ AssetType::SCENE, SceneImporter::ImportScene },
-		{ AssetType::TEXTURE, TextureImporter::ImportTexture }
+		{ AssetType::TEXTURE, TextureImporter::ImportTexture },
+		{ AssetType::ANIMATION, AnimationImporter::ImportAnimation }
 	};
 
 	std::shared_ptr<Stimpi::Asset> AssetImporter::ImportAsset(AssetHandle handle, const AssetMetadata& metadata)

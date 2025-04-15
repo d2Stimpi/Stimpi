@@ -301,6 +301,7 @@
     <ClInclude Include="src\Stimpi\Platform\OpenGLTypes.h" />
     <ClInclude Include="src\Stimpi\Graphics\Material.h" />
     <ClInclude Include="src\Stimpi\VisualScripting\ExecTreeRegistry.h" />
+    <ClInclude Include="src\Stimpi\Asset\AnimationImporter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Asset\Asset.cpp">
@@ -517,5 +518,6 @@
     <ClCompile Include="src\Stimpi\VisualScripting\ExecTreeSerializer.cpp" />
     <ClCompile Include="src\Stimpi\Graphics\Material.cpp" />
     <ClCompile Include="src\Stimpi\VisualScripting\ExecTreeRegistry.cpp" />
+    <ClCompile Include="src\Stimpi\Asset\AnimationImporter.cpp" />
   </ItemGroup>
 </Project>

@@ -13,7 +13,8 @@ namespace Stimpi
 		NONE = 0,
 		TEXTURE,
 		SHADER,
-		SCENE
+		SCENE,
+		ANIMATION
 	};
 
 	std::string AssetTypeToString(AssetType type);

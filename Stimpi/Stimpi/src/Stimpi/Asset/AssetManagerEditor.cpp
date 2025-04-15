@@ -78,6 +78,11 @@ namespace Stimpi
 		return it->second;
 	}
 
+	Stimpi::AssetHandle AssetManagerEditor::GetAssetHandle(const AssetMetadata& metadata)
+	{
+		return GetAssetHandle(metadata.m_FilePath);
+	}
+
 	bool AssetManagerEditor::WasAssetUpdated(AssetHandle handle)
 	{
 		static FileTimeType s_ZeroTime;

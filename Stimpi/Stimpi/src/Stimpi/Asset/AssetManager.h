@@ -13,5 +13,7 @@ namespace Stimpi
 			std::shared_ptr<Asset> asset = Project::GetAssetManager()->GetAsset(handle);
 			return std::static_pointer_cast<T>(asset);
 		}
+
+		static AssetHandle GetAssetHandle(const AssetMetadata& metadata);
 	};
 }

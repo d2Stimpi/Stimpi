@@ -2,7 +2,6 @@
 
 #include "Stimpi/Core/Core.h"
 #include "Stimpi/Asset/AssetManagerBase.h"
-#include "Stimpi/Asset/AssetMetadata.h"
 
 namespace Stimpi
 {
@@ -13,6 +12,7 @@ namespace Stimpi
 	{
 	public:
 		std::shared_ptr<Asset> GetAsset(AssetHandle handle) override;
+		AssetHandle GetAssetHandle(const AssetMetadata& metadata) override;
 
 		bool IsAssetHandleValid(AssetHandle handle) override;
 		bool IsAssetLoaded(AssetHandle handle) override;

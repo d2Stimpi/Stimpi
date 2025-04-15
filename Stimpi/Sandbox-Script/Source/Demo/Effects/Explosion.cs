@@ -49,7 +49,7 @@ namespace Demo
                 if (_anim.AnimState == AnimationState.COMPELETED)
                 {
                     _played = false;                    
-                    EffectsPool.ReleaseObject(this); //Entity.Destroy(ID);
+                    EffectsPool.ReleaseObject(this);
                 }
             }
         }

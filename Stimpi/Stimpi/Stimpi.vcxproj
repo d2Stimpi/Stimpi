@@ -164,6 +164,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi.h" />
+    <ClInclude Include="src\Stimpi\Asset\AnimationImporter.h" />
     <ClInclude Include="src\Stimpi\Asset\Asset.h" />
     <ClInclude Include="src\Stimpi\Asset\AssetImporter.h" />
     <ClInclude Include="src\Stimpi\Asset\AssetManager.h" />
@@ -254,6 +255,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\stpch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Stimpi\Asset\AnimationImporter.cpp" />
     <ClCompile Include="src\Stimpi\Asset\Asset.cpp" />
     <ClCompile Include="src\Stimpi\Asset\AssetImporter.cpp" />
     <ClCompile Include="src\Stimpi\Asset\AssetManager.cpp" />

@@ -60,16 +60,16 @@ Scene:
       - 24
       - 0
     AnimatedSpriteComponent:
-      DefaultAnimation: animations\char\unarmed_idle_front.anim
+      DefaultAnimationHandle: 7469747603640462214
       Animations:
         Animation:
-          AnimationAssetPath: animations\char\unarmed_walk_back.anim
+          AnimationHandle: 17035806228380399739
         Animation:
-          AnimationAssetPath: animations\char\unarmed_walk_front.anim
+          AnimationHandle: 15705175175117077721
         Animation:
-          AnimationAssetPath: animations\char\unarmed_walk_side_left.anim
+          AnimationHandle: 5631870992591448076
         Animation:
-          AnimationAssetPath: animations\char\unarmed_walk_side_right.anim
+          AnimationHandle: 3414443410911274819
       AutoPlay: false
     ScriptComponent:
       ScriptName: Demo.DemoPlayer
@@ -322,52 +322,52 @@ Scene:
       - 6
       - 0
     AnimatedSpriteComponent:
-      DefaultAnimation: animations\explosion01.anim
+      DefaultAnimationHandle: 12297633509687351236
       Animations:
         Animation:
-          AnimationAssetPath: animations\char\sword_attack_front.anim
+          AnimationHandle: 12297220821660015364
         Animation:
-          AnimationAssetPath: animations\char\unarmed_walk_back.anim
+          AnimationHandle: 17035806228380399739
         Animation:
-          AnimationAssetPath: animations\fireball01.anim
+          AnimationHandle: 4797646646277876960
         Animation:
-          AnimationAssetPath: animations\explosion01.anim
+          AnimationHandle: 12297633509687351236
         Animation:
-          AnimationAssetPath: animations\lightning_proj_start.anim
+          AnimationHandle: 12617106886154280590
         Animation:
-          AnimationAssetPath: animations\lightning_proj_loop.anim
+          AnimationHandle: 10706201719177763124
         Animation:
-          AnimationAssetPath: animations\char\sword_attack_back.anim
+          AnimationHandle: 9956436020230964262
         Animation:
-          AnimationAssetPath: animations\char\sword_attack_side_left.anim
+          AnimationHandle: 11357781097830641570
         Animation:
-          AnimationAssetPath: animations\char\sword_attack_side_right.anim
+          AnimationHandle: 4188262754872855305
         Animation:
-          AnimationAssetPath: animations\char\sword_death_side_left.anim
+          AnimationHandle: 6695523510364417629
         Animation:
-          AnimationAssetPath: animations\char\sword_idle_front.anim
+          AnimationHandle: 276263481809743999
         Animation:
-          AnimationAssetPath: animations\char\sword_walk_back.anim
+          AnimationHandle: 8722242261239452159
         Animation:
-          AnimationAssetPath: animations\char\sword_walk_front.anim
+          AnimationHandle: 8458109719646091265
         Animation:
-          AnimationAssetPath: animations\char\sword_walk_side_left.anim
+          AnimationHandle: 17607788546281064143
         Animation:
-          AnimationAssetPath: animations\char\sword_walk_side_right.anim
+          AnimationHandle: 17907834197573449681
         Animation:
-          AnimationAssetPath: animations\char\unarmed_idle_front.anim
+          AnimationHandle: 7469747603640462214
         Animation:
-          AnimationAssetPath: animations\char\unarmed_walk_front.anim
+          AnimationHandle: 15705175175117077721
         Animation:
-          AnimationAssetPath: animations\char\unarmed_walk_side_left.anim
+          AnimationHandle: 5631870992591448076
         Animation:
-          AnimationAssetPath: animations\char\unarmed_walk_side_right.anim
+          AnimationHandle: 3414443410911274819
         Animation:
-          AnimationAssetPath: animations\char\sword_death_back.anim
+          AnimationHandle: 5671786511856698261
         Animation:
-          AnimationAssetPath: animations\char\sword_death_front.anim
+          AnimationHandle: 7832990049996959105
         Animation:
-          AnimationAssetPath: animations\char\sword_death_side_right.anim
+          AnimationHandle: 11863235245198031560
       AutoPlay: false
   Entity:
     UUIDComponent:
@@ -1546,8 +1546,8 @@ Scene:
       - 12
       - 0
     AnimatedSpriteComponent:
-      DefaultAnimation: animations\lightning.anim
+      DefaultAnimationHandle: 18317789384067128086
       Animations:
         {}
       AutoPlay: false
-      Shader: 8449217666332328825
+      Shader: 9330867936995005736

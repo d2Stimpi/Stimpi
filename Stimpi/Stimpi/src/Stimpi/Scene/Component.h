@@ -447,9 +447,9 @@ namespace Stimpi
 	struct AnimatedSpriteComponent
 	{
 		std::shared_ptr<AnimatedSprite> m_AnimSprite;
-		std::shared_ptr<Animation> m_DefaultAnimation;
+		AssetHandle m_DefaultAnimation = 0;
 
-		std::unordered_map<std::string, std::shared_ptr<Animation>> m_Animations;
+		std::unordered_map<std::string, AssetHandle> m_Animations;
 		bool m_AutoPlay = false; // Auto play the default anim on start
 
 		// Custom shader asset
@@ -486,20 +486,23 @@ namespace Stimpi
 			return anim->GetName();
 		}
 
-		void SetDefailtAnimation(const std::string& filePath)
+		void SetDefailtAnimation(const AssetHandle& handle)
 		{
-			auto newAnim = std::make_shared<Animation>();
-			newAnim.reset(Animation::Create(filePath));
-
-			m_DefaultAnimation = newAnim;
+			m_DefaultAnimation = handle;
 		}
 
-		void AddAnimation(const std::string& filePath)
+		std::shared_ptr<Animation> GetDefaultAnimation()
 		{
-			auto newAnim = std::make_shared<Animation>();
-			newAnim.reset(Animation::Create(filePath));
+			return AssetManager::GetAsset<Animation>(m_DefaultAnimation);
+		}
 
-			m_Animations[newAnim->GetName()] = newAnim;
+		void AddAnimation(const AssetHandle& handle)
+		{
+			if (handle)
+			{
+				std::shared_ptr<Animation> animation = AssetManager::GetAsset<Animation>(handle);
+				m_Animations[animation->GetName()] = handle;
+			}
 		}
 
 		void RemoveAnimation(const std::string& name)
@@ -589,7 +592,7 @@ namespace Stimpi
 			{
 				if (m_DefaultAnimation)
 				{
-					out << YAML::Key << "DefaultAnimation" << YAML::Value << m_DefaultAnimation->GetAssetFilePath().GetRelativePath(Project::GetAssestsDir()).string();
+					out << YAML::Key << "DefaultAnimationHandle" << YAML::Value << m_DefaultAnimation;
 				}
 				out << YAML::Key << "Animations";
 				out << YAML::BeginMap;
@@ -599,7 +602,7 @@ namespace Stimpi
 						out << YAML::Key << "Animation";
 						out << YAML::BeginMap;
 						{
-							out << YAML::Key << "AnimationAssetPath" << YAML::Value << anim.second->GetAssetFilePath().GetRelativePath(Project::GetAssestsDir()).string();
+							out << YAML::Key << "AnimationHandle" << YAML::Value << anim.second;
 						}
 						out << YAML::EndMap;
 					}
@@ -620,10 +623,10 @@ namespace Stimpi
 			m_AnimSprite = std::make_shared<AnimatedSprite>();
 			m_AutoPlay = false;
 
-			if (node["DefaultAnimation"])
+			if (node["DefaultAnimationHandle"])
 			{
-				FilePath defaultAnimPath = Project::GetAssestsDir() / node["DefaultAnimation"].as<std::string>();
-				SetDefailtAnimation(defaultAnimPath);
+				AssetHandle defaultAnimHandle = node["DefaultAnimationHandle"].as<UUIDType>();
+				SetDefailtAnimation(defaultAnimHandle);
 				m_AnimSprite->SetAnimation(m_DefaultAnimation);
 			}
 			if (node["Animations"])
@@ -632,10 +635,10 @@ namespace Stimpi
 				for (YAML::const_iterator it = anims.begin(); it != anims.end(); it++)
 				{
 					YAML::Node anim = it->second;
-					if (anim["AnimationAssetPath"])
+					if (anim["AnimationHandle"])
 					{
-						FilePath animPath = Project::GetAssestsDir() / anim["AnimationAssetPath"].as<std::string>();
-						AddAnimation(animPath);
+						AssetHandle animHandle = anim["AnimationHandle"].as<UUIDType>();
+						AddAnimation(animHandle);
 					}
 				}
 			}

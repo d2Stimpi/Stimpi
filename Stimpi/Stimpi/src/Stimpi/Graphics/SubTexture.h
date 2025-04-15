@@ -33,6 +33,7 @@ namespace Stimpi
 		unsigned int GetTextureID() { return GetTexture()->GetTextureID(); }
 
 		AssetHandle GetAssetHandle() { return m_TextureAssetHandle; }
+		void SetTextureHandle(AssetHandle handle) { m_TextureAssetHandle = handle; }
 
 	private:
 		bool m_Loaded = false;

@@ -1,7 +1,4 @@
 NodeGraphRegistry:
   NodeGraph:
-    UUID: 11084975744725160239
-    Name: checkerboard
-  NodeGraph:
-    UUID: 8449217666332328825
+    UUID: 9330867936995005736
     Name: shader2

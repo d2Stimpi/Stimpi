@@ -14,10 +14,15 @@ namespace Stimpi
 	{
 	}
 
-	Stimpi::Animation* Animation::Create(std::string file)
+	AssetHandle Animation::GetTexture()
 	{
-		Animation* newAnimation = new Animation();
-		AnimationSerializer serializer(newAnimation);
+		return m_TextureHandle;
+	}
+
+	std::shared_ptr<Animation> Animation::Create(std::string file)
+	{
+		std::shared_ptr<Animation> newAnimation = std::make_shared<Animation>();
+		AnimationSerializer serializer(newAnimation.get());
 		serializer.Deseriealize(file);
 
 		newAnimation->m_AssetPath = file;

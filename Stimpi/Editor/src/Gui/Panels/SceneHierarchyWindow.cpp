@@ -615,20 +615,23 @@ namespace Stimpi
 			ImGui::SameLine(0.0f, 5.0f);
 			std::string defaultAnimLabel = "None";
 			if (component.m_DefaultAnimation)
-				defaultAnimLabel = component.m_DefaultAnimation->GetName();
+				defaultAnimLabel = component.GetDefaultAnimation()->GetName();
 			ImGui::Text(defaultAnimLabel.c_str());
 
 			UIPayload::BeginTarget(PAYLOAD_ANIMATION, [&component](void* data, uint32_t size) {
-				std::string strData = std::string((char*)data, size);
-				ST_CORE_INFO("Texture data dropped: {0}", strData.c_str());
-				component.SetDefailtAnimation(strData);
+				AssetHandle handle = *(AssetHandle*)data;
+				AssetMetadata metadata = Project::GetEditorAssetManager()->GetAssetMetadata(handle);
+				ST_CORE_INFO("Texture data dropped: {0}", metadata.m_FilePath.string());
+				component.SetDefailtAnimation(handle);
 				});
 
 			if (ImGui::Button(">##AnimatedSpriteComponent"))
 			{
 				if (component.m_AnimSprite)
+				{
 					component.m_AnimSprite->Stop();
 					component.m_AnimSprite->Start();
+				}
 			}
 			ImGui::SameLine();
 			if (ImGui::Button("=##AnimatedSpriteComponent"))
@@ -680,8 +683,8 @@ namespace Stimpi
 			{
 				// Target is TreeNode
 				UIPayload::BeginTarget(PAYLOAD_ANIMATION, [&component](void* data, uint32_t size) {
-					std::string strData = std::string((char*)data, size);
-					component.AddAnimation(strData);
+					AssetHandle handle = *(AssetHandle*)data;
+					component.AddAnimation(handle);
 					});
 
 				ImGui::Spacing();
@@ -704,7 +707,8 @@ namespace Stimpi
 					}
 					ImGui::SameLine(0.0f, 5.0f);
 					float availableWidth = ImGui::GetWindowContentRegionWidth() - ImGui::GetCursorPosX() - 18.0f; // 18.0f is for "..." and a button
-					std::string str = EditorUtils::StringTrimByWidth(anim.second->GetName(), availableWidth);
+					std::shared_ptr<Animation> animation = AssetManager::GetAsset<Animation>(anim.second);
+					std::string str = EditorUtils::StringTrimByWidth(animation->GetName(), availableWidth);
 					ImGui::Text(str.c_str());
 
 					ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 15.0f, 5.0f);
@@ -752,8 +756,8 @@ namespace Stimpi
 			else
 			{
 				UIPayload::BeginTarget(PAYLOAD_ANIMATION, [&component](void* data, uint32_t size) {
-					std::string strData = std::string((char*)data, size);
-					component.AddAnimation(strData);
+					AssetHandle handle = *(AssetHandle*)data;
+					component.AddAnimation(handle);
 					});
 			}
 			
@@ -862,7 +866,7 @@ namespace Stimpi
 						for (auto& item : shader->GetInfo().m_ShaderLayout)
 						{
 							// For now, skip "default" shader layouts
-							if (std::find(s_FilterLayoutNames.begin(), s_FilterLayoutNames.end(), item.m_Name) == s_FilterLayoutNames.end())
+							if (std::find(s_FilterLayoutNames.begin(), s_FilterLayoutNames.end(), item.m_Name) != s_FilterLayoutNames.end())
 								continue;
 
 							switch (item.m_Type)

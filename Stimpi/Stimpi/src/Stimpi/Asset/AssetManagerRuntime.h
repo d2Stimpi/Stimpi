@@ -8,6 +8,7 @@ namespace Stimpi
 	{
 	public:
 		std::shared_ptr<Asset> GetAsset(AssetHandle handle) override;
+		AssetHandle GetAssetHandle(const AssetMetadata& metadata) override;
 		bool IsAssetHandleValid(AssetHandle handle) override;
 		virtual bool IsAssetLoaded(AssetHandle handle) override;
 	};
