@@ -91,6 +91,13 @@ namespace Stimpi
         public extern static bool AnimatedSpriteComponent_GetPlaybackSpeed(uint entityID, out float playbackSpeed);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool AnimatedSpriteComponent_SetPlaybackSpeed(uint entityID, float playbackSpeed);
+        // Material methods
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool AnimatedSpriteComponent_SetMaterial(uint entityID, string assetName);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool AnimatedSpriteComponent_GetUseCustomMaterial(uint entityID, out bool useCustomMaterial);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool AnimatedSpriteComponent_SetUseCustomMaterial(uint entityID, bool useCustomMaterial);
 
 
         /* RigidBody2DComponent */

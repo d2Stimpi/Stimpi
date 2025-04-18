@@ -35,8 +35,8 @@ void main()
 		vec2 uv;
 		float tf = TilingFactor;
 
-		if (tf < 0) tf = 0;
-		if (tf > 1) tf = 1;
+		//if (tf < 0) tf = 0;
+		//if (tf > 1) tf = 1;
 
 		if (tf == 0)
 			uv = TexCoord;

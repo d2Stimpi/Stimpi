@@ -174,15 +174,55 @@ namespace Demo
 
                         if (pattern.Contains("W"))
                         {
-                            EnemyTracker.LogStuff();
-
-                            Enemy closest = EnemyTracker.GetClosestEnemy(targetPos);
-                            if (closest != null)
-                                targetPos = closest.GetPosition();
-
                             projType = ProjectileType.LIGHTNING_BOLT;
                             projSize = new Vector2(48.0f, 9.0f);
-                            ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, targetPos, projSize));
+
+                            //EnemyTracker.LogStuff(_cursorQuad.Position);
+                            bool done = false;
+                            float range = 20.0f;
+                            int maxChain = 5;
+                            Vector2 startPos = _cursorQuad.Position;
+                            Entity owner = this;
+                            while (!done && maxChain > 0)
+                            {
+                                Enemy closest = EnemyTracker.GetClosestEnemyInRange(startPos, range);
+                                if (closest != null)
+                                {
+                                    ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(owner, closest.GetPosition(), projSize));
+                                    EnemyTracker.SkipAdd(closest);
+
+                                    // move owner to next target entity
+                                    owner = closest;
+                                    startPos = closest.GetPosition();
+                                }
+                                else
+                                {
+                                    // Once done with looking for closest elements (chain of nearby objects) reset the Skip hash set
+                                    EnemyTracker.SkipReset();
+                                    done = true;
+                                }
+                                maxChain--;
+                            }
+
+
+                            /*Enemy closest = EnemyTracker.GetClosestEnemyInRange(_cursorQuad.Position, 200.0f);
+                            if (closest != null)
+                            {
+                                EnemyTracker.SkipAdd(closest);
+
+                                targetPos = closest.GetPosition();
+                                Enemy second = EnemyTracker.GetClosestEnemyInRange(closest.GetPosition(), 200.0f);
+                                if (second != null)
+                                {
+                                    Console.WriteLine($"Next enemy pos: {second.GetPosition()}");
+                                    // Spawn another proj from Enemy -> Enemy
+                                    ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(closest, second.GetPosition(), projSize));
+                                }
+                            }
+                            // Once done with looking for closest elements (chain of nearby objects) reset the Skip hash set
+                            EnemyTracker.SkipReset();
+
+                            ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, targetPos, projSize));*/
                             return;
                         }
 

@@ -255,6 +255,31 @@ namespace Stimpi
                     Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (set PlaybackSpeed)");
             }
         }
+
+        public bool SetMaterial(string assetName)
+        {
+            bool result = InternalCalls.AnimatedSpriteComponent_SetMaterial(Entity.ID, assetName);
+            if (!result)
+                Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (SetMaterial)");
+
+            return result;
+        }
+
+        public bool UseCustomShader
+        {
+            get 
+            {
+                if (!InternalCalls.AnimatedSpriteComponent_GetUseCustomMaterial(Entity.ID, out bool useCustomMaterial))
+                    Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (get UseCustomMaterial)");
+
+                return useCustomMaterial;
+            }
+            set
+            {
+                if (!InternalCalls.AnimatedSpriteComponent_SetUseCustomMaterial(Entity.ID, value))
+                    Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (set UseCustomMaterial)");
+            }
+        }
     }
 
     public enum BodyType

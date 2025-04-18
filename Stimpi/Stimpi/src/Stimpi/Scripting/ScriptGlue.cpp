@@ -753,6 +753,62 @@ namespace Stimpi
 		return hasComponent;
 	}
 
+	static bool AnimatedSpriteComponent_SetMaterial(uint32_t entityID, MonoString* materialName)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<AnimatedSpriteComponent>();
+		if (hasComponent)
+		{
+			AnimatedSpriteComponent& anim = entity.GetComponent<AnimatedSpriteComponent>();
+			char* nameCStr = mono_string_to_utf8(materialName);
+			anim.SetMaterial(nameCStr);
+			mono_free(nameCStr);
+		}
+
+		return hasComponent;
+	}
+
+	static bool AnimatedSpriteComponent_GetUseCustomMaterial(uint32_t entityID, bool* useCustomMaterial)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<AnimatedSpriteComponent>();
+		if (hasComponent)
+		{
+			auto& anim = entity.GetComponent<AnimatedSpriteComponent>();
+			*useCustomMaterial = anim.m_UseCustomShader;
+		}
+
+		return hasComponent;
+	}
+
+	static bool AnimatedSpriteComponent_SetUseCustomMaterial(uint32_t entityID, bool useCustomMaterial)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<AnimatedSpriteComponent>();
+		if (hasComponent)
+		{
+			auto& anim = entity.GetComponent<AnimatedSpriteComponent>();
+			anim.m_UseCustomShader = useCustomMaterial;
+		}
+
+		return hasComponent;
+	}
+
 #pragma endregion AnimatedSpriteComponent
 
 #pragma region Input
@@ -1597,6 +1653,9 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_SetWrapMode);
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_GetPlaybackSpeed);
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_SetPlaybackSpeed);
+		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_SetMaterial);
+		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_GetUseCustomMaterial);
+		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_SetUseCustomMaterial);
 		
 
 		// RigidBody2DComponent

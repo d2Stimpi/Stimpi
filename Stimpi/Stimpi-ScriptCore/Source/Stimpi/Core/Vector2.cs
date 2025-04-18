@@ -53,6 +53,11 @@ namespace Stimpi
             return new Vector2(v1.X - v2.X, v1.Y - v2.Y);
         }
 
+        public static Vector2 operator- (Vector2 v1, float f)
+        {
+            return new Vector2(v1.X - f, v1.Y - f);
+        }
+
         public static Vector2 operator* (Vector2 v1, float f)
         {
             return new Vector2(v1.X * f, v1.Y * f);

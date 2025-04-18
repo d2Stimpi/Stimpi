@@ -17,6 +17,7 @@ namespace Demo
         private BoxCollider2DComponent _bc2d;
         private AnimatedSpriteComponent _anim;
         private bool _enableUpdate = true;
+        private bool _enableCollision = true;
         private float _fileSpan = 0.0f;
         private Vector2 _velocity;
         private Vector2 _velocityUnit;
@@ -81,12 +82,17 @@ namespace Demo
                 _quad.Size = size;
 
                 _rb2d.Enabled = false;
+                _enableCollision = false;
+
+                _anim.SetMaterial("shader2.shader");
+                _anim.UseCustomShader = true;
             }
             else
             {
                 _bc2d.Shape = Collider2DShape.CIRCLE;
                 _bc2d.Size = new Vector2(0.25f, 0.25f);
                 _rb2d.Enabled = true;
+                _enableCollision = true;
             }
 
             Physics.InitializePhysics2DBody(ID);    // Will only create the body if it does not already exist
@@ -119,6 +125,11 @@ namespace Demo
         {
             if (_anim != null)
                 _anim.PlaybackSpeed = playbackSpeed;
+        }
+
+        public bool CollisionEnabled()
+        {
+            return _enableCollision;
         }
 
         public override void OnCreate()
@@ -185,7 +196,7 @@ namespace Demo
                 Console.WriteLine($"Collision wiht obj type {type.Name}");
             }
             
-            if (collide)
+            if (collide && _enableCollision)
             {
                 Explosion explosion = EffectsPool.GetObject();
                 Vector2 impact = collision.Contacts[0].Point;

@@ -192,7 +192,7 @@ namespace Demo
                 }
 
                 Projectile projectile = other.As<Projectile>();
-                if (projectile != null) // If this is actually a Projectile type
+                if (projectile != null && projectile.CollisionEnabled()) // If this is actually a Projectile type
                 {
                     _health -= 25;
                     _healthBar.SetFillPercentage(_health / 100.0f);

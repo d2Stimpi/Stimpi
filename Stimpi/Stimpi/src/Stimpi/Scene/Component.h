@@ -5,6 +5,7 @@
 #include "Stimpi/Core/UUID.h"
 #include "Stimpi/Graphics/Texture.h"
 #include "Stimpi/Graphics/Material.h"
+#include "Stimpi/Graphics/ShaderRegistry.h"
 #include "Stimpi/Graphics/Animation/AnimatedSprite.h"
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Scene/ScriptableEntity.h"
@@ -460,6 +461,12 @@ namespace Stimpi
 		AnimatedSpriteComponent()
 		{
 			m_AnimSprite = std::make_shared<AnimatedSprite>();
+		}
+
+		// name - Shader asset name
+		void SetMaterial(const std::string& name)
+		{
+			m_Material = std::make_shared<Material>(ShaderRegistry::GetShaderHandle(name));
 		}
 
 		bool IsAnimationSet()
