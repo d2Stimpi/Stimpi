@@ -302,6 +302,7 @@
     <ClInclude Include="src\Stimpi\Graphics\Material.h" />
     <ClInclude Include="src\Stimpi\VisualScripting\ExecTreeRegistry.h" />
     <ClInclude Include="src\Stimpi\Asset\AnimationImporter.h" />
+    <ClInclude Include="src\Stimpi\Asset\Prefab.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Asset\Asset.cpp">

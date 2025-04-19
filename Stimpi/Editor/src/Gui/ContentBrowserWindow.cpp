@@ -263,6 +263,11 @@ namespace Stimpi
 			}
 		}
 		ThumbnailPopup();
+
+		// Spacing to make sure multiline file name can be seen
+		ImGui::SetCursorScreenPos({ startCursor.x, cursor.y + THUMBNAIL_WIDTH + ImGui::GetFontSize() });
+		ImGui::Text("");
+
 		ImGui::EndChild();
 	}
 

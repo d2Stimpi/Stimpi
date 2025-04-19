@@ -50,6 +50,7 @@ namespace Stimpi
 		}
 
 		entt::entity GetHandle() const { return m_Handle; }
+		Scene* GetScene() { return m_Scene; }
 
 		operator bool() const { return (uint32_t)m_Handle != 0; }
 		bool operator== (const Entity& rhs) { return m_Handle == rhs.m_Handle; }

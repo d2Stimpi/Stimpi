@@ -6,6 +6,8 @@
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/SceneManager.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 namespace Stimpi
 {
 
@@ -33,9 +35,9 @@ namespace Stimpi
 			if (prevParentUUID)
 			{
 				auto scene = SceneManager::Instance()->GetActiveScene();
-				Entity& prePrent = scene->m_EntityUUIDMap[prevParentUUID];
+				Entity& preParent = scene->m_EntityUUIDMap[prevParentUUID];
 
-				RemoveChild(prePrent, child);
+				RemoveChild(preParent, child);
 			}
 		}
 
@@ -55,6 +57,35 @@ namespace Stimpi
 			// Remove component if all child entities were removed
 			if (parentComponent.m_Children.empty() && parentComponent.m_Parent == 0)
 				parent.RemoveComponent<HierarchyComponent>();
+		}
+	}
+
+	void EntityHierarchy::Translate(Entity& entity, const glm::vec3& vec)
+	{
+		if (entity.HasComponent<QuadComponent>())
+		{
+			QuadComponent& quad = entity.GetComponent<QuadComponent>();
+			quad.m_Position += vec;
+		}
+
+		if (entity.HasComponent<HierarchyComponent>())
+		{
+			HierarchyComponent& hierarcy = entity.GetComponent<HierarchyComponent>();
+			if (!hierarcy.m_Children.empty())
+			{
+				auto scene = entity.GetScene();
+				for (auto uuid : hierarcy.m_Children)
+				{
+					Entity& childEntity = scene->m_EntityUUIDMap[uuid];
+					Translate(childEntity, vec);
+
+					/*if (childEntity.HasComponent<QuadComponent>())
+					{
+						QuadComponent& quad = childEntity.GetComponent<QuadComponent>();
+						quad.m_Position += vec;
+					}*/
+				}
+			}
 		}
 	}
 

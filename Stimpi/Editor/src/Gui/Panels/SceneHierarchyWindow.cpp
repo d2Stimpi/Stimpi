@@ -321,6 +321,14 @@ namespace Stimpi
 		if (ImGui::CollapsingHeaderIcon("Quad##ComponentName", EditorResources::GetIconTextureID(EDITOR_ICON_CUBE), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 		{
 			ImGui::Spacing();
+			glm::vec3 pos = component.m_Position;
+			/*if (UI::Input::DragFloat3("Position##Quad", pos))
+			{
+				if (s_Context.m_SelectedEntity.HasComponent<HierarchyComponent>())
+					EntityHierarchy::Translate(s_Context.m_SelectedEntity, pos - component.m_Position);
+				else
+					component.m_Position = pos;
+			}*/
 			UI::Input::DragFloat3("Position##Quad", component.m_Position);
 			UI::Input::DragFloat2("Size##Quad", component.m_Size);
 			ImGui::PushItemWidth(80.0f);

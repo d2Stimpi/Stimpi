@@ -172,6 +172,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Asset\AssetManagerEditor.h" />
     <ClInclude Include="src\Stimpi\Asset\AssetManagerRuntime.h" />
     <ClInclude Include="src\Stimpi\Asset\AssetMetadata.h" />
+    <ClInclude Include="src\Stimpi\Asset\Prefab.h" />
     <ClInclude Include="src\Stimpi\Asset\SceneImporter.h" />
     <ClInclude Include="src\Stimpi\Asset\ShaderImporter.h" />
     <ClInclude Include="src\Stimpi\Asset\TextureImporter.h" />

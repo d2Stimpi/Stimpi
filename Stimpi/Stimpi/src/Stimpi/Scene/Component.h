@@ -36,12 +36,6 @@ namespace Stimpi
 		static void DeinitConstructObservers(entt::registry& reg);
 	};
 
-	// Internal
-	struct ParentComponent
-	{
-		
-	};
-
 	struct UUIDComponent
 	{
 		UUID m_UUID;

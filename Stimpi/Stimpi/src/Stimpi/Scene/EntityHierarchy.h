@@ -12,5 +12,7 @@ namespace Stimpi
 	public:
 		static void AddChild(Entity& parent, Entity& child);
 		static void RemoveChild(Entity& parent, Entity& child);
+
+		static void Translate(Entity& entity, const glm::vec3& vec);
 	};
 }
