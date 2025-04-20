@@ -85,6 +85,13 @@ namespace Stimpi
 		return retCmd;
 	}
 
+	void CommandStack::Invalidate()
+	{
+		s_Context.m_CmdIndex = 0;
+		s_Context.m_CmdCount = 0;
+		s_Context.m_UndoCount = 0;
+	}
+
 	uint32_t CommandStack::Count()
 	{
 		return s_Context.m_CmdCount;

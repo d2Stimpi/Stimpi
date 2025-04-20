@@ -1,7 +1,9 @@
 #include "stpch.h"
 #include "Stimpi/Cmd/Commands.h"
 
+#include "Stimpi/Log.h"
 #include "Stimpi/Scene/Component.h"
+#include "Stimpi/Scene/EntityManager.h"
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -89,6 +91,63 @@ namespace Stimpi
 		{
 			*(bool*)m_DataPtr = undo ? value : !value;
 		}
+	}
+
+
+	/**
+	 * EntityHierarcyCommand implementation
+	 */
+
+
+	void EntityHierarchyCommand::Undo()
+	{
+		switch (m_Type)
+		{
+		case Stimpi::HierarchyCommandType::TRANSLATE:
+			ST_CORE_ASSERT_MSG(!std::holds_alternative<glm::vec3>(m_Value), "Wrong value type for HierarchyCommandType::TRANSLATE undo command!");
+			Translate(std::get<glm::vec3>(m_Value));
+			break;
+		case Stimpi::HierarchyCommandType::SCALE:
+			ST_CORE_ASSERT_MSG(!std::holds_alternative<glm::vec2>(m_Value), "Wrong value type for HierarchyCommandType::SCALE undo command!");
+			break;
+		case Stimpi::HierarchyCommandType::ROTATE:
+			ST_CORE_ASSERT_MSG(!std::holds_alternative<float>(m_Value), "Wrong value type for HierarchyCommandType::ROTATE undo command!");
+			break;
+		default:
+			break;
+		}
+	}
+
+	void EntityHierarchyCommand::Redo()
+	{
+		switch (m_Type)
+		{
+		case Stimpi::HierarchyCommandType::TRANSLATE:
+			ST_CORE_ASSERT_MSG(!std::holds_alternative<glm::vec3>(m_Value), "Wrong value type for HierarchyCommandType::TRANSLATE redo command!");
+			Translate(std::get<glm::vec3>(m_Value), false);
+			break;
+		case Stimpi::HierarchyCommandType::SCALE:
+			ST_CORE_ASSERT_MSG(!std::holds_alternative<glm::vec2>(m_Value), "Wrong value type for HierarchyCommandType::SCALE redo command!");
+			break;
+		case Stimpi::HierarchyCommandType::ROTATE:
+			ST_CORE_ASSERT_MSG(!std::holds_alternative<float>(m_Value), "Wrong value type for HierarchyCommandType::ROTATE redo command!");
+			break;
+		default:
+			break;
+		}
+	}
+
+	EntityHierarchyCommand* EntityHierarchyCommand::Create(Entity entity, HierarchyCommandType type, EntityValueVariant value)
+	{
+		return new EntityHierarchyCommand(entity, type, value);
+	}
+
+	void EntityHierarchyCommand::Translate(const glm::vec3& vec, bool undo)
+	{
+		if (undo)
+			EntityManager::Translate(m_Entity, -vec);
+		else
+			EntityManager::Translate(m_Entity, vec);
 	}
 
 }

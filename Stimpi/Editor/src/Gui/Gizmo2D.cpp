@@ -7,6 +7,7 @@
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/Utils/SceneUtils.h"
 #include "Gui/EditorUtils.h"
+#include "Gui/EditorEntityManager.h"
 
 #include "ImGui/src/imgui_internal.h"
 
@@ -86,7 +87,10 @@ namespace Stimpi
 						auto& quad = gContext.m_Entity.GetComponent<QuadComponent>();
 						if (gContext.m_Action == GizmoAction::TRANSLATE)
 						{
-							quad.m_Position.x += translate_x * gContext.m_CameraZoom * gContext.m_TranslateScale;
+							//quad.m_Position.x += translate_x * gContext.m_CameraZoom * gContext.m_TranslateScale;
+							glm::vec3 translate = { 0.0f, 0.0f, 0.0f };
+							translate.x += translate_x * gContext.m_CameraZoom * gContext.m_TranslateScale;
+							EditorEntityManager::Translate(gContext.m_Entity, translate, false);
 						}
 						if (gContext.m_Action == GizmoAction::SCALE)
 						{
@@ -120,7 +124,10 @@ namespace Stimpi
 						auto& quad = gContext.m_Entity.GetComponent<QuadComponent>();
 						if (gContext.m_Action == GizmoAction::TRANSLATE)
 						{
-							quad.m_Position.y -= translate_y * gContext.m_CameraZoom * gContext.m_TranslateScale;
+							//quad.m_Position.y -= translate_y * gContext.m_CameraZoom * gContext.m_TranslateScale;
+							glm::vec3 translate = { 0.0f, 0.0f, 0.0f };
+							translate.y -= translate_y * gContext.m_CameraZoom * gContext.m_TranslateScale;
+							EditorEntityManager::Translate(gContext.m_Entity, translate, false);
 						}
 						if (gContext.m_Action == GizmoAction::SCALE)
 						{
@@ -155,8 +162,12 @@ namespace Stimpi
 						auto& quad = gContext.m_Entity.GetComponent<QuadComponent>();
 						if (gContext.m_Action == GizmoAction::TRANSLATE)
 						{
-							quad.m_Position.x += translate_x * gContext.m_CameraZoom * gContext.m_TranslateScale;
-							quad.m_Position.y -= translate_y * gContext.m_CameraZoom * gContext.m_TranslateScale;
+							//quad.m_Position.x += translate_x * gContext.m_CameraZoom * gContext.m_TranslateScale;
+							//quad.m_Position.y -= translate_y * gContext.m_CameraZoom * gContext.m_TranslateScale;
+							glm::vec3 translate = { 0.0f, 0.0f, 0.0f };
+							translate.x += translate_x * gContext.m_CameraZoom * gContext.m_TranslateScale;
+							translate.y -= translate_y * gContext.m_CameraZoom * gContext.m_TranslateScale;
+							EditorEntityManager::Translate(gContext.m_Entity, translate, false);
 						}
 						if (gContext.m_Action == GizmoAction::SCALE)
 						{

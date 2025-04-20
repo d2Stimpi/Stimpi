@@ -32,4 +32,34 @@ namespace Stimpi
 		EntityValueVariant m_Value;
 		void* m_DataPtr;
 	};
+
+	// Commands for recording Entity Hierarchy changes
+
+	enum class HierarchyCommandType
+	{
+		TRANSLATE,
+		SCALE,
+		ROTATE
+	};
+
+	class ST_API EntityHierarchyCommand : public Command
+	{
+	public:
+		EntityHierarchyCommand(Entity entity, HierarchyCommandType type, EntityValueVariant value)
+			: m_Entity(entity), m_Type(type), m_Value(value)
+		{}
+
+		void Undo() override;
+		void Redo() override;
+
+		static EntityHierarchyCommand* Create(Entity entity, HierarchyCommandType type, EntityValueVariant value);
+
+	private:
+		void Translate(const glm::vec3& vec, bool undo = true);
+
+	private:
+		Entity m_Entity;
+		HierarchyCommandType m_Type;
+		EntityValueVariant m_Value;
+	};
 }

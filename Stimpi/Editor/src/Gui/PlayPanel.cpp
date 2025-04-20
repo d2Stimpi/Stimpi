@@ -3,6 +3,7 @@
 
 #include "Stimpi/Log.h"
 #include "Stimpi/Scene/SceneManager.h"
+#include "Stimpi/Cmd/CommandStack.h"
 
 #include "ImGui/src/imgui.h"
 
@@ -48,6 +49,7 @@ namespace Stimpi
 					SceneManager::Instance()->SaveScene("tmp.d2s");
 
 					ST_CORE_INFO("Play the scene.");
+					CommandStack::Invalidate();
 					m_ActiveScene->OnScenePlay();
 				}
 			}

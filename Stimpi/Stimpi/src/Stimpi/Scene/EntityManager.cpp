@@ -41,4 +41,39 @@ namespace Stimpi
 		}
 	}
 
+	void EntityManager::Translate(Entity entity, const glm::vec3& vec)
+	{
+		if (entity.HasComponent<QuadComponent>())
+		{
+			QuadComponent& quad = entity.GetComponent<QuadComponent>();
+			quad.m_Position += vec;
+		}
+
+		if (entity.HasComponent<HierarchyComponent>())
+		{
+			HierarchyComponent& hierarcy = entity.GetComponent<HierarchyComponent>();
+			if (!hierarcy.m_Children.empty())
+			{
+				auto scene = entity.GetScene();
+				for (auto& uuid : hierarcy.m_Children)
+				{
+					Entity& childEntity = scene->m_EntityUUIDMap[uuid];
+					Translate(childEntity, vec);
+				}
+			}
+		}
+	}
+
+	void EntityManager::Translate(std::vector<Entity>& entities, const glm::vec3& vec)
+	{
+		for (auto& entity : entities)
+		{
+			if (entity.HasComponent<QuadComponent>())
+			{
+				QuadComponent& quad = entity.GetComponent<QuadComponent>();
+				quad.m_Position += vec;
+			}
+		}
+	}
+
 }

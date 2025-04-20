@@ -5,6 +5,7 @@
 #include "Gui/Components/SearchPopup.h"
 #include "Gui/Components/Input.h"
 #include "Gui/EditorUtils.h"
+#include "Gui/EditorEntityManager.h"
 #include "Gui/Components/ImGuiEx.h"
 #include "Gui/Panels/ScriptFieldFragment.h"
 #include "Gui/NNode/NGraphPanel.h"
@@ -16,11 +17,11 @@
 #include "Stimpi/Graphics/ShaderRegistry.h"
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Entity.h"
-#include "Stimpi/Scene/EntityManager.h"
 #include "Stimpi/Scene/EntityHierarchy.h"
 #include "Stimpi/Utils/PlatformUtils.h"
 
 #include "Stimpi/Scripting/ScriptEngine.h"
+#include "Stimpi/Cmd/CommandStack.h"
 
 #include "ImGui/src/imgui.h"
 #include "ImGui/src/imgui_internal.h"
@@ -321,15 +322,22 @@ namespace Stimpi
 		if (ImGui::CollapsingHeaderIcon("Quad##ComponentName", EditorResources::GetIconTextureID(EDITOR_ICON_CUBE), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap))
 		{
 			ImGui::Spacing();
-			glm::vec3 pos = component.m_Position;
-			/*if (UI::Input::DragFloat3("Position##Quad", pos))
+			// TODO: one if block for hierarchy entity and one for ordinary handling
+			if (s_Context.m_SelectedEntity.HasComponent<HierarchyComponent>())
 			{
-				if (s_Context.m_SelectedEntity.HasComponent<HierarchyComponent>())
-					EntityHierarchy::Translate(s_Context.m_SelectedEntity, pos - component.m_Position);
-				else
-					component.m_Position = pos;
-			}*/
-			UI::Input::DragFloat3("Position##Quad", component.m_Position);
+				glm::vec3 pos = component.m_Position;
+				bool inputDone = false;
+				if (UI::Input::DragFloat3("Position##Quad", pos, &inputDone, false))
+				{
+					glm::vec3 translate = pos - component.m_Position;
+					EditorEntityManager::Translate(s_Context.m_SelectedEntity, translate, inputDone);
+				}
+			}
+			else
+			{
+				// If entity does not have a Hierarchy, change position directly
+				UI::Input::DragFloat3("Position##Quad", component.m_Position);
+			}
 			UI::Input::DragFloat2("Size##Quad", component.m_Size);
 			ImGui::PushItemWidth(80.0f);
 			UI::Input::DragFloat("Rotation", component.m_Rotation, 0.01);
@@ -563,7 +571,7 @@ namespace Stimpi
 						currentSortingLayer = layer->m_Name;
 						component.m_SortingLayerName = layer->m_Name;
 						component.UpdateLayerIndex();
-						EntityManager::UpdateEntitySortingLayerIndex(s_Context.m_SelectedEntity);
+						EditorEntityManager::UpdateEntitySortingLayerIndex(s_Context.m_SelectedEntity);
 					}
 
 					if (isSelected)
@@ -580,7 +588,7 @@ namespace Stimpi
 					orderInLayerInput = 0;
 
 				component.m_OrderInLayer = orderInLayerInput;
-				EntityManager::UpdateEntitySortingLayerIndex(s_Context.m_SelectedEntity);
+				EditorEntityManager::UpdateEntitySortingLayerIndex(s_Context.m_SelectedEntity);
 			}
 			EditorUtils::SetActiveItemCaptureKeyboard(false);
 			ImGui::Spacing();
