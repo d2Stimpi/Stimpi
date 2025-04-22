@@ -74,6 +74,9 @@ namespace Stimpi
 
 	Texture* SubTexture::GetTexture()	//TODO: to be removed
 	{
-		return AssetManager::GetAsset<Texture>(m_TextureAssetHandle).get();
+		if (m_TextureAssetHandle)
+			return AssetManager::GetAsset<Texture>(m_TextureAssetHandle).get();
+		else
+			return nullptr;
 	}
 }

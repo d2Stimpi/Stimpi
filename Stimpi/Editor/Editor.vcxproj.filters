@@ -16,6 +16,9 @@
     <Filter Include="Gui\NNode">
       <UniqueIdentifier>{CDAFAB40-391A-60B7-8258-115DEE013E0C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Gui\NNode\Exec">
+      <UniqueIdentifier>{A1F9FC7B-8DC7-F081-765B-61A862C8CCE6}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Gui\Nodes">
       <UniqueIdentifier>{B299BD40-1E04-72B7-6742-235DD3EB4F0C}</UniqueIdentifier>
     </Filter>
@@ -81,6 +84,9 @@
     <ClInclude Include="src\Gui\ContentBrowserWindow.h">
       <Filter>Gui</Filter>
     </ClInclude>
+    <ClInclude Include="src\Gui\EditorEntityManager.h">
+      <Filter>Gui</Filter>
+    </ClInclude>
     <ClInclude Include="src\Gui\EditorLayer.h">
       <Filter>Gui</Filter>
     </ClInclude>
@@ -93,7 +99,13 @@
     <ClInclude Include="src\Gui\MainManuBar.h">
       <Filter>Gui</Filter>
     </ClInclude>
+    <ClInclude Include="src\Gui\NNode\Exec\ExecTreeBuilder.h">
+      <Filter>Gui\NNode\Exec</Filter>
+    </ClInclude>
     <ClInclude Include="src\Gui\NNode\NGraph.h">
+      <Filter>Gui\NNode</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\NNode\NGraphBuilder.h">
       <Filter>Gui\NNode</Filter>
     </ClInclude>
     <ClInclude Include="src\Gui\NNode\NGraphComponents.h">
@@ -103,6 +115,9 @@
       <Filter>Gui\NNode</Filter>
     </ClInclude>
     <ClInclude Include="src\Gui\NNode\NGraphPanel.h">
+      <Filter>Gui\NNode</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\NNode\NGraphRegistry.h">
       <Filter>Gui\NNode</Filter>
     </ClInclude>
     <ClInclude Include="src\Gui\NNode\NGraphRenderer.h">
@@ -192,9 +207,6 @@
     <ClInclude Include="src\Gui\Utils\YamlCustomTypesEditor.h">
       <Filter>Gui\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="src\Gui\NNode\Exec\ExecTreeBuilder.h" />
-    <ClInclude Include="src\Gui\NNode\NGraphBuilder.h" />
-    <ClInclude Include="src\Gui\NNode\NGraphRegistry.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
@@ -240,6 +252,9 @@
     <ClCompile Include="src\Gui\ContentBrowserWindow.cpp">
       <Filter>Gui</Filter>
     </ClCompile>
+    <ClCompile Include="src\Gui\EditorEntityManager.cpp">
+      <Filter>Gui</Filter>
+    </ClCompile>
     <ClCompile Include="src\Gui\EditorLayer.cpp">
       <Filter>Gui</Filter>
     </ClCompile>
@@ -252,7 +267,13 @@
     <ClCompile Include="src\Gui\MainMenuBar.cpp">
       <Filter>Gui</Filter>
     </ClCompile>
+    <ClCompile Include="src\Gui\NNode\Exec\ExecTreeBuilder.cpp">
+      <Filter>Gui\NNode\Exec</Filter>
+    </ClCompile>
     <ClCompile Include="src\Gui\NNode\NGraph.cpp">
+      <Filter>Gui\NNode</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\NNode\NGraphBuilder.cpp">
       <Filter>Gui\NNode</Filter>
     </ClCompile>
     <ClCompile Include="src\Gui\NNode\NGraphComponents.cpp">
@@ -262,6 +283,9 @@
       <Filter>Gui\NNode</Filter>
     </ClCompile>
     <ClCompile Include="src\Gui\NNode\NGraphPanel.cpp">
+      <Filter>Gui\NNode</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\NNode\NGraphRegistry.cpp">
       <Filter>Gui\NNode</Filter>
     </ClCompile>
     <ClCompile Include="src\Gui\NNode\NGraphRenderer.cpp">
@@ -345,8 +369,5 @@
     <ClCompile Include="src\Gui\Utils\YamlCustomTypesEditor.cpp">
       <Filter>Gui\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="src\Gui\NNode\Exec\ExecTreeBuilder.cpp" />
-    <ClCompile Include="src\Gui\NNode\NGraphBuilder.cpp" />
-    <ClCompile Include="src\Gui\NNode\NGraphRegistry.cpp" />
   </ItemGroup>
 </Project>

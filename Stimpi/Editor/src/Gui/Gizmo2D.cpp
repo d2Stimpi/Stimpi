@@ -90,12 +90,14 @@ namespace Stimpi
 							//quad.m_Position.x += translate_x * gContext.m_CameraZoom * gContext.m_TranslateScale;
 							glm::vec3 translate = { 0.0f, 0.0f, 0.0f };
 							translate.x += translate_x * gContext.m_CameraZoom * gContext.m_TranslateScale;
-							EditorEntityManager::Translate(gContext.m_Entity, translate, false);
+							EditorEntityManager::Translate(gContext.m_Entity, translate);
 						}
 						if (gContext.m_Action == GizmoAction::SCALE)
 						{
-							quad.m_Size.x += translate_x * gContext.m_CameraZoom * gContext.m_ScalingScale;
-							quad.m_Position.x -= translate_x * gContext.m_CameraZoom / 2 * gContext.m_ScalingScale;
+							//quad.m_Size.x += translate_x * gContext.m_CameraZoom * gContext.m_ScalingScale;
+							glm::vec2 scale = { 0.0f, 0.0f };
+							scale.x += translate_x * gContext.m_CameraZoom * gContext.m_ScalingScale;
+							EditorEntityManager::Scale(gContext.m_Entity, scale);
 						}
 					}
 					// Circle
@@ -127,11 +129,14 @@ namespace Stimpi
 							//quad.m_Position.y -= translate_y * gContext.m_CameraZoom * gContext.m_TranslateScale;
 							glm::vec3 translate = { 0.0f, 0.0f, 0.0f };
 							translate.y -= translate_y * gContext.m_CameraZoom * gContext.m_TranslateScale;
-							EditorEntityManager::Translate(gContext.m_Entity, translate, false);
+							EditorEntityManager::Translate(gContext.m_Entity, translate);
 						}
 						if (gContext.m_Action == GizmoAction::SCALE)
 						{
-							quad.m_Size.y -= translate_y * gContext.m_CameraZoom * gContext.m_ScalingScale;
+							//quad.m_Size.y -= translate_y * gContext.m_CameraZoom * gContext.m_ScalingScale;
+							glm::vec2 scale = { 0.0f, 0.0f };
+							scale.x -= translate_y * gContext.m_CameraZoom * gContext.m_ScalingScale;
+							EditorEntityManager::Scale(gContext.m_Entity, scale);
 						}
 					}
 					// Circle
@@ -167,12 +172,16 @@ namespace Stimpi
 							glm::vec3 translate = { 0.0f, 0.0f, 0.0f };
 							translate.x += translate_x * gContext.m_CameraZoom * gContext.m_TranslateScale;
 							translate.y -= translate_y * gContext.m_CameraZoom * gContext.m_TranslateScale;
-							EditorEntityManager::Translate(gContext.m_Entity, translate, false);
+							EditorEntityManager::Translate(gContext.m_Entity, translate);
 						}
 						if (gContext.m_Action == GizmoAction::SCALE)
 						{
-							quad.m_Size.x += translate_x * gContext.m_CameraZoom * gContext.m_ScalingScale;
-							quad.m_Size.y -= translate_y * gContext.m_CameraZoom * gContext.m_ScalingScale;
+							//quad.m_Size.x += translate_x * gContext.m_CameraZoom * gContext.m_ScalingScale;
+							//quad.m_Size.y -= translate_y * gContext.m_CameraZoom * gContext.m_ScalingScale;
+							glm::vec2 scale = { 0.0f, 0.0f };
+							scale.x += translate_x * gContext.m_CameraZoom * gContext.m_ScalingScale;
+							scale.y -= translate_y * gContext.m_CameraZoom * gContext.m_ScalingScale;
+							EditorEntityManager::Scale(gContext.m_Entity, scale);
 						}
 					}
 					// Circle
@@ -207,33 +216,55 @@ namespace Stimpi
 		}
 		else
 		{
+			// Check if Gizmo control dragging has finished and record the cmd
 			if (gContext.m_MouseHold && gContext.m_Moved)
 			{
-				ST_CORE_INFO("Gizmo released {},{}", gContext.m_Transform.x, gContext.m_Transform.y);
+				//ST_CORE_INFO("Gizmo released {},{}", gContext.m_Transform.x, gContext.m_Transform.y);
 				Command* cmd = nullptr;
 				void* ptr = nullptr;
 				if (gContext.m_Entity.HasComponent<QuadComponent>())
 				{
-					auto& quad = gContext.m_Entity.GetComponent<QuadComponent>();
-					if (gContext.m_Action == GizmoAction::TRANSLATE)
+					if (gContext.m_Entity.HasComponent<HierarchyComponent>())
 					{
-						ptr = glm::value_ptr(quad.m_Position);
-						glm::vec3 pos = { 0.0f, 0.0f, 0.0f };
-						pos.x = gContext.m_Transform.x * gContext.m_CameraZoom * gContext.m_TranslateScale;
-						pos.y = -gContext.m_Transform.y * gContext.m_CameraZoom * gContext.m_TranslateScale;
-						cmd = EntityCommand::Create(gContext.m_Entity, pos, ptr);
+						if (gContext.m_Action == GizmoAction::TRANSLATE)
+						{
+							glm::vec3 translate = { 0.0f, 0.0f, 0.0f };
+							translate.x = gContext.m_Transform.x * gContext.m_CameraZoom * gContext.m_TranslateScale;
+							translate.y = -gContext.m_Transform.y * gContext.m_CameraZoom * gContext.m_TranslateScale;
+							cmd = EntityHierarchyCommand::Create(gContext.m_Entity, HierarchyCommandType::TRANSLATE, translate);
+						}
+						else if (gContext.m_Action == GizmoAction::SCALE)
+						{
+
+							glm::vec2 size = { 0.0f, 0.0f };
+							size.x = gContext.m_Transform.x * gContext.m_CameraZoom * gContext.m_ScalingScale;
+							size.y = -gContext.m_Transform.y * gContext.m_CameraZoom * gContext.m_ScalingScale;
+							cmd = EntityHierarchyCommand::Create(gContext.m_Entity, HierarchyCommandType::SCALE, size);
+						}
 					}
-					else if (gContext.m_Action == GizmoAction::SCALE)
+					else
 					{
-						ptr = glm::value_ptr(quad.m_Size);
-						glm::vec2 size = { 0.0f, 0.0f };
-						size.x = gContext.m_Transform.x * gContext.m_CameraZoom * gContext.m_ScalingScale;
-						size.y = -gContext.m_Transform.y * gContext.m_CameraZoom * gContext.m_ScalingScale;
-						cmd = EntityCommand::Create(gContext.m_Entity, size, ptr);
-					}
-					else if (gContext.m_Action == GizmoAction::ROTATE)
-					{
-						// TODO: support rotation with Gizmo
+						auto& quad = gContext.m_Entity.GetComponent<QuadComponent>();
+						if (gContext.m_Action == GizmoAction::TRANSLATE)
+						{
+							ptr = glm::value_ptr(quad.m_Position);
+							glm::vec3 pos = { 0.0f, 0.0f, 0.0f };
+							pos.x = gContext.m_Transform.x * gContext.m_CameraZoom * gContext.m_TranslateScale;
+							pos.y = -gContext.m_Transform.y * gContext.m_CameraZoom * gContext.m_TranslateScale;
+							cmd = EntityCommand::Create(gContext.m_Entity, pos, ptr);
+						}
+						else if (gContext.m_Action == GizmoAction::SCALE)
+						{
+							ptr = glm::value_ptr(quad.m_Size);
+							glm::vec2 size = { 0.0f, 0.0f };
+							size.x = gContext.m_Transform.x * gContext.m_CameraZoom * gContext.m_ScalingScale;
+							size.y = -gContext.m_Transform.y * gContext.m_CameraZoom * gContext.m_ScalingScale;
+							cmd = EntityCommand::Create(gContext.m_Entity, size, ptr);
+						}
+						else if (gContext.m_Action == GizmoAction::ROTATE)
+						{
+							// TODO: support rotation with Gizmo
+						}
 					}
 				}
 				else if (gContext.m_Entity.HasComponent<CircleComponent>())

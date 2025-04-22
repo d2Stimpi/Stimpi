@@ -15,5 +15,9 @@ namespace Stimpi
 
 		static void Translate(Entity entity, const glm::vec3& vec);
 		static void Translate(std::vector<Entity>& entities, const glm::vec3& vec);
+		static void Scale(Entity entity, const glm::vec2& vec);
+		static void Scale(std::vector<Entity>& entities, const glm::vec2& vec);
+		static void Rotate(Entity entity, const float& val);
+		static void Rotate(std::vector<Entity>& entities, const float& val);
 	};
 }

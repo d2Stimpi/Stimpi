@@ -9,6 +9,9 @@ TODO Next:
 - Script component => asset that holds serializable field/attribute data 
 
 
+Modify CircleComponent or remove compleatelly
+
+
 
 [Bugs/Issue]
 

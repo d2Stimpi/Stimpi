@@ -56,6 +56,8 @@ namespace Stimpi
 
 	private:
 		void Translate(const glm::vec3& vec, bool undo = true);
+		void Scale(const glm::vec2& vec, bool undo = true);
+		void Rotate(const float& val, bool undo = true);
 
 	private:
 		Entity m_Entity;

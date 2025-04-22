@@ -109,9 +109,11 @@ namespace Stimpi
 			break;
 		case Stimpi::HierarchyCommandType::SCALE:
 			ST_CORE_ASSERT_MSG(!std::holds_alternative<glm::vec2>(m_Value), "Wrong value type for HierarchyCommandType::SCALE undo command!");
+			Scale(std::get<glm::vec2>(m_Value));
 			break;
 		case Stimpi::HierarchyCommandType::ROTATE:
 			ST_CORE_ASSERT_MSG(!std::holds_alternative<float>(m_Value), "Wrong value type for HierarchyCommandType::ROTATE undo command!");
+			Rotate(std::get<float>(m_Value));
 			break;
 		default:
 			break;
@@ -128,9 +130,11 @@ namespace Stimpi
 			break;
 		case Stimpi::HierarchyCommandType::SCALE:
 			ST_CORE_ASSERT_MSG(!std::holds_alternative<glm::vec2>(m_Value), "Wrong value type for HierarchyCommandType::SCALE redo command!");
+			Scale(std::get<glm::vec2>(m_Value), false);
 			break;
 		case Stimpi::HierarchyCommandType::ROTATE:
 			ST_CORE_ASSERT_MSG(!std::holds_alternative<float>(m_Value), "Wrong value type for HierarchyCommandType::ROTATE redo command!");
+			Rotate(std::get<float>(m_Value), false);
 			break;
 		default:
 			break;
@@ -148,6 +152,23 @@ namespace Stimpi
 			EntityManager::Translate(m_Entity, -vec);
 		else
 			EntityManager::Translate(m_Entity, vec);
+	}
+
+	void EntityHierarchyCommand::Scale(const glm::vec2& vec, bool undo)
+	{
+		if (undo)
+			EntityManager::Scale(m_Entity, -vec);
+		else
+			EntityManager::Scale(m_Entity, vec);
+	}
+
+	void EntityHierarchyCommand::Rotate(const float& val, bool undo)
+	{
+
+		if (undo)
+			EntityManager::Rotate(m_Entity, -val);
+		else
+			EntityManager::Rotate(m_Entity, val);
 	}
 
 }

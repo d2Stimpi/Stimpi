@@ -168,6 +168,7 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
     <ClInclude Include="src\Gui\Config\PhysicsConfigPanel.h" />
     <ClInclude Include="src\Gui\Config\SceneConfigPanel.h" />
     <ClInclude Include="src\Gui\ContentBrowserWindow.h" />
+    <ClInclude Include="src\Gui\EditorEntityManager.h" />
     <ClInclude Include="src\Gui\EditorLayer.h" />
     <ClInclude Include="src\Gui\EditorUtils.h" />
     <ClInclude Include="src\Gui\Gizmo2D.h" />
@@ -225,6 +226,7 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
     <ClCompile Include="src\Gui\Config\PhysicsConfigPanel.cpp" />
     <ClCompile Include="src\Gui\Config\SceneConfigPanel.cpp" />
     <ClCompile Include="src\Gui\ContentBrowserWindow.cpp" />
+    <ClCompile Include="src\Gui\EditorEntityManager.cpp" />
     <ClCompile Include="src\Gui\EditorLayer.cpp" />
     <ClCompile Include="src\Gui\EditorUtils.cpp" />
     <ClCompile Include="src\Gui\Gizmo2D.cpp" />

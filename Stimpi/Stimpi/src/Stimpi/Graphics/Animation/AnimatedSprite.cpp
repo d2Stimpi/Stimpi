@@ -42,7 +42,10 @@ namespace Stimpi
 
 	std::shared_ptr<Animation> AnimatedSprite::GetAnimation()
 	{
-		return AssetManager::GetAsset<Animation>(m_AnimationHandle);
+		if (m_AnimationHandle)
+			return AssetManager::GetAsset<Animation>(m_AnimationHandle);
+		else
+			return nullptr;
 	}
 
 	void AnimatedSprite::Update(Timestep ts)

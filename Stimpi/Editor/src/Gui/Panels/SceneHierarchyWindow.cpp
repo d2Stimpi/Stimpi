@@ -330,18 +330,58 @@ namespace Stimpi
 				if (UI::Input::DragFloat3("Position##Quad", pos, &inputDone, false))
 				{
 					glm::vec3 translate = pos - component.m_Position;
-					EditorEntityManager::Translate(s_Context.m_SelectedEntity, translate, inputDone);
+					EditorEntityManager::Translate(s_Context.m_SelectedEntity, translate);
+					if (inputDone)
+					{
+						Command* cmd = EntityHierarchyCommand::Create(
+							s_Context.m_SelectedEntity,
+							HierarchyCommandType::TRANSLATE,
+							component.m_Position - UI::Input::GetStartFloat3());
+						CommandStack::Push(cmd);
+					}
 				}
+
+				glm::vec2 size = component.m_Size;
+				if (UI::Input::DragFloat2("Size##Quad", size, &inputDone, false))
+				{
+					glm::vec2 scale = size - component.m_Size;
+					EditorEntityManager::Scale(s_Context.m_SelectedEntity, scale);
+					if (inputDone)
+					{
+						Command* cmd = EntityHierarchyCommand::Create(
+							s_Context.m_SelectedEntity,
+							HierarchyCommandType::SCALE,
+							component.m_Size - UI::Input::GetStartFloat2());
+						CommandStack::Push(cmd);
+					}
+				}
+
+				float rotation = component.m_Rotation;
+				ImGui::PushItemWidth(80.0f);
+				if (UI::Input::DragFloat("Rotation", rotation, 0.01, 0.0f, 0.0f, &inputDone, false))
+				{
+					float rotate = rotation - component.m_Rotation;
+					EditorEntityManager::Rotate(s_Context.m_SelectedEntity, rotate);
+					if (inputDone)
+					{
+						Command* cmd = EntityHierarchyCommand::Create(
+							s_Context.m_SelectedEntity,
+							HierarchyCommandType::ROTATE,
+							component.m_Rotation - UI::Input::GetStartFloat());
+						CommandStack::Push(cmd);
+					}
+				}
+				ImGui::PopItemWidth();
 			}
 			else
 			{
 				// If entity does not have a Hierarchy, change position directly
 				UI::Input::DragFloat3("Position##Quad", component.m_Position);
+				UI::Input::DragFloat2("Size##Quad", component.m_Size);
+				ImGui::PushItemWidth(80.0f);
+				UI::Input::DragFloat("Rotation", component.m_Rotation, 0.01);
+				ImGui::PopItemWidth();
 			}
-			UI::Input::DragFloat2("Size##Quad", component.m_Size);
-			ImGui::PushItemWidth(80.0f);
-			UI::Input::DragFloat("Rotation", component.m_Rotation, 0.01);
-			ImGui::PopItemWidth();
 			ImGui::Spacing();
 		}
 

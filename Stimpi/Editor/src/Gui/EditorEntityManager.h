@@ -10,7 +10,7 @@ namespace Stimpi
 	{
 	public:
 
-		static void Translate(Entity entity, const glm::vec3& vec, bool recordCmd = true);
-		static void Translate(std::vector<Entity>& entities, const glm::vec3& vec, bool recordCmd = true);
+		static void Translate(Entity entity, const glm::vec3& vec);
+		static void Translate(std::vector<Entity>& entities, const glm::vec3& vec);
 	};
 }

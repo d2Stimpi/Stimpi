@@ -49,6 +49,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Stimpi.h" />
+    <ClInclude Include="src\Stimpi\Asset\AnimationImporter.h">
+      <Filter>Stimpi\Asset</Filter>
+    </ClInclude>
     <ClInclude Include="src\Stimpi\Asset\Asset.h">
       <Filter>Stimpi\Asset</Filter>
     </ClInclude>
@@ -68,6 +71,9 @@
       <Filter>Stimpi\Asset</Filter>
     </ClInclude>
     <ClInclude Include="src\Stimpi\Asset\AssetMetadata.h">
+      <Filter>Stimpi\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Asset\Prefab.h">
       <Filter>Stimpi\Asset</Filter>
     </ClInclude>
     <ClInclude Include="src\Stimpi\Asset\SceneImporter.h">
@@ -166,6 +172,9 @@
     <ClInclude Include="src\Stimpi\Graphics\Graphics.h">
       <Filter>Stimpi\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\Graphics\Material.h">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClInclude>
     <ClInclude Include="src\Stimpi\Graphics\OpenGL.h">
       <Filter>Stimpi\Graphics</Filter>
     </ClInclude>
@@ -218,6 +227,9 @@
       <Filter>Stimpi\Platform</Filter>
     </ClInclude>
     <ClInclude Include="src\Stimpi\Platform\OpenGLTexture.h">
+      <Filter>Stimpi\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Platform\OpenGLTypes.h">
       <Filter>Stimpi\Platform</Filter>
     </ClInclude>
     <ClInclude Include="src\Stimpi\Platform\OpenGLVertexArrayObject.h">
@@ -292,19 +304,24 @@
     <ClInclude Include="src\Stimpi\VisualScripting\ExecTree.h">
       <Filter>Stimpi\VisualScripting</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\VisualScripting\ExecTreeRegistry.h">
+      <Filter>Stimpi\VisualScripting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\VisualScripting\ExecTreeSerializer.h">
+      <Filter>Stimpi\VisualScripting</Filter>
+    </ClInclude>
     <ClInclude Include="src\Stimpi\VisualScripting\NNodeMethodRegistry.h">
       <Filter>Stimpi\VisualScripting</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\VisualScripting\NNodeNames.h">
+      <Filter>Stimpi\VisualScripting</Filter>
+    </ClInclude>
     <ClInclude Include="src\stpch.h" />
-    <ClInclude Include="src\Stimpi\VisualScripting\ExecTreeSerializer.h" />
-    <ClInclude Include="src\Stimpi\VisualScripting\NNodeNames.h" />
-    <ClInclude Include="src\Stimpi\Platform\OpenGLTypes.h" />
-    <ClInclude Include="src\Stimpi\Graphics\Material.h" />
-    <ClInclude Include="src\Stimpi\VisualScripting\ExecTreeRegistry.h" />
-    <ClInclude Include="src\Stimpi\Asset\AnimationImporter.h" />
-    <ClInclude Include="src\Stimpi\Asset\Prefab.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Stimpi\Asset\AnimationImporter.cpp">
+      <Filter>Stimpi\Asset</Filter>
+    </ClCompile>
     <ClCompile Include="src\Stimpi\Asset\Asset.cpp">
       <Filter>Stimpi\Asset</Filter>
     </ClCompile>
@@ -390,6 +407,9 @@
       <Filter>Stimpi\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Graphics\Graphics.cpp">
+      <Filter>Stimpi\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Graphics\Material.cpp">
       <Filter>Stimpi\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Graphics\OpenGL.cpp">
@@ -512,13 +532,15 @@
     <ClCompile Include="src\Stimpi\VisualScripting\ExecTree.cpp">
       <Filter>Stimpi\VisualScripting</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\VisualScripting\ExecTreeRegistry.cpp">
+      <Filter>Stimpi\VisualScripting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\VisualScripting\ExecTreeSerializer.cpp">
+      <Filter>Stimpi\VisualScripting</Filter>
+    </ClCompile>
     <ClCompile Include="src\Stimpi\VisualScripting\NNodeMethodRegistry.cpp">
       <Filter>Stimpi\VisualScripting</Filter>
     </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
-    <ClCompile Include="src\Stimpi\VisualScripting\ExecTreeSerializer.cpp" />
-    <ClCompile Include="src\Stimpi\Graphics\Material.cpp" />
-    <ClCompile Include="src\Stimpi\VisualScripting\ExecTreeRegistry.cpp" />
-    <ClCompile Include="src\Stimpi\Asset\AnimationImporter.cpp" />
   </ItemGroup>
 </Project>
