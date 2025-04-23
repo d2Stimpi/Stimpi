@@ -5,8 +5,30 @@
 
 namespace Stimpi
 {
+	class Entity;	// Temp
+
 	using AssetRegistry = std::unordered_map<AssetHandle, AssetMetadata>;
 	using AssetLookup = std::unordered_map<std::string, AssetHandle>;
+
+	class ST_API AssetReloadHandler
+	{
+		using OnAssetReloadFunction = std::function<void(std::shared_ptr<Asset>)>;
+
+	public:
+		AssetReloadHandler(OnAssetReloadFunction onAssetReload)
+			: m_OnAssetReload(onAssetReload)
+		{}
+		void OnAssetReload(std::shared_ptr<Asset>  asset) { if (m_OnAssetReload) m_OnAssetReload(asset); }
+
+	private:
+		OnAssetReloadFunction m_OnAssetReload;
+	};
+
+	using AssetReloadHandlers = std::vector<AssetReloadHandler*>;
+
+	/**
+	 * AssetManager - Editor version
+	 */
 
 	class ST_API AssetManagerEditor : public AssetManagerBase
 	{
@@ -30,13 +52,25 @@ namespace Stimpi
 
 		// Stats
 		size_t GetLoadedAssetsCount();
+
+		// Asset creation
+		AssetHandle CreateAsset(AssetMetadata& metadata);
+
+		// Event handler functions
+		void RegisterAssetReloadHandler(AssetReloadHandler* handler);
+		void UnregisterAssetReloadHandler(AssetReloadHandler* handler);
+
 	private:
 		void OnAssetRegistered(AssetHandle handle, AssetMetadata metadata);
 
 	private:
 		AssetMap m_LoadedAssets;
 		AssetRegistry m_AssetRegistry;
+		
 		// For quick lookup by file path if asset is registered;
 		AssetLookup m_AssetLookup;
+
+		// Event handlers - callbacks
+		AssetReloadHandlers m_AssetReloadHandlers;
 	};
 }

@@ -325,6 +325,31 @@ namespace Stimpi
 		return entity;
 	}
 
+	Entity Scene::CreateEntity(const AssetHandle& prefabHandle)
+	{
+		static Entity invalidEntity = { (entt::entity)0, this };
+
+		if (prefabHandle)
+		{
+			auto prefab = AssetManager::GetAsset<Prefab>(prefabHandle);
+			if (prefab)
+			{
+				Entity entity = { m_Registry.create(), this };
+				UUID entityUUID = UUID();
+				entity.AddComponent<UUIDComponent>(entityUUID);
+				entity.AddComponent<DefaultGroupComponent>();
+				
+				prefab->BuildComponents(entity);
+				
+				m_Entities.push_back(entity);
+				m_EntityUUIDMap[entityUUID] = entity;
+				return entity;
+			}
+		}
+
+		return invalidEntity;
+	}
+
 	Entity Scene::GetEntityByHandle(entt::entity handle)
 	{
 		return Entity(handle, this);

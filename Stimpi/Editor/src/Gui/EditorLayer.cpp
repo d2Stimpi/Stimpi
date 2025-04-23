@@ -6,6 +6,7 @@
 #include "ImGui/src/backend/imgui_impl_opengl3.h"
 
 #include "Stimpi/Asset/ShaderImporter.h"
+#include "Stimpi/Asset/AssetManager.h"
 #include "Stimpi/Cmd/CommandStack.h"
 #include "Stimpi/Core/Time.h"
 #include "Stimpi/Core/WindowManager.h"
@@ -19,6 +20,7 @@
 #include "Gui/EditorUtils.h"
 #include "Gui/Gizmo2D.h"
 #include "Gui/Utils/EditorResources.h"
+#include "Gui/Prefab/PrefabManager.h"
 
 #include <SDL.h>
 #include <SDL_opengl.h>
@@ -120,6 +122,10 @@ namespace Stimpi
 				ImVec2 size = m_SceneViewWindow.GetMousePosition();
 				return { size.x, size.y };
 			});
+
+		// Prefab asset update handler registration
+		auto assetManager = Project::GetEditorAssetManager();
+		assetManager->RegisterAssetReloadHandler(new AssetReloadHandler(PrefabManager::OnPrefabAssetReload));
 	}
 
 	EditorLayer::~EditorLayer()

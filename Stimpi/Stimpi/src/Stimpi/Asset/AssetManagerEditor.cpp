@@ -4,8 +4,12 @@
 #include "Stimpi/Core/Core.h"
 #include "Stimpi/Core/Project.h"
 #include "Stimpi/Asset/AssetImporter.h"
+#include "Stimpi/Asset/AssetBuilder.h"
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Graphics/ShaderRegistry.h"
+//temp
+#include "Stimpi/Scene/Entity.h"
+#include "Stimpi/Asset/Prefab.h"
 
 #include <yaml-cpp/yaml.h>
 
@@ -51,7 +55,7 @@ namespace Stimpi
 
 	bool AssetManagerEditor::IsAssetHandleValid(AssetHandle handle)
 	{
-		return handle != 0 && (m_AssetRegistry.find(handle) != m_AssetRegistry.end());
+		return handle != INVALID_ASSET_HANDLE && (m_AssetRegistry.find(handle) != m_AssetRegistry.end());
 	}
 
 	bool AssetManagerEditor::IsAssetLoaded(AssetHandle handle)
@@ -87,7 +91,7 @@ namespace Stimpi
 	{
 		static FileTimeType s_ZeroTime;
 		AssetMetadata& metadata = GetAssetMetadata(handle);
-		// Check if valid asset type
+		// Check if valid asset type - note: LastWriteTime is taken only when the asset is loaded for the first time and on each asset reload
 		if (metadata.m_Type != AssetType::NONE && metadata.m_LastWriteTime != s_ZeroTime)
 		{
 			return metadata.m_LastWriteTime != FileSystem::LastWriteTime(Project::GetAssestsDir() / metadata.m_FilePath);
@@ -108,6 +112,11 @@ namespace Stimpi
 
 			metadata.m_LastWriteTime = FileSystem::LastWriteTime(Project::GetAssestsDir() / metadata.m_FilePath);
 			m_LoadedAssets[handle] = newAsset;
+
+			for (auto& handler : m_AssetReloadHandlers)
+			{
+				handler->OnAssetReload(newAsset);
+			}
 		}
 
 		return false;
@@ -212,14 +221,45 @@ namespace Stimpi
 		return m_LoadedAssets.size();
 	}
 
+	AssetHandle AssetManagerEditor::CreateAsset(AssetMetadata& metadata)
+	{
+		auto asset = AssetBuilder::CreateAsset(metadata);
+		if (asset)
+		{
+			AssetHandle assetHandle = RegisterAsset(metadata);
+			asset->m_Handle = assetHandle;
+			m_LoadedAssets[assetHandle] = asset;
+			return assetHandle;
+		}
+
+		return INVALID_ASSET_HANDLE;
+	}
+
+	void AssetManagerEditor::RegisterAssetReloadHandler(AssetReloadHandler* handler)
+	{
+		if (handler)
+		{
+			auto found = std::find(m_AssetReloadHandlers.begin(), m_AssetReloadHandlers.end(), handler);
+			if (found == m_AssetReloadHandlers.end())
+			{
+				m_AssetReloadHandlers.push_back(handler);
+			}
+		}
+	}
+
+	void AssetManagerEditor::UnregisterAssetReloadHandler(AssetReloadHandler* handler)
+	{
+		if (handler)
+		{
+			m_AssetReloadHandlers.erase(std::remove(m_AssetReloadHandlers.begin(), m_AssetReloadHandlers.end(), handler));
+		}
+	}
+
 	void AssetManagerEditor::OnAssetRegistered(AssetHandle handle, AssetMetadata metadata)
 	{
 		if (metadata.m_Type == AssetType::SHADER)
 		{
 			ShaderRegistry::RegisterShader(handle);
-
-			// Register shader with Renderer to prepare VAO and BO structures
-			//Renderer2D::Instance()->RegisterShader(handle);
 		}
 	}
 

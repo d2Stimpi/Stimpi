@@ -13,6 +13,7 @@
 #include "Stimpi/Scripting/ScriptEngine.h"
 #include "Stimpi/Scripting/ScriptSerializer.h"
 #include "Stimpi/Asset/AssetManager.h"
+#include "Stimpi/Asset/Prefab.h"
 
 #include <glm/glm.hpp>
 #include <yaml-cpp/yaml.h>

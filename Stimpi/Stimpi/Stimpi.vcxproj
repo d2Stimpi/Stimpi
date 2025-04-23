@@ -166,6 +166,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi.h" />
     <ClInclude Include="src\Stimpi\Asset\AnimationImporter.h" />
     <ClInclude Include="src\Stimpi\Asset\Asset.h" />
+    <ClInclude Include="src\Stimpi\Asset\AssetBuilder.h" />
     <ClInclude Include="src\Stimpi\Asset\AssetImporter.h" />
     <ClInclude Include="src\Stimpi\Asset\AssetManager.h" />
     <ClInclude Include="src\Stimpi\Asset\AssetManagerBase.h" />
@@ -173,6 +174,8 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Asset\AssetManagerRuntime.h" />
     <ClInclude Include="src\Stimpi\Asset\AssetMetadata.h" />
     <ClInclude Include="src\Stimpi\Asset\Prefab.h" />
+    <ClInclude Include="src\Stimpi\Asset\PrefabAssetBuilder.h" />
+    <ClInclude Include="src\Stimpi\Asset\PrefabImporter.h" />
     <ClInclude Include="src\Stimpi\Asset\SceneImporter.h" />
     <ClInclude Include="src\Stimpi\Asset\ShaderImporter.h" />
     <ClInclude Include="src\Stimpi\Asset\TextureImporter.h" />
@@ -258,10 +261,14 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Asset\AnimationImporter.cpp" />
     <ClCompile Include="src\Stimpi\Asset\Asset.cpp" />
+    <ClCompile Include="src\Stimpi\Asset\AssetBuilder.cpp" />
     <ClCompile Include="src\Stimpi\Asset\AssetImporter.cpp" />
     <ClCompile Include="src\Stimpi\Asset\AssetManager.cpp" />
     <ClCompile Include="src\Stimpi\Asset\AssetManagerEditor.cpp" />
     <ClCompile Include="src\Stimpi\Asset\AssetManagerRuntime.cpp" />
+    <ClCompile Include="src\Stimpi\Asset\Prefab.cpp" />
+    <ClCompile Include="src\Stimpi\Asset\PrefabAssetBuilder.cpp" />
+    <ClCompile Include="src\Stimpi\Asset\PrefabImporter.cpp" />
     <ClCompile Include="src\Stimpi\Asset\SceneImporter.cpp" />
     <ClCompile Include="src\Stimpi\Asset\ShaderImporter.cpp" />
     <ClCompile Include="src\Stimpi\Asset\TextureImporter.cpp" />

@@ -317,6 +317,9 @@
       <Filter>Stimpi\VisualScripting</Filter>
     </ClInclude>
     <ClInclude Include="src\stpch.h" />
+    <ClInclude Include="src\Stimpi\Asset\AssetBuilder.h" />
+    <ClInclude Include="src\Stimpi\Asset\PrefabAssetBuilder.h" />
+    <ClInclude Include="src\Stimpi\Asset\PrefabImporter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Asset\AnimationImporter.cpp">
@@ -542,5 +545,9 @@
       <Filter>Stimpi\VisualScripting</Filter>
     </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
+    <ClCompile Include="src\Stimpi\Asset\Prefab.cpp" />
+    <ClCompile Include="src\Stimpi\Asset\AssetBuilder.cpp" />
+    <ClCompile Include="src\Stimpi\Asset\PrefabAssetBuilder.cpp" />
+    <ClCompile Include="src\Stimpi\Asset\PrefabImporter.cpp" />
   </ItemGroup>
 </Project>

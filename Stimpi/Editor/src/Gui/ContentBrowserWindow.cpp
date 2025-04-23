@@ -2,9 +2,12 @@
 
 #include "Stimpi/Asset/TextureImporter.h"
 #include "Stimpi/Asset/AssetManager.h"
+#include "Stimpi/Asset/Prefab.h"
 #include "Stimpi/Core/Project.h"
 #include "Stimpi/Log.h"
+#include "Stimpi/Scene/Entity.h"
 #include "Stimpi/Scene/ResourceManager.h"
+#include "Stimpi/Scene/Component.h"
 
 #include "Gui/Components/UIPayload.h"
 #include "Gui/Components/ImGuiEx.h"
@@ -30,10 +33,16 @@ namespace Stimpi
 		FilePath m_RelativePath = "";
 	};
 
+	struct PrefabPopupContext
+	{
+		Entity m_Entity;
+	};
+
 	struct ContentBrowserWindowContext
 	{
 		ContentMode m_Mode = ContentMode::FILESYSTEM;
 		ThumbanailPopupContext m_ThumbnailPopupContext;
+		PrefabPopupContext m_PrefabPopupContext;
 		char m_SearchTextBuffer[64];
 
 		// Content browser used Textures
@@ -269,6 +278,15 @@ namespace Stimpi
 		ImGui::Text("");
 
 		ImGui::EndChild();
+
+		UIPayload::BeginTarget(PAYLOAD_DATA_TYPE_ENTITY, [&](void* data, uint32_t size) {
+			Entity entity = *(Entity*)data;
+			ST_CORE_INFO("ContentBrowser: dropped entity ID: {}", (uint32_t)entity);
+			s_Context.m_PrefabPopupContext.m_Entity = entity;
+			ImGui::OpenPopup("ContentBrowserWindow##CreatePrefabPopup");
+		});
+
+		CreatePrefabPopup();
 	}
 
 	void ContentBrowserWindow::RecurseNodeDraw(FileNode* rootNode)
@@ -307,9 +325,8 @@ namespace Stimpi
 				{
 				}
 				//ImGui::SameLine(startX); ImGui::TextDisabled("(?)");
-				/*auto asset = AssetManager::GetAssetNoRefCount<Texture>(Project::GetAssestsDir() / "textures\/folder.png");
-				Texture* texture = AssetManager::GetAssetData<Texture>(asset);
-				ImGui::Image((void*)(intptr_t)texture->GetTextureID(), ImVec2(16, 16));*/
+				/*Texture* texture = s_Context.m_FolderTexture.get();
+				ImGui::Image((void*)(intptr_t)texture->GetTextureID(), ImVec2(16, -16));*/
 				ImGui::PopID();
 			}
 		}
@@ -438,6 +455,29 @@ namespace Stimpi
 					{
 						assetManager->RegisterAsset({ assetType, s_Context.m_ThumbnailPopupContext.m_RelativePath });
 					}
+				}
+			}
+
+			ImGui::EndPopup();
+		}
+	}
+
+	void ContentBrowserWindow::CreatePrefabPopup()
+	{
+		if (ImGui::BeginPopup("ContentBrowserWindow##CreatePrefabPopup"))
+		{
+			if (ImGui::Selectable("Create Prefab Asset"))
+			{
+				auto assetManager = Project::GetEditorAssetManager();
+				Entity entity = s_Context.m_PrefabPopupContext.m_Entity;
+				TagComponent tag = entity.GetComponent<TagComponent>();
+				AssetMetadata metadata = { AssetType::PREFAB, m_CurrentDirectory / tag.m_Tag };
+				AssetHandle assetHandle = assetManager->CreateAsset(metadata);
+				std::shared_ptr<Prefab> asset = AssetManager::GetAsset<Prefab>(assetHandle);
+				if (asset)
+				{
+					asset->Initialize(entity);
+					asset->Save(metadata.m_FilePath);
 				}
 			}
 

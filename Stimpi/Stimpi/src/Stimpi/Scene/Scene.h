@@ -36,6 +36,8 @@ namespace Stimpi
 		void OnEvent(Event* event);
 
 		Entity CreateEntity(const std::string& name = "", const uint64_t& uuid = 0);
+		Entity CreateEntity(const AssetHandle& prefabHandle);
+
 		Entity GetEntityByHandle(entt::entity handle);
 		Entity FindentityByName(std::string_view name);
 		std::vector<Entity> FindAllEntitiesByName(std::string_view name);

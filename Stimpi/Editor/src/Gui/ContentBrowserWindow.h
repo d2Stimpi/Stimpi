@@ -53,6 +53,7 @@ namespace Stimpi
 		void ResetDirHierarchyData();
 		void RefreshDirHierachyData();
 		void ThumbnailPopup();
+		void CreatePrefabPopup();
 
 	private:
 		bool m_Show = true;

@@ -23,7 +23,7 @@ namespace Stimpi
 		{
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(type))
 			{
-				ST_CORE_INFO("DragDropPayload - Some data dropped");
+				//ST_CORE_INFO("DragDropPayload - Some data dropped");
 				onPalyoadDrop(payload->Data, payload->DataSize);
 			}
 			ImGui::EndDragDropTarget();
