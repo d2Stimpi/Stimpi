@@ -327,7 +327,7 @@ namespace Stimpi
 
 	Entity Scene::CreateEntity(const AssetHandle& prefabHandle)
 	{
-		static Entity invalidEntity = { (entt::entity)0, this };
+		static Entity invalidEntity = Entity();
 
 		if (prefabHandle)
 		{
@@ -376,6 +376,20 @@ namespace Stimpi
 		{
 			const TagComponent& tag = view.get<TagComponent>(entity);
 			if (tag.m_Tag == name)
+				entities.emplace_back(entity, this);
+		}
+		return entities;
+	}
+
+	std::vector<Entity> Scene::FindAllPrefabEntities(const AssetHandle& prefabHandle)
+	{
+		std::vector<Entity> entities;
+
+		auto view = m_Registry.view<PrefabComponent>();
+		for (auto entity : view)
+		{
+			const PrefabComponent& prefab = view.get<PrefabComponent>(entity);
+			if (prefab.m_PrefabHandle == prefabHandle)
 				entities.emplace_back(entity, this);
 		}
 		return entities;

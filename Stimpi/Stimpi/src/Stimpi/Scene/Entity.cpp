@@ -33,6 +33,7 @@ namespace Stimpi
 		SERIALIZE_COMPONENT(CameraComponent);
 		SERIALIZE_COMPONENT(RigidBody2DComponent);
 		SERIALIZE_COMPONENT(BoxCollider2DComponent);
+		SERIALIZE_COMPONENT(PrefabComponent);
 
 		out << YAML::EndMap;
 	}

@@ -101,6 +101,33 @@ namespace Stimpi
 		}
 	};
 
+	struct PrefabComponent
+	{
+		AssetHandle m_PrefabHandle;
+
+		PrefabComponent() = default;
+		PrefabComponent(const PrefabComponent&) = default;
+		PrefabComponent(const AssetHandle& handle)
+			: m_PrefabHandle(handle) {}
+
+		void Serialize(YAML::Emitter& out)
+		{
+			out << YAML::Key << "PrefabComponent";
+			out << YAML::BeginMap;
+				out << YAML::Key << "AssetHandle" << YAML::Value << m_PrefabHandle;
+			out << YAML::EndMap;
+		}
+
+		//De-serialize constructor
+		PrefabComponent(const YAML::Node& node)
+		{
+			if (node["AssetHandle"])
+			{
+				m_PrefabHandle = node["AssetHandle"].as<UUIDType>();
+			}
+		}
+	};
+
 	struct TagComponent
 	{
 		std::string m_Tag;

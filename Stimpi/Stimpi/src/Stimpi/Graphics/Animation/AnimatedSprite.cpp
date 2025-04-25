@@ -74,7 +74,7 @@ namespace Stimpi
 				}
 
 				if (m_WrapMode == AnimationWrapMode::LOOPING)
-					m_CurrentFrame %= m_FramesCount - 1;
+					m_CurrentFrame %= m_FramesCount;
 				else if (m_WrapMode == AnimationWrapMode::CLAMP)
 					m_CurrentFrame = animation->GetFrames().size() - 1;
 			}

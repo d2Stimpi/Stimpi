@@ -109,13 +109,20 @@ namespace Stimpi
 		{
 			auto& metadata = GetAssetMetadata(handle);
 			auto newAsset = AssetImporter::ImportAsset(handle, metadata);
-
-			metadata.m_LastWriteTime = FileSystem::LastWriteTime(Project::GetAssestsDir() / metadata.m_FilePath);
-			m_LoadedAssets[handle] = newAsset;
-
-			for (auto& handler : m_AssetReloadHandlers)
+			if (!newAsset)
 			{
-				handler->OnAssetReload(newAsset);
+				ST_CORE_ERROR("Failed to import asset (Reload): {}", metadata.m_FilePath.string());
+			}
+			else
+			{
+				metadata.m_LastWriteTime = FileSystem::LastWriteTime(Project::GetAssestsDir() / metadata.m_FilePath);
+				m_LoadedAssets[handle] = newAsset;
+				newAsset->m_Handle = handle;
+
+				for (auto& handler : m_AssetReloadHandlers)
+				{
+					handler->OnAssetReload(newAsset);
+				}
 			}
 		}
 

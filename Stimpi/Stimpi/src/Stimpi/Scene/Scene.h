@@ -41,6 +41,7 @@ namespace Stimpi
 		Entity GetEntityByHandle(entt::entity handle);
 		Entity FindentityByName(std::string_view name);
 		std::vector<Entity> FindAllEntitiesByName(std::string_view name);
+		std::vector<Entity> FindAllPrefabEntities(const AssetHandle& prefabHandle);
 		bool RemoveEntity(Entity entity);
 		bool RemoveEntity(entt::entity handle);
 		bool IsEntityValid(Entity entity);

@@ -5,6 +5,24 @@
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Scene/Component.h"
 
+#define SERIALIZE_ENTITY_COMPONENT(Entity, ComponentName)			\
+		if (Entity.HasComponent<ComponentName>())					\
+		{															\
+			Entity.GetComponent<ComponentName>().Serialize(out);	\
+		}
+
+#define REMOVE_ENTITY_COMPONENT(Entity, ComponentName)	\
+		if (Entity.HasComponent<ComponentName>())		\
+		{												\
+			Entity.RemoveComponent<ComponentName>();	\
+		}
+
+#define BUILD_ENTITY_COMPONENT(Entity, ComponentName)	\
+		if (m_Data[#ComponentName])						\
+		{												\
+			Entity.AddComponent<ComponentName>(ComponentName(m_Data[#ComponentName]));	\
+		}
+
 namespace Stimpi
 {
 
@@ -22,7 +40,23 @@ namespace Stimpi
 	void Prefab::Initialize(Entity entity)
 	{
 		YAML::Emitter out;
-		entity.Serialize(out);
+		
+		out << YAML::BeginMap;
+
+		SERIALIZE_ENTITY_COMPONENT(entity, TagComponent);
+		SERIALIZE_ENTITY_COMPONENT(entity, HierarchyComponent);
+		SERIALIZE_ENTITY_COMPONENT(entity, QuadComponent);
+		SERIALIZE_ENTITY_COMPONENT(entity, CircleComponent);
+		SERIALIZE_ENTITY_COMPONENT(entity, SpriteComponent);
+		SERIALIZE_ENTITY_COMPONENT(entity, SortingGroupComponent);
+		SERIALIZE_ENTITY_COMPONENT(entity, AnimatedSpriteComponent);
+		SERIALIZE_ENTITY_COMPONENT(entity, ScriptComponent);
+		SERIALIZE_ENTITY_COMPONENT(entity, CameraComponent);
+		SERIALIZE_ENTITY_COMPONENT(entity, RigidBody2DComponent);
+		SERIALIZE_ENTITY_COMPONENT(entity, BoxCollider2DComponent);
+
+		out << YAML::EndMap;
+
 		m_Data = YAML::Load(out.c_str());
 	}
 
@@ -39,46 +73,56 @@ namespace Stimpi
 			tag = m_Data["TagComponent"]["Tag"].as<std::string>();
 		}
 		entity.AddComponent<TagComponent>(tag);
-		if (m_Data["QuadComponent"])
-		{
-			entity.AddComponent<QuadComponent>(QuadComponent(m_Data["QuadComponent"]));
-		}
-		if (m_Data["HierarchyComponent"])
-		{
-			entity.AddComponent<HierarchyComponent>(HierarchyComponent(m_Data["HierarchyComponent"]));
-		}
-		if (m_Data["CircleComponent"])
-		{
-			entity.AddComponent<CircleComponent>(CircleComponent(m_Data["CircleComponent"]));
-		}
-		if (m_Data["SpriteComponent"])
-		{
-			entity.AddComponent<SpriteComponent>(SpriteComponent(m_Data["SpriteComponent"]));
-		}
-		if (m_Data["SortingGroupComponent"])
-		{
-			entity.AddComponent<SortingGroupComponent>(SortingGroupComponent(m_Data["SortingGroupComponent"]));
-		}
-		if (m_Data["AnimatedSpriteComponent"])
-		{
-			entity.AddComponent<AnimatedSpriteComponent>(AnimatedSpriteComponent(m_Data["AnimatedSpriteComponent"]));
-		}
+		BUILD_ENTITY_COMPONENT(entity, QuadComponent);
+		BUILD_ENTITY_COMPONENT(entity, HierarchyComponent);
+		BUILD_ENTITY_COMPONENT(entity, CircleComponent);
+		BUILD_ENTITY_COMPONENT(entity, SpriteComponent);
+		BUILD_ENTITY_COMPONENT(entity, SortingGroupComponent);
+		BUILD_ENTITY_COMPONENT(entity, AnimatedSpriteComponent);
 		if (m_Data["ScriptComponent"])
 		{
 			ScriptComponent& scriptComponent = entity.AddComponent<ScriptComponent>(ScriptComponent(m_Data["ScriptComponent"]));
 			scriptComponent.PopulateScriptInstanceData(m_Data["ScriptComponent"]);
 		}
-		if (m_Data["CameraComponent"])
+		BUILD_ENTITY_COMPONENT(entity, CameraComponent);
+		BUILD_ENTITY_COMPONENT(entity, RigidBody2DComponent);
+		BUILD_ENTITY_COMPONENT(entity, BoxCollider2DComponent);
+
+		// Only prefabs will have PrefabComponent as a way to identify them easily
+		if (!entity.HasComponent<PrefabComponent>())
+			entity.AddComponent<PrefabComponent>(m_Handle);
+	}
+
+	void Prefab::UpdateComponents(Entity entity)
+	{
+		// Save the current entity position in order to restore it after update.
+		// Provided that the entity has QuadComponent
+		glm::vec3 position = { 0.0f, 0.0f, 0.0f };
+		if (entity.HasComponent<QuadComponent>())
 		{
-			entity.AddComponent<CameraComponent>(CameraComponent(m_Data["CameraComponent"]));
+			QuadComponent& quad = entity.GetComponent<QuadComponent>();
+			position = quad.m_Position;
 		}
-		if (m_Data["RigidBody2DComponent"])
+
+		REMOVE_ENTITY_COMPONENT(entity, TagComponent)
+		REMOVE_ENTITY_COMPONENT(entity, HierarchyComponent);
+		REMOVE_ENTITY_COMPONENT(entity, QuadComponent);
+		REMOVE_ENTITY_COMPONENT(entity, CircleComponent);
+		REMOVE_ENTITY_COMPONENT(entity, SpriteComponent);
+		REMOVE_ENTITY_COMPONENT(entity, SortingGroupComponent);
+		REMOVE_ENTITY_COMPONENT(entity, AnimatedSpriteComponent);
+		REMOVE_ENTITY_COMPONENT(entity, ScriptComponent);
+		REMOVE_ENTITY_COMPONENT(entity, CameraComponent);
+		REMOVE_ENTITY_COMPONENT(entity, RigidBody2DComponent);
+		REMOVE_ENTITY_COMPONENT(entity, BoxCollider2DComponent);
+
+		BuildComponents(entity);
+
+		// Restore the entity's position
+		if (entity.HasComponent<QuadComponent>())
 		{
-			entity.AddComponent<RigidBody2DComponent>(RigidBody2DComponent(m_Data["RigidBody2DComponent"]));
-		}
-		if (m_Data["BoxCollider2DComponent"])
-		{
-			entity.AddComponent<BoxCollider2DComponent>(BoxCollider2DComponent(m_Data["BoxCollider2DComponent"]));
+			QuadComponent& quad = entity.GetComponent<QuadComponent>();
+			quad.m_Position = position;
 		}
 	}
 

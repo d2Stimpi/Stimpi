@@ -27,6 +27,7 @@ namespace Stimpi
 		void Save(const FilePath& filePath);	// Consider moving to ExportAsset
 
 		void BuildComponents(Entity entity);
+		void UpdateComponents(Entity entity);
 
 		static std::shared_ptr<Prefab> Create();
 		static std::shared_ptr<Prefab> Create(Entity entity);

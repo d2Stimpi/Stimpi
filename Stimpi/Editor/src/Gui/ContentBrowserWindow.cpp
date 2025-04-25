@@ -270,6 +270,11 @@ namespace Stimpi
 				AssetHandle shaderHandle = Project::GetEditorAssetManager()->GetAssetHandle(relativePath);
 				UIPayload::BeginSource(PAYLOAD_SHADER, &shaderHandle, sizeof(AssetHandle), filenameStr.c_str());
 			}
+			if (relativePath.extension().string() == ".fab")
+			{
+				AssetHandle prefabHandle = Project::GetEditorAssetManager()->GetAssetHandle(relativePath);
+				UIPayload::BeginSource(PAYLOAD_PREFAB, &prefabHandle, sizeof(AssetHandle), filenameStr.c_str());
+			}
 		}
 		ThumbnailPopup();
 
@@ -471,7 +476,7 @@ namespace Stimpi
 				auto assetManager = Project::GetEditorAssetManager();
 				Entity entity = s_Context.m_PrefabPopupContext.m_Entity;
 				TagComponent tag = entity.GetComponent<TagComponent>();
-				AssetMetadata metadata = { AssetType::PREFAB, m_CurrentDirectory / tag.m_Tag };
+				AssetMetadata metadata = { AssetType::PREFAB, m_CurrentDirectory / tag.m_Tag.append(".fab")};
 				AssetHandle assetHandle = assetManager->CreateAsset(metadata);
 				std::shared_ptr<Prefab> asset = AssetManager::GetAsset<Prefab>(assetHandle);
 				if (asset)
