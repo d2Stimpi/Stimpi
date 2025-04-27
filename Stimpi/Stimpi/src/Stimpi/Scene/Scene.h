@@ -39,6 +39,7 @@ namespace Stimpi
 		Entity CreateEntity(const AssetHandle& prefabHandle);
 
 		Entity GetEntityByHandle(entt::entity handle);
+		Entity GetEntityByUUID(const UUID& uuid);
 		Entity FindentityByName(std::string_view name);
 		std::vector<Entity> FindAllEntitiesByName(std::string_view name);
 		std::vector<Entity> FindAllPrefabEntities(const AssetHandle& prefabHandle);

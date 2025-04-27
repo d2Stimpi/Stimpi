@@ -105,6 +105,9 @@ namespace Stimpi
 	{
 		AssetHandle m_PrefabHandle;
 
+		// Internal UUID that references prefab (sub) entity ID, for easier prefab updates
+		UUID m_PrefabEntityID;
+
 		PrefabComponent() = default;
 		PrefabComponent(const PrefabComponent&) = default;
 		PrefabComponent(const AssetHandle& handle)
@@ -115,6 +118,7 @@ namespace Stimpi
 			out << YAML::Key << "PrefabComponent";
 			out << YAML::BeginMap;
 				out << YAML::Key << "AssetHandle" << YAML::Value << m_PrefabHandle;
+				out << YAML::Key << "PrefabEntityID" << YAML::Value << m_PrefabEntityID;
 			out << YAML::EndMap;
 		}
 
@@ -124,6 +128,10 @@ namespace Stimpi
 			if (node["AssetHandle"])
 			{
 				m_PrefabHandle = node["AssetHandle"].as<UUIDType>();
+			}
+			if (node["PrefabEntityID"])
+			{
+				m_PrefabEntityID = node["PrefabEntityID"].as<UUIDType>();
 			}
 		}
 	};

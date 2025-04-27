@@ -334,16 +334,7 @@ namespace Stimpi
 			auto prefab = AssetManager::GetAsset<Prefab>(prefabHandle);
 			if (prefab)
 			{
-				Entity entity = { m_Registry.create(), this };
-				UUID entityUUID = UUID();
-				entity.AddComponent<UUIDComponent>(entityUUID);
-				entity.AddComponent<DefaultGroupComponent>();
-				
-				prefab->BuildComponents(entity);
-				
-				m_Entities.push_back(entity);
-				m_EntityUUIDMap[entityUUID] = entity;
-				return entity;
+				return prefab->CreateEntities(this);
 			}
 		}
 
@@ -353,6 +344,11 @@ namespace Stimpi
 	Entity Scene::GetEntityByHandle(entt::entity handle)
 	{
 		return Entity(handle, this);
+	}
+
+	Stimpi::Entity Scene::GetEntityByUUID(const UUID& uuid)
+	{
+		return m_EntityUUIDMap[uuid];
 	}
 
 	Entity Scene::FindentityByName(std::string_view name)

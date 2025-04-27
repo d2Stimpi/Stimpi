@@ -15,7 +15,7 @@ namespace Stimpi
 
 	std::shared_ptr<Stimpi::Prefab> PrefabImporter::LoadPrefab(const FilePath& filePath)
 	{
-		return Prefab::Create(filePath);
+		return Prefab::Create(filePath.GetFileName(), filePath);
 	}
 
 }
