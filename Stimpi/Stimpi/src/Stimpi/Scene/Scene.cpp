@@ -396,6 +396,16 @@ namespace Stimpi
 		bool valid = IsEntityValid(entity);
 		if (valid)
 		{
+			// Remove all entities in the hierarchy
+			if (entity.HasComponent<HierarchyComponent>())
+			{
+				HierarchyComponent& hierarchy = entity.GetComponent<HierarchyComponent>();
+				for (auto& childID : hierarchy.m_Children)
+				{
+					RemoveEntity(m_EntityUUIDMap[childID]);
+				}
+			}
+
 			m_EntityUUIDMap.erase(entity.GetComponent<UUIDComponent>().m_UUID);
 			m_Registry.destroy(entity.GetHandle());
 			m_Entities.erase(std::remove(std::begin(m_Entities), std::end(m_Entities), entity));

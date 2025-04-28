@@ -45,7 +45,7 @@ namespace Stimpi
 		void GroupFilteredEntities();
 
 		void CreateEntityPopup();
-		void SelectedEntityPopup();
+		void HoveredEntityPopup();
 	private:
 		bool m_Show = true;
 		bool m_ShowInspect = true;
