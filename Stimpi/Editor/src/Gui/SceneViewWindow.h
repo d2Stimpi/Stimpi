@@ -24,6 +24,8 @@ namespace Stimpi
 		void DrawUIComponents(ImVec2 winPos, ImVec2 winSize);
 		bool PickUIComponents(ImVec2 pickPos);
 
+		ImVec2 GetWorldMousePosition();
+	private:
 		bool m_Show = true;
 		ImGuiWindowFlags m_Flags;
 		bool m_Hovered = false;

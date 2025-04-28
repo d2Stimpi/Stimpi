@@ -18,6 +18,7 @@
 #include "Gui/Gizmo2D.h"
 #include "Gui/EditorUtils.h"
 #include "Gui/Utils/Utils.h"
+#include "Gui/Prefab/PrefabManager.h"
 
 #include <cmath>
 
@@ -197,8 +198,20 @@ namespace Stimpi
 			std::string strData = std::string((char*)data, size);
 			ST_CORE_INFO("Scene data dropped: {0}", strData.c_str());
 			SceneManager::Instance()->LoadScene(strData);
-			});
+		});
 
+		UIPayload::BeginTarget(PAYLOAD_PREFAB, [&](void* data, uint32_t size) {
+			AssetHandle prefabHandle = *(AssetHandle*)data;
+			Entity prefabEntity = PrefabManager::InstantiatePrefab(prefabHandle);
+
+			if (prefabEntity && prefabEntity.HasComponent<QuadComponent>())
+			{
+				ImVec2 worldPos = GetWorldMousePosition();
+				QuadComponent& quad = prefabEntity.GetComponent<QuadComponent>();
+				quad.m_Position.x = worldPos.x;
+				quad.m_Position.y = worldPos.y;
+			}
+		});
 
 		ImGui::End();
 	}
@@ -280,6 +293,22 @@ namespace Stimpi
 			});
 
 		return picked;
+	}
+
+	ImVec2 SceneViewWindow::GetWorldMousePosition()
+	{
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto camera = scene->GetRenderCamera();
+		ST_CORE_ASSERT(!camera);
+
+		ImVec2 winSize = ImGui::GetContentRegionAvail();
+		ImVec2 winPos = ImGui::GetCursorScreenPos();
+		ImVec2 mousePos = ImGui::GetMousePos();
+		glm::vec2 pickPos = { mousePos.x - winPos.x, winSize.y - (mousePos.y - winPos.y) };
+		glm::vec2 worldPos = SceneUtils::WindowToWorldPoint(camera, glm::vec2{ winSize.x, winSize.y }, pickPos);
+
+		return ImVec2(worldPos.x, worldPos.y);
 	}
 
 }

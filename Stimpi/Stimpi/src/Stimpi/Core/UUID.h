@@ -4,6 +4,8 @@
 
 #include <xhash>
 
+#define INVALID_UUID	0
+
 namespace Stimpi
 {
 	using UUIDType = uint64_t;

@@ -34,9 +34,10 @@ namespace Stimpi
 			s_Context.m_UndoCmdType = type;
 		}
 
-		bool Input::DragFloat3(const char* label, glm::vec3& val)
+		bool Input::DragFloat3(const char* label, glm::vec3& val, bool* done, bool saveCmd)
 		{
 			bool retVal = false;
+			if (done) *done = false;
 
 			retVal = ImGui::DragFloat3(label, glm::value_ptr(val));
 
@@ -51,17 +52,26 @@ namespace Stimpi
 				glm::vec3 prevValue = s_Context.m_TempVec3;
 				if (prevValue != val)
 				{
-					//ST_CORE_INFO("Input finished, previous value: {}", prevValue);
-					// Create cmd here
-					if (s_Context.m_UndoCmdType == UndoCmdType::ENTITY)
+					// Set to true only when value changed and input has finished 
+					if (done)
 					{
-						Entity entity = SceneHierarchyWindow::GetSelectedEntity();
-						Command* cmd = EntityCommand::Create(entity, val - prevValue, glm::value_ptr(val));
-						CommandStack::Push(cmd);
+						*done = true;
+						retVal = true;
 					}
-					else if(s_Context.m_UndoCmdType == UndoCmdType::VALUE)
+
+					// Create cmd here
+					if (saveCmd)
 					{
-						// TODO: consider if needed
+						if (s_Context.m_UndoCmdType == UndoCmdType::ENTITY)
+						{
+							Entity entity = SceneHierarchyWindow::GetSelectedEntity();
+							Command* cmd = EntityCommand::Create(entity, val - prevValue, glm::value_ptr(val));
+							CommandStack::Push(cmd);
+						}
+						else if(s_Context.m_UndoCmdType == UndoCmdType::VALUE)
+						{
+							// TODO: consider if needed
+						}
 					}
 				}
 			}
@@ -69,9 +79,10 @@ namespace Stimpi
 			return retVal;
 		}
 
-		bool Input::DragFloat2(const char* label, glm::vec2& val)
+		bool Input::DragFloat2(const char* label, glm::vec2& val, bool* done, bool saveCmd)
 		{
 			bool retVal = false;
+			if (done) *done = false;
 
 			retVal = ImGui::DragFloat2(label, glm::value_ptr(val));
 
@@ -86,17 +97,26 @@ namespace Stimpi
 				glm::vec2 prevValue = s_Context.m_TempVec2;
 				if (prevValue != val)
 				{
-					//ST_CORE_INFO("Input finished, previous value: {}", prevValue);
-					// Create cmd here
-					if (s_Context.m_UndoCmdType == UndoCmdType::ENTITY)
+					// Set to true only when value changed and input has finished 
+					if (done)
 					{
-						Entity entity = SceneHierarchyWindow::GetSelectedEntity();
-						Command* cmd = EntityCommand::Create(entity, val - prevValue, glm::value_ptr(val));
-						CommandStack::Push(cmd);
+						*done = true;
+						retVal = true;
 					}
-					else if (s_Context.m_UndoCmdType == UndoCmdType::VALUE)
+					
+					// Create cmd here
+					if (saveCmd)
 					{
-						// TODO: consider if needed
+						if (s_Context.m_UndoCmdType == UndoCmdType::ENTITY)
+						{
+							Entity entity = SceneHierarchyWindow::GetSelectedEntity();
+							Command* cmd = EntityCommand::Create(entity, val - prevValue, glm::value_ptr(val));
+							CommandStack::Push(cmd);
+						}
+						else if (s_Context.m_UndoCmdType == UndoCmdType::VALUE)
+						{
+							// TODO: consider if needed
+						}
 					}
 				}
 			}
@@ -104,9 +124,10 @@ namespace Stimpi
 			return retVal;
 		}
 
-		bool Input::DragFloat(const char* label, float& val, float speed, float min, float max)
+		bool Input::DragFloat(const char* label, float& val, float speed, float min, float max, bool* done, bool saveCmd)
 		{
 			bool retVal = false;
+			if (done) *done = false;
 
 			retVal = ImGui::DragFloat(label, &val, speed, min, max);
 
@@ -121,22 +142,46 @@ namespace Stimpi
 				float prevValue = s_Context.m_TempFloat;
 				if (prevValue != val)
 				{
-					ST_CORE_INFO("Input finished, previous value: {}", prevValue);
-					// Create cmd here
-					if (s_Context.m_UndoCmdType == UndoCmdType::ENTITY)
+					// Set to true only when value changed and input has finished 
+					if (done)
 					{
-						Entity entity = SceneHierarchyWindow::GetSelectedEntity();
-						Command* cmd = EntityCommand::Create(entity, val - prevValue, &val);
-						CommandStack::Push(cmd);
+						*done = true;
+						retVal = true;
 					}
-					else if (s_Context.m_UndoCmdType == UndoCmdType::VALUE)
+
+					// Create cmd here
+					if (saveCmd)
 					{
-						// TODO: consider if needed
+						if (s_Context.m_UndoCmdType == UndoCmdType::ENTITY)
+						{
+							Entity entity = SceneHierarchyWindow::GetSelectedEntity();
+							Command* cmd = EntityCommand::Create(entity, val - prevValue, &val);
+							CommandStack::Push(cmd);
+						}
+						else if (s_Context.m_UndoCmdType == UndoCmdType::VALUE)
+						{
+							// TODO: consider if needed
+						}
 					}
 				}
 			}
 
 			return retVal;
+		}
+
+		glm::vec3 Input::GetStartFloat3()
+		{
+			return s_Context.m_TempVec3;
+		}
+
+		glm::vec2 Input::GetStartFloat2()
+		{
+			return s_Context.m_TempVec2;
+		}
+
+		float Input::GetStartFloat()
+		{
+			return s_Context.m_TempFloat;
 		}
 
 	}

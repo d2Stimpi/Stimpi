@@ -6,6 +6,8 @@
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/SceneManager.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 namespace Stimpi
 {
 
@@ -33,9 +35,9 @@ namespace Stimpi
 			if (prevParentUUID)
 			{
 				auto scene = SceneManager::Instance()->GetActiveScene();
-				Entity& prePrent = scene->m_EntityUUIDMap[prevParentUUID];
+				Entity& preParent = scene->m_EntityUUIDMap[prevParentUUID];
 
-				RemoveChild(prePrent, child);
+				RemoveChild(preParent, child);
 			}
 		}
 

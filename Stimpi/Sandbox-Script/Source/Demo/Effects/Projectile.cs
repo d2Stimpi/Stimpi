@@ -93,6 +93,7 @@ namespace Demo
                 _bc2d.Size = new Vector2(0.25f, 0.25f);
                 _rb2d.Enabled = true;
                 _enableCollision = true;
+                _anim.UseCustomShader = false;
             }
 
             Physics.InitializePhysics2DBody(ID);    // Will only create the body if it does not already exist

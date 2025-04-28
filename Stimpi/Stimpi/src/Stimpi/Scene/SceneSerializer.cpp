@@ -99,6 +99,10 @@ namespace Stimpi
 				{
 					entity.AddComponent<BoxCollider2DComponent>(BoxCollider2DComponent(entityNode["BoxCollider2DComponent"]));
 				}
+				if (entityNode["PrefabComponent"])
+				{
+					entity.AddComponent<PrefabComponent>(PrefabComponent(entityNode["PrefabComponent"]));
+				}
 			}
 		}
 

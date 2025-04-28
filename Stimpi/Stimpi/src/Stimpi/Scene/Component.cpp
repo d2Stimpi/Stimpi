@@ -69,6 +69,17 @@ namespace Stimpi
 		}
 	}
 
+	static void OnScriptDestruct(entt::registry& reg, entt::entity ent)
+	{
+		Entity entity = { ent, s_ActiveScene };
+
+		ScriptComponent& component = entity.GetComponent<ScriptComponent>();
+		if (!component.m_ScriptInstance)
+		{
+			ScriptEngine::OnScriptComponentRemove(entity);
+		}
+	}
+
 	//TODO: scriptOnDestruct
 
 	// Sprite
@@ -159,6 +170,7 @@ namespace Stimpi
 		ENTT_REGISTER_COMPONENT_ON_DESTROY(QuadComponent, OnQuadDestruct);
 		ENTT_REGISTER_COMPONENT_ON_DESTROY(CircleComponent, OnCircleDestruct);
 		ENTT_REGISTER_COMPONENT_ON_DESTROY(CameraComponent, OnCameraDestruct);
+		ENTT_REGISTER_COMPONENT_ON_DESTROY(ScriptComponent, OnScriptDestruct);
 		ENTT_REGISTER_COMPONENT_ON_DESTROY(SpriteComponent, OnSpriteDestruct);
 		ENTT_REGISTER_COMPONENT_ON_DESTROY(AnimatedSpriteComponent, OnAnimatedSpriteDestruct);
 		ENTT_REGISTER_COMPONENT_ON_DESTROY(RigidBody2DComponent, OnRigidBody2DDestruct);

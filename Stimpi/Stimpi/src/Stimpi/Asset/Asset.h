@@ -4,6 +4,8 @@
 #include "Stimpi/Core/UUID.h"
 #include "Stimpi/Utils/FilePath.h"
 
+#define INVALID_ASSET_HANDLE	INVALID_UUID
+
 namespace Stimpi
 {
 	using AssetHandle = UUID;
@@ -14,7 +16,8 @@ namespace Stimpi
 		TEXTURE,
 		SHADER,
 		SCENE,
-		ANIMATION
+		ANIMATION,
+		PREFAB
 	};
 
 	std::string AssetTypeToString(AssetType type);
@@ -34,6 +37,7 @@ namespace Stimpi
 
 		virtual AssetType GetType() = 0;
 
+		bool IsValid() { return m_Handle != 0; }
 		operator bool() const { return m_Handle != 0; }
 	};
 }

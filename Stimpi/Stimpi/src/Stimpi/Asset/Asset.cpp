@@ -13,6 +13,7 @@ namespace Stimpi
 		case Stimpi::AssetType::SHADER:		return std::string("SHADER");
 		case Stimpi::AssetType::SCENE:		return std::string("SCENE");
 		case Stimpi::AssetType::ANIMATION:	return std::string("ANIMATION");
+		case Stimpi::AssetType::PREFAB:		return std::string("PREFAB");
 		default: return std::string("NONE");
 		}
 	}
@@ -24,6 +25,7 @@ namespace Stimpi
 		else if (str == "SHADER")		return AssetType::SHADER;
 		else if (str == "SCENE")		return AssetType::SCENE;
 		else if (str == "ANIMATION")	return AssetType::ANIMATION;
+		else if (str == "PREFAB")		return AssetType::PREFAB;
 		else return AssetType::NONE;
 	}
 
@@ -41,6 +43,8 @@ namespace Stimpi
 			return AssetType::SCENE;
 		if (extension == ".anim")
 			return AssetType::ANIMATION;
+		if (extension == ".fab")
+			return AssetType::PREFAB;
 
 		return AssetType::NONE;
 	}

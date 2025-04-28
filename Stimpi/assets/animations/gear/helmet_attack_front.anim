@@ -1,5 +1,5 @@
 Animation:
-  Texture: sprite_sheets\char\Sword_attack_side_right.png
+  Texture: sprite_sheets\gear\Helmet_attack_front.png
   Frames:
     Frame:
       Duration: 0.1
@@ -7,7 +7,7 @@ Animation:
         - 64
         - 64
       FramePosition:
-        - 192
+        - 0
         - 0
     Frame:
       Duration: 0.1

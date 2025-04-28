@@ -36,9 +36,13 @@ namespace Stimpi
 		void OnEvent(Event* event);
 
 		Entity CreateEntity(const std::string& name = "", const uint64_t& uuid = 0);
+		Entity CreateEntity(const AssetHandle& prefabHandle);
+
 		Entity GetEntityByHandle(entt::entity handle);
+		Entity GetEntityByUUID(const UUID& uuid);
 		Entity FindentityByName(std::string_view name);
 		std::vector<Entity> FindAllEntitiesByName(std::string_view name);
+		std::vector<Entity> FindAllPrefabEntities(const AssetHandle& prefabHandle);
 		bool RemoveEntity(Entity entity);
 		bool RemoveEntity(entt::entity handle);
 		bool IsEntityValid(Entity entity);
@@ -126,6 +130,7 @@ namespace Stimpi
 
 		friend class Entity;
 		friend class EntityManager;
+		friend class EditorEntityManager;
 		friend class EntityHierarchy;
 		friend class SceneSerializer;
 		friend class SceneHierarchyWindow;

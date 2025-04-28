@@ -49,3 +49,19 @@ Animation:
       FramePosition:
         - 320
         - 0
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 64
+      FramePosition:
+        - 384
+        - 0
+    Frame:
+      Duration: 0.1
+      FrameSize:
+        - 64
+        - 64
+      FramePosition:
+        - 448
+        - 0

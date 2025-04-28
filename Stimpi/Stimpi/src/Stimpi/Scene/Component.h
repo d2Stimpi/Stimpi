@@ -13,6 +13,7 @@
 #include "Stimpi/Scripting/ScriptEngine.h"
 #include "Stimpi/Scripting/ScriptSerializer.h"
 #include "Stimpi/Asset/AssetManager.h"
+#include "Stimpi/Asset/Prefab.h"
 
 #include <glm/glm.hpp>
 #include <yaml-cpp/yaml.h>
@@ -34,12 +35,6 @@ namespace Stimpi
 	public:
 		static void InitComponentObservers(entt::registry& reg, Scene* scene);
 		static void DeinitConstructObservers(entt::registry& reg);
-	};
-
-	// Internal
-	struct ParentComponent
-	{
-		
 	};
 
 	struct UUIDComponent
@@ -102,6 +97,41 @@ namespace Stimpi
 					const YAML::Node& child = *it;
 					m_Children.emplace_back(child.as<uint64_t>());
 				}
+			}
+		}
+	};
+
+	struct PrefabComponent
+	{
+		AssetHandle m_PrefabHandle;
+
+		// Internal UUID that references prefab (sub) entity ID, for easier prefab updates
+		UUID m_PrefabEntityID;
+
+		PrefabComponent() = default;
+		PrefabComponent(const PrefabComponent&) = default;
+		PrefabComponent(const AssetHandle& handle)
+			: m_PrefabHandle(handle) {}
+
+		void Serialize(YAML::Emitter& out)
+		{
+			out << YAML::Key << "PrefabComponent";
+			out << YAML::BeginMap;
+				out << YAML::Key << "AssetHandle" << YAML::Value << m_PrefabHandle;
+				out << YAML::Key << "PrefabEntityID" << YAML::Value << m_PrefabEntityID;
+			out << YAML::EndMap;
+		}
+
+		//De-serialize constructor
+		PrefabComponent(const YAML::Node& node)
+		{
+			if (node["AssetHandle"])
+			{
+				m_PrefabHandle = node["AssetHandle"].as<UUIDType>();
+			}
+			if (node["PrefabEntityID"])
+			{
+				m_PrefabEntityID = node["PrefabEntityID"].as<UUIDType>();
 			}
 		}
 	};

@@ -179,7 +179,7 @@ namespace Demo
 
                             //EnemyTracker.LogStuff(_cursorQuad.Position);
                             bool done = false;
-                            float range = 20.0f;
+                            float range = 200.0f;
                             int maxChain = 5;
                             Vector2 startPos = _cursorQuad.Position;
                             Entity owner = this;

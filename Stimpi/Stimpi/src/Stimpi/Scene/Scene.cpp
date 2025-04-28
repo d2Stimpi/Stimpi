@@ -325,9 +325,30 @@ namespace Stimpi
 		return entity;
 	}
 
+	Entity Scene::CreateEntity(const AssetHandle& prefabHandle)
+	{
+		static Entity invalidEntity = Entity();
+
+		if (prefabHandle)
+		{
+			auto prefab = AssetManager::GetAsset<Prefab>(prefabHandle);
+			if (prefab)
+			{
+				return prefab->CreateEntities(this);
+			}
+		}
+
+		return invalidEntity;
+	}
+
 	Entity Scene::GetEntityByHandle(entt::entity handle)
 	{
 		return Entity(handle, this);
+	}
+
+	Stimpi::Entity Scene::GetEntityByUUID(const UUID& uuid)
+	{
+		return m_EntityUUIDMap[uuid];
 	}
 
 	Entity Scene::FindentityByName(std::string_view name)
@@ -356,11 +377,35 @@ namespace Stimpi
 		return entities;
 	}
 
+	std::vector<Entity> Scene::FindAllPrefabEntities(const AssetHandle& prefabHandle)
+	{
+		std::vector<Entity> entities;
+
+		auto view = m_Registry.view<PrefabComponent>();
+		for (auto entity : view)
+		{
+			const PrefabComponent& prefab = view.get<PrefabComponent>(entity);
+			if (prefab.m_PrefabHandle == prefabHandle)
+				entities.emplace_back(entity, this);
+		}
+		return entities;
+	}
+
 	bool Scene::RemoveEntity(Entity entity)
 	{
 		bool valid = IsEntityValid(entity);
 		if (valid)
 		{
+			// Remove all entities in the hierarchy
+			if (entity.HasComponent<HierarchyComponent>())
+			{
+				HierarchyComponent& hierarchy = entity.GetComponent<HierarchyComponent>();
+				for (auto& childID : hierarchy.m_Children)
+				{
+					RemoveEntity(m_EntityUUIDMap[childID]);
+				}
+			}
+
 			m_EntityUUIDMap.erase(entity.GetComponent<UUIDComponent>().m_UUID);
 			m_Registry.destroy(entity.GetHandle());
 			m_Entities.erase(std::remove(std::begin(m_Entities), std::end(m_Entities), entity));

@@ -17,7 +17,7 @@ namespace Stimpi
 	std::shared_ptr<Stimpi::Asset> ShaderImporter::ImportShader(AssetHandle handle, const AssetMetadata& metadata)
 	{
 		FilePath assetPath = Project::GetAssestsDir() / metadata.m_FilePath.string();
-		return std::static_pointer_cast<Shader>(LoadShader(assetPath, handle));
+		return std::static_pointer_cast<Asset>(LoadShader(assetPath, handle));
 	}
 
 	std::shared_ptr<Stimpi::Shader> ShaderImporter::LoadShader(const FilePath& filePath, AssetHandle handle)
