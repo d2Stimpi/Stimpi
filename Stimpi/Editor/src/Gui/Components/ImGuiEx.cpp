@@ -216,4 +216,99 @@ namespace Stimpi
 		return ret;
 	}
 
+	bool ImGuiEx::TreeNodeIcon(const void* ptrID, ImGuiTreeNodeFlags flags, const std::string& label, const std::string& iconName)
+	{
+		bool ret = false;
+		ImGuiWindow* window = ImGui::GetCurrentWindow();
+		if (window->SkipItems)
+			return false;
+
+		Texture* iconTexture = EditorResources::GetIconTexture(iconName);
+		if (iconTexture)
+			ret = ImGui::TreeNodeBehavior(window->GetID(ptrID), flags, label.c_str(), NULL, (void*)(intptr_t)iconTexture->GetTextureID());
+		else
+			ret = ImGui::TreeNodeBehavior(window->GetID(ptrID), flags, label.c_str());
+
+		return ret;
+	}
+
+	bool ImGuiEx::TreeNodeHeaderIcon(const void* ptrID, ImGuiTreeNodeFlags flags, const std::string& label, const std::string& iconName)
+	{
+		bool ret = false;
+		ImGuiWindow* window = ImGui::GetCurrentWindow();
+		if (window->SkipItems)
+			return false;
+
+		flags = flags | ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowOverlap;
+
+		Texture* iconTexture = EditorResources::GetIconTexture(iconName);
+		if (iconTexture)
+			ret = ImGui::TreeNodeBehavior(window->GetID(ptrID), flags, label.c_str(), NULL, (void*)(intptr_t)iconTexture->GetTextureID());
+		else
+			ret = ImGui::TreeNodeBehavior(window->GetID(ptrID), flags, label.c_str());
+
+		return ret;
+	}
+
+	bool ImGuiEx::PrefabHeaderIcon(const std::string& label)
+	{
+		ImGuiStyle& style = ImGui::GetStyle();
+		bool ret = false;
+
+		ImGuiWindow* window = ImGui::GetCurrentWindow();
+		if (window->SkipItems)
+			return false;
+
+		// Save cursor position
+		ImVec2 invisibleBtnPos = ImGui::GetCursorPos();
+		const ImVec2 label_size = ImGui::CalcTextSize(label.c_str(), NULL, true);
+		const ImVec2 frame_size = ImVec2(ImGui::GetWindowContentRegionWidth(), label_size.y + style.FramePadding.y * 2.0f);
+		const ImVec2 btn_size = ImVec2(24.0f, frame_size.y);
+
+		ImVec2 pos = ImGui::GetCursorScreenPos();
+		ImRect bb = { pos.x + 1, pos.y,  pos.x + frame_size.x,  pos.y + frame_size.y };
+		ImRect btn_bb = { pos.x + 1, pos.y,  pos.x + btn_size.x,  pos.y + btn_size.y };
+		
+		// Rendering frame and highlight
+		const ImU32 col = ImGui::GetColorU32(ImGuiCol_HeaderActive);
+		ImGui::RenderFrame(bb.Min, bb.Max, col, false, style.FrameRounding);
+		if (ImGui::IsMouseHoveringRect(btn_bb.Min, btn_bb.Max))
+			ImGui::RenderFrame(btn_bb.Min, btn_bb.Max, ImGui::GetColorU32(ImGuiCol_HeaderHovered), false, style.FrameRounding);
+
+		ImGui::SetCursorPos(invisibleBtnPos);
+		if (ImGui::InvisibleButton("PrefabInvisBtn", btn_size, ImGuiButtonFlags_None))
+		{
+			ret = true;
+		}
+
+		Texture* backIconTexture = EditorResources::GetIconTexture(EDITOR_ICON_NAV_BACK);
+		if (backIconTexture)
+		{
+			ImVec2 icon_pos_min = { btn_bb.Min.x + btn_size.x / 6.0f, btn_bb.Min.y + style.FramePadding.y };
+			ImVec2 icon_pos_max = { icon_pos_min.x + s_Style.m_IconSize.x, icon_pos_min.y + s_Style.m_IconSize.y };
+			window->DrawList->AddImage((void*)(intptr_t)backIconTexture->GetTextureID(), icon_pos_min, icon_pos_max, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImGui::ColorConvertFloat4ToU32(ImVec4(0.785f, 0.785f, 0.785f, 1.0f)));
+		}
+
+		float text_offset = (frame_size.x - label_size.x) / 2.0f;
+		float icon_offset = (frame_size.x - label_size.x) / 2.0f - s_Style.m_IconSize.x - style.FramePadding.x;
+
+		Texture* iconTexture = EditorResources::GetIconTexture(EDITOR_ICON_BCUBE);
+		if (iconTexture)
+		{
+			ImVec2 icon_pos_min = { pos.x + icon_offset, pos.y + style.FramePadding.y };
+			ImVec2 icon_pos_max = { icon_pos_min.x + s_Style.m_IconSize.x, icon_pos_min.y + s_Style.m_IconSize.y };
+			window->DrawList->AddImage((void*)(intptr_t)iconTexture->GetTextureID(), icon_pos_min, icon_pos_max, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImGui::ColorConvertFloat4ToU32(ImVec4(0.785f, 0.785f, 0.785f, 1.0f)));
+		}
+
+		ImGui::SameLine(text_offset);
+		// Set line size and text offset (if not using framed style)
+		window->DC.CurrLineSize.y = 21.0f;
+		window->DC.CurrLineTextBaseOffset = 3.0f;	// This is used to force an offset on text position
+													// Otherwise it won't be well centered on the current line
+
+		ImGui::Text(label.c_str());
+
+		return ret;
+	}
+
 }

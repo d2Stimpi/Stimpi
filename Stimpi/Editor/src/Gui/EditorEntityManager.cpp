@@ -16,4 +16,12 @@ namespace Stimpi
 		EntityManager::Translate(entities, vec);
 	}
 
+	Stimpi::EntityType EditorEntityManager::GetEntityType(Entity entity)
+	{
+		if (entity.HasComponent<PrefabComponent>())
+			return EntityType::PREFAB;
+
+		return EntityType::DEFAULT;
+	}
+
 }

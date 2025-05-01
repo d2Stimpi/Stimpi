@@ -60,4 +60,31 @@ namespace Stimpi
 		}
 	}
 
+	void EntityHierarchy::Detach(Entity& entity)
+	{
+		if (entity.HasComponent<HierarchyComponent>())
+		{
+			HierarchyComponent& hierarchyComp = entity.GetComponent<HierarchyComponent>();
+			if (hierarchyComp.m_Parent)
+			{
+				auto scene = SceneManager::Instance()->GetActiveScene();
+				if (scene)
+				{
+					Entity parent = scene->m_EntityUUIDMap[hierarchyComp.m_Parent];
+
+					RemoveChild(parent, entity);
+					hierarchyComp.m_Parent = 0;
+					if (hierarchyComp.m_Children.empty())
+						entity.RemoveComponent<HierarchyComponent>();
+
+					ST_CORE_INFO("Removed parent of entity {}", (uint32_t)entity);
+				}
+				else
+				{
+					ST_CORE_ERROR("[EntityHierarchy::Detach] Scene == null!");
+				}
+			}
+		}
+	}
+
 }

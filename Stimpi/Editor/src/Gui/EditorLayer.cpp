@@ -193,9 +193,9 @@ namespace Stimpi
 		colors[ImGuiCol_Text] = ImVec4{ 0.885f, 0.885f, 0.885f, 1.0f };
 
 		// Headers
-		colors[ImGuiCol_Header] = ImVec4{ 0.14f, 0.145f, 0.14f, 1.0f };			// 62 62 62
-		colors[ImGuiCol_HeaderHovered] = ImVec4{ 0.24f, 0.245f, 0.24f, 1.0f };	// 71 71 71
-		colors[ImGuiCol_HeaderActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+		colors[ImGuiCol_Header] = ImVec4{ 0.24f, 0.245f, 0.24f, 1.0f };			// 62 62 62
+		colors[ImGuiCol_HeaderHovered] = ImVec4{ 0.34f, 0.345f, 0.34f, 1.0f };	// 71 71 71
+		colors[ImGuiCol_HeaderActive] = ImVec4{ 0.25f, 0.2505f, 0.251f, 1.0f };
 
 		// Buttons
 		/*colors[ImGuiCol_Button] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };

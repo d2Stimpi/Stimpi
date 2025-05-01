@@ -28,5 +28,9 @@ namespace Stimpi
 		static void Icon(std::string iconName);
 		static bool InputSelectable(const char* label, const char* strID, char* buf, size_t bufSize, bool selected = false, bool textDisabled = false);
 		static bool SearchInput(const char* strID, char* buffer, size_t bufferSize, const char* hintTxt = "Search");
+
+		static bool TreeNodeIcon(const void* ptrID, ImGuiTreeNodeFlags flags, const std::string& label, const std::string& iconName);
+		static bool TreeNodeHeaderIcon(const void* ptrID, ImGuiTreeNodeFlags flags, const std::string& label, const std::string& iconName);
+		static bool PrefabHeaderIcon(const std::string& label);
 	};
 }

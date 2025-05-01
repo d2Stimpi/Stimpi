@@ -9,6 +9,7 @@
 #define EDITOR_ICON_GEAR		"gear.png"
 #define EDITOR_ICON_CUBE		"cube.png"
 #define EDITOR_ICON_WCUBE		"whitecube.png"
+#define EDITOR_ICON_BCUBE		"bluecube.png"
 #define EDITOR_ICON_SCRIPT		"script.png"
 #define EDITOR_ICON_RB2D		"rb2d.png"
 #define EDITOR_ICON_ANIM		"anim.png"
@@ -19,6 +20,7 @@
 #define EDITOR_ICON_HAND		"hand.png"
 #define EDITOR_ICON_MOVE		"move.png"
 #define EDITOR_ICON_SCALE		"scale.png"
+#define EDITOR_ICON_NAV_BACK	"back.png"
 
 // Node panel toolbar icons
 #define EDITOR_ICON_COMPILE		"compile.png"

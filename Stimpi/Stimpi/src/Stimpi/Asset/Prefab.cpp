@@ -59,24 +59,33 @@ namespace Stimpi
 			HierarchyComponent& hierarchy = root.GetComponent<HierarchyComponent>();
 			hierarchy.m_Children = m_HierarchyMap[m_RootEntityUUID];
 
+			std::vector<UUID> newChildrenIDs;
 			// Create direct child nodes of root node
 			for (auto& childUUID : hierarchy.m_Children)
 			{
-				CreateEntity(scene, childUUID, m_RootEntityUUID);
+				Entity child = CreateEntity(scene, childUUID, m_RootEntityUUID);
+				newChildrenIDs.push_back(child.GetComponent<UUIDComponent>().m_UUID);
+
+				if (child.HasComponent<HierarchyComponent>())
+				{
+					HierarchyComponent& hierarcyChild = child.GetComponent<HierarchyComponent>();
+					hierarcyChild.m_Parent = root.GetComponent<UUIDComponent>().m_UUID;
+				}
 			}
+			hierarchy.m_Children = newChildrenIDs;
 		}
 
 		return root;
 	}
 
-	void Prefab::CreateEntity(Scene* scene, UUID dataID, UUID parent)
+	Entity Prefab::CreateEntity(Scene* scene, UUID dataID, UUID parent)
 	{
 		// Get the name of the entity
 		std::string name = "";
 		auto data = m_EntityDataMap[dataID];
 		if ((*data)["TagComponent"])
 		{
-			std::string name = (*data)["TagComponent"]["Tag"].as<std::string>();
+			name = (*data)["TagComponent"]["Tag"].as<std::string>();
 		}
 
 		Entity entity = scene->CreateEntity(name);
@@ -86,14 +95,24 @@ namespace Stimpi
 		{
 			HierarchyComponent& hierarchy = entity.GetComponent<HierarchyComponent>();
 			hierarchy.m_Children = m_HierarchyMap[dataID];
-			hierarchy.m_Parent = parent;
 
+			std::vector<UUID> newChildrenIDs;
 			// Create direct child nodes of root node
 			for (auto& childUUID : hierarchy.m_Children)
 			{
-				CreateEntity(scene, childUUID, dataID);
+				Entity child = CreateEntity(scene, childUUID, dataID);
+				newChildrenIDs.push_back(child.GetComponent<UUIDComponent>().m_UUID);
+
+				if (child.HasComponent<HierarchyComponent>())
+				{
+					HierarchyComponent& hierarcyChild = child.GetComponent<HierarchyComponent>();
+					hierarcyChild.m_Parent = entity.GetComponent<UUIDComponent>().m_UUID;
+				}
 			}
+			hierarchy.m_Children = newChildrenIDs;
 		}
+
+		return entity;
 	}
 
 	void Prefab::BuildComponents(Entity entity, std::shared_ptr<YAML::Node> data)
@@ -289,23 +308,26 @@ namespace Stimpi
 				}
 			}
 
-			for (YAML::const_iterator it = entityHierarchy.begin(); it != entityHierarchy.end(); it++)
+			if (entityHierarchy.size() > 0)
 			{
-				YAML::Node hierarchyData = it->second;
-				if (hierarchyData["Owner"] && hierarchyData["Children"])
+				for (YAML::const_iterator it = entityHierarchy.begin(); it != entityHierarchy.end(); it++)
 				{
-					UUID owner = hierarchyData["Owner"].as<UUIDType>();
-					std::vector<UUID> children;
-					YAML::Node childrenData = hierarchyData["Children"];
-					for (size_t i = 0; i < childrenData.size(); i++)
+					YAML::Node hierarchyData = it->second;
+					if (hierarchyData["Owner"] && hierarchyData["Children"])
 					{
-						children.push_back(childrenData[i].as<UUIDType>());
+						UUID owner = hierarchyData["Owner"].as<UUIDType>();
+						std::vector<UUID> children;
+						YAML::Node childrenData = hierarchyData["Children"];
+						for (size_t i = 0; i < childrenData.size(); i++)
+						{
+							children.push_back(childrenData[i].as<UUIDType>());
+						}
+						m_HierarchyMap[owner] = children;
 					}
-					m_HierarchyMap[owner] = children;
-				}
-				else
-				{
-					ST_CORE_ERROR("Prefab asset parsing error (hierarchy data malformed)! {}", m_Name);
+					else
+					{
+						ST_CORE_ERROR("Prefab asset parsing error (hierarchy data malformed)! {}", m_Name);
+					}
 				}
 			}
 		}

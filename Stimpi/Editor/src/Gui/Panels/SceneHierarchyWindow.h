@@ -46,6 +46,9 @@ namespace Stimpi
 
 		void CreateEntityPopup();
 		void HoveredEntityPopup();
+
+		void SetPrefabDisplayMode(Entity prefab);
+		void SetSceneDisplayMode();
 	private:
 		bool m_Show = true;
 		bool m_ShowInspect = true;

@@ -4,13 +4,14 @@
 #include "Gui/Components/UIPayload.h"
 #include "Gui/Components/SearchPopup.h"
 #include "Gui/Components/Input.h"
+#include "Gui/Components/ImGuiEx.h"
 #include "Gui/EditorUtils.h"
 #include "Gui/EditorEntityManager.h"
-#include "Gui/Components/ImGuiEx.h"
-#include "Gui/Panels/ScriptFieldFragment.h"
 #include "Gui/NNode/NGraphPanel.h"
 #include "Gui/NNode/NGraphBuilder.h"
 #include "Gui/NNode/NGraphRegistry.h"
+#include "Gui/Panels/ScriptFieldFragment.h"
+#include "Gui/Prefab/PrefabManager.h"
 
 #include "Stimpi/Core/InputManager.h"
 #include "Stimpi/Core/WindowManager.h"
@@ -31,6 +32,8 @@
 
 namespace Stimpi
 {
+	enum class ContentMode { SCENE, PREFAB };
+
 	struct HoveredEntityPopupContext
 	{
 		Entity m_Entity = {};
@@ -52,6 +55,11 @@ namespace Stimpi
 		// Popup context data
 		HoveredEntityPopupContext m_HoveredEntityPopupContext;
 
+		// Current content display mode
+		ContentMode m_ActiveMode = ContentMode::SCENE;
+		Entity m_PrefabViewEntity = {};
+		std::vector<Entity> m_PrefabEntites;
+
 		SceneHierarchyWindowContext()
 		{
 			memset(m_SearchTextBuffer, 0, sizeof(m_SearchTextBuffer));
@@ -59,6 +67,29 @@ namespace Stimpi
 	};
 
 	SceneHierarchyWindowContext s_Context;
+
+
+	/**
+	 * Local static methods
+	 */
+
+	static std::string GetEntityIconName(Entity entity)
+	{
+		EntityType entityType = EditorEntityManager::GetEntityType(entity);
+
+		switch (entityType)
+		{
+		case Stimpi::EntityType::DEFAULT:	return EDITOR_ICON_CUBE;
+		case Stimpi::EntityType::PREFAB:	return EDITOR_ICON_BCUBE;
+		}
+
+		return EDITOR_ICON_CUBE;
+	}
+
+
+	 /**
+	  * SceneHierarchyWindow methods
+	  */
 
 	SceneHierarchyWindow::SceneHierarchyWindow()
 	{
@@ -164,10 +195,18 @@ namespace Stimpi
 
 				// Reset the flag that marks presence of hovered entity
 				s_Context.m_HasHoveredEntity = false;
-
-				if (ImGui::TreeNodeEx((void*)&m_ActiveScene, node_flags | ImGuiTreeNodeFlags_DefaultOpen, "Scene"))
+				
+				if (s_Context.m_ActiveMode == ContentMode::PREFAB && PrefabManager::IsEntityValidPrefab(s_Context.m_PrefabViewEntity))
 				{
-					std::vector<Entity>& entities = strlen(s_Context.m_SearchTextBuffer) > 0 ? s_Context.m_FilteredEntites : m_ActiveScene->m_Entities;
+					PrefabComponent& prefabComponent = s_Context.m_PrefabViewEntity.GetComponent<PrefabComponent>();
+					auto prefab = AssetManager::GetAsset<Prefab>(prefabComponent.m_PrefabHandle);
+
+					if (ImGuiEx::PrefabHeaderIcon(prefab->GetName()))
+					{
+						SetSceneDisplayMode();
+					}
+
+					std::vector<Entity>& entities = strlen(s_Context.m_SearchTextBuffer) > 0 ? s_Context.m_FilteredEntites : s_Context.m_PrefabEntites;
 
 					for (auto& entity : entities)
 					{
@@ -180,8 +219,27 @@ namespace Stimpi
 
 						DrawTreeNode(entity);
 					}
+				}
+				else
+				{
+					if (ImGuiEx::TreeNodeHeaderIcon((void*)&m_ActiveScene, node_flags | ImGuiTreeNodeFlags_DefaultOpen, "Scene", EDITOR_ICON_CUBE))
+					{
+						std::vector<Entity>& entities = strlen(s_Context.m_SearchTextBuffer) > 0 ? s_Context.m_FilteredEntites : m_ActiveScene->m_Entities;
 
-					ImGui::TreePop();
+						for (auto& entity : entities)
+						{
+							if (entity.HasComponent<HierarchyComponent>() && entity.GetComponent<HierarchyComponent>().m_Parent != 0)
+							{
+								auto& component = entity.GetComponent<HierarchyComponent>();
+								auto& entityTag = entity.GetComponent<TagComponent>().m_Tag;
+								continue;
+							}
+
+							DrawTreeNode(entity);
+						}
+
+						ImGui::TreePop();
+					}
 				}
 
 				HoveredEntityPopup();
@@ -224,12 +282,16 @@ namespace Stimpi
 		ImGui::SetCursorPos(cursorPos);
 		static bool showSettings = false;
 
+		ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_Header));
+
 		std::string btnID = name.append("_IconButton");
 		if (ImGuiEx::IconButton(btnID.c_str(), EDITOR_ICON_GEAR))
 		{
 			showSettings = true;
 			ImGui::OpenPopup(name.c_str());
 		}
+
+		ImGui::PopStyleColor();
 
 		// Restore cursor position
 		ImGui::SetCursorPos(temp);
@@ -246,6 +308,12 @@ namespace Stimpi
 
 	void SceneHierarchyWindow::DrawTreeNode(Entity& entity, bool leafNode)
 	{
+		if (!entity)
+		{
+			ST_ERROR("[SceneHierarchyWindow::DrawTreeNode] Invalud entity!");
+			return;
+		}
+
 		ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen;
 		ImGuiTreeNodeFlags leaf_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 		auto& entityTag = entity.GetComponent<TagComponent>().m_Tag;
@@ -264,7 +332,7 @@ namespace Stimpi
 		if (isLeafNode)
 			node_flags = leaf_flags;
 
-		if (ImGui::TreeNodeEx((void*)&entity, node_flags, "%s", entityTag.c_str()))
+		if (ImGuiEx::TreeNodeIcon((void*)&entity, node_flags, entityTag, GetEntityIconName(entity)))
 		{
 			if (s_Context.m_SelectedEntity == entity)
 				s_Context.m_HoveredSelectedEntity = ImGui::IsItemHovered();
@@ -1343,19 +1411,41 @@ namespace Stimpi
 
 		if (strlen(s_Context.m_SearchTextBuffer) > 0)
 		{
-			for (auto& entity : m_ActiveScene->m_Entities)
+			if (s_Context.m_ActiveMode == ContentMode::SCENE)
 			{
-				std::string& tag = entity.GetComponent<TagComponent>().m_Tag;
-				if (tag.find(s_Context.m_SearchTextBuffer) != std::string::npos)
+				for (auto& entity : m_ActiveScene->m_Entities)
 				{
-					s_Context.m_FilteredEntites.push_back(entity);
-				}
-				else
-				{
-					// Check if entity children are filtered
-					if (FilterSubEntity(entity))
+					std::string& tag = entity.GetComponent<TagComponent>().m_Tag;
+					if (tag.find(s_Context.m_SearchTextBuffer) != std::string::npos)
 					{
 						s_Context.m_FilteredEntites.push_back(entity);
+					}
+					else
+					{
+						// Check if entity children are filtered
+						if (FilterSubEntity(entity))
+						{
+							s_Context.m_FilteredEntites.push_back(entity);
+						}
+					}
+				}
+			}
+			else  // ContentMode::PREFAB
+			{
+				for (auto& entity : s_Context.m_PrefabEntites)
+				{
+					std::string& tag = entity.GetComponent<TagComponent>().m_Tag;
+					if (tag.find(s_Context.m_SearchTextBuffer) != std::string::npos)
+					{
+						s_Context.m_FilteredEntites.push_back(entity);
+					}
+					else
+					{
+						// Check if entity children are filtered
+						if (FilterSubEntity(entity))
+						{
+							s_Context.m_FilteredEntites.push_back(entity);
+						}
 					}
 				}
 			}
@@ -1430,20 +1520,28 @@ namespace Stimpi
 			if (s_Context.m_HoveredEntity.HasComponent<HierarchyComponent>())
 			{
 				Entity entity = s_Context.m_HoveredEntityPopupContext.m_Entity;
-				HierarchyComponent& parentComp = entity.GetComponent<HierarchyComponent>();
+				HierarchyComponent& hierarchyComp = entity.GetComponent<HierarchyComponent>();
 
-				if (parentComp.m_Parent)
+				if (hierarchyComp.m_Parent)
 				{
 					if (ImGui::Selectable("Detach parent"))
 					{
-						Entity parent = m_ActiveScene->m_EntityUUIDMap[parentComp.m_Parent];
+						EntityHierarchy::Detach(entity);
+					}
+				}
+			}
 
-						EntityHierarchy::RemoveChild(parent, entity);
-						parentComp.m_Parent = 0;
-						if (parentComp.m_Children.empty())
-							entity.RemoveComponent<HierarchyComponent>();
-
-						ST_CORE_INFO("Remove parent of entity {}", (uint32_t)entity);
+			if (PrefabManager::IsEntityValidPrefab(s_Context.m_HoveredEntity))
+			{
+				ImGui::Separator();
+				if (ImGui::Selectable("Inspect Prefab"))
+				{
+					PrefabComponent& prefabComponent = s_Context.m_HoveredEntity.GetComponent<PrefabComponent>();
+					auto prefab = AssetManager::GetAsset<Prefab>(prefabComponent.m_PrefabHandle);
+					if (prefab)
+					{
+						Entity rootPrefabEntity = PrefabManager::GetPrefabRootEntity(s_Context.m_HoveredEntity);
+						SetPrefabDisplayMode(rootPrefabEntity);
 					}
 				}
 			}
@@ -1451,6 +1549,9 @@ namespace Stimpi
 			ImGui::Separator();
 			if (ImGui::Selectable("Remove"))
 			{
+				// Make sure to detach if entity is part of hierarchy
+				EntityHierarchy::Detach(s_Context.m_HoveredEntityPopupContext.m_Entity);
+
 				if (s_Context.m_HoveredEntityPopupContext.m_Entity)
 				{
 					if (s_Context.m_HoveredEntityPopupContext.m_Entity.GetHandle() == s_Context.m_SelectedEntity.GetHandle())
@@ -1463,6 +1564,26 @@ namespace Stimpi
 
 			ImGui::EndPopup();
 		}
+	}
+
+	void SceneHierarchyWindow::SetPrefabDisplayMode(Entity prefab)
+	{
+		// Verify and set data before changing mode
+		if (PrefabManager::IsEntityValidPrefab(prefab))
+		{
+			s_Context.m_ActiveMode = ContentMode::PREFAB;
+			s_Context.m_PrefabViewEntity = prefab;
+
+			PrefabComponent& prefabComponent = prefab.GetComponent<PrefabComponent>();
+			s_Context.m_PrefabEntites = m_ActiveScene->FindAllPrefabEntities(prefabComponent.m_PrefabHandle);
+		}
+	}
+
+	void SceneHierarchyWindow::SetSceneDisplayMode()
+	{
+		s_Context.m_ActiveMode = ContentMode::SCENE;
+		s_Context.m_PrefabViewEntity = {};
+		s_Context.m_PrefabEntites.clear();
 	}
 
 }

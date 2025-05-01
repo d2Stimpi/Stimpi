@@ -4,6 +4,7 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Entity.h"
+#include "Stimpi/Scene/Component.h"
 #include "Stimpi/Core/Project.h"
 #include "Stimpi/Asset/AssetManager.h"
 
@@ -22,6 +23,65 @@ namespace Stimpi
 		}
 
 		return Entity();
+	}
+
+	bool PrefabManager::IsEntityValidPrefab(Entity entity)
+	{
+		if (entity && entity.HasComponent<PrefabComponent>())
+		{
+			PrefabComponent& component = entity.GetComponent<PrefabComponent>();
+			if (component.m_PrefabHandle)
+			{
+				auto asset = AssetManager::GetAsset<Prefab>(component.m_PrefabHandle);
+				if (asset->GetType() == AssetType::PREFAB)
+					return true;
+			}
+		}
+
+		return false;
+	}
+
+	Entity PrefabManager::GetPrefabRootEntity(Entity entity)
+	{
+		if (IsEntityValidPrefab(entity))
+		{
+			auto scene = SceneManager::Instance()->GetActiveScene();
+			if (scene)
+			{
+				bool found = false;
+				uint32_t loopbreak = 0;
+				while (!found)
+				{
+					if (entity.HasComponent<HierarchyComponent>())
+					{
+						HierarchyComponent& hierarchy = entity.GetComponent<HierarchyComponent>();
+						if (!hierarchy.m_Parent)
+						{
+							found = true;
+						}
+						else
+						{
+							// move to next parent entity and check
+							entity = scene->GetEntityByUUID(hierarchy.m_Parent);
+						}
+					}
+					else
+					{
+						found = true;
+					}
+
+					if (++loopbreak >= 100)
+					{
+						ST_ERROR("[PrefabManager::GetPrefabRootEntity] stuck in loop - break! (entity hierarchy handling issue)");
+						return {};
+					}
+				}
+
+				return entity;
+			}
+		}
+
+		return {};
 	}
 
 	void PrefabManager::OnPrefabAssetReload(std::shared_ptr<Asset> asset)
