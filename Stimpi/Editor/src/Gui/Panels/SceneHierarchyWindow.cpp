@@ -388,8 +388,11 @@ namespace Stimpi
 			strcpy_s(tagInputBuff, component.m_Tag.c_str());
 		}
 
+		ImGuiEx::SetCurrentLineTextOffset();
+		ImGui::Text("Tag");
+		ImGui::SameLine();
 		
-		ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth() - 105);
+		ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth() - 135);
 		if (ImGui::InputText("##TagComponent", tagInputBuff, sizeof(tagInputBuff), ImGuiInputTextFlags_EnterReturnsTrue))
 		{
 			component.m_Tag = std::string(tagInputBuff);
@@ -415,7 +418,7 @@ namespace Stimpi
 			{
 				glm::vec3 pos = component.m_Position;
 				bool inputDone = false;
-				if (UI::Input::DragFloat3("Position##Quad", pos, &inputDone, false))
+				if (UI::Input::DragFloat3("Position##PositionQuad", pos, &inputDone, false))
 				{
 					glm::vec3 translate = pos - component.m_Position;
 					EditorEntityManager::Translate(s_Context.m_SelectedEntity, translate);
@@ -430,7 +433,7 @@ namespace Stimpi
 				}
 
 				glm::vec2 size = component.m_Size;
-				if (UI::Input::DragFloat2("Size##Quad", size, &inputDone, false))
+				if (UI::Input::DragFloat2("Size##SizeQuad", size, &inputDone, false))
 				{
 					glm::vec2 scale = size - component.m_Size;
 					EditorEntityManager::Scale(s_Context.m_SelectedEntity, scale);
@@ -445,8 +448,8 @@ namespace Stimpi
 				}
 
 				float rotation = component.m_Rotation;
-				ImGui::PushItemWidth(80.0f);
-				if (UI::Input::DragFloat("Rotation", rotation, 0.01, 0.0f, 0.0f, &inputDone, false))
+				//ImGui::PushItemWidth(45.0f);
+				if (UI::Input::DragFloat("Rotation##RotationQuad", rotation, 0.01, 0.0f, 0.0f, &inputDone, false))
 				{
 					float rotate = rotation - component.m_Rotation;
 					EditorEntityManager::Rotate(s_Context.m_SelectedEntity, rotate);
@@ -459,16 +462,16 @@ namespace Stimpi
 						CommandStack::Push(cmd);
 					}
 				}
-				ImGui::PopItemWidth();
+				//ImGui::PopItemWidth();
 			}
 			else
 			{
 				// If entity does not have a Hierarchy, change position directly
-				UI::Input::DragFloat3("Position##Quad", component.m_Position);
-				UI::Input::DragFloat2("Size##Quad", component.m_Size);
-				ImGui::PushItemWidth(80.0f);
-				UI::Input::DragFloat("Rotation", component.m_Rotation, 0.01);
-				ImGui::PopItemWidth();
+				UI::Input::DragFloat3("Position##PositionQuad", component.m_Position);
+				UI::Input::DragFloat2("Size##SizeQuad", component.m_Size);
+				//ImGui::PushItemWidth(45.0f);
+				UI::Input::DragFloat("Rotation##RotationQuad", component.m_Rotation, 0.01);
+				//ImGui::PopItemWidth();
 			}
 			ImGui::Spacing();
 		}
@@ -535,7 +538,7 @@ namespace Stimpi
 
 			static bool showPopup = false;
 			ImGui::Spacing();
-			ImGui::InputText("##ScriptComponentPreview", scriptName, sizeof(scriptName), ImGuiInputTextFlags_ReadOnly);
+			UI::Input::InputText("Script##ScriptComponentPreview", scriptName, sizeof(scriptName), ImGuiInputTextFlags_ReadOnly);
 			if (ImGui::IsItemClicked())
 			{
 				SearchPopup::OpenPopup("ScriptSearch##ScriptComponent");
@@ -582,13 +585,11 @@ namespace Stimpi
 							{
 								float fNum = 0.0f;
 								field->GetValue(&fNum);
-								std::string label = fmt::format("##{}_{}", field->GetName(), tagName);
-								if (ImGui::InputFloat(label.c_str(), &fNum, 0.0f, 0.0f, "%.3f", fieldInputFlags))
+								std::string label = fmt::format("{}##{}_{}", field->GetName(), field->GetName(), tagName);
+								if (UI::Input::InputFloat(label.c_str(), &fNum, 0.0f, 0.0f))
 								{
 									field->SetValue(&fNum);
 								}
-								ImGui::SameLine();
-								ImGui::Text(fieldName.c_str());
 							}
 						}
 					}

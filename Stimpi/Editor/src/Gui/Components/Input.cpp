@@ -6,7 +6,6 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Cmd/CommandStack.h"
 
-#include "ImGui/src/imgui.h"
 #include "ImGui/src/imgui_internal.h"
 
 #include <glm/gtc/type_ptr.hpp>
@@ -25,9 +24,31 @@ namespace Stimpi
 			float m_TempFloat;
 
 			UndoCmdType m_UndoCmdType = UndoCmdType::ENTITY;
+
+			// Style variables
+			float m_LabelOffset = 150.0f;
+			float m_InputWidth = 50.0f;
+			const char* m_InputFormat = "%.2f";
 		};
 
 		static InputContext s_Context;
+
+		/**
+		 * Local static methods
+		 */
+
+		static void SetCurrentLineTextOffset()
+		{
+			ImGuiWindow* window = ImGui::GetCurrentWindow();
+			if (window->SkipItems)
+				return;
+
+			window->DC.CurrLineTextBaseOffset = 3.0f;
+		}
+
+		/**
+		 * Input methods
+		 */
 
 		void Input::SetUndoCmdContext(UndoCmdType type)
 		{
@@ -36,10 +57,17 @@ namespace Stimpi
 
 		bool Input::DragFloat3(const char* label, glm::vec3& val, bool* done, bool saveCmd)
 		{
-			bool retVal = false;
+			ImGuiStyle& style = ImGui::GetStyle();
+			bool ret = false;
 			if (done) *done = false;
 
-			retVal = ImGui::DragFloat3(label, glm::value_ptr(val));
+			const char* label_end = ImGui::FindRenderedTextEnd(label);
+			SetCurrentLineTextOffset();
+			ImGui::TextEx(label, label_end); ImGui::SameLine(s_Context.m_LabelOffset);
+
+			ImGui::SetNextItemWidth(s_Context.m_InputWidth * 3 + style.ItemInnerSpacing.x * 2);
+			label_end = strlen(label_end) == 0 ? label : label_end;
+			ret = ImGui::DragFloat3(label_end, glm::value_ptr(val), 1.0f, 0.0f, 0.0f, s_Context.m_InputFormat);
 
 			if (ImGui::IsItemActive() && s_Context.m_ActiveID == 0)
 			{
@@ -56,7 +84,7 @@ namespace Stimpi
 					if (done)
 					{
 						*done = true;
-						retVal = true;
+						ret = true;
 					}
 
 					// Create cmd here
@@ -76,15 +104,22 @@ namespace Stimpi
 				}
 			}
 
-			return retVal;
+			return ret;
 		}
 
 		bool Input::DragFloat2(const char* label, glm::vec2& val, bool* done, bool saveCmd)
 		{
-			bool retVal = false;
+			ImGuiStyle& style = ImGui::GetStyle();
+			bool ret = false;
 			if (done) *done = false;
 
-			retVal = ImGui::DragFloat2(label, glm::value_ptr(val));
+			const char* label_end = ImGui::FindRenderedTextEnd(label);
+			SetCurrentLineTextOffset();
+			ImGui::TextEx(label, label_end); ImGui::SameLine(s_Context.m_LabelOffset);
+
+			ImGui::SetNextItemWidth(s_Context.m_InputWidth * 2 + style.ItemInnerSpacing.x);
+			label_end = strlen(label_end) == 0 ? label : label_end;
+			ret = ImGui::DragFloat2(label_end, glm::value_ptr(val), 1.0f, 0.0f, 0.0f, s_Context.m_InputFormat);
 
 			if (ImGui::IsItemActive() && s_Context.m_ActiveID == 0)
 			{
@@ -101,7 +136,7 @@ namespace Stimpi
 					if (done)
 					{
 						*done = true;
-						retVal = true;
+						ret = true;
 					}
 					
 					// Create cmd here
@@ -121,15 +156,21 @@ namespace Stimpi
 				}
 			}
 
-			return retVal;
+			return ret;
 		}
 
 		bool Input::DragFloat(const char* label, float& val, float speed, float min, float max, bool* done, bool saveCmd)
 		{
-			bool retVal = false;
+			bool ret = false;
 			if (done) *done = false;
 
-			retVal = ImGui::DragFloat(label, &val, speed, min, max);
+			const char* label_end = ImGui::FindRenderedTextEnd(label);
+			SetCurrentLineTextOffset();
+			ImGui::TextEx(label, label_end); ImGui::SameLine(s_Context.m_LabelOffset);
+
+			ImGui::SetNextItemWidth(s_Context.m_InputWidth);
+			label_end = strlen(label_end) == 0 ? label : label_end;
+			ret = ImGui::DragFloat(label_end, &val, speed, min, max, s_Context.m_InputFormat);
 
 			if (ImGui::IsItemActive() && s_Context.m_ActiveID == 0)
 			{
@@ -146,7 +187,7 @@ namespace Stimpi
 					if (done)
 					{
 						*done = true;
-						retVal = true;
+						ret = true;
 					}
 
 					// Create cmd here
@@ -166,7 +207,7 @@ namespace Stimpi
 				}
 			}
 
-			return retVal;
+			return ret;
 		}
 
 		glm::vec3 Input::GetStartFloat3()
@@ -182,6 +223,38 @@ namespace Stimpi
 		float Input::GetStartFloat()
 		{
 			return s_Context.m_TempFloat;
+		}
+
+		bool Input::InputText(const char* label, char* buf, size_t size, ImGuiInputTextFlags flags)
+		{
+			bool ret = false;
+
+			const char* label_end = ImGui::FindRenderedTextEnd(label);
+			SetCurrentLineTextOffset();
+			ImGui::TextEx(label, label_end); ImGui::SameLine(s_Context.m_LabelOffset);
+
+			ImGui::SetNextItemWidth(ImGui::GetWindowContentRegionWidth() - s_Context.m_LabelOffset + 10.0f);
+			label_end = strlen(label_end) == 0 ? label : label_end;
+
+			ret = ImGui::InputText(label_end, buf, size, flags);
+
+			return ret;
+		}
+
+		bool Input::InputFloat(const char* label, float* val, float step, float step_fast)
+		{
+			bool ret = false;
+
+			const char* label_end = ImGui::FindRenderedTextEnd(label);
+			SetCurrentLineTextOffset();
+			ImGui::TextEx(label, label_end); ImGui::SameLine(s_Context.m_LabelOffset);
+
+			ImGui::SetNextItemWidth(ImGui::GetWindowContentRegionWidth() - s_Context.m_LabelOffset + 10.0f);
+			label_end = strlen(label_end) == 0 ? label : label_end;
+
+			ret = ImGui::InputFloat(label, val, step, step_fast, s_Context.m_InputFormat, ImGuiInputTextFlags_EnterReturnsTrue);
+
+			return ret;
 		}
 
 	}

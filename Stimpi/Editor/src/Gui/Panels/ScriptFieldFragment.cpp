@@ -5,6 +5,7 @@
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scripting/ScriptGlueTypes.h"
 
+#include "Gui/Components/Input.h"
 #include "Gui/Components/UIPayload.h"
 #include "Gui/Panels/SceneHierarchyWindow.h"
 
@@ -78,14 +79,11 @@ namespace Stimpi
 		std::string tagStr = CallFragmentFunction(ownerObj, field);
 
 		// Unique field label
-		std::string label = fmt::format("##ScriptClassField_{}_{}", field->GetName(), (uint32_t)selectedEntity);
+		std::string label = fmt::format("{}##ScriptClassField_{}_{}", field->GetName(), field->GetName(), (uint32_t)selectedEntity);
 		std::string text = fmt::format("{} ({})", tagStr, fieldTypeShortName);
-		ImGui::InputText(label.c_str(), text.data(), text.length(), ImGuiInputTextFlags_ReadOnly);
+		UI::Input::InputText(label.c_str(), text.data(), text.length(), ImGuiInputTextFlags_ReadOnly);
 
 		HandlePayloadType(ownerObj, field);
-
-		ImGui::SameLine();
-		ImGui::Text(field->GetName().c_str());
 	}
 
 	std::string ScriptFieldFragment::CallFragmentFunction(ScriptObject* ownerObj, ScriptField* field)

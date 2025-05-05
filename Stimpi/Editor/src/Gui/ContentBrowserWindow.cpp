@@ -11,6 +11,7 @@
 
 #include "Gui/Components/UIPayload.h"
 #include "Gui/Components/ImGuiEx.h"
+#include "Gui/Prefab/PrefabManager.h"
 
 #include "ImGui/src/imgui.h"
 
@@ -474,15 +475,26 @@ namespace Stimpi
 			if (ImGui::Selectable("Create Prefab Asset"))
 			{
 				auto assetManager = Project::GetEditorAssetManager();
+				auto relativePath = std::filesystem::relative(m_CurrentDirectory, ResourceManager::GetAssetsPath());
+				if (relativePath == ".")
+					relativePath = "";
+
 				Entity entity = s_Context.m_PrefabPopupContext.m_Entity;
 				TagComponent tag = entity.GetComponent<TagComponent>();
-				AssetMetadata metadata = { AssetType::PREFAB, m_CurrentDirectory / tag.m_Tag.append(".fab")};
-				AssetHandle assetHandle = assetManager->CreateAsset(metadata);
+				AssetMetadata metadata = { AssetType::PREFAB, relativePath / tag.m_Tag.append(".fab")};
+
+				// Check if asset with requested name is already registered
+				AssetHandle assetHandle = assetManager->GetAssetHandle(metadata);
+				if (!assetHandle)
+					assetHandle = assetManager->CreateAsset(metadata);
+
 				std::shared_ptr<Prefab> asset = AssetManager::GetAsset<Prefab>(assetHandle);
 				if (asset)
 				{
 					asset->Initialize(entity);
-					asset->Save(metadata.m_FilePath);
+					asset->Save(ResourceManager::GetAssetsPath() / metadata.m_FilePath);
+
+					PrefabManager::ConvertToPrefabEntity(entity, assetHandle);
 				}
 			}
 

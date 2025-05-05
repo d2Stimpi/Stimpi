@@ -92,7 +92,7 @@ namespace Stimpi
 		static FileTimeType s_ZeroTime;
 		AssetMetadata& metadata = GetAssetMetadata(handle);
 		// Check if valid asset type - note: LastWriteTime is taken only when the asset is loaded for the first time and on each asset reload
-		if (metadata.m_Type != AssetType::NONE && metadata.m_LastWriteTime != s_ZeroTime)
+		if (metadata.m_Type != AssetType::NONE && IsAssetLoaded(handle))
 		{
 			return metadata.m_LastWriteTime != FileSystem::LastWriteTime(Project::GetAssestsDir() / metadata.m_FilePath);
 		}

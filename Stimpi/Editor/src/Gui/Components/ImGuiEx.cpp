@@ -34,6 +34,16 @@ namespace Stimpi
 		}
 	}
 
+	void ImGuiEx::SetCurrentLineTextOffset()
+	{
+		ImGuiWindow* window = ImGui::GetCurrentWindow();
+		if (window->SkipItems)
+			return;
+
+		auto& style = ImGui::GetStyle();
+		window->DC.CurrLineTextBaseOffset = style.FramePadding.y;
+	}
+
 	bool ImGuiEx::IconButton(const char* strID, std::string iconName, ImVec2 size)
 	{
 		bool retVal = false;

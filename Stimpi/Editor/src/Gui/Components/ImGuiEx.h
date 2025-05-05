@@ -23,6 +23,8 @@ namespace Stimpi
 		static void PushStyle(ImGuiExStyle style);
 		static void PopStyle();
 
+		static void SetCurrentLineTextOffset();
+
 		static bool IconButton(const char* strID, std::string iconName, ImVec2 size = s_DefaultIconButtonSize);
 		static bool ToggleIconButton(const char* strID, std::string iconName, bool active, ImVec2 size = s_DefaultIconButtonSize);
 		static void Icon(std::string iconName);

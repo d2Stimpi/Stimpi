@@ -134,7 +134,7 @@ namespace Stimpi
 		BUILD_ENTITY_COMPONENT(entity, RigidBody2DComponent, node);
 		BUILD_ENTITY_COMPONENT(entity, BoxCollider2DComponent, node);
 
-		// Only prefabs will have PrefabComponent as a way to identify them easily
+		// Only prefabs will have PrefabComponent as a way to identify them
 		if (!entity.HasComponent<PrefabComponent>())
 		{
 			PrefabComponent& prefabComponent = entity.AddComponent<PrefabComponent>(m_Handle);
@@ -324,10 +324,10 @@ namespace Stimpi
 						}
 						m_HierarchyMap[owner] = children;
 					}
-					else
+					/*else
 					{
 						ST_CORE_ERROR("Prefab asset parsing error (hierarchy data malformed)! {}", m_Name);
-					}
+					}*/
 				}
 			}
 		}

@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+#include "ImGui/src/imgui.h"
+
 namespace Stimpi
 {
 	namespace UI
@@ -20,6 +22,10 @@ namespace Stimpi
 			static glm::vec3 GetStartFloat3();
 			static glm::vec2 GetStartFloat2();
 			static float GetStartFloat();
+
+			static bool InputText(const char* label, char* buf, size_t size, ImGuiInputTextFlags flags = 0);
+
+			static bool InputFloat(const char* label, float* val, float step = 0.0f, float step_fast = 0.0f);
 		};
 	}
 }
