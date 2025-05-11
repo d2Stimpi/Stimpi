@@ -47,6 +47,18 @@ namespace Stimpi
 		}
 
 		/**
+		 *  Render label text and return char buffer position just before ## separator
+		 */
+		static const char* RenderLabelText(const char* label)
+		{
+			const char* label_end = ImGui::FindRenderedTextEnd(label);
+			SetCurrentLineTextOffset();
+			ImGui::TextEx(label, label_end); ImGui::SameLine(s_Context.m_LabelOffset);
+
+			return strlen(label_end) == 0 ? label : label_end;
+		}
+
+		/**
 		 * Input methods
 		 */
 
@@ -61,12 +73,8 @@ namespace Stimpi
 			bool ret = false;
 			if (done) *done = false;
 
-			const char* label_end = ImGui::FindRenderedTextEnd(label);
-			SetCurrentLineTextOffset();
-			ImGui::TextEx(label, label_end); ImGui::SameLine(s_Context.m_LabelOffset);
-
+			const char* label_end = RenderLabelText(label);
 			ImGui::SetNextItemWidth(s_Context.m_InputWidth * 3 + style.ItemInnerSpacing.x * 2);
-			label_end = strlen(label_end) == 0 ? label : label_end;
 			ret = ImGui::DragFloat3(label_end, glm::value_ptr(val), 1.0f, 0.0f, 0.0f, s_Context.m_InputFormat);
 
 			if (ImGui::IsItemActive() && s_Context.m_ActiveID == 0)
@@ -113,12 +121,8 @@ namespace Stimpi
 			bool ret = false;
 			if (done) *done = false;
 
-			const char* label_end = ImGui::FindRenderedTextEnd(label);
-			SetCurrentLineTextOffset();
-			ImGui::TextEx(label, label_end); ImGui::SameLine(s_Context.m_LabelOffset);
-
+			const char* label_end = RenderLabelText(label);
 			ImGui::SetNextItemWidth(s_Context.m_InputWidth * 2 + style.ItemInnerSpacing.x);
-			label_end = strlen(label_end) == 0 ? label : label_end;
 			ret = ImGui::DragFloat2(label_end, glm::value_ptr(val), 1.0f, 0.0f, 0.0f, s_Context.m_InputFormat);
 
 			if (ImGui::IsItemActive() && s_Context.m_ActiveID == 0)
@@ -164,12 +168,8 @@ namespace Stimpi
 			bool ret = false;
 			if (done) *done = false;
 
-			const char* label_end = ImGui::FindRenderedTextEnd(label);
-			SetCurrentLineTextOffset();
-			ImGui::TextEx(label, label_end); ImGui::SameLine(s_Context.m_LabelOffset);
-
+			const char* label_end = RenderLabelText(label);
 			ImGui::SetNextItemWidth(s_Context.m_InputWidth);
-			label_end = strlen(label_end) == 0 ? label : label_end;
 			ret = ImGui::DragFloat(label_end, &val, speed, min, max, s_Context.m_InputFormat);
 
 			if (ImGui::IsItemActive() && s_Context.m_ActiveID == 0)
@@ -229,14 +229,20 @@ namespace Stimpi
 		{
 			bool ret = false;
 
-			const char* label_end = ImGui::FindRenderedTextEnd(label);
-			SetCurrentLineTextOffset();
-			ImGui::TextEx(label, label_end); ImGui::SameLine(s_Context.m_LabelOffset);
-
+			const char* label_end = RenderLabelText(label);
 			ImGui::SetNextItemWidth(ImGui::GetWindowContentRegionWidth() - s_Context.m_LabelOffset + 10.0f);
-			label_end = strlen(label_end) == 0 ? label : label_end;
-
 			ret = ImGui::InputText(label_end, buf, size, flags);
+
+			return ret;
+		}
+
+		bool Input::InputInt(const char* label, int* val, int step, int set_fast)
+		{
+			bool ret = false;
+
+			const char* label_end = RenderLabelText(label);
+			ImGui::SetNextItemWidth(ImGui::GetWindowContentRegionWidth() - s_Context.m_LabelOffset + 10.0f);
+			ret = ImGui::InputInt(label_end, val, step, set_fast);
 
 			return ret;
 		}
@@ -245,16 +251,69 @@ namespace Stimpi
 		{
 			bool ret = false;
 
-			const char* label_end = ImGui::FindRenderedTextEnd(label);
-			SetCurrentLineTextOffset();
-			ImGui::TextEx(label, label_end); ImGui::SameLine(s_Context.m_LabelOffset);
-
+			const char* label_end = RenderLabelText(label);
 			ImGui::SetNextItemWidth(ImGui::GetWindowContentRegionWidth() - s_Context.m_LabelOffset + 10.0f);
-			label_end = strlen(label_end) == 0 ? label : label_end;
-
 			ret = ImGui::InputFloat(label, val, step, step_fast, s_Context.m_InputFormat, ImGuiInputTextFlags_EnterReturnsTrue);
 
 			return ret;
+		}
+
+		bool Input::ColorEdit4(const char* label, glm::vec4& val, bool* done, bool saveCmd)
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			bool ret = false;
+			if (done) *done = false;
+
+			const char* label_end = RenderLabelText(label);
+			ret = ImGui::ColorEdit4(label_end, glm::value_ptr(val), ImGuiColorEditFlags_NoInputs);
+
+			// TODO: handle undo/redo
+
+			return ret;
+		}
+
+		bool Input::ButtonFileInput(const char* label, const char* fileName)
+		{
+			bool ret = false;
+
+			RenderLabelText(label);
+			ret = ImGui::Button("Load");
+
+			ImGui::SameLine();
+			ImGui::Text(fileName);
+
+			return ret;
+		}
+
+		bool Input::Checkbox(const char* label, bool* val)
+		{
+			bool ret = false;
+
+			const char* label_end = RenderLabelText(label);
+			ret = ImGui::Checkbox(label_end, val);
+
+			return ret;
+		}
+
+		bool Input::BeginCombo(const char* label, const char* preview)
+		{
+			bool ret = false;
+
+			RenderLabelText(label);
+			ImGui::SetNextItemWidth(ImGui::GetWindowContentRegionWidth() - s_Context.m_LabelOffset + 10.0f);
+			ret = ImGui::BeginCombo(label, preview);
+
+			return ret;
+		}
+
+		void Input::EndCombo()
+		{
+			ImGui::EndCombo();
+		}
+
+		bool Input::Selectable(const char* label, bool selected)
+		{
+			return ImGui::Selectable(label, selected);
 		}
 
 	}

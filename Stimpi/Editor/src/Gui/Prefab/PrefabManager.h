@@ -17,6 +17,6 @@ namespace Stimpi
 
 		static void OnPrefabAssetReload(std::shared_ptr<Asset> asset);
 
-		static void ConvertToPrefabEntity(Entity entity, AssetHandle prefabHandle);
+		static void ConvertToPrefabEntity(Entity entity, AssetHandle prefabHandle, bool isRootObject = false);
 	};
 }

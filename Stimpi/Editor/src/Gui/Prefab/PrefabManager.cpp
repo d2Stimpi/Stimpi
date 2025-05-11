@@ -106,12 +106,13 @@ namespace Stimpi
 
 	}
 
-	void PrefabManager::ConvertToPrefabEntity(Entity entity, AssetHandle prefabHandle)
+	void PrefabManager::ConvertToPrefabEntity(Entity entity, AssetHandle prefabHandle, bool isRootObject)
 	{
 		if (!entity.HasComponent<PrefabComponent>())
 		{
 			PrefabComponent& prefabComponent = entity.AddComponent<PrefabComponent>(prefabHandle);
 			prefabComponent.m_PrefabEntityID = entity.GetComponent<UUIDComponent>().m_UUID;
+			prefabComponent.m_IsRootObject = isRootObject;
 
 			if (entity.HasComponent<HierarchyComponent>())
 			{
@@ -122,7 +123,7 @@ namespace Stimpi
 				for (auto childUUID : hierarchyComponent.m_Children)
 				{
 					Entity child = scene->GetEntityByUUID(childUUID);
-					ConvertToPrefabEntity(entity, prefabHandle);
+					ConvertToPrefabEntity(entity, prefabHandle, isRootObject);
 				}
 			}
 		}

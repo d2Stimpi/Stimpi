@@ -322,6 +322,7 @@ namespace Stimpi
 
 		bool isLeafNode = !entity.HasComponent<HierarchyComponent>() ||
 			(entity.HasComponent<HierarchyComponent>() && entity.GetComponent<HierarchyComponent>().m_Children.empty());
+		bool isPrefabInstance = entity.HasComponent<PrefabComponent>() && !entity.GetComponent<PrefabComponent>().m_IsRootObject;
 
 		// Selection render
 		if (s_Context.m_SelectedEntity == entity)
@@ -331,7 +332,9 @@ namespace Stimpi
 
 		if (isLeafNode)
 			node_flags = leaf_flags;
-
+		
+		if (isPrefabInstance)
+			ImGui::PushStyleColor(ImGuiCol_Text, s_BlueTextColor);
 		if (ImGuiEx::TreeNodeIcon((void*)&entity, node_flags, entityTag, GetEntityIconName(entity)))
 		{
 			if (s_Context.m_SelectedEntity == entity)
@@ -339,9 +342,9 @@ namespace Stimpi
 
 			if (ImGui::IsItemHovered())
 			{
-				if (ImGui::IsMouseDown(ImGuiMouseButton_Left)/* || ImGui::IsMouseDown(ImGuiMouseButton_Right)*/)
+				if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
 					s_Context.m_PreSelect = entity;
-				else if (ImGui::IsMouseReleased(ImGuiMouseButton_Left)/* || ImGui::IsMouseReleased(ImGuiMouseButton_Right)*/)
+				else if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
 					s_Context.m_SelectedEntity = s_Context.m_PreSelect;
 
 				if (s_Context.m_HoveredEntity.GetHandle() != entity.GetHandle())
@@ -375,6 +378,8 @@ namespace Stimpi
 				ImGui::TreePop();
 			}
 		}
+		if (isPrefabInstance)
+			ImGui::PopStyleColor();
 
 		ImGui::PopID();
 	}
@@ -400,6 +405,14 @@ namespace Stimpi
 		EditorUtils::SetActiveItemCaptureKeyboard(false);
 		ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 90); AddComponentLayout();
 		ImGui::PopItemWidth();
+	}
+
+	void SceneHierarchyWindow::PrefabComponentLayout(PrefabComponent& component)
+	{
+		if (s_Context.m_ActiveMode == ContentMode::PREFAB)
+		{
+
+		}
 	}
 
 	void SceneHierarchyWindow::QuadComponentLayout(QuadComponent& component)
@@ -626,10 +639,12 @@ namespace Stimpi
 			std::filesystem::path texturePath = metadata.m_FilePath;
 
 			ImGui::Spacing();
-			ImGui::ColorEdit4("Color##SpriteColor", glm::value_ptr(component.m_Color));
+			UI::Input::ColorEdit4("Color##SpriteColor", component.m_Color);
 
-			ImGui::PushItemWidth(80.0f);
-			if (ImGui::Button("Texture##SpriteComponent"))
+			std::string fileNameText = "Not set";
+			if (texturePath.has_filename())
+				fileNameText = texturePath.filename().string();
+			if (UI::Input::ButtonFileInput("Texture##SpriteComponent", fileNameText.c_str()))
 			{
 				std::string filePath = FileDialogs::OpenFile("Texture (*.jpg)\0*.jpg\0(*.png)\0*.png\0");
 				if (!filePath.empty())
@@ -643,7 +658,6 @@ namespace Stimpi
 					component.m_TextureAssetHandle = handle;
 				}
 			}
-			ImGui::PopItemWidth();
 
 			UIPayload::BeginTarget(PAYLOAD_TEXTURE, [&component](void* data, uint32_t size) {
 				AssetHandle handle = *(AssetHandle*)data;
@@ -652,14 +666,7 @@ namespace Stimpi
 				component.m_TextureAssetHandle = handle;
 				});
 
-			ImGui::SameLine();
-			if (texturePath.has_filename())
-				ImGui::Text("%s", texturePath.filename().string().c_str());
-			else
-				ImGui::Text("Add Texture");
-
-			//ImGui::SameLine();
-			ImGui::Checkbox("Enable Texture##Texture_SpriteComponent", &component.m_Enable);
+			UI::Input::Checkbox("Enable Texture##Texture_SpriteComponent", &component.m_Enable);
 			ImGui::Spacing();
 		}
 
@@ -690,12 +697,12 @@ namespace Stimpi
 			std::string currentSortingLayer = component.m_SortingLayerName;
 
 			ImGui::Spacing();
-			if (ImGui::BeginCombo("Sorting Layer", currentSortingLayer.c_str()))
+			if (UI::Input::BeginCombo("Sorting Layer", currentSortingLayer.c_str()))
 			{
 				for (auto& layer : sortingLayers)
 				{
 					bool isSelected = layer->m_Name == currentSortingLayer;
-					if (ImGui::Selectable(layer->m_Name.c_str(), isSelected))
+					if (UI::Input::Selectable(layer->m_Name.c_str(), isSelected))
 					{
 						currentSortingLayer = layer->m_Name;
 						component.m_SortingLayerName = layer->m_Name;
@@ -707,11 +714,11 @@ namespace Stimpi
 						ImGui::SetItemDefaultFocus();
 				}
 
-				ImGui::EndCombo(); 
+				UI::Input::EndCombo();
 			}
 
 			int orderInLayerInput = (int)component.m_OrderInLayer;
-			if (ImGui::InputInt("Order in Layer##SortingGroup", &orderInLayerInput))
+			if (UI::Input::InputInt("Order in Layer##SortingGroup", &orderInLayerInput))
 			{
 				if (orderInLayerInput < 0)
 					orderInLayerInput = 0;
@@ -805,7 +812,7 @@ namespace Stimpi
 			}
 
 			static bool looping = false;
-			if (ImGui::Checkbox("Loop##AnimatedSpriteComponent", &looping))
+			if (UI::Input::Checkbox("Loop##AnimatedSpriteComponent", &looping))
 			{
 				if (component.m_AnimSprite)
 					component.m_AnimSprite->SetLooping(looping);
@@ -814,9 +821,7 @@ namespace Stimpi
 			float playSpeed = 1.0f;
 			if (component.m_AnimSprite)
 				playSpeed = component.m_AnimSprite->GetPlaybackSpeed();
-			ImGui::SameLine();
-			ImGui::SetNextItemWidth(50.0f);
-			if (ImGui::DragFloat("Playback speed", &playSpeed, 0.001f, 0.01f))
+			if (UI::Input::DragFloat("Playback speed##AnimatedSpriteComponent_PlaybackSpeed", playSpeed, 0.001f, 0.01f))
 			{
 				if (playSpeed < 0.001f) playSpeed = 0.001;
 			}
@@ -908,7 +913,7 @@ namespace Stimpi
 			
 			// Custom shader section
 			ImGui::Separator();
-			ImGui::Checkbox("Use custom shader", &component.m_UseCustomShader);
+			UI::Input::Checkbox("Use custom shader##AnimatedSpriteComponent_UseCustomShader", &component.m_UseCustomShader);
 
 			if (component.m_UseCustomShader)
 			{
@@ -922,7 +927,7 @@ namespace Stimpi
 
 				ImGui::Spacing();
 				shaderSettingsCursor = ImGui::GetCursorPos();
-				ImGui::InputText("##ScriptComponentPreview", shaderName, sizeof(shaderName), ImGuiInputTextFlags_ReadOnly);
+				UI::Input::InputText("Shader##AnimatedSpriteComponent_ShaderName", shaderName, sizeof(shaderName), ImGuiInputTextFlags_ReadOnly);
 
 				if (ImGui::IsItemClicked())
 				{
@@ -950,9 +955,6 @@ namespace Stimpi
 					component.m_Material = std::make_shared<Material>(shaderHandle);
 					});
 
-				ImGui::SameLine();
-				ImGui::Text("Shader");
-
 				// Shader uniforms / properties will go here
 				if (component.m_Material != nullptr)
 				{
@@ -960,9 +962,9 @@ namespace Stimpi
 					auto& values = component.m_Material->GetUniformValues();
 					for (auto& uniform : uniforms)
 					{
-						//ImGui::Text(uniform.m_Name.c_str());
 						float val = std::get<float>(values.at(uniform.m_Name));
-						ImGui::DragFloat(uniform.m_Name.c_str(), &val, 0.01f, 0.01, 1.0f);
+						std::string label = fmt::format("{}##AnimatedSpriteComponent_{}", uniform.m_Name, uniform.m_Name);
+						UI::Input::DragFloat(uniform.m_Name.c_str(), val, 0.01f, 0.01, 1.0f);
 						values[uniform.m_Name] = val;
 					}
 				}
@@ -1322,6 +1324,12 @@ namespace Stimpi
 			{
 				auto& component = s_Context.m_SelectedEntity.GetComponent<TagComponent>();
 				TagComponentLayout(component);
+			}
+
+			if (s_Context.m_SelectedEntity.HasComponent<PrefabComponent>())
+			{
+				auto& component = s_Context.m_SelectedEntity.GetComponent<PrefabComponent>();
+				PrefabComponentLayout(component);
 			}
 
 			if (s_Context.m_SelectedEntity.HasComponent<QuadComponent>())

@@ -249,7 +249,7 @@ namespace Stimpi
 
 					if (sprite.m_Disabled == false)
 					{
-						if (sprite.m_Enable)
+						if (sprite.m_Enable && sprite.m_TextureAssetHandle)
 							Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite, m_DefaultShader.get());
 						else
 							Renderer2D::Instance()->Submit(quad.m_Position, quad.m_Size, quad.m_Rotation, sprite.m_Color, m_DefaultSolidColorShader.get());

@@ -33,6 +33,9 @@ constexpr ImVec2 s_DefaultIconButtonSize = { 22.0f, 21.0f };
 constexpr ImVec2 s_DefaultSmallIconSize = { 16.0f, 16.0f };
 constexpr ImVec2 s_DefaultMediumIconSize = { 32.0f, 32.0f };
 
+// Colors
+constexpr ImVec4 s_BlueTextColor = { 0.26f, 0.62f, 1.0f, 1.0f };
+
 namespace Stimpi
 {
 	using EditorIcons = std::unordered_map<std::string, std::shared_ptr<Texture>>;

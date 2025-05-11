@@ -494,7 +494,7 @@ namespace Stimpi
 					asset->Initialize(entity);
 					asset->Save(ResourceManager::GetAssetsPath() / metadata.m_FilePath);
 
-					PrefabManager::ConvertToPrefabEntity(entity, assetHandle);
+					PrefabManager::ConvertToPrefabEntity(entity, assetHandle, true);
 				}
 			}
 

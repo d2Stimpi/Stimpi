@@ -24,8 +24,16 @@ namespace Stimpi
 			static float GetStartFloat();
 
 			static bool InputText(const char* label, char* buf, size_t size, ImGuiInputTextFlags flags = 0);
-
+			static bool InputInt(const char* label, int* val, int step = 1, int set_fast = 100);
 			static bool InputFloat(const char* label, float* val, float step = 0.0f, float step_fast = 0.0f);
+			static bool ColorEdit4(const char* label, glm::vec4& val, bool* done = nullptr, bool saveCmd = true);
+
+			static bool ButtonFileInput(const char* label, const char* fileName);
+			static bool Checkbox(const char* label, bool* val);
+
+			static bool BeginCombo(const char* label, const char* preview);
+			static void EndCombo();
+			static bool Selectable(const char* label, bool selected);
 		};
 	}
 }

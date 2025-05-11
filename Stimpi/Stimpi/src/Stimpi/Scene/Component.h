@@ -104,9 +104,10 @@ namespace Stimpi
 	struct PrefabComponent
 	{
 		AssetHandle m_PrefabHandle;
+		bool m_IsRootObject = false;	// Weather the entity is root prefab object or not
 
 		// Internal UUID that references prefab (sub) entity ID, for easier prefab updates
-		UUID m_PrefabEntityID;
+		UUID m_PrefabEntityID = 0;
 
 		PrefabComponent() = default;
 		PrefabComponent(const PrefabComponent&) = default;
@@ -118,6 +119,7 @@ namespace Stimpi
 			out << YAML::Key << "PrefabComponent";
 			out << YAML::BeginMap;
 				out << YAML::Key << "AssetHandle" << YAML::Value << m_PrefabHandle;
+				out << YAML::Key << "IsRootObject" << YAML::Value << m_IsRootObject;
 				out << YAML::Key << "PrefabEntityID" << YAML::Value << m_PrefabEntityID;
 			out << YAML::EndMap;
 		}
@@ -128,6 +130,10 @@ namespace Stimpi
 			if (node["AssetHandle"])
 			{
 				m_PrefabHandle = node["AssetHandle"].as<UUIDType>();
+			}
+			if (node["IsRootObject"])
+			{
+				m_IsRootObject = node["IsRootObject"].as<bool>();
 			}
 			if (node["PrefabEntityID"])
 			{

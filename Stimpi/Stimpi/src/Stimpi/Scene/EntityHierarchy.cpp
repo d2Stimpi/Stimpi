@@ -10,6 +10,48 @@
 
 namespace Stimpi
 {
+	/**
+	 *  Local static methods
+	 */
+
+	static bool IsValidChildObject(Entity& child, Entity& parent)
+	{
+		// New child object can't be the root of hierarchy
+		
+		if (child.HasComponent<HierarchyComponent>())
+		{
+			if (parent.HasComponent<HierarchyComponent>())
+			{
+				HierarchyComponent& childComponent = child.GetComponent<HierarchyComponent>();
+				UUID childUUID = child.GetComponent<UUIDComponent>().m_UUID;
+
+				HierarchyComponent& parentComponent = parent.GetComponent<HierarchyComponent>();
+				if (childUUID == parentComponent.m_Parent)
+				{
+					return false;
+				}
+				else
+				{
+					// Check further up in hierarchy
+					if (parentComponent.m_Parent)
+					{
+						auto scene = SceneManager::Instance()->GetActiveScene();
+						if (scene)
+						{
+							Entity nextParent = scene->GetEntityByUUID(parentComponent.m_Parent);
+							return IsValidChildObject(child, nextParent);
+						}
+					}
+				}
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * EntityHierarchy methods
+	 */
 
 	void EntityHierarchy::AddChild(Entity& parent, Entity& child)
 	{
@@ -23,6 +65,10 @@ namespace Stimpi
 
 		HierarchyComponent& parentComponent = parent.GetComponent<HierarchyComponent>();
 		HierarchyComponent& childComponent = child.GetComponent<HierarchyComponent>();
+
+		// Skip if not a valid child entity (entity is already a parent in the hierarchy)
+		if (!IsValidChildObject(child, parent))
+			return;
 
 		// Prevent adding if already the same parent, prevent adding
 		if (childComponent.m_Parent != parentUUID && parentComponent.m_Parent != childUUID)
