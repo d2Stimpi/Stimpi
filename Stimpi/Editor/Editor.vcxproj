@@ -203,7 +203,6 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
     <ClInclude Include="src\Gui\Panels\SceneHierarchyWindow.h" />
     <ClInclude Include="src\Gui\Panels\ScriptFieldFragment.h" />
     <ClInclude Include="src\Gui\PlayPanel.h" />
-    <ClInclude Include="src\Gui\Prefab\PrefabManager.h" />
     <ClInclude Include="src\Gui\SceneViewWindow.h" />
     <ClInclude Include="src\Gui\SpriteAnimPanel.h" />
     <ClInclude Include="src\Gui\Stats\EditorConfig.h" />
@@ -261,7 +260,6 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
     <ClCompile Include="src\Gui\Panels\SceneHierarchyWindow.cpp" />
     <ClCompile Include="src\Gui\Panels\ScriptFieldFragment.cpp" />
     <ClCompile Include="src\Gui\PlayPanel.cpp" />
-    <ClCompile Include="src\Gui\Prefab\PrefabManager.cpp" />
     <ClCompile Include="src\Gui\SceneViewWindow.cpp" />
     <ClCompile Include="src\Gui\SpriteAnimPanel.cpp" />
     <ClCompile Include="src\Gui\Stats\EditorConfig.cpp" />

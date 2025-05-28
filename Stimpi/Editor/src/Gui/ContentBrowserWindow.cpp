@@ -3,6 +3,7 @@
 #include "Stimpi/Asset/TextureImporter.h"
 #include "Stimpi/Asset/AssetManager.h"
 #include "Stimpi/Asset/Prefab.h"
+#include "Stimpi/Asset/PrefabManager.h"
 #include "Stimpi/Core/Project.h"
 #include "Stimpi/Log.h"
 #include "Stimpi/Scene/Entity.h"
@@ -11,7 +12,6 @@
 
 #include "Gui/Components/UIPayload.h"
 #include "Gui/Components/ImGuiEx.h"
-#include "Gui/Prefab/PrefabManager.h"
 
 #include "ImGui/src/imgui.h"
 

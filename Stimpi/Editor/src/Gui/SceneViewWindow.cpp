@@ -7,6 +7,7 @@
 #include "Stimpi/Core/Project.h"
 #include "Stimpi/Graphics/Renderer2D.h"
 #include "Stimpi/Asset/TextureImporter.h"
+#include "Stimpi/Asset/PrefabManager.h"
 
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Entity.h"
@@ -17,8 +18,8 @@
 #include "Gui/Panels/SceneHierarchyWindow.h"
 #include "Gui/Gizmo2D.h"
 #include "Gui/EditorUtils.h"
+#include "Gui/EditorEntityManager.h"
 #include "Gui/Utils/Utils.h"
-#include "Gui/Prefab/PrefabManager.h"
 
 #include <cmath>
 
@@ -208,8 +209,7 @@ namespace Stimpi
 			{
 				ImVec2 worldPos = GetWorldMousePosition();
 				QuadComponent& quad = prefabEntity.GetComponent<QuadComponent>();
-				quad.m_Position.x = worldPos.x;
-				quad.m_Position.y = worldPos.y;
+				EditorEntityManager::Translate(prefabEntity, { worldPos.x - quad.m_Position.x, worldPos.y - quad.m_Position.y, 0.0f });
 			}
 		});
 

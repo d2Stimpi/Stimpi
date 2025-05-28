@@ -7,6 +7,7 @@
 
 #include "Stimpi/Asset/ShaderImporter.h"
 #include "Stimpi/Asset/AssetManager.h"
+#include "Stimpi/Asset/PrefabManager.h"
 #include "Stimpi/Cmd/CommandStack.h"
 #include "Stimpi/Core/Time.h"
 #include "Stimpi/Core/WindowManager.h"
@@ -20,7 +21,6 @@
 #include "Gui/EditorUtils.h"
 #include "Gui/Gizmo2D.h"
 #include "Gui/Utils/EditorResources.h"
-#include "Gui/Prefab/PrefabManager.h"
 
 #include <SDL.h>
 #include <SDL_opengl.h>

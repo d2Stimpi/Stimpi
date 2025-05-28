@@ -320,6 +320,7 @@
     <ClInclude Include="src\Stimpi\Asset\AssetBuilder.h" />
     <ClInclude Include="src\Stimpi\Asset\PrefabAssetBuilder.h" />
     <ClInclude Include="src\Stimpi\Asset\PrefabImporter.h" />
+    <ClInclude Include="src\Stimpi\Asset\PrefabManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Asset\AnimationImporter.cpp">
@@ -549,5 +550,6 @@
     <ClCompile Include="src\Stimpi\Asset\AssetBuilder.cpp" />
     <ClCompile Include="src\Stimpi\Asset\PrefabAssetBuilder.cpp" />
     <ClCompile Include="src\Stimpi\Asset\PrefabImporter.cpp" />
+    <ClCompile Include="src\Stimpi\Asset\PrefabManager.cpp" />
   </ItemGroup>
 </Project>

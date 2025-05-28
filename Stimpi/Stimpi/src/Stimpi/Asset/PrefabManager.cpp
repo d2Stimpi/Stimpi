@@ -1,5 +1,5 @@
 #include "stpch.h"
-#include "Gui/Prefab/PrefabManager.h"
+#include "Stimpi/Asset/PrefabManager.h"
 
 #include "Stimpi/Log.h"
 #include "Stimpi/Scene/SceneManager.h"
@@ -123,7 +123,7 @@ namespace Stimpi
 				for (auto childUUID : hierarchyComponent.m_Children)
 				{
 					Entity child = scene->GetEntityByUUID(childUUID);
-					ConvertToPrefabEntity(entity, prefabHandle, isRootObject);
+					ConvertToPrefabEntity(child, prefabHandle, isRootObject);
 				}
 			}
 		}

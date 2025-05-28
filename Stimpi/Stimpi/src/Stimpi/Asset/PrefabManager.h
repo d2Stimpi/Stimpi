@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Stimpi/Core/Core.h"
 #include "Stimpi/Asset/AssetManager.h"
 #include "Stimpi/Asset/Prefab.h"
 
@@ -7,7 +8,7 @@ namespace Stimpi
 {
 	class Entity;
 
-	class PrefabManager
+	class ST_API PrefabManager
 	{
 	public:
 		static Entity InstantiatePrefab(AssetHandle prefabHandle);

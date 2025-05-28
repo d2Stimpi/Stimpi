@@ -11,8 +11,8 @@
 #include "Gui/NNode/NGraphBuilder.h"
 #include "Gui/NNode/NGraphRegistry.h"
 #include "Gui/Panels/ScriptFieldFragment.h"
-#include "Gui/Prefab/PrefabManager.h"
 
+#include "Stimpi/Asset/PrefabManager.h"
 #include "Stimpi/Core/InputManager.h"
 #include "Stimpi/Core/WindowManager.h"
 #include "Stimpi/Graphics/ShaderRegistry.h"
