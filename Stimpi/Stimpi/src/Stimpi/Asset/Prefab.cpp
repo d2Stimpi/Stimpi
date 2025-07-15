@@ -51,7 +51,7 @@ namespace Stimpi
 	Entity Prefab::CreateEntities(Scene* scene)
 	{
 		Entity root = scene->CreateEntity(m_Name);
-		auto node = m_EntityDataMap[m_RootEntityUUID];
+		auto& node = m_EntityDataMap[m_RootEntityUUID];
 		BuildComponents(root, node);
 
 		if (root.HasComponent<HierarchyComponent>())
@@ -82,7 +82,7 @@ namespace Stimpi
 	{
 		// Get the name of the entity
 		std::string name = "";
-		auto data = m_EntityDataMap[dataID];
+		auto& data = m_EntityDataMap[dataID];
 		if ((*data)["TagComponent"])
 		{
 			name = (*data)["TagComponent"]["Tag"].as<std::string>();
@@ -125,7 +125,7 @@ namespace Stimpi
 		BUILD_ENTITY_COMPONENT(entity, SpriteComponent, node);
 		BUILD_ENTITY_COMPONENT(entity, SortingGroupComponent, node);
 		BUILD_ENTITY_COMPONENT(entity, AnimatedSpriteComponent, node);
-		if (m_Data["ScriptComponent"])
+		if (node["ScriptComponent"])
 		{
 			ScriptComponent& scriptComponent = entity.AddComponent<ScriptComponent>(ScriptComponent(node["ScriptComponent"]));
 			scriptComponent.PopulateScriptInstanceData(node["ScriptComponent"]);

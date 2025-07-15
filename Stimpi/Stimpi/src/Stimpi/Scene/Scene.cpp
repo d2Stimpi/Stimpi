@@ -76,6 +76,7 @@ namespace Stimpi
 		ComponentObserver::InitComponentObservers(m_Registry, this);
 
 		// Clear script instances - they are created in OnScriptConstruct
+		// Fixme / TODO: this following call prevents having multiple scenes active at the same time
 		ScriptEngine::ClearScriptInstances();
 
 		m_RuntimeState = RuntimeState::STOPPED;
@@ -332,7 +333,7 @@ namespace Stimpi
 		if (prefabHandle)
 		{
 			auto prefab = AssetManager::GetAsset<Prefab>(prefabHandle);
-			if (prefab)
+			if (prefab && prefab->GetType() == AssetType::PREFAB)
 			{
 				return prefab->CreateEntities(this);
 			}
@@ -343,7 +344,7 @@ namespace Stimpi
 
 	Entity Scene::GetEntityByHandle(entt::entity handle)
 	{
-		return Entity(handle, this);
+		return {handle, this};
 	}
 
 	Stimpi::Entity Scene::GetEntityByUUID(const UUID& uuid)
@@ -372,20 +373,6 @@ namespace Stimpi
 		{
 			const TagComponent& tag = view.get<TagComponent>(entity);
 			if (tag.m_Tag == name)
-				entities.emplace_back(entity, this);
-		}
-		return entities;
-	}
-
-	std::vector<Entity> Scene::FindAllPrefabEntities(const AssetHandle& prefabHandle)
-	{
-		std::vector<Entity> entities;
-
-		auto view = m_Registry.view<PrefabComponent>();
-		for (auto entity : view)
-		{
-			const PrefabComponent& prefab = view.get<PrefabComponent>(entity);
-			if (prefab.m_PrefabHandle == prefabHandle)
 				entities.emplace_back(entity, this);
 		}
 		return entities;

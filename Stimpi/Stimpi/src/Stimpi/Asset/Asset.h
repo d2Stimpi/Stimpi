@@ -37,7 +37,7 @@ namespace Stimpi
 
 		virtual AssetType GetType() = 0;
 
-		bool IsValid() { return m_Handle != 0; }
+		bool IsValid() const { return m_Handle != 0; }
 		operator bool() const { return m_Handle != 0; }
 	};
 }

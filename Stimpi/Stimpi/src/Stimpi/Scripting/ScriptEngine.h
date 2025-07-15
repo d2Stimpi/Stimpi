@@ -50,6 +50,9 @@ namespace Stimpi
 
 		std::vector<ClassIdentifier>::iterator begin() { return m_ClassIdentifiers.begin(); }
 		std::vector<ClassIdentifier>::iterator end() { return m_ClassIdentifiers.end(); }
+
+		const std::vector<ClassIdentifier>::const_iterator begin() const { return m_ClassIdentifiers.begin(); }
+		const std::vector<ClassIdentifier>::const_iterator end() const { return m_ClassIdentifiers.end(); }
 	};
 
 	struct AssetAssembly;

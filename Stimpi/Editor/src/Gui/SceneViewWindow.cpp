@@ -203,14 +203,8 @@ namespace Stimpi
 
 		UIPayload::BeginTarget(PAYLOAD_PREFAB, [&](void* data, uint32_t size) {
 			AssetHandle prefabHandle = *(AssetHandle*)data;
-			Entity prefabEntity = PrefabManager::InstantiatePrefab(prefabHandle);
-
-			if (prefabEntity && prefabEntity.HasComponent<QuadComponent>())
-			{
-				ImVec2 worldPos = GetWorldMousePosition();
-				QuadComponent& quad = prefabEntity.GetComponent<QuadComponent>();
-				EditorEntityManager::Translate(prefabEntity, { worldPos.x - quad.m_Position.x, worldPos.y - quad.m_Position.y, 0.0f });
-			}
+			ImVec2 worldPos = GetWorldMousePosition();
+			Entity prefabEntity = PrefabManager::InstantiatePrefab(prefabHandle, { worldPos.x, worldPos.y, 0.0f });
 		});
 
 		ImGui::End();

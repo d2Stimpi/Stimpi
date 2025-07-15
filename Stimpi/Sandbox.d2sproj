@@ -1,7 +1,7 @@
 Project:
   Name: Sandbox
   StartingScene: Demo/DemoScene.d2s
-  ProjectDir: D:/GitHub/Stimpi
+  ProjectDir: C:/GitHub/Stimpi/Stimpi
   AssetsSubDir: assets
   ScriptsSubDir: resources/scripts
   Graphics:

@@ -158,4 +158,27 @@ namespace Stimpi
 		}
 	}
 
+	void EntityManager::ConvertToPrefabEntity(Entity entity, AssetHandle prefabHandle, bool isRootObject /*= false*/)
+	{
+		if (!entity.HasComponent<PrefabComponent>())
+		{
+			PrefabComponent& prefabComponent = entity.AddComponent<PrefabComponent>(prefabHandle);
+			prefabComponent.m_PrefabEntityID = entity.GetComponent<UUIDComponent>().m_UUID;
+			prefabComponent.m_IsRootObject = isRootObject;
+
+			if (entity.HasComponent<HierarchyComponent>())
+			{
+				Scene* scene = entity.GetScene();
+				ST_CORE_ASSERT(!scene);
+
+				HierarchyComponent& hierarchyComponent = entity.GetComponent<HierarchyComponent>();
+				for (auto& childUUID : hierarchyComponent.m_Children)
+				{
+					Entity child = scene->GetEntityByUUID(childUUID);
+					ConvertToPrefabEntity(child, prefabHandle, isRootObject);
+				}
+			}
+		}
+	}
+
 }

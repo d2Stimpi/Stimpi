@@ -1,0 +1,58 @@
+EntityList:
+  EntityData:
+    UUIDComponent:
+      UUID: 17428536547676656400
+    TagComponent:
+      Tag: Player
+    QuadComponent:
+      - 64
+      - 36
+      - 0
+      - 24
+      - 24
+      - 0
+    AnimatedSpriteComponent:
+      DefaultAnimationHandle: 7469747603640462214
+      Animations:
+        Animation:
+          AnimationHandle: 17035806228380399739
+        Animation:
+          AnimationHandle: 15705175175117077721
+        Animation:
+          AnimationHandle: 5631870992591448076
+        Animation:
+          AnimationHandle: 3414443410911274819
+      AutoPlay: false
+    ScriptComponent:
+      ScriptName: Demo.DemoPlayer
+      ScriptFields:
+        Field:
+          Type: FIELD_TYPE_CLASS
+          FieldTypeName: Stimpi.Entity
+          Name: Cursor
+          FieldData:
+            ID: 4
+        Field:
+          Type: FIELD_TYPE_CLASS
+          FieldTypeName: Stimpi.Entity
+          Name: Camera
+          FieldData:
+            ID: 1
+    RigidBody2DComponent:
+      Type: Dynamic
+      FixedRotation: true
+    BoxCollider2DComponent:
+      Shape: 0
+      Offset:
+        - 0
+        - -1
+      Size:
+        - 0.100000001
+        - 0.119999997
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+      GroupIndex: 0
+EntityHierarchy:
+  EntityHierarchyData: {}

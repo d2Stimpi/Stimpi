@@ -19,5 +19,8 @@ namespace Stimpi
 		static void Scale(std::vector<Entity>& entities, const glm::vec2& vec);
 		static void Rotate(Entity entity, const float& val);
 		static void Rotate(std::vector<Entity>& entities, const float& val);
+
+		// Prefab related
+		static void ConvertToPrefabEntity(Entity entity, AssetHandle prefabHandle, bool isRootObject = false);
 	};
 }

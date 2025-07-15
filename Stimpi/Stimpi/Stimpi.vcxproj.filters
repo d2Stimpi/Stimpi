@@ -55,6 +55,9 @@
     <ClInclude Include="src\Stimpi\Asset\Asset.h">
       <Filter>Stimpi\Asset</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\Asset\AssetBuilder.h">
+      <Filter>Stimpi\Asset</Filter>
+    </ClInclude>
     <ClInclude Include="src\Stimpi\Asset\AssetImporter.h">
       <Filter>Stimpi\Asset</Filter>
     </ClInclude>
@@ -74,6 +77,15 @@
       <Filter>Stimpi\Asset</Filter>
     </ClInclude>
     <ClInclude Include="src\Stimpi\Asset\Prefab.h">
+      <Filter>Stimpi\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Asset\PrefabAssetBuilder.h">
+      <Filter>Stimpi\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Asset\PrefabImporter.h">
+      <Filter>Stimpi\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stimpi\Asset\PrefabManager.h">
       <Filter>Stimpi\Asset</Filter>
     </ClInclude>
     <ClInclude Include="src\Stimpi\Asset\SceneImporter.h">
@@ -317,16 +329,15 @@
       <Filter>Stimpi\VisualScripting</Filter>
     </ClInclude>
     <ClInclude Include="src\stpch.h" />
-    <ClInclude Include="src\Stimpi\Asset\AssetBuilder.h" />
-    <ClInclude Include="src\Stimpi\Asset\PrefabAssetBuilder.h" />
-    <ClInclude Include="src\Stimpi\Asset\PrefabImporter.h" />
-    <ClInclude Include="src\Stimpi\Asset\PrefabManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Asset\AnimationImporter.cpp">
       <Filter>Stimpi\Asset</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Asset\Asset.cpp">
+      <Filter>Stimpi\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Asset\AssetBuilder.cpp">
       <Filter>Stimpi\Asset</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Asset\AssetImporter.cpp">
@@ -339,6 +350,18 @@
       <Filter>Stimpi\Asset</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Asset\AssetManagerRuntime.cpp">
+      <Filter>Stimpi\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Asset\Prefab.cpp">
+      <Filter>Stimpi\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Asset\PrefabAssetBuilder.cpp">
+      <Filter>Stimpi\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Asset\PrefabImporter.cpp">
+      <Filter>Stimpi\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Asset\PrefabManager.cpp">
       <Filter>Stimpi\Asset</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Asset\SceneImporter.cpp">
@@ -546,10 +569,5 @@
       <Filter>Stimpi\VisualScripting</Filter>
     </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
-    <ClCompile Include="src\Stimpi\Asset\Prefab.cpp" />
-    <ClCompile Include="src\Stimpi\Asset\AssetBuilder.cpp" />
-    <ClCompile Include="src\Stimpi\Asset\PrefabAssetBuilder.cpp" />
-    <ClCompile Include="src\Stimpi\Asset\PrefabImporter.cpp" />
-    <ClCompile Include="src\Stimpi\Asset\PrefabManager.cpp" />
   </ItemGroup>
 </Project>

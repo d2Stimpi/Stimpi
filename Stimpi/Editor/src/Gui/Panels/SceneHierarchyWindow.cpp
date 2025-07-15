@@ -1551,6 +1551,17 @@ namespace Stimpi
 					{
 						Entity rootPrefabEntity = PrefabManager::GetPrefabRootEntity(s_Context.m_HoveredEntity);
 						SetPrefabDisplayMode(rootPrefabEntity);
+
+						// Instead, create temp prefab instance for data editing purpose
+						// 1. Create prefab instance
+						Entity rootEntity = PrefabManager::InstantiatePrefab(prefabComponent.m_PrefabHandle);
+						
+						// 2. Set it as "rootPrefabEntity"
+						// 3. When exiting inspect prefab mode destroy temp instance
+						// 3a. Check for any changes and ask user to update prefab data before closing view
+						// 3b. What to do with the temp prefab instance when simulation starts/stops?
+						//		- set disabled flag for Render component
+						//		- set disabled flag for Script component (TODO: add the flag)
 					}
 				}
 			}
@@ -1584,7 +1595,7 @@ namespace Stimpi
 			s_Context.m_PrefabViewEntity = prefab;
 
 			PrefabComponent& prefabComponent = prefab.GetComponent<PrefabComponent>();
-			s_Context.m_PrefabEntites = m_ActiveScene->FindAllPrefabEntities(prefabComponent.m_PrefabHandle);
+			s_Context.m_PrefabEntites = PrefabManager::GetAllPrefabEntities(prefabComponent.m_PrefabHandle);
 		}
 	}
 

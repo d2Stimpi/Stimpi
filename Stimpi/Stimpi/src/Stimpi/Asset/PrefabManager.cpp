@@ -4,6 +4,7 @@
 #include "Stimpi/Log.h"
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Entity.h"
+#include "Stimpi/Scene/EntityManager.h"
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Core/Project.h"
 #include "Stimpi/Asset/AssetManager.h"
@@ -11,18 +12,34 @@
 namespace Stimpi
 {
 
-	Entity PrefabManager::InstantiatePrefab(AssetHandle prefabHandle)
+	Entity PrefabManager::InstantiatePrefab(AssetHandle prefabHandle, glm::vec3 position)
 	{
 		if (prefabHandle)
 		{
 			auto scene = SceneManager::Instance()->GetActiveScene();
 			if (scene)
 			{
-				return scene->CreateEntity(prefabHandle);
+				Entity rootEntity = scene->CreateEntity(prefabHandle);
+				if (rootEntity)
+				{
+					if (rootEntity.HasComponent<QuadComponent>())
+					{
+						QuadComponent& quad = rootEntity.GetComponent<QuadComponent>();
+						// Center the entity to the passed position.
+						EntityManager::Translate(rootEntity, { position.x - quad.m_Position.x, position.y - quad.m_Position.y, 0.0f });
+					}
+					else
+					{
+						// In case the root entity is used only for grouping multiple pieces.
+						// Make sure to move all child entities.
+						EntityManager::Translate(rootEntity, { position.x, position.y, 0.0f });
+					}
+				}
+				return rootEntity;
 			}
 		}
 
-		return Entity();
+		return {};
 	}
 
 	bool PrefabManager::IsEntityValidPrefab(Entity entity)
@@ -84,6 +101,24 @@ namespace Stimpi
 		return {};
 	}
 
+	std::vector<Entity> PrefabManager::GetAllPrefabEntities(const AssetHandle& prefabHandle)
+	{
+		std::vector<Entity> entities;
+
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		if (scene)
+		{
+			auto view = scene->m_Registry.view<PrefabComponent>();
+			for (auto& entity : view)
+			{
+				const PrefabComponent& prefab = view.get<PrefabComponent>(entity);
+				if (prefab.m_PrefabHandle == prefabHandle)
+					entities.emplace_back(entity, scene);
+			}
+		}
+		return entities;
+	}
+
 	void PrefabManager::OnPrefabAssetReload(std::shared_ptr<Asset> asset)
 	{
 		if (asset->GetType() == AssetType::PREFAB)
@@ -96,34 +131,10 @@ namespace Stimpi
 			if (scene)
 			{
 				std::shared_ptr<Prefab> prefab = AssetManager::GetAsset<Prefab>(prefabHandle);
-				auto entities = scene->FindAllPrefabEntities(prefabHandle);
+				auto entities = GetAllPrefabEntities(prefabHandle);
 				for (auto& entity : entities)
 				{
 					prefab->UpdateComponents(entity);
-				}
-			}
-		}
-
-	}
-
-	void PrefabManager::ConvertToPrefabEntity(Entity entity, AssetHandle prefabHandle, bool isRootObject)
-	{
-		if (!entity.HasComponent<PrefabComponent>())
-		{
-			PrefabComponent& prefabComponent = entity.AddComponent<PrefabComponent>(prefabHandle);
-			prefabComponent.m_PrefabEntityID = entity.GetComponent<UUIDComponent>().m_UUID;
-			prefabComponent.m_IsRootObject = isRootObject;
-
-			if (entity.HasComponent<HierarchyComponent>())
-			{
-				Scene* scene = entity.GetScene();
-				ST_CORE_ASSERT(!scene);
-
-				HierarchyComponent& hierarchyComponent = entity.GetComponent<HierarchyComponent>();
-				for (auto childUUID : hierarchyComponent.m_Children)
-				{
-					Entity child = scene->GetEntityByUUID(childUUID);
-					ConvertToPrefabEntity(child, prefabHandle, isRootObject);
 				}
 			}
 		}

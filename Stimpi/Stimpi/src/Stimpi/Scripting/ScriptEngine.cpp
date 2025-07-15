@@ -463,7 +463,7 @@ namespace Stimpi
 			mono_domain_finalize(s_Data->m_AppDomain, 2000);
 			mono_gc_collect(mono_gc_max_generation());
 
-			MonoException* exc = NULL;
+			MonoException* exc = nullptr;
 			mono_domain_try_unload(s_Data->m_AppDomain, (MonoObject**)&exc);
 
 			if (exc) {
@@ -617,8 +617,7 @@ namespace Stimpi
 			MonoClass* monoClass = GetClassInAssembly(assembly, nameSpace, name);
 			if (monoClass)
 			{
-				auto loadDetails = classDetails;
-				for (auto loadClass : loadDetails)
+				for (auto& loadClass : classDetails)
 				{
 					if ((loadClass.m_NamespaceName == nameSpace) && (loadClass.m_ClassName == name))
 					{

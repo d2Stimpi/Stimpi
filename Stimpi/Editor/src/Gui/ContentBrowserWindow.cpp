@@ -3,10 +3,10 @@
 #include "Stimpi/Asset/TextureImporter.h"
 #include "Stimpi/Asset/AssetManager.h"
 #include "Stimpi/Asset/Prefab.h"
-#include "Stimpi/Asset/PrefabManager.h"
 #include "Stimpi/Core/Project.h"
 #include "Stimpi/Log.h"
 #include "Stimpi/Scene/Entity.h"
+#include "Stimpi/Scene/EntityManager.h"
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Scene/Component.h"
 
@@ -494,7 +494,7 @@ namespace Stimpi
 					asset->Initialize(entity);
 					asset->Save(ResourceManager::GetAssetsPath() / metadata.m_FilePath);
 
-					PrefabManager::ConvertToPrefabEntity(entity, assetHandle, true);
+					EntityManager::ConvertToPrefabEntity(entity, assetHandle, true);
 				}
 			}
 

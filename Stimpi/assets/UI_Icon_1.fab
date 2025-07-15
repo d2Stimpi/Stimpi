@@ -1,0 +1,68 @@
+EntityList:
+  EntityData:
+    UUIDComponent:
+      UUID: 4365098979523029398
+    TagComponent:
+      Tag: UI_Icon_1
+    HierarchyComponent:
+      Parent: 0
+      Children:
+        - 623925547620880920
+    QuadComponent:
+      - 8
+      - 63
+      - 2
+      - 6
+      - 6
+      - 0
+    SpriteComponent:
+      AssetHandle: 0
+      Enabled: false
+      Color:
+        - 0.224144593
+        - 0.862745106
+        - 0.581009448
+        - 1
+    SortingGroupComponent:
+      SortingLayerName: UI
+      OrderInLayer: 0
+    ScriptComponent:
+      ScriptName: Demo.Icon
+      ScriptFields: {}
+  EntityData:
+    UUIDComponent:
+      UUID: 623925547620880920
+    TagComponent:
+      Tag: UI_Icon_2
+    HierarchyComponent:
+      Parent: 4365098979523029398
+      Children: []
+    QuadComponent:
+      - 15
+      - 63
+      - 2
+      - 6
+      - 6
+      - 0
+    SpriteComponent:
+      AssetHandle: 0
+      Enabled: false
+      Color:
+        - 0.349024415
+        - 0.857843161
+        - 0.633364201
+        - 1
+    SortingGroupComponent:
+      SortingLayerName: UI
+      OrderInLayer: 0
+    ScriptComponent:
+      ScriptName: Demo.Icon
+      ScriptFields: {}
+EntityHierarchy:
+  EntityHierarchyData:
+    Owner: 4365098979523029398
+    Children:
+      - 623925547620880920
+  EntityHierarchyData:
+    Owner: 623925547620880920
+    Children: []
