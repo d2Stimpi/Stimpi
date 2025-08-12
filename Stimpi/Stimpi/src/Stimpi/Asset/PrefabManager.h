@@ -16,6 +16,7 @@ namespace Stimpi
 		static Entity InstantiatePrefab(AssetHandle prefabHandle, glm::vec3 position = {-10000.0f, -10000.0f, -10.0f});
 
 		static bool IsEntityValidPrefab(Entity entity);
+
 		static Entity GetPrefabRootEntity(Entity entity);
 		static std::vector<Entity> GetAllPrefabEntities(const AssetHandle& prefabHandle);
 

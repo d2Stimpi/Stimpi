@@ -115,6 +115,27 @@ namespace Stimpi
 		outFile.close();
 	}
 
+	bool ResourceManager::CompareFileContent(const std::string& fileA, const std::string& fileB)
+	{
+		// TODO: add flag param to have more compare options: Raw, YAML, etc...
+
+		if (fileA != fileB)
+		{
+			YAML::Node dataA = YAML::LoadFile(fileA);
+			YAML::Node dataB = YAML::LoadFile(fileB);
+
+			if (dataA.IsDefined() && dataB.IsDefined())
+			{
+				return dataA == dataB;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
 
 	// TEMP test functions
 	void ResourceManager::Test()

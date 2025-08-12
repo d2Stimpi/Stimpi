@@ -258,7 +258,7 @@ namespace Stimpi
 	{
 		if (handler)
 		{
-			m_AssetReloadHandlers.erase(std::remove(m_AssetReloadHandlers.begin(), m_AssetReloadHandlers.end(), handler));
+			m_AssetReloadHandlers.erase(std::remove(m_AssetReloadHandlers.begin(), m_AssetReloadHandlers.end(), handler), m_AssetReloadHandlers.end());
 		}
 	}
 

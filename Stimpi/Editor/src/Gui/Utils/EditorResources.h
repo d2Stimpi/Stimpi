@@ -36,6 +36,9 @@ constexpr ImVec2 s_DefaultMediumIconSize = { 32.0f, 32.0f };
 // Colors
 constexpr ImVec4 s_BlueTextColor = { 0.26f, 0.62f, 1.0f, 1.0f };
 
+// Temp file paths
+constexpr const char* s_TempPrefabPath = "temp.fab";
+
 namespace Stimpi
 {
 	using EditorIcons = std::unordered_map<std::string, std::shared_ptr<Texture>>;

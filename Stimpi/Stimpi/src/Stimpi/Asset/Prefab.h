@@ -26,11 +26,12 @@ namespace Stimpi
 	class ST_API Prefab : public Asset
 	{
 	public:
+		Prefab() {}
 		Prefab(const std::string& name) : m_Name(name) {}
 		Prefab(const std::string& name, YAML::Node data);
 
 		void Initialize(Entity entity);
-		void Save(const FilePath& filePath);	// Consider moving to ExportAsset
+		void Save(const FilePath& filePath) const;	// Consider moving to ExportAsset
 
 		Entity CreateEntities(Scene* scene);
 		Entity CreateEntity(Scene* scene, UUID dataID, UUID parent);

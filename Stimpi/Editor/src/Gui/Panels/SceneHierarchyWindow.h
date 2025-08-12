@@ -50,6 +50,8 @@ namespace Stimpi
 
 		void SetPrefabDisplayMode(Entity prefab);
 		void SetSceneDisplayMode();
+		void RemoveInspectedPrefabEntity();
+		void CheckAndConfirmPrefabChanges();
 	private:
 		bool m_Show = true;
 		bool m_ShowInspect = true;

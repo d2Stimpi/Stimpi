@@ -58,7 +58,7 @@ namespace Stimpi
 
 	void SceneManager::NotifyOnSceneChange()
 	{
-		for (auto listener : m_OnSceneChangeListeners)
+		for (auto& listener : m_OnSceneChangeListeners)
 		{
 			listener();
 		}

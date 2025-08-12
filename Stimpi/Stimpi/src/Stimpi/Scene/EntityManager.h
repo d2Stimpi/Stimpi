@@ -22,5 +22,9 @@ namespace Stimpi
 
 		// Prefab related
 		static void ConvertToPrefabEntity(Entity entity, AssetHandle prefabHandle, bool isRootObject = false);
+
+		// Generic entity handling
+		static void RemoveEntity(Entity entity);
+		static std::vector<Entity> GetAllEntitiesInHierarchy(Entity parentEntity);
 	};
 }

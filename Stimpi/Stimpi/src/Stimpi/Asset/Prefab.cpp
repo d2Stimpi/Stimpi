@@ -43,7 +43,7 @@ namespace Stimpi
 		ParseAssetData();
 	}
 
-	void Prefab::Save(const FilePath& filePath)
+	void Prefab::Save(const FilePath& filePath) const
 	{
 		ResourceManager::Instance()->WriteToFile(filePath, m_Data);
 	}
@@ -81,7 +81,7 @@ namespace Stimpi
 	Entity Prefab::CreateEntity(Scene* scene, UUID dataID, UUID parent)
 	{
 		// Get the name of the entity
-		std::string name = "";
+		std::string name;
 		auto& data = m_EntityDataMap[dataID];
 		if ((*data)["TagComponent"])
 		{
@@ -240,7 +240,7 @@ namespace Stimpi
 			HierarchyComponent& component = entity.GetComponent<HierarchyComponent>();
 			if (!component.m_Children.empty())
 			{
-				for (auto childUUID : component.m_Children)
+				for (auto& childUUID : component.m_Children)
 				{
 					Entity child = scene->GetEntityByUUID(childUUID);
 					SerializeEntityPrefabData(child, out);
@@ -274,7 +274,7 @@ namespace Stimpi
 			HierarchyComponent& hierarchy = entity.GetComponent<HierarchyComponent>();
 			if (!hierarchy.m_Children.empty())
 			{
-				for (auto childUUID : hierarchy.m_Children)
+				for (auto& childUUID : hierarchy.m_Children)
 				{
 					Entity child = scene->GetEntityByUUID(childUUID);
 					SerializeEntityHierarchyData(child, out);

@@ -16,6 +16,7 @@
 #include "Stimpi/Core/InputManager.h"
 #include "Stimpi/Core/WindowManager.h"
 #include "Stimpi/Graphics/ShaderRegistry.h"
+#include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Entity.h"
 #include "Stimpi/Scene/EntityHierarchy.h"
@@ -49,7 +50,7 @@ namespace Stimpi
 
 		bool m_WindowFocused = false;
 
-		char m_SearchTextBuffer[64];
+		char m_SearchTextBuffer[64]{};
 		std::vector<Entity> m_FilteredEntites;
 
 		// Popup context data
@@ -96,7 +97,7 @@ namespace Stimpi
 		ScriptFieldFragment::RegisterScriptFieldFunctions();
 
 		OnSceneChangedListener onScneeChanged = [&]() {
-			ST_CORE_INFO("Scene change detected!");
+			ST_INFO("Scene change detected!");
 			m_ActiveScene = SceneManager::Instance()->GetActiveScene();
 			s_Context.m_SelectedEntity = {};
 		};
@@ -359,7 +360,7 @@ namespace Stimpi
 				{
 					Entity child = *(Entity*)data;
 					UUID dropUUID = child.GetComponent<UUIDComponent>().m_UUID;
-					ST_CORE_INFO("Dropped entity: {} - {} on {}", (uint32_t)child, (uint64_t)dropUUID, entityTag.c_str());
+					ST_INFO("Dropped entity: {} - {} on {}", (uint32_t)child, (uint64_t)dropUUID, entityTag.c_str());
 
 					EntityHierarchy::AddChild(entity, child);
 				});
@@ -431,6 +432,8 @@ namespace Stimpi
 			{
 				glm::vec3 pos = component.m_Position;
 				bool inputDone = false;
+
+				ImGui::BeginDisabled(s_Context.m_ActiveMode == ContentMode::PREFAB);
 				if (UI::Input::DragFloat3("Position##PositionQuad", pos, &inputDone, false))
 				{
 					glm::vec3 translate = pos - component.m_Position;
@@ -444,6 +447,7 @@ namespace Stimpi
 						CommandStack::Push(cmd);
 					}
 				}
+				ImGui::EndDisabled();
 
 				glm::vec2 size = component.m_Size;
 				if (UI::Input::DragFloat2("Size##SizeQuad", size, &inputDone, false))
@@ -480,7 +484,9 @@ namespace Stimpi
 			else
 			{
 				// If entity does not have a Hierarchy, change position directly
+				ImGui::BeginDisabled(s_Context.m_ActiveMode == ContentMode::PREFAB);
 				UI::Input::DragFloat3("Position##PositionQuad", component.m_Position);
+				ImGui::EndDisabled();
 				UI::Input::DragFloat2("Size##SizeQuad", component.m_Size);
 				//ImGui::PushItemWidth(45.0f);
 				UI::Input::DragFloat("Rotation##RotationQuad", component.m_Rotation, 0.01);
@@ -652,7 +658,7 @@ namespace Stimpi
 					AssetHandle handle = Project::GetEditorAssetManager()->GetAssetHandle(filePath);
 					if (!handle)
 					{
-						ST_CORE_INFO("Auto importing asset {}", filePath);
+						ST_INFO("Auto importing asset {}", filePath);
 						handle = Project::GetEditorAssetManager()->RegisterAsset({AssetType::TEXTURE, filePath});
 					}
 					component.m_TextureAssetHandle = handle;
@@ -662,7 +668,7 @@ namespace Stimpi
 			UIPayload::BeginTarget(PAYLOAD_TEXTURE, [&component](void* data, uint32_t size) {
 				AssetHandle handle = *(AssetHandle*)data;
 				AssetMetadata metadata = Project::GetEditorAssetManager()->GetAssetMetadata(handle);
-				ST_CORE_INFO("Texture data dropped: {}", metadata.m_FilePath.string());
+				ST_INFO("Texture data dropped: {}", metadata.m_FilePath.string());
 				component.m_TextureAssetHandle = handle;
 				});
 
@@ -773,7 +779,7 @@ namespace Stimpi
 			UIPayload::BeginTarget(PAYLOAD_ANIMATION, [&component](void* data, uint32_t size) {
 				AssetHandle handle = *(AssetHandle*)data;
 				AssetMetadata metadata = Project::GetEditorAssetManager()->GetAssetMetadata(handle);
-				ST_CORE_INFO("Texture data dropped: {0}", metadata.m_FilePath.string());
+				ST_INFO("Texture data dropped: {0}", metadata.m_FilePath.string());
 				component.SetDefailtAnimation(handle);
 				});
 
@@ -951,7 +957,7 @@ namespace Stimpi
 				UIPayload::BeginTarget(PAYLOAD_SHADER, [&component](void* data, uint32_t size) {
 					AssetHandle shaderHandle = *((AssetHandle*)data);
 					AssetMetadata metadata = Project::GetEditorAssetManager()->GetAssetMetadata(shaderHandle);
-					ST_CORE_INFO("Shader data dropped: {}", metadata.m_FilePath.string());
+					ST_INFO("Shader data dropped: {}", metadata.m_FilePath.string());
 					component.m_Material = std::make_shared<Material>(shaderHandle);
 					});
 
@@ -1549,14 +1555,13 @@ namespace Stimpi
 					auto prefab = AssetManager::GetAsset<Prefab>(prefabComponent.m_PrefabHandle);
 					if (prefab)
 					{
-						Entity rootPrefabEntity = PrefabManager::GetPrefabRootEntity(s_Context.m_HoveredEntity);
-						SetPrefabDisplayMode(rootPrefabEntity);
-
 						// Instead, create temp prefab instance for data editing purpose
 						// 1. Create prefab instance
 						Entity rootEntity = PrefabManager::InstantiatePrefab(prefabComponent.m_PrefabHandle);
 						
-						// 2. Set it as "rootPrefabEntity"
+						// 2. Set it as "rootPrefabEntity" for display mode
+						SetPrefabDisplayMode(rootEntity);
+
 						// 3. When exiting inspect prefab mode destroy temp instance
 						// 3a. Check for any changes and ask user to update prefab data before closing view
 						// 3b. What to do with the temp prefab instance when simulation starts/stops?
@@ -1586,24 +1591,65 @@ namespace Stimpi
 		}
 	}
 
-	void SceneHierarchyWindow::SetPrefabDisplayMode(Entity prefab)
+	void SceneHierarchyWindow::SetPrefabDisplayMode(Entity prefabEntity)
 	{
 		// Verify and set data before changing mode
-		if (PrefabManager::IsEntityValidPrefab(prefab))
+		if (PrefabManager::IsEntityValidPrefab(prefabEntity))
 		{
-			s_Context.m_ActiveMode = ContentMode::PREFAB;
-			s_Context.m_PrefabViewEntity = prefab;
+			// Clear the previously inspected temp entity data if still valid
+			RemoveInspectedPrefabEntity();
 
-			PrefabComponent& prefabComponent = prefab.GetComponent<PrefabComponent>();
-			s_Context.m_PrefabEntites = PrefabManager::GetAllPrefabEntities(prefabComponent.m_PrefabHandle);
+			s_Context.m_ActiveMode = ContentMode::PREFAB;
+			s_Context.m_PrefabViewEntity = prefabEntity;
+
+			s_Context.m_PrefabEntites = EntityManager::GetAllEntitiesInHierarchy(s_Context.m_PrefabViewEntity);
+			s_Context.m_PrefabEntites.push_back(s_Context.m_PrefabViewEntity);
 		}
 	}
 
 	void SceneHierarchyWindow::SetSceneDisplayMode()
 	{
+		// Clear temp prefab instance if still available
+		RemoveInspectedPrefabEntity();
+
 		s_Context.m_ActiveMode = ContentMode::SCENE;
 		s_Context.m_PrefabViewEntity = {};
 		s_Context.m_PrefabEntites.clear();
+	}
+
+	void SceneHierarchyWindow::RemoveInspectedPrefabEntity()
+	{
+		if (s_Context.m_PrefabViewEntity)
+		{
+			CheckAndConfirmPrefabChanges();
+			EntityManager::RemoveEntity(s_Context.m_PrefabViewEntity);
+		}
+	}
+
+	void SceneHierarchyWindow::CheckAndConfirmPrefabChanges()
+	{
+		if (PrefabManager::IsEntityValidPrefab(s_Context.m_PrefabViewEntity))
+		{
+			FilePath tempAssetDataPath = Project::GetResourcesSubdir(Project::Subdir::Misc) / s_TempPrefabPath;
+
+			// Prefab::Save will save only internal data, we need to make new temp Prefab and initialize it with temp data
+			std::shared_ptr<Prefab> tempPrefab = std::make_shared<Prefab>();
+			tempPrefab->Initialize(s_Context.m_PrefabViewEntity);
+			tempPrefab->Save(tempAssetDataPath);
+
+			// Compare temp saved prefab asset data with the original
+			PrefabComponent& component = s_Context.m_PrefabViewEntity.GetComponent<PrefabComponent>();
+			auto& metadata = Project::GetEditorAssetManager()->GetAssetMetadata(component.m_PrefabHandle);
+			FilePath prefabDataPath = Project::GetAssestsDir() / metadata.m_FilePath;
+			if (ResourceManager::Instance()->CompareFileContent(prefabDataPath, tempAssetDataPath))
+			{
+				ST_INFO("Prefab data not changed - todo handling");
+			}
+			else
+			{
+				ST_INFO("Prefab data was changed! - todo handling");
+			}
+		}
 	}
 
 }

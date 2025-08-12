@@ -181,4 +181,37 @@ namespace Stimpi
 		}
 	}
 
+	void EntityManager::RemoveEntity(Entity entity)
+	{
+		auto scene = entity.GetScene();
+		if (scene)
+		{
+			scene->RemoveEntity(entity);
+		}
+	}
+
+	// Does not include root "parent" entity
+	std::vector<Stimpi::Entity> EntityManager::GetAllEntitiesInHierarchy(Entity parentEntity)
+	{
+		std::vector<Entity> entities;
+
+		if (parentEntity.HasComponent<HierarchyComponent>())
+		{
+			Scene* scene = parentEntity.GetScene();
+			ST_CORE_ASSERT(!scene);
+
+			HierarchyComponent& hierarchyComponent = parentEntity.GetComponent<HierarchyComponent>();
+			for (auto& childUUID : hierarchyComponent.m_Children)
+			{
+				Entity child = scene->GetEntityByUUID(childUUID);
+				entities.push_back(child);
+
+				std::vector<Entity> childEntites = GetAllEntitiesInHierarchy(child);
+				entities.insert(entities.end(), childEntites.begin(), childEntites.end());
+			}
+		}
+
+		return entities;
+	}
+
 }
