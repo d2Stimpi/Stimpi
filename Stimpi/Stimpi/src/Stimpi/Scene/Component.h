@@ -113,7 +113,7 @@ namespace Stimpi
 		PrefabComponent() = default;
 		PrefabComponent(const PrefabComponent&) = default;
 		PrefabComponent(const AssetHandle& handle)
-			: m_PrefabHandle(handle) {}
+			: m_PrefabHandle(handle), m_PrefabEntityID(handle) {}
 
 		void Serialize(YAML::Emitter& out)
 		{
@@ -182,7 +182,7 @@ namespace Stimpi
 		QuadComponent(const glm::vec3& pos, const glm::vec2 size, float rotation = 0.0f)
 			: m_Position(pos), m_Size(size), m_Rotation(rotation) {}
 
-		glm::vec2 Center() { return glm::vec2(m_Position.x, m_Position.y); }
+		glm::vec2 Center() { return {m_Position.x, m_Position.y}; }
 
 		void Serialize(YAML::Emitter& out)
 		{
@@ -235,8 +235,8 @@ namespace Stimpi
 		{
 		}
 
-		operator glm::vec4() const { return glm::vec4(m_Position.x, m_Position.y, m_Size.x, m_Size.y); }
-		glm::vec2 Center() { return glm::vec2(m_Position.x, m_Position.y); }
+		operator glm::vec4() const { return {m_Position.x, m_Position.y, m_Size.x, m_Size.y}; }
+		glm::vec2 Center() { return {m_Position.x, m_Position.y}; }
 
 		float MaxRadius() { return m_Size.x > m_Size.y ? m_Size.x : m_Size.y; }
 
@@ -474,7 +474,7 @@ namespace Stimpi
 	{
 		uint32_t m_LayerIndex = 0;
 		uint32_t m_OrderInLayer = 0;
-		glm::vec3 m_Position;
+		glm::vec3 m_Position{};
 
 		DefaultGroupComponent()
 		{
@@ -1046,4 +1046,37 @@ namespace Stimpi
 	};
 }
 
-	
+
+// TODO: Reorganize stuff, maybe move Component impl to cpp file
+
+ST_API YAML::Emitter& operator<<(YAML::Emitter& out, const Stimpi::QuadComponent& quad);
+
+namespace YAML {
+	template<>
+	struct convert<Stimpi::QuadComponent> {
+		static Node encode(const Stimpi::QuadComponent& rhs) {
+			Node node;
+			node.push_back(rhs.m_Position.x);
+			node.push_back(rhs.m_Position.y);
+			node.push_back(rhs.m_Position.z);
+			node.push_back(rhs.m_Size.x);
+			node.push_back(rhs.m_Size.y);
+			node.push_back(rhs.m_Rotation);
+			return node;
+		}
+
+		static bool decode(const Node& node, Stimpi::QuadComponent& rhs) {
+			if (!node.IsSequence() || node.size() != 6) {
+				return false;
+			}
+
+			rhs.m_Position.x = node[0].as<float>();
+			rhs.m_Position.y = node[1].as<float>();
+			rhs.m_Position.z = node[2].as<float>();
+			rhs.m_Size.x	 = node[3].as<float>();
+			rhs.m_Size.y	 = node[4].as<float>();
+			rhs.m_Rotation	 = node[5].as<float>();
+			return true;
+		}
+	};
+}

@@ -200,3 +200,11 @@ namespace Stimpi
 	}
 
 }
+
+YAML::Emitter& operator<<(YAML::Emitter& out, const Stimpi::QuadComponent& quad)
+{
+	out << YAML::BeginSeq;
+	out << quad.m_Position.x << quad.m_Position.y << quad.m_Position.z << quad.m_Size.x << quad.m_Size.y << quad.m_Rotation;
+	out << YAML::EndSeq;
+	return out;
+}

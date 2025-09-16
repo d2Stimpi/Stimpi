@@ -35,7 +35,7 @@ namespace Stimpi
 		void WriteToFileAppend(const std::string& fileName, const char* data);
 		void WriteToFileAppend(const std::string& fileName, const YAML::Node& data);
 
-		bool CompareFileContent(const std::string& fileA, const std::string& fileB);
+		bool CompareYamlFileContent(const std::string& fileA, const std::string& fileB, const std::vector<std::string> ignoreKeys = {});
 
 		// TODO: tmp test
 		void Test();

@@ -5,6 +5,7 @@
 #include "Stimpi/Log.h"
 
 #include "Stimpi/Core/Project.h"
+#include "Stimpi/Utils/YamlUtils.h"
 
 #define DBG_LOG false
 
@@ -115,7 +116,7 @@ namespace Stimpi
 		outFile.close();
 	}
 
-	bool ResourceManager::CompareFileContent(const std::string& fileA, const std::string& fileB)
+	bool ResourceManager::CompareYamlFileContent(const std::string& fileA, const std::string& fileB, const std::vector<std::string> ignoreKeys)
 	{
 		// TODO: add flag param to have more compare options: Raw, YAML, etc...
 
@@ -126,7 +127,7 @@ namespace Stimpi
 
 			if (dataA.IsDefined() && dataB.IsDefined())
 			{
-				return dataA == dataB;
+				return YamlUtils::NodesEqual(dataA, dataB, ignoreKeys);
 			}
 			else
 			{

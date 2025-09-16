@@ -1641,14 +1641,30 @@ namespace Stimpi
 			PrefabComponent& component = s_Context.m_PrefabViewEntity.GetComponent<PrefabComponent>();
 			auto& metadata = Project::GetEditorAssetManager()->GetAssetMetadata(component.m_PrefabHandle);
 			FilePath prefabDataPath = Project::GetAssestsDir() / metadata.m_FilePath;
-			if (ResourceManager::Instance()->CompareFileContent(prefabDataPath, tempAssetDataPath))
+			if (ResourceManager::Instance()->CompareYamlFileContent(prefabDataPath, tempAssetDataPath, {"UUIDComponent", "TagComponent", "QuadComponent"}))
 			{
 				ST_INFO("Prefab data not changed - todo handling");
+				std::shared_ptr<Prefab> viewPrefab = AssetManager::GetAsset<Prefab>(component.m_PrefabHandle);
+				if (viewPrefab)
+				{
+					if (s_Context.m_PrefabViewEntity.HasComponent<QuadComponent>())
+					{
+						QuadComponent assetQuad = viewPrefab->GetAssetDataValue<QuadComponent>("QuadComponent");
+						QuadComponent entityQuad = s_Context.m_PrefabViewEntity.GetComponent<QuadComponent>();
+						// Check for other data than position since it is not relevant in this context
+						if ((assetQuad.m_Size != entityQuad.m_Size) || (assetQuad.m_Rotation != entityQuad.m_Rotation))
+						{
+							ST_INFO("Prefab data actually did changed - size/rotation");
+						}
+					}
+				}
 			}
 			else
 			{
 				ST_INFO("Prefab data was changed! - todo handling");
 			}
+
+			// TODO: manually check TagComponent ? and QuadComponent (skip position)
 		}
 	}
 

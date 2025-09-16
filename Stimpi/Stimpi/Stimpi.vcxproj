@@ -261,6 +261,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\VisualScripting\NNodeMethodRegistry.h" />
     <ClInclude Include="src\Stimpi\VisualScripting\NNodeNames.h" />
     <ClInclude Include="src\stpch.h" />
+    <ClInclude Include="src\Stimpi\Utils\YamlUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Asset\AnimationImporter.cpp" />
@@ -345,6 +346,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClCompile Include="src\stpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Utils\YamlUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GLAD\GLAD.vcxproj">

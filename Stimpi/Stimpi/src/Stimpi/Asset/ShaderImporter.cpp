@@ -42,7 +42,7 @@ namespace Stimpi
 			while (!shaderFile.eof())
 			{
 				std::getline(shaderFile, line);
-				if (line.compare("#fragment") == 0)
+				if (line == "#fragment")
 				{
 					readingFragmentShader = true;
 					continue;

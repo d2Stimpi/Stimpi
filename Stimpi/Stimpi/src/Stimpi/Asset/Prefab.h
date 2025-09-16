@@ -45,6 +45,18 @@ namespace Stimpi
 		std::string& GetName() { return m_Name; }
 		UUID GetRootEntityID() { return m_RootEntityUUID; }
 
+		// Reading asset data
+		template <typename T>
+		T GetAssetDataValue(const std::string& key)
+		{
+			T t;
+			if (m_Data[key])
+			{
+				t = m_Data[key].as<T>();
+			}
+			return t;
+		}
+
 		// Asset
 		static AssetType GetTypeStatic() { return AssetType::PREFAB; }
 		AssetType GetType() override { return GetTypeStatic(); }
@@ -67,4 +79,5 @@ namespace Stimpi
 		PrefabEntityMap m_EntityDataMap;
 		HierarchyMap m_HierarchyMap;
 	};
+
 }

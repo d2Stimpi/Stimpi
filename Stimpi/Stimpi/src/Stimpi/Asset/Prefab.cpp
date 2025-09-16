@@ -167,6 +167,9 @@ namespace Stimpi
 		UUID prefabDataUUID = entity.GetComponent<PrefabComponent>().m_PrefabEntityID;
 		BuildComponents(entity, m_EntityDataMap[prefabDataUUID]);
 
+		//Re-initialize internal "map" data with data from updated entity
+		//Initialize(entity);
+
 		// Restore the entity's position
 		if (entity.HasComponent<QuadComponent>())
 		{
@@ -214,7 +217,6 @@ namespace Stimpi
 	{
 		out << YAML::Key << "EntityData" << YAML::Value;
 		out << YAML::BeginMap;
-
 
 		SERIALIZE_ENTITY_COMPONENT(entity, UUIDComponent, out);
 		SERIALIZE_ENTITY_COMPONENT(entity, TagComponent, out);
@@ -288,6 +290,10 @@ namespace Stimpi
 		YAML::Node entityList = m_Data["EntityList"];
 		YAML::Node entityHierarchy = m_Data["EntityHierarchy"];
 
+		// Make sure that if present, old data is cleared
+		m_EntityDataMap.clear();
+		m_HierarchyMap.clear();
+
 		if (entityList.IsDefined() && entityHierarchy.IsDefined())
 		{
 			for (YAML::const_iterator it = entityList.begin(); it != entityList.end(); it++)
@@ -318,9 +324,9 @@ namespace Stimpi
 						UUID owner = hierarchyData["Owner"].as<UUIDType>();
 						std::vector<UUID> children;
 						YAML::Node childrenData = hierarchyData["Children"];
-						for (size_t i = 0; i < childrenData.size(); i++)
+						for (auto& i : childrenData)
 						{
-							children.push_back(childrenData[i].as<UUIDType>());
+							children.emplace_back(i.as<UUIDType>());
 						}
 						m_HierarchyMap[owner] = children;
 					}
