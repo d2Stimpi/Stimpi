@@ -214,4 +214,9 @@ namespace Stimpi
 		return entities;
 	}
 
+	void EntityManager::SubmitForRendering(std::vector<Entity>& entities)
+	{
+
+	}
+
 }

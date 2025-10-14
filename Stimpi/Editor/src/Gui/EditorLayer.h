@@ -13,6 +13,7 @@
 #include "Gui/ContentBrowserWindow.h"
 #include "Gui/SceneViewWindow.h"
 #include "Gui/Panels/SceneHierarchyWindow.h"
+#include "Gui/Panels/PrefabInspectWindow.h"
 #include "Gui/MainManuBar.h"
 #include "Gui/PlayPanel.h"
 #include "Gui/SpriteAnimPanel.h"
@@ -55,6 +56,7 @@ namespace Stimpi
 		SceneViewWindow m_SceneViewWindow;
 		SceneHierarchyWindow m_SceneHierarchyWindow;
 		ContentBrowserWindow m_ContentBrowserWindow;
+		PrefabInspectWindow m_PrefabInspectWindow;
 		
 		SpriteAnimPanel m_SpriteAnimPanel;
 

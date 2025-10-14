@@ -110,7 +110,7 @@ namespace Stimpi
 
 	private:
 		entt::registry m_Registry;
-		std::vector<Entity> m_Entities;
+		std::vector<Entity> m_Entities; // TODO: remove - not really used anywhere
 		std::unordered_map<UUID, Entity> m_EntityUUIDMap;
 		RuntimeState m_RuntimeState;
 

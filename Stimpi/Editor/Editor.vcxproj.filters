@@ -207,6 +207,9 @@
     <ClInclude Include="src\Gui\Utils\YamlCustomTypesEditor.h">
       <Filter>Gui\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\Gui\Panels\PrefabInspectWindow.h">
+      <Filter>Gui\Panels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
@@ -368,6 +371,9 @@
     </ClCompile>
     <ClCompile Include="src\Gui\Utils\YamlCustomTypesEditor.cpp">
       <Filter>Gui\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Panels\PrefabInspectWindow.cpp">
+      <Filter>Gui\Panels</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

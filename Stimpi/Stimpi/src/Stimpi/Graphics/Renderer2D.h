@@ -22,6 +22,8 @@
 #define RENDERER_DBG	(true)
 #define DEFAULT_LINE_WIDTH	(3.0f)
 
+#define DEFAULT_COLOR_CHANNEL_NUMBER	(4)
+
 namespace Stimpi
 {
 	class Entity;
@@ -58,9 +60,6 @@ namespace Stimpi
 
 		void SetLineWidth(float width);
 
-		// Custom Shader
-		//void Submit(glm::vec3 pos, glm::vec2 scale, float rotation, SubTexture* subtexture, Shader* shader);
-
 		// Event Callbacks
 		void ResizeCanvas(uint32_t width, uint32_t height);
 
@@ -73,9 +72,15 @@ namespace Stimpi
 		void DrawFrame();
 		void EndFrame();
 
+		void StartFrame(FrameBuffer* frameBuffer);
+		void EndFrame(FrameBuffer* frameBuffer);
+
 		// Custom shader handling
 		void RegisterShader(AssetHandle shaderHandle);
 		void UnregisterShader(AssetHandle shaderHandle);
+
+		// FrameBuffer handling
+		FrameBuffer* CreateFrameBuffer(uint32_t width, uint32_t height, uint32_t channles);
 
 		// To link with ImGui
 		FrameBuffer* GetFrameBuffer();

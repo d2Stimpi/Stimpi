@@ -433,7 +433,6 @@ namespace Stimpi
 				glm::vec3 pos = component.m_Position;
 				bool inputDone = false;
 
-				ImGui::BeginDisabled(s_Context.m_ActiveMode == ContentMode::PREFAB);
 				if (UI::Input::DragFloat3("Position##PositionQuad", pos, &inputDone, false))
 				{
 					glm::vec3 translate = pos - component.m_Position;
@@ -447,7 +446,6 @@ namespace Stimpi
 						CommandStack::Push(cmd);
 					}
 				}
-				ImGui::EndDisabled();
 
 				glm::vec2 size = component.m_Size;
 				if (UI::Input::DragFloat2("Size##SizeQuad", size, &inputDone, false))
@@ -484,9 +482,7 @@ namespace Stimpi
 			else
 			{
 				// If entity does not have a Hierarchy, change position directly
-				ImGui::BeginDisabled(s_Context.m_ActiveMode == ContentMode::PREFAB);
 				UI::Input::DragFloat3("Position##PositionQuad", component.m_Position);
-				ImGui::EndDisabled();
 				UI::Input::DragFloat2("Size##SizeQuad", component.m_Size);
 				//ImGui::PushItemWidth(45.0f);
 				UI::Input::DragFloat("Rotation##RotationQuad", component.m_Rotation, 0.01);

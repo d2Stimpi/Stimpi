@@ -810,7 +810,7 @@ namespace Stimpi
 	{
 		s_Data->m_EntityInstances.clear();
 
-		auto entities = s_Data->m_Scene->m_Entities;
+		auto& entities = s_Data->m_Scene->m_Entities;
 		for (Entity entity : entities)
 		{
 			if (entity.HasComponent<ScriptComponent>())

@@ -203,6 +203,7 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
     <ClInclude Include="src\Gui\Nodes\Nodes.h" />
     <ClInclude Include="src\Gui\Nodes\Variables\VariableGetNode.h" />
     <ClInclude Include="src\Gui\Nodes\Variables\VariableSetNode.h" />
+    <ClInclude Include="src\Gui\Panels\PrefabInspectWindow.h" />
     <ClInclude Include="src\Gui\Panels\SceneHierarchyWindow.h" />
     <ClInclude Include="src\Gui\Panels\ScriptFieldFragment.h" />
     <ClInclude Include="src\Gui\PlayPanel.h" />
@@ -260,6 +261,7 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
     <ClCompile Include="src\Gui\Nodes\NodeGraph.cpp" />
     <ClCompile Include="src\Gui\Nodes\Variables\VariableGetNode.cpp" />
     <ClCompile Include="src\Gui\Nodes\Variables\VariableSetNode.cpp" />
+    <ClCompile Include="src\Gui\Panels\PrefabInspectWindow.cpp" />
     <ClCompile Include="src\Gui\Panels\SceneHierarchyWindow.cpp" />
     <ClCompile Include="src\Gui\Panels\ScriptFieldFragment.cpp" />
     <ClCompile Include="src\Gui\PlayPanel.cpp" />

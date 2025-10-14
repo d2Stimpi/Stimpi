@@ -13,7 +13,7 @@
 
 /**
  * TODO: Consider making shader usage more flexible. Adding custom shader usage.
- * FIXME: Custom shader can fix pixel wobble effect (moving objects). 
+ * FIXME: Custom shader can fix pixel wobble effect (moving objects). ** this is actually due to editor screne size
  *   Cam.size / FB.siza (canvas) will be rounding factor or fix in shader.
  */
 
@@ -231,13 +231,13 @@ namespace Stimpi
 	void Renderer2D::Submit(glm::vec3 pos, glm::vec2 scale, float rotation, glm::vec4 color, Shader* shader, glm::vec2 minUV/*{ 0.0f, 0.0f }*/, glm::vec2 maxUV/*{ 1.0f, 1.0f }*/)
 	{
 		CheckShaderBatching(shader);
-		auto currentCmd = *m_ActiveRenderCmdIter;
+		auto currentCmd = (*m_ActiveRenderCmdIter).get();
 
 		// Check if some other type was used in active cmd
 		if (currentCmd->m_Type != RenderCommandType::QUAD && currentCmd->m_Type != RenderCommandType::NONE)
 		{
 			NewCmd();
-			currentCmd = *m_ActiveRenderCmdIter;
+			currentCmd = (*m_ActiveRenderCmdIter).get();
 		}
 
 		CheckCapacity();
@@ -245,17 +245,17 @@ namespace Stimpi
 		if ((currentCmd->m_Texture != nullptr) || (currentCmd->m_Shader != shader))
 		{
 			NewCmd();
-			currentCmd = *m_ActiveRenderCmdIter;
+			currentCmd = (*m_ActiveRenderCmdIter).get();
 		}
 
-		PushTransformedVertexData(currentCmd.get(), pos, scale, rotation, color, minUV, maxUV);
+		PushTransformedVertexData(currentCmd, pos, scale, rotation, color, minUV, maxUV);
 		currentCmd->m_Shader = shader;
 	}
 
 	void Renderer2D::SubmitCircle(glm::vec3 pos, glm::vec2 scale, glm::vec4 color, float thickness, float fade)
 	{
 		CheckBatchingByType(RenderCommandType::CIRLCE);
-		auto currentCmd = *m_ActiveRenderCmdIter;
+		auto currentCmd = (*m_ActiveRenderCmdIter).get();;
 		glm::vec2 minUV = { -1.0f, -1.0f };
 		glm::vec2 maxUV = { 1.0f, 1.0f };
 
@@ -265,7 +265,7 @@ namespace Stimpi
 		if (currentCmd->m_Type != RenderCommandType::CIRLCE && currentCmd->m_Type != RenderCommandType::NONE)
 		{
 			NewCmd();
-			currentCmd = *m_ActiveRenderCmdIter;
+			currentCmd = (*m_ActiveRenderCmdIter).get();;
 		}
 
 		// Set cmd data
@@ -295,7 +295,7 @@ namespace Stimpi
 	void Renderer2D::SubmitLine(glm::vec3 p0, glm::vec3 p1, glm::vec4 color)
 	{
 		CheckBatchingByType(RenderCommandType::LINE);
-		auto currentCmd = *m_ActiveRenderCmdIter;
+		auto currentCmd = (*m_ActiveRenderCmdIter).get();;
 
 		CheckCapacity();
 
@@ -303,7 +303,7 @@ namespace Stimpi
 		if (currentCmd->m_Type != RenderCommandType::LINE && currentCmd->m_Type != RenderCommandType::NONE)
 		{
 			NewCmd();
-			currentCmd = *m_ActiveRenderCmdIter;
+			currentCmd = (*m_ActiveRenderCmdIter).get();;
 		}
 
 		// Set cmd data
@@ -322,14 +322,14 @@ namespace Stimpi
 			return;
 
 		CheckMaterialBatching(material, subtexture->GetTexture());
-		auto currentCmd = *m_ActiveRenderCmdIter;
+		auto currentCmd = (*m_ActiveRenderCmdIter).get();;
 		auto shader = material->GetShader();
 
 		// Check if some other type was used in active cmd
 		if (currentCmd->m_Type != RenderCommandType::VARIABLE && currentCmd->m_Type != RenderCommandType::NONE)
 		{
 			NewCmd();
-			currentCmd = *m_ActiveRenderCmdIter;
+			currentCmd = (*m_ActiveRenderCmdIter).get();;
 			currentCmd->m_Texture = subtexture->GetTexture();
 			currentCmd->m_Shader = shader.get();
 			currentCmd->m_Material = material;
@@ -346,7 +346,7 @@ namespace Stimpi
 			currentCmd->m_Texture = subtexture->GetTexture();
 			currentCmd->m_Shader = shader.get();
 			currentCmd->m_Material = material;
-			PushTransformedCustomVertexData(entity, currentCmd.get(), pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+			PushTransformedCustomVertexData(entity, currentCmd, pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 
 			SetShaderUniforms(shader.get());
 		}
@@ -354,18 +354,18 @@ namespace Stimpi
 		{
 			// If shader or texture changed
 			NewCmd();
-			currentCmd = *m_ActiveRenderCmdIter;
+			currentCmd = (*m_ActiveRenderCmdIter).get();;
 			currentCmd->m_Texture = subtexture->GetTexture();
 			currentCmd->m_Shader = shader.get();
 			currentCmd->m_Material = material;
-			PushTransformedCustomVertexData(entity, currentCmd.get(), pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+			PushTransformedCustomVertexData(entity, currentCmd, pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 
 			SetShaderUniforms(shader.get());
 		}
 		else
 		{
 			// Batching vertex data
-			PushTransformedCustomVertexData(entity, currentCmd.get(), pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
+			PushTransformedCustomVertexData(entity, currentCmd, pos, scale, rotation, glm::vec4{ 1.0f }, subtexture->GetUVMin(), subtexture->GetUVMax());
 		}
 	}
 
@@ -434,7 +434,7 @@ namespace Stimpi
 
 	void Renderer2D::SetShaderUniforms(Shader* shader)
 	{
-		auto currnetCmd = *m_ActiveRenderCmdIter;
+		auto currnetCmd = (*m_ActiveRenderCmdIter).get();
 
 		if (shader == nullptr)
 			return;
@@ -460,6 +460,21 @@ namespace Stimpi
 		m_RenderAPI->SetViewport(0, 0, m_FrameBuffer->GetWidth(), m_FrameBuffer->GetHeight());
 		m_RenderAPI->Clear(0.5f, 0.5f, 0.5f, 1.0f);	 // TODO: make as param / configurable
 		m_RenderAPI->EnableBlend();
+	}
+
+	void Renderer2D::StartFrame(FrameBuffer* frameBuffer)
+	{
+		if (frameBuffer)
+		{
+			frameBuffer->BindBuffer();
+			m_RenderAPI->SetViewport(0, 0, frameBuffer->GetWidth(), frameBuffer->GetHeight());
+			m_RenderAPI->Clear(0.5f, 0.5f, 0.5f, 1.0f);	 // TODO: make as param / configurable
+			m_RenderAPI->EnableBlend();
+		}
+		else
+		{
+			ST_CORE_ERROR("StartFrame - invalid FrameBuffer used");
+		}
 	}
 
 	void Renderer2D::DrawFrame()
@@ -494,13 +509,34 @@ namespace Stimpi
 
 		// Clear Render commands
 		ClearRenderCommands();
+	}
 
-		// Clear Debug data
-		ShowDebugData();
-		m_LastFrameDrawCallCnt = m_DrawCallCnt;
-		m_LastFrameRenderedCmdCnt = m_RenderedCmdCnt;
-		m_DrawCallCnt = 0;
-		m_RenderedCmdCnt = 0;
+	void Renderer2D::EndFrame(FrameBuffer* frameBuffer)
+	{
+		// TODO: Combine two EndFrame methods into one
+		if (frameBuffer)
+		{
+			// Unbind stuff
+			frameBuffer->Unbind();
+			m_RenderAPI->UnbindTexture();
+
+			if (m_LocalRendering)	// If app handles rendering FB locally to window
+				RenderFrameBuffer();
+
+			// Clear Render commands
+			ClearRenderCommands();
+
+			// Clear Debug data
+			ShowDebugData();
+			m_LastFrameDrawCallCnt = m_DrawCallCnt;
+			m_LastFrameRenderedCmdCnt = m_RenderedCmdCnt;
+			m_DrawCallCnt = 0;
+			m_RenderedCmdCnt = 0;
+		}
+		else
+		{
+			ST_CORE_ERROR("EndFrame - invalid FrameBuffer used");
+		}
 	}
 
 	void Renderer2D::RegisterShader(AssetHandle shaderHandle)
@@ -530,8 +566,8 @@ namespace Stimpi
 	{
 		auto shader = AssetManager::GetAsset<Shader>(shaderHandle);
 		unsigned int shaderID = shader->GetShaderID();
-		auto vao = m_CustomVAOs[shaderID];
-		auto vbo = m_CustomVBOs[shaderID];
+		auto& vao = m_CustomVAOs[shaderID];
+		auto& vbo = m_CustomVBOs[shaderID];
 
 		if (vao != nullptr && vbo != nullptr)
 		{
@@ -547,6 +583,11 @@ namespace Stimpi
 			m_CustomShaders.erase(found);
 	}
 
+	Stimpi::FrameBuffer* Renderer2D::CreateFrameBuffer(uint32_t width, uint32_t height, uint32_t channles)
+	{
+		return FrameBuffer::CreateFrameBuffer({ width,  height, channles });
+	}
+
 	void Renderer2D::DrawQuadRenderCmd(std::shared_ptr<RenderCommand>& renderCmd)
 	{
 		auto shader = renderCmd->m_Shader;
@@ -556,7 +597,7 @@ namespace Stimpi
 			// We need to set uniforms now
 			for (auto& uni : shader->GetInfo().m_Uniforms)
 			{
-				auto values = renderCmd->m_Material->GetUniformValues();
+				auto& values = renderCmd->m_Material->GetUniformValues();
 				shader->SetUniform(uni.m_Name, values.at(uni.m_Name));
 			}
 		}
@@ -629,8 +670,8 @@ namespace Stimpi
 		shader->Use();
 		shader->SetBufferedUniforms();
 
-		auto customVAO = m_CustomVAOs.at(shaderID);
-		auto customVBO = m_CustomVBOs.at(shaderID);
+		auto& customVAO = m_CustomVAOs.at(shaderID);
+		auto& customVBO = m_CustomVBOs.at(shaderID);
 
 		customVAO->BindArray();
 		customVBO->BindBuffer();
@@ -698,8 +739,8 @@ namespace Stimpi
 
 	void Renderer2D::PrepareCustomShaderObjects(const unsigned int& shaderID)
 	{
-		auto vao = m_CustomVAOs[shaderID];
-		auto vbo = m_CustomVBOs[shaderID];
+		auto& vao = m_CustomVAOs[shaderID];
+		auto& vbo = m_CustomVBOs[shaderID];
 
 		if (vao != nullptr && vbo != nullptr)
 		{
@@ -716,7 +757,7 @@ namespace Stimpi
 
 	void Renderer2D::CheckCapacity()
 	{
-		auto currentCmd = *m_ActiveRenderCmdIter;
+		auto currentCmd = (*m_ActiveRenderCmdIter).get();
 		if (currentCmd->m_VertexCount >= VERTEX_CMD_CAPACITY)
 			NewCmd();
 	}	
@@ -847,7 +888,7 @@ namespace Stimpi
 			cmd->m_VertexSize = m_CustomVAOs.at(shaderID)->VertexSize();
 
 		// 1. Find SetShaderData node
-		auto execTree = cmd->m_Shader->GetCustomExecTree();
+		auto& execTree = cmd->m_Shader->GetCustomExecTree();
 		if (execTree)
 		{
 			auto foundShaderDataNode = std::find_if(execTree->m_Methods.begin(), execTree->m_Methods.end(), [](std::shared_ptr<Method>& item)

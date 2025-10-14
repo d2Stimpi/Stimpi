@@ -302,7 +302,7 @@ namespace Stimpi
 		glm::vec2 pickPos = { mousePos.x - winPos.x, winSize.y - (mousePos.y - winPos.y) };
 		glm::vec2 worldPos = SceneUtils::WindowToWorldPoint(camera, glm::vec2{ winSize.x, winSize.y }, pickPos);
 
-		return ImVec2(worldPos.x, worldPos.y);
+		return {worldPos.x, worldPos.y};
 	}
 
 }

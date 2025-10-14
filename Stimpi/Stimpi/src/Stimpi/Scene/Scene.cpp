@@ -72,7 +72,7 @@ namespace Stimpi
 		ST_PROFILE_FUNCTION();
 
 		// Workaround - Create 0 value Entity and never use it. Fixes check for valid Entity
-		m_Registry.create();
+		(void)m_Registry.create();
 		ComponentObserver::InitComponentObservers(m_Registry, this);
 
 		// Clear script instances - they are created in OnScriptConstruct

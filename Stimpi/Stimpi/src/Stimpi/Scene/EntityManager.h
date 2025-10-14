@@ -26,5 +26,8 @@ namespace Stimpi
 		// Generic entity handling
 		static void RemoveEntity(Entity entity);
 		static std::vector<Entity> GetAllEntitiesInHierarchy(Entity parentEntity);
+
+		// Render Entities
+		static void SubmitForRendering(std::vector<Entity>& entities);
 	};
 }

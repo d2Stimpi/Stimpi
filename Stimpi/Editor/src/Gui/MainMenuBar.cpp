@@ -22,6 +22,8 @@
 #include "Gui/Config/LayersConfigPanel.h"
 #include "Gui/Config/PhysicsConfigPanel.h"
 
+#include "Gui/Panels/PrefabInspectWindow.h"
+
 #include "ImGui/src/imgui.h"
 #include "ImGui/src/imgui_internal.h"
 
@@ -176,6 +178,11 @@ namespace Stimpi
 				if (ImGui::MenuItem("Node Panel", nullptr, NGraphPanel::IsVisible()))
 				{
 					NGraphPanel::ShowWindow(!NGraphPanel::IsVisible());
+				}
+
+				if (ImGui::MenuItem("Prefab inspector", nullptr, PrefabInspectWindow::IsVisible()))
+				{
+					PrefabInspectWindow::ShowWindow(!PrefabInspectWindow::IsVisible());
 				}
 
 				ImGui::EndMenu();
