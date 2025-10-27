@@ -1,8 +1,11 @@
 #include "stpch.h"
 #include "Stimpi/Scene/SceneManager.h"
 
+#include "Stimpi/Log.h"
 #include "Stimpi/Core/Project.h"
 #include "Stimpi/Scene/SceneSerializer.h"
+#include "Stimpi/Asset/AssetManager.h"
+#include "Stimpi/Asset/SceneAssetBuilder.h"
 
 namespace Stimpi
 {
@@ -26,7 +29,8 @@ namespace Stimpi
 	void SceneManager::NewScene()
 	{
 		m_ActiveScenePath = "";
-		m_ActiveScene.reset(new Scene());
+		m_ActiveScene = std::make_shared<Scene>();
+
 		NotifyOnSceneChange();
 	}
 
@@ -35,7 +39,7 @@ namespace Stimpi
 		if (filePath != "tmp.d2s")
 			m_ActiveScenePath = filePath;
 
-		m_ActiveScene.reset(new Scene());
+		m_ActiveScene = std::make_shared<Scene>();
 		m_ActiveScene->SetName(FilePath(filePath).GetFileNameStem());
 		SceneSerializer serializer(m_ActiveScene.get());
 		serializer.Deseriealize(filePath);
@@ -48,6 +52,15 @@ namespace Stimpi
 			m_ActiveScenePath = filePath;
 
 		SceneSerializer serializer(m_ActiveScene.get());
+		serializer.Serialize(filePath);
+	}
+
+	void SceneManager::SaveScene(Scene* scene, const FilePath& filePath)
+	{
+		if (filePath.GetFileName() != "tmp.d2s")
+			m_ActiveScenePath = filePath;
+
+		SceneSerializer serializer(scene);
 		serializer.Serialize(filePath);
 	}
 

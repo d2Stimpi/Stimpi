@@ -33,8 +33,30 @@ namespace Stimpi
 	class ComponentObserver
 	{
 	public:
-		static void InitComponentObservers(entt::registry& reg, Scene* scene);
-		static void DeinitConstructObservers(entt::registry& reg);
+		void InitComponentObservers(entt::registry& reg, Scene* scene);
+		void DeinitConstructObservers(entt::registry& reg);
+
+		void OnQuadConstruct(entt::registry& reg, entt::entity ent);
+		void OnQuadDestruct(entt::registry& reg, entt::entity ent);
+		void OnCircleConstruct(entt::registry& reg, entt::entity ent);
+		void OnCircleDestruct(entt::registry& reg, entt::entity ent);
+		void OnCameraConstruct(entt::registry& reg, entt::entity ent);
+		void OnCameraDestruct(entt::registry& reg, entt::entity ent);
+		void OnScriptConstruct(entt::registry& reg, entt::entity ent);
+		void OnScriptDestruct(entt::registry& reg, entt::entity ent);
+		void OnSpriteConstruct(entt::registry& reg, entt::entity ent);
+		void OnSpriteDestruct(entt::registry& reg, entt::entity ent);
+		void OnAnimatedSpriteConstruct(entt::registry& reg, entt::entity ent);
+		void OnAnimatedSpriteDestruct(entt::registry& reg, entt::entity ent);
+		void OnRigidBody2DConstruct(entt::registry& reg, entt::entity ent);
+		void OnRigidBody2DDestruct(entt::registry& reg, entt::entity ent);
+		void OnSortingGroupConstruct(entt::registry& reg, entt::entity ent);
+		void OnSortingGroupDestruct(entt::registry& reg, entt::entity ent);
+		void OnDefaultGroupComponentConstruct(entt::registry& reg, entt::entity ent);
+		void OnDefaultGroupComponentDestruct(entt::registry& reg, entt::entity ent);
+
+	private:
+		Scene* m_Scene = nullptr;
 	};
 
 	struct UUIDComponent
@@ -790,6 +812,40 @@ namespace Stimpi
 		ScriptComponent(const std::string& scriptName)
 			: m_ScriptName(scriptName)
 		{
+		}
+
+		// Internal use only, for saving field values when reloading assembly
+		YAML::Node m_FieldsSnapshot;
+
+		void MakeFieldDataSnapshot()
+		{
+			YAML::Emitter out;
+
+			out << YAML::BeginMap;
+			if (m_ScriptInstance)
+			{
+				out << YAML::Key << "ScriptFields";
+				out << YAML::BeginMap;
+				{
+					auto& fields = m_ScriptInstance->GetFields();
+					auto& object = m_ScriptInstance->GetInstance();
+					for (auto& item : fields)
+					{
+						auto& field = item.second;
+						ScriptSeriaizer::SerializeScriptField(out, object.get(), field.get());
+					}
+				}
+				out << YAML::EndMap;
+			}
+			out << YAML::EndMap;
+
+			ST_CORE_INFO(out.c_str());
+			m_FieldsSnapshot = YAML::Load(out.c_str());
+		}
+
+		void RestoreFiledData()
+		{
+			PopulateScriptInstanceData(m_FieldsSnapshot);
 		}
 
 		void Serialize(YAML::Emitter& out)

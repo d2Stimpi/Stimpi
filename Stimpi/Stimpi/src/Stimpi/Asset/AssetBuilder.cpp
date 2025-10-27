@@ -2,6 +2,7 @@
 #include "Stimpi/Asset/AssetBuilder.h"
 
 #include "Stimpi/Asset/PrefabAssetBuilder.h"
+#include "Stimpi/Asset/SceneAssetBuilder.h"
 
 namespace Stimpi
 {
@@ -10,7 +11,8 @@ namespace Stimpi
 
 	std::unordered_map<AssetType, AssetBuilderFunction> s_AssetBuilders =
 	{
-		{ AssetType::PREFAB, PrefabAssetBuilder::CreatePrefabAsset }
+		{ AssetType::PREFAB, PrefabAssetBuilder::CreatePrefabAsset },
+		{ AssetType::SCENE, SceneAssetBuilder::CreateSceneAsset }
 	};
 
 	std::shared_ptr<Asset> AssetBuilder::CreateAsset(AssetMetadata& metadata)

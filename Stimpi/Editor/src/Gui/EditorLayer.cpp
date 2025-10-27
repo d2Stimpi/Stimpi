@@ -126,6 +126,8 @@ namespace Stimpi
 		// Prefab asset update handler registration
 		auto assetManager = Project::GetEditorAssetManager();
 		assetManager->RegisterAssetReloadHandler(new AssetReloadHandler(PrefabManager::OnPrefabAssetReload));
+
+		m_SceneHierarchyWindow.SetPrefabInspectorWindowRef(&m_PrefabInspectWindow);
 	}
 
 	EditorLayer::~EditorLayer()
@@ -293,7 +295,7 @@ namespace Stimpi
 		/* Scene Hierarchy */
 		m_SceneHierarchyWindow.OnImGuiRender();
 		/* Prefab Inspector */
-		m_PrefabInspectWindow.OnImGuiRender();
+		m_PrefabInspectWindow.OnImGuiRender(ts);
 		/* Sprite & Animation */
 		m_SpriteAnimPanel.OnUpdate(ts);
 		m_SpriteAnimPanel.OnImGuiRender();
@@ -318,8 +320,8 @@ namespace Stimpi
 		}
 
 		// Custom Rendering stuff
-		auto canvasWidth = Stimpi::Renderer2D::Instance()->GetCanvasWidth();
-		auto canvasHeight = Stimpi::Renderer2D::Instance()->GetCanvasHeight();
+		auto canvasWidth = Renderer2D::Instance()->GetCanvasWidth();
+		auto canvasHeight = Renderer2D::Instance()->GetCanvasHeight();
 
 		m_BackgroundCamera->Resize(0.0f, canvasWidth, 0.0f, canvasHeight);
 		m_ShaderChecker->SetUniform("u_Projection", m_BackgroundCamera->GetProjectionMatrix());

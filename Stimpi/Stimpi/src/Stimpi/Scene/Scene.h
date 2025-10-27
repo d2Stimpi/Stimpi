@@ -22,6 +22,7 @@ namespace Stimpi
 {
 	class Entity;
 	class ContactListener;
+	class ComponentObserver;
 
 	enum class RuntimeState { STOPPED = 0, RUNNING, PAUSED };
 
@@ -44,6 +45,7 @@ namespace Stimpi
 		std::vector<Entity> FindAllEntitiesByName(std::string_view name);
 		bool RemoveEntity(Entity entity);
 		bool RemoveEntity(entt::entity handle);
+		void RemoveAllEntites();
 		bool IsEntityValid(Entity entity);
 
 		Entity CopyEntity(const Entity entity);
@@ -124,8 +126,10 @@ namespace Stimpi
 
 		// Physics
 		b2World* m_PhysicsWorld = nullptr;
-		std::shared_ptr <ContactListener> m_ContactListener;
+		std::shared_ptr<ContactListener> m_ContactListener;
 		std::unordered_map<uint32_t, bool> m_PhysicsStateToBeChanged;
+
+		std::shared_ptr<ComponentObserver> m_ComponentObserver;
 
 		friend class Entity;
 		friend class EntityManager;

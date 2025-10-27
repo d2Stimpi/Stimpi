@@ -22,7 +22,7 @@ namespace Stimpi
 		out << YAML::Key << "Scene" << YAML::Value;
 
 		out << YAML::BeginMap;
-		for (auto entity : m_Scene->m_Entities)
+		for (auto& entity : m_Scene->m_Entities)
 		{
 			out << YAML::Key << "Entity" << YAML::Value;
 			entity.Serialize(out);

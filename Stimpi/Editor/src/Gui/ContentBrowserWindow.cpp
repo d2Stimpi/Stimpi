@@ -44,7 +44,7 @@ namespace Stimpi
 		ContentMode m_Mode = ContentMode::FILESYSTEM;
 		ThumbanailPopupContext m_ThumbnailPopupContext;
 		PrefabPopupContext m_PrefabPopupContext;
-		char m_SearchTextBuffer[64];
+		char m_SearchTextBuffer[64]{};
 
 		// Content browser used Textures
 		std::shared_ptr<Texture> m_FolderTexture;
@@ -259,7 +259,9 @@ namespace Stimpi
 			}
 			if (relativePath.extension().string() == ".d2s")
 			{
-				UIPayload::BeginSource(PAYLOAD_SCENE, path.string().c_str(), path.string().length(), filenameStr.c_str());
+				AssetHandle handle = Project::GetEditorAssetManager()->GetAssetHandle(relativePath);
+				UIPayload::BeginSource(PAYLOAD_SCENE, &handle, sizeof(AssetHandle), filenameStr.c_str());
+				//UIPayload::BeginSource(PAYLOAD_SCENE, path.string().c_str(), path.string().length(), filenameStr.c_str());
 			}
 			if (relativePath.extension().string() == ".anim")
 			{

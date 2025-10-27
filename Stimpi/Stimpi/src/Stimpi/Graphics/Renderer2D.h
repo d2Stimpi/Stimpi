@@ -72,7 +72,7 @@ namespace Stimpi
 		void DrawFrame();
 		void EndFrame();
 
-		void StartFrame(FrameBuffer* frameBuffer);
+		void StartFrame(FrameBuffer* frameBuffer, glm::vec4 bgColor = { 0.13f, 0.135f, 0.14f, 1.0f });
 		void EndFrame(FrameBuffer* frameBuffer);
 
 		// Custom shader handling

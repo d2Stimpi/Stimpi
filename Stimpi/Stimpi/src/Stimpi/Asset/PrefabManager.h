@@ -14,6 +14,7 @@ namespace Stimpi
 	{
 	public:
 		static Entity InstantiatePrefab(AssetHandle prefabHandle, glm::vec3 position = {-10000.0f, -10000.0f, -10.0f});
+		static Entity InstantiatePrefab(Scene* scene, AssetHandle prefabHandle, glm::vec3 position);
 
 		static bool IsEntityValidPrefab(Entity entity);
 

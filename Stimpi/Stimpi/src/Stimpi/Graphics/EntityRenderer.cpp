@@ -48,7 +48,7 @@ namespace Stimpi
 					return lhs.m_LayerIndex < rhs.m_LayerIndex;
 				});
 		}
-		/**/
+		/*
 		Renderer2D::Instance()->BeginScene(m_RenderCamera->GetOrthoCamera());
 		auto layeredView = registry.view<DefaultGroupComponent, QuadComponent>();
 		layeredView.use<DefaultGroupComponent>();

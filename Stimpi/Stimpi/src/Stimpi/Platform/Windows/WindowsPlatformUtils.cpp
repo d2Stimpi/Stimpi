@@ -41,7 +41,7 @@ namespace Stimpi
 		{
 			return ofn.lpstrFile;
 		}
-		return std::string();
+		return {};
 	}
 
 	std::string FileDialogs::SaveFile(const char* filter)
@@ -62,7 +62,7 @@ namespace Stimpi
 		{
 			return ofn.lpstrFile;
 		}
-		return std::string();
+		return {};
 	}
 
 	std::string FileDialogs::OpenFolder()
@@ -85,7 +85,7 @@ namespace Stimpi
 			return szPath;
 		}
 
-		return std::string();
+		return {};
 	}
 
 	bool ShellUtils::ChangeNotifyRegister(const char* path, unsigned long* handle)

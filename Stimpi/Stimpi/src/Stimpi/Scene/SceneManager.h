@@ -24,14 +24,18 @@ namespace Stimpi
 		FilePath GetActiveScenePath() { return m_ActiveScenePath; }
 
 		void NewScene();
+		// Loading Scene means deserialize asset data and present the Scene as "Active"
 		void LoadScene(const std::string& filePath);
 		void SaveScene(const std::string& filePath);
+		void SaveScene(Scene* scene, const FilePath& filePath); //TODO: remove once scene registry is used
 
-		void LoadStartingScene();
+		void LoadStartingScene(); // TODO: also populate SceneRegistry based on AssetRegistry
 
 		void RegisterOnSceneChangeListener(OnSceneChangedListener listener) { m_OnSceneChangeListeners.emplace_back(listener); }
+	
 	private:
 		void NotifyOnSceneChange();
+
 	private:
 		std::shared_ptr<Scene> m_ActiveScene;
 		FilePath m_ActiveScenePath;

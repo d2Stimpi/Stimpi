@@ -61,6 +61,9 @@ namespace Stimpi
 		Entity m_PrefabViewEntity = {};
 		std::vector<Entity> m_PrefabEntites;
 
+		// Reference to prefab inspector window
+		PrefabInspectWindow* m_PrefabInspectWindow{};
+
 		SceneHierarchyWindowContext()
 		{
 			memset(m_SearchTextBuffer, 0, sizeof(m_SearchTextBuffer));
@@ -264,6 +267,11 @@ namespace Stimpi
 	Entity SceneHierarchyWindow::GetSelectedEntity()
 	{
 		return s_Context.m_SelectedEntity;
+	}
+
+	void SceneHierarchyWindow::SetPrefabInspectorWindowRef(PrefabInspectWindow* window)
+	{
+		s_Context.m_PrefabInspectWindow = window;
 	}
 
 	void SceneHierarchyWindow::ComponentInspectorWidget()
@@ -1563,6 +1571,12 @@ namespace Stimpi
 						// 3b. What to do with the temp prefab instance when simulation starts/stops?
 						//		- set disabled flag for Render component
 						//		- set disabled flag for Script component (TODO: add the flag)
+
+						// New stuff, TODO: remove prefabViewEntity related code from here and move it to PrefabInspectWinodw
+						if (s_Context.m_PrefabInspectWindow)
+						{
+							s_Context.m_PrefabInspectWindow->SetPrefabEntity(prefabComponent.m_PrefabHandle);
+						}
 					}
 				}
 			}

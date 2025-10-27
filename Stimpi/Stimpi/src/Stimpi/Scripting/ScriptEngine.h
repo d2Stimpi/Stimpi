@@ -74,6 +74,7 @@ namespace Stimpi
 
 		static void ReloadAssembly();
 		static void ReloadAssetAssembly(const std::filesystem::path& assetPath);
+		static void MakeInstanceDataSnapshot();
 
 		static bool HasScriptClass(const std::string& className);	// Not used
 		static std::shared_ptr<ScriptClass> GetScriptClassByName(const std::string& className);

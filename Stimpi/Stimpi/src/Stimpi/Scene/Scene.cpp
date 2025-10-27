@@ -73,11 +73,12 @@ namespace Stimpi
 
 		// Workaround - Create 0 value Entity and never use it. Fixes check for valid Entity
 		(void)m_Registry.create();
-		ComponentObserver::InitComponentObservers(m_Registry, this);
+		m_ComponentObserver = std::make_shared<ComponentObserver>();
+		m_ComponentObserver->InitComponentObservers(m_Registry, this);
 
 		// Clear script instances - they are created in OnScriptConstruct
 		// Fixme / TODO: this following call prevents having multiple scenes active at the same time
-		ScriptEngine::ClearScriptInstances();
+		//ScriptEngine::ClearScriptInstances();
 
 		m_RuntimeState = RuntimeState::STOPPED;
 		m_DefaultShader = ShaderImporter::LoadShader(Project::GetResourcesDir() / "shaders\/shader.shader");
@@ -142,7 +143,7 @@ namespace Stimpi
 	{
 		ST_PROFILE_FUNCTION();
 
-		ComponentObserver::DeinitConstructObservers(m_Registry);
+		m_ComponentObserver->DeinitConstructObservers(m_Registry);
 	}
 
 	void Scene::OnUpdate(Timestep ts)
@@ -406,6 +407,11 @@ namespace Stimpi
 	{
 		Entity entity = Entity{ handle, this };
 		return RemoveEntity(entity);
+	}
+
+	void Scene::RemoveAllEntites()
+	{
+		m_Registry.clear();
 	}
 
 	bool Scene::IsEntityValid(Entity entity)

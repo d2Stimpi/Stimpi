@@ -462,13 +462,13 @@ namespace Stimpi
 		m_RenderAPI->EnableBlend();
 	}
 
-	void Renderer2D::StartFrame(FrameBuffer* frameBuffer)
+	void Renderer2D::StartFrame(FrameBuffer* frameBuffer, glm::vec4 bgColor)
 	{
 		if (frameBuffer)
 		{
 			frameBuffer->BindBuffer();
 			m_RenderAPI->SetViewport(0, 0, frameBuffer->GetWidth(), frameBuffer->GetHeight());
-			m_RenderAPI->Clear(0.5f, 0.5f, 0.5f, 1.0f);	 // TODO: make as param / configurable
+			m_RenderAPI->Clear(bgColor.r, bgColor.g, bgColor.b, bgColor.a);
 			m_RenderAPI->EnableBlend();
 		}
 		else

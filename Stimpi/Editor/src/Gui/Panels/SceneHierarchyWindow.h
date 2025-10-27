@@ -3,6 +3,8 @@
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/Scene.h"
 
+#include "Gui/Panels/PrefabInspectWindow.h"
+
 #include "ImGui/src/imgui.h"
 
 namespace Stimpi
@@ -19,6 +21,8 @@ namespace Stimpi
 
 		static void SetPickedEntity(Entity picked);
 		static Entity GetSelectedEntity();
+
+		void SetPrefabInspectorWindowRef(PrefabInspectWindow* window);
 
 	private:
 		void ComponentInspectorWidget();

@@ -42,6 +42,35 @@ namespace Stimpi
 		return {};
 	}
 
+	Stimpi::Entity PrefabManager::InstantiatePrefab(Scene* scene, AssetHandle prefabHandle, glm::vec3 position)
+	{
+		if (prefabHandle)
+		{
+			if (scene)
+			{
+				Entity rootEntity = scene->CreateEntity(prefabHandle);
+				if (rootEntity)
+				{
+					if (rootEntity.HasComponent<QuadComponent>())
+					{
+						QuadComponent& quad = rootEntity.GetComponent<QuadComponent>();
+						// Center the entity to the passed position.
+						EntityManager::Translate(rootEntity, { position.x - quad.m_Position.x, position.y - quad.m_Position.y, 0.0f });
+					}
+					else
+					{
+						// In case the root entity is used only for grouping multiple pieces.
+						// Make sure to move all child entities.
+						EntityManager::Translate(rootEntity, { position.x, position.y, 0.0f });
+					}
+				}
+				return rootEntity;
+			}
+		}
+
+		return {};
+	}
+
 	bool PrefabManager::IsEntityValidPrefab(Entity entity)
 	{
 		if (entity && entity.HasComponent<PrefabComponent>())
