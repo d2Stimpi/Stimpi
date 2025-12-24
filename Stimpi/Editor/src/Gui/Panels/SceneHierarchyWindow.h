@@ -51,6 +51,7 @@ namespace Stimpi
 
 		void CreateEntityPopup();
 		void HoveredEntityPopup();
+		void ConfirmPrefabChangesPopup();
 
 		void SetPrefabDisplayMode(Entity prefab);
 		void SetSceneDisplayMode();

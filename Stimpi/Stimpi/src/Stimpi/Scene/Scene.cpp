@@ -295,7 +295,8 @@ namespace Stimpi
 		Timestep ts = Time::Instance()->GetFrameTime();
 
 		// Update Scripts
-		UpdateScripts(ts);
+		if (m_EnableScripting)
+			UpdateScripts(ts);
 
 		// Physics
 		UpdatePhysicsSimulation(ts);
@@ -451,7 +452,10 @@ namespace Stimpi
 	{
 		ST_PROFILE_FUNCTION();
 
-		InitializeScripts();
+
+		if (m_EnableScripting)
+			InitializeScripts();
+
 		InitializePhysics();
 
 		m_Registry.view<CameraComponent>().each([=](auto entity, auto& ncs)
@@ -489,7 +493,9 @@ namespace Stimpi
 	{
 		ST_PROFILE_FUNCTION();
 
-		DeinitializeScritps();
+		if (m_EnableScripting)
+			DeinitializeScritps();
+
 		DeinitializePhysics();
 
 		// Update Scene state last

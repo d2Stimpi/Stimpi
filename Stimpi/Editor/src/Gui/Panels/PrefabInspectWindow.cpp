@@ -9,6 +9,9 @@
 #include "Stimpi/Scene/Entity.h"
 #include "Stimpi/Scene/Camera.h"
 
+#include "Gui/Components/Toolbar.h"
+#include "Gui/Gizmo2D.h"
+
 namespace Stimpi
 {
 	bool PrefabInspectWindow::m_Show = false;
@@ -16,6 +19,7 @@ namespace Stimpi
 	struct PrefabInspectWindowContext
 	{
 		std::shared_ptr<Scene> m_Scene{};
+		Entity m_PrefabEntity{};
 		std::shared_ptr<Camera> m_Camera{};
 		std::shared_ptr<FrameBuffer> m_FrameBuffer;
 	};
@@ -30,6 +34,7 @@ namespace Stimpi
 
 		s_Context.m_Scene = std::make_shared<Scene>();
 		s_Context.m_Scene->SetCamera(s_Context.m_Camera.get());
+		s_Context.m_Scene->SetScriptingEnabled(false);
 	}
 
 	PrefabInspectWindow::~PrefabInspectWindow()
@@ -107,7 +112,17 @@ namespace Stimpi
 	void PrefabInspectWindow::SetPrefabEntity(AssetHandle prefabHandle)
 	{
 		s_Context.m_Scene->RemoveAllEntites();
-		PrefabManager::InstantiatePrefab(s_Context.m_Scene.get(), prefabHandle, {0.0f, 0.0f, 0.0f});
+		s_Context.m_PrefabEntity = PrefabManager::InstantiatePrefab(s_Context.m_Scene.get(), prefabHandle, {0.0f, 0.0f, 0.0f});
+	}
+
+	Stimpi::Entity PrefabInspectWindow::GetPrefabEntity()
+	{
+		return s_Context.m_PrefabEntity;
+	}
+
+	Stimpi::Scene* PrefabInspectWindow::GetScene()
+	{
+		return s_Context.m_Scene.get();
 	}
 
 }

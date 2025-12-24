@@ -7,6 +7,9 @@
 
 namespace Stimpi
 {
+	class Entity;
+	class Scene;
+
 	class PrefabInspectWindow
 	{
 	public:
@@ -19,6 +22,8 @@ namespace Stimpi
 		static bool IsVisible();
 
 		void SetPrefabEntity(AssetHandle prefabHandle);
+		Entity GetPrefabEntity();
+		Scene* GetScene();
 
 	private:
 		static bool m_Show;

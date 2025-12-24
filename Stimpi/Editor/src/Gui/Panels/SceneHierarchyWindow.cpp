@@ -64,6 +64,9 @@ namespace Stimpi
 		// Reference to prefab inspector window
 		PrefabInspectWindow* m_PrefabInspectWindow{};
 
+		// Prefab change confirmation modal dialog data
+		std::shared_ptr<Prefab> m_ModalPopupPrefab;
+
 		SceneHierarchyWindowContext()
 		{
 			memset(m_SearchTextBuffer, 0, sizeof(m_SearchTextBuffer));
@@ -207,10 +210,12 @@ namespace Stimpi
 
 					if (ImGuiEx::PrefabHeaderIcon(prefab->GetName()))
 					{
-						SetSceneDisplayMode();
+						// Goes back to Scene display mode when pressing the icon
+						// First we check if prefab data has changed, before changing the display mode
+						CheckAndConfirmPrefabChanges();
 					}
 
-					std::vector<Entity>& entities = strlen(s_Context.m_SearchTextBuffer) > 0 ? s_Context.m_FilteredEntites : s_Context.m_PrefabEntites;
+					std::vector<Entity>& entities = strlen(s_Context.m_SearchTextBuffer) > 0 ? s_Context.m_FilteredEntites : s_Context.m_PrefabInspectWindow->GetScene()->m_Entities;
 
 					for (auto& entity : entities)
 					{
@@ -247,6 +252,7 @@ namespace Stimpi
 				}
 
 				HoveredEntityPopup();
+				ConfirmPrefabChangesPopup();
 
 				ImGui::EndChild();
 			}
@@ -319,7 +325,7 @@ namespace Stimpi
 	{
 		if (!entity)
 		{
-			ST_ERROR("[SceneHierarchyWindow::DrawTreeNode] Invalud entity!");
+			ST_ERROR("[SceneHierarchyWindow::DrawTreeNode] Invalid entity!");
 			return;
 		}
 
@@ -379,6 +385,7 @@ namespace Stimpi
 			{
 				for (auto& child : entity.GetComponent<HierarchyComponent>().m_Children)
 				{
+					//auto scene = entity.GetScene();
 					auto& childEntity = m_ActiveScene->m_EntityUUIDMap[child];
 					DrawTreeNode(childEntity);
 				}
@@ -1561,10 +1568,10 @@ namespace Stimpi
 					{
 						// Instead, create temp prefab instance for data editing purpose
 						// 1. Create prefab instance
-						Entity rootEntity = PrefabManager::InstantiatePrefab(prefabComponent.m_PrefabHandle);
+						//Entity rootEntity = PrefabManager::InstantiatePrefab(prefabComponent.m_PrefabHandle);
 						
 						// 2. Set it as "rootPrefabEntity" for display mode
-						SetPrefabDisplayMode(rootEntity);
+						//SetPrefabDisplayMode(rootEntity);
 
 						// 3. When exiting inspect prefab mode destroy temp instance
 						// 3a. Check for any changes and ask user to update prefab data before closing view
@@ -1576,6 +1583,8 @@ namespace Stimpi
 						if (s_Context.m_PrefabInspectWindow)
 						{
 							s_Context.m_PrefabInspectWindow->SetPrefabEntity(prefabComponent.m_PrefabHandle);
+							Entity inspectedEntity = s_Context.m_PrefabInspectWindow->GetPrefabEntity();
+							SetPrefabDisplayMode(inspectedEntity);
 						}
 					}
 				}
@@ -1601,6 +1610,38 @@ namespace Stimpi
 		}
 	}
 
+	void SceneHierarchyWindow::ConfirmPrefabChangesPopup()
+	{
+		if (ImGui::BeginPopupModal("ConfirmPrefabChangesPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			ImGui::Text("Prefab Data has changed, would you like to save the changes?");
+			ImGui::Separator();
+
+			if (ImGui::Button("Discard", ImVec2(120, 0)))
+			{ 
+				ImGui::CloseCurrentPopup();
+				SetSceneDisplayMode();
+			}
+			ImGui::SetItemDefaultFocus();
+			ImGui::SameLine();
+			if (ImGui::Button("Save", ImVec2(120, 0)))
+			{
+				// Change the file data contents when updating the prefab by writing temp prefab data over asset file
+				PrefabComponent& component = s_Context.m_PrefabViewEntity.GetComponent<PrefabComponent>();
+				auto& metadata = Project::GetEditorAssetManager()->GetAssetMetadata(component.m_PrefabHandle);
+				FilePath prefabDataPath = Project::GetAssestsDir() / metadata.m_FilePath;
+
+				// Make sure that the new updated asset has the same prefab UUID
+				s_Context.m_ModalPopupPrefab->SetAssetDataValue<UUIDComponent>(UUIDComponent(component.m_PrefabEntityID));
+				s_Context.m_ModalPopupPrefab->Save(prefabDataPath);
+
+				ImGui::CloseCurrentPopup();
+				SetSceneDisplayMode();
+			}
+			ImGui::EndPopup();
+		}
+	}
+
 	void SceneHierarchyWindow::SetPrefabDisplayMode(Entity prefabEntity)
 	{
 		// Verify and set data before changing mode
@@ -1609,8 +1650,12 @@ namespace Stimpi
 			// Clear the previously inspected temp entity data if still valid
 			RemoveInspectedPrefabEntity();
 
+			// Set the prefabInspector's scene as active scene for manipulating correct entities while in "inspect" mode
+			m_ActiveScene = s_Context.m_PrefabInspectWindow->GetScene();
+
 			s_Context.m_ActiveMode = ContentMode::PREFAB;
 			s_Context.m_PrefabViewEntity = prefabEntity;
+			s_Context.m_SelectedEntity = prefabEntity;
 
 			s_Context.m_PrefabEntites = EntityManager::GetAllEntitiesInHierarchy(s_Context.m_PrefabViewEntity);
 			s_Context.m_PrefabEntites.push_back(s_Context.m_PrefabViewEntity);
@@ -1625,13 +1670,15 @@ namespace Stimpi
 		s_Context.m_ActiveMode = ContentMode::SCENE;
 		s_Context.m_PrefabViewEntity = {};
 		s_Context.m_PrefabEntites.clear();
+
+		// Make sure to move back to correct "active scene"
+		m_ActiveScene = SceneManager::Instance()->GetActiveScene();
 	}
 
 	void SceneHierarchyWindow::RemoveInspectedPrefabEntity()
 	{
 		if (s_Context.m_PrefabViewEntity)
 		{
-			CheckAndConfirmPrefabChanges();
 			EntityManager::RemoveEntity(s_Context.m_PrefabViewEntity);
 		}
 	}
@@ -1646,6 +1693,7 @@ namespace Stimpi
 			std::shared_ptr<Prefab> tempPrefab = std::make_shared<Prefab>();
 			tempPrefab->Initialize(s_Context.m_PrefabViewEntity);
 			tempPrefab->Save(tempAssetDataPath);
+			s_Context.m_ModalPopupPrefab = tempPrefab;
 
 			// Compare temp saved prefab asset data with the original
 			PrefabComponent& component = s_Context.m_PrefabViewEntity.GetComponent<PrefabComponent>();
@@ -1655,6 +1703,7 @@ namespace Stimpi
 			{
 				ST_INFO("Prefab data not changed - todo handling");
 				std::shared_ptr<Prefab> viewPrefab = AssetManager::GetAsset<Prefab>(component.m_PrefabHandle);
+				viewPrefab->Save(Project::GetResourcesSubdir(Project::Subdir::Misc) / "test.fab");
 				if (viewPrefab)
 				{
 					if (s_Context.m_PrefabViewEntity.HasComponent<QuadComponent>())
@@ -1665,6 +1714,7 @@ namespace Stimpi
 						if ((assetQuad.m_Size != entityQuad.m_Size) || (assetQuad.m_Rotation != entityQuad.m_Rotation))
 						{
 							ST_INFO("Prefab data actually did changed - size/rotation");
+							ImGui::OpenPopup("ConfirmPrefabChangesPopup");
 						}
 					}
 				}
@@ -1672,6 +1722,7 @@ namespace Stimpi
 			else
 			{
 				ST_INFO("Prefab data was changed! - todo handling");
+				ImGui::OpenPopup("ConfirmPrefabChangesPopup");
 			}
 
 			// TODO: manually check TagComponent ? and QuadComponent (skip position)

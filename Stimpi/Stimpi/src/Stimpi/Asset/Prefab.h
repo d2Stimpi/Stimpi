@@ -6,6 +6,7 @@
 #include "Stimpi/Core/UUID.h"
 #include "Stimpi/Utils/FilePath.h"
 #include "Stimpi/Scene/Scene.h"
+#include "Stimpi/Utils/YamlUtils.h"
 
 #include <yaml-cpp/yaml.h>
 
@@ -45,16 +46,58 @@ namespace Stimpi
 		std::string& GetName() { return m_Name; }
 		UUID GetRootEntityID() { return m_RootEntityUUID; }
 
-		// Reading asset data
-		template <typename T>
-		T GetAssetDataValue(const std::string& key)
+		// Reading raw asset data
+		template <typename TComponent>
+		TComponent GetAssetDataValue(const std::string& key)
 		{
-			T t;
-			if (m_Data[key])
+			TComponent t;
+			YAML::Node entityList = m_Data["EntityList"];
+
+			if (entityList.IsDefined())
 			{
-				t = m_Data[key].as<T>();
+				for (YAML::const_iterator it = entityList.begin(); it != entityList.end(); it++)
+				{
+					YAML::Node entityNode = it->second;
+					if (entityNode[key])
+					{
+						t = TComponent(entityNode[key]);
+						return t;
+					}
+				}
 			}
 			return t;
+		}
+
+		// Change raw asset data
+		template <typename TComponent>
+		void SetAssetDataValue(TComponent& component)
+		{
+			std::string_view typeName = typeid(TComponent).name();
+			size_t pos = typeName.find_last_of(':');
+			std::string_view componentName = typeName.substr(pos + 1);
+			YAML::Node entityList = m_Data["EntityList"];
+
+			if (entityList.IsDefined())
+			{
+				for (YAML::const_iterator it = entityList.begin(); it != entityList.end(); it++)
+				{
+					YAML::Node entityNode = it->second;
+					if (entityNode[componentName])
+					{
+						YAML::Emitter out;
+						YAML::Node data;
+
+						out << YAML::BeginMap;
+						component.Serialize(out);
+						out << YAML::EndMap;
+						data = YAML::Load(out.c_str());
+
+						YamlUtils::NodeReplace(entityNode[componentName], data[componentName]);
+
+						break;
+					}
+				}
+			}
 		}
 
 		// Asset

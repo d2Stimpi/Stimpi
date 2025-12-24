@@ -70,6 +70,9 @@ namespace Stimpi
 		// Component change events
 		void OnSortingLayerRemove(const std::string layerName);
 
+		// Scripting options
+		void SetScriptingEnabled(bool enable = true) { m_EnableScripting = enable; };
+
 		// TODO: move physics related stuff to Physics class (Wrapper around Box2D)
 		// Physics
 		void CreatePhysicsBody(Entity entity);
@@ -130,6 +133,9 @@ namespace Stimpi
 		std::unordered_map<uint32_t, bool> m_PhysicsStateToBeChanged;
 
 		std::shared_ptr<ComponentObserver> m_ComponentObserver;
+
+		// Scene behavior options
+		bool m_EnableScripting = true;
 
 		friend class Entity;
 		friend class EntityManager;
