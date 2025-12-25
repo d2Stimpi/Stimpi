@@ -509,6 +509,14 @@ namespace Stimpi
 
 		// Clear Render commands
 		ClearRenderCommands();
+
+		// Clear Debug data
+		ShowDebugData();
+		m_LastFrameDrawCallCnt = m_DrawCallCnt;
+		m_LastFrameRenderedCmdCnt = m_RenderedCmdCnt;
+
+		m_DrawCallCnt = 0;
+		m_RenderedCmdCnt = 0;
 	}
 
 	void Renderer2D::EndFrame(FrameBuffer* frameBuffer)
@@ -525,13 +533,6 @@ namespace Stimpi
 
 			// Clear Render commands
 			ClearRenderCommands();
-
-			// Clear Debug data
-			ShowDebugData();
-			m_LastFrameDrawCallCnt = m_DrawCallCnt;
-			m_LastFrameRenderedCmdCnt = m_RenderedCmdCnt;
-			m_DrawCallCnt = 0;
-			m_RenderedCmdCnt = 0;
 		}
 		else
 		{
@@ -662,7 +663,7 @@ namespace Stimpi
 			// We need to set uniforms now
 			for (auto& uni : shader->GetInfo().m_Uniforms)
 			{
-				auto values = renderCmd->m_Material->GetUniformValues();
+				auto& values = renderCmd->m_Material->GetUniformValues();
 				shader->SetUniform(uni.m_Name, values.at(uni.m_Name));
 			}
 		}
