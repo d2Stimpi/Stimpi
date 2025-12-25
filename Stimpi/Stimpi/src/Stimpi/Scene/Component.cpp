@@ -5,11 +5,10 @@
 
 namespace Stimpi
 {
-	Scene* s_ActiveScene = nullptr;
 
-	static void OnQuadConstruct(entt::registry& reg, entt::entity ent)
+	void ComponentObserver::OnQuadConstruct(entt::registry& reg, entt::entity ent)
 	{
-		Entity entity = { ent, s_ActiveScene };
+		Entity entity = { ent, m_Scene };
 		if (entity.HasComponent<CameraComponent>())
 		{
 			auto& quad = entity.GetComponent<QuadComponent>();
@@ -17,24 +16,24 @@ namespace Stimpi
 		}
 	}
 
-	static void OnQuadDestruct(entt::registry& reg, entt::entity ent)
+	void ComponentObserver::OnQuadDestruct(entt::registry& reg, entt::entity ent)
 	{
-		//Entity entity = { ent, s_ActiveScene };
+		//Entity entity = { ent, m_Scene };
 	}
 
-	static void OnCircleConstruct(entt::registry& reg, entt::entity ent)
+	void ComponentObserver::OnCircleConstruct(entt::registry& reg, entt::entity ent)
 	{
-		//Entity entity = { ent, s_ActiveScene };
+		//Entity entity = { ent, m_Scene };
 	}
 
-	static void OnCircleDestruct(entt::registry& reg, entt::entity ent)
+	void ComponentObserver::OnCircleDestruct(entt::registry& reg, entt::entity ent)
 	{
-		//Entity entity = { ent, s_ActiveScene };
+		//Entity entity = { ent, m_Scene };
 	}
 
-	static void OnCameraConstruct(entt::registry& reg, entt::entity ent)
+	void ComponentObserver::OnCameraConstruct(entt::registry& reg, entt::entity ent)
 	{
-		Entity entity = { ent, s_ActiveScene };
+		Entity entity = { ent, m_Scene };
 
 		if (entity.HasComponent<QuadComponent>())
 		{
@@ -43,9 +42,9 @@ namespace Stimpi
 		}
 	}
 
-	static void OnCameraDestruct(entt::registry& reg, entt::entity ent)
+	void ComponentObserver::OnCameraDestruct(entt::registry& reg, entt::entity ent)
 	{
-		Entity entity = { ent, s_ActiveScene };
+		Entity entity = { ent, m_Scene };
 
 		if (entity.HasComponent<QuadComponent>())
 		{
@@ -55,9 +54,9 @@ namespace Stimpi
 	}
 
 	// Script
-	static void OnScriptConstruct(entt::registry& reg, entt::entity ent)
+	void ComponentObserver::OnScriptConstruct(entt::registry& reg, entt::entity ent)
 	{
-		Entity entity = { ent, s_ActiveScene };
+		Entity entity = { ent, m_Scene };
 
 		if (entity.HasComponent<ScriptComponent>())
 		{
@@ -69,9 +68,9 @@ namespace Stimpi
 		}
 	}
 
-	static void OnScriptDestruct(entt::registry& reg, entt::entity ent)
+	void ComponentObserver::OnScriptDestruct(entt::registry& reg, entt::entity ent)
 	{
-		Entity entity = { ent, s_ActiveScene };
+		Entity entity = { ent, m_Scene };
 
 		ScriptComponent& component = entity.GetComponent<ScriptComponent>();
 		if (!component.m_ScriptInstance)
@@ -83,43 +82,43 @@ namespace Stimpi
 	//TODO: scriptOnDestruct
 
 	// Sprite
-	static void OnSpriteConstruct(entt::registry& reg, entt::entity ent)
+	void ComponentObserver::OnSpriteConstruct(entt::registry& reg, entt::entity ent)
 	{
-		Entity entity = { ent, s_ActiveScene };
+		Entity entity = { ent, m_Scene };
 	}
 
-	static void OnSpriteDestruct(entt::registry& reg, entt::entity ent)
+	void ComponentObserver::OnSpriteDestruct(entt::registry& reg, entt::entity ent)
 	{
-		Entity entity = { ent, s_ActiveScene };
+		Entity entity = { ent, m_Scene };
 	}
 
 	// AnimatedSprite
-	static void OnAnimatedSpriteConstruct(entt::registry& reg, entt::entity ent)
+	void ComponentObserver::OnAnimatedSpriteConstruct(entt::registry& reg, entt::entity ent)
 	{
-		//Entity entity = { ent, s_ActiveScene };
+		//Entity entity = { ent, m_Scene };
 	}
 
-	static void OnAnimatedSpriteDestruct(entt::registry& reg, entt::entity ent)
+	void ComponentObserver::OnAnimatedSpriteDestruct(entt::registry& reg, entt::entity ent)
 	{
-		//Entity entity = { ent, s_ActiveScene };
+		//Entity entity = { ent, m_Scene };
 	}
 
 	// RigidBody2D
-	static void OnRigidBody2DConstruct(entt::registry& reg, entt::entity ent)
+	void ComponentObserver::OnRigidBody2DConstruct(entt::registry& reg, entt::entity ent)
 	{
 
 	}
 
-	static void OnRigidBody2DDestruct(entt::registry& reg, entt::entity ent)
+	void ComponentObserver::OnRigidBody2DDestruct(entt::registry& reg, entt::entity ent)
 	{
-		Entity entity = { ent, s_ActiveScene };
-		s_ActiveScene->DestroyPhysicsBody(entity);
+		Entity entity = { ent, m_Scene };
+		m_Scene->DestroyPhysicsBody(entity);
 	}
 
 	// SortingGroup
-	static void OnSortingGroupConstruct(entt::registry& reg, entt::entity ent)
+	void ComponentObserver::OnSortingGroupConstruct(entt::registry& reg, entt::entity ent)
 	{
-		Entity entity = { ent, s_ActiveScene };
+		Entity entity = { ent, m_Scene };
 		
 		SortingGroupComponent sortingGroup = entity.GetComponent<SortingGroupComponent>();
 		DefaultGroupComponent& component = entity.GetComponent<DefaultGroupComponent>();
@@ -127,9 +126,9 @@ namespace Stimpi
 		component.m_OrderInLayer = sortingGroup.m_OrderInLayer;
 	}
 
-	static void OnSortingGroupDestruct(entt::registry& reg, entt::entity ent)
+	void ComponentObserver::OnSortingGroupDestruct(entt::registry& reg, entt::entity ent)
 	{
-		Entity entity = { ent, s_ActiveScene };
+		Entity entity = { ent, m_Scene };
 		if (entity.HasComponent<DefaultGroupComponent>())
 		{
 			DefaultGroupComponent& component = entity.GetComponent<DefaultGroupComponent>();
@@ -139,64 +138,69 @@ namespace Stimpi
 	}
 
 	// DefaultGroupComponent
-	static void OnDefaultGroupComponentConstruct(entt::registry& reg, entt::entity ent)
+	void ComponentObserver::OnDefaultGroupComponentConstruct(entt::registry& reg, entt::entity ent)
 	{
 	}
 
-	static void OnDefaultGroupComponentDestruct(entt::registry& reg, entt::entity ent)
+	void ComponentObserver::OnDefaultGroupComponentDestruct(entt::registry& reg, entt::entity ent)
 	{
 	}
 
-#define ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(component, function)	reg.on_construct<component>().connect<&function>()
-#define ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(component, function)		reg.on_construct<component>().disconnect<&function>()
-#define ENTT_REGISTER_COMPONENT_ON_DESTROY(component, function)		reg.on_destroy<component>().connect<&function>()
-#define ENTT_REMOVE_COMPONENT_ON_DESTROY(component, function)		reg.on_destroy<component>().disconnect<&function>()
+#define ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(component, function)	reg.on_construct<component>().connect<&function>(this)
+#define ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(component, function)		reg.on_construct<component>().disconnect<&function>(this)
+#define ENTT_REGISTER_COMPONENT_ON_DESTROY(component, function)		reg.on_destroy<component>().connect<&function>(this)
+#define ENTT_REMOVE_COMPONENT_ON_DESTROY(component, function)		reg.on_destroy<component>().disconnect<&function>(this)
+
+	static void TestMethod(entt::registry& reg, entt::entity ent)
+	{
+
+	}
 
 	void ComponentObserver::InitComponentObservers(entt::registry& reg, Scene* scene)
 	{
-		s_ActiveScene = scene;
+		m_Scene = scene;
 
 		// on_construct
-		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(QuadComponent, OnQuadConstruct);
-		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(CircleComponent, OnCircleConstruct);
-		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(CameraComponent, OnCameraConstruct);
-		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(ScriptComponent, OnScriptConstruct);
-		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(SpriteComponent, OnSpriteConstruct);
-		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(AnimatedSpriteComponent, OnAnimatedSpriteConstruct);
-		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(SortingGroupComponent, OnSortingGroupConstruct);
-		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(DefaultGroupComponent, OnDefaultGroupComponentConstruct);
-
+		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(QuadComponent, ComponentObserver::OnQuadConstruct);
+		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(CircleComponent, ComponentObserver::OnCircleConstruct);
+		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(CameraComponent, ComponentObserver::OnCameraConstruct);
+		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(ScriptComponent, ComponentObserver::OnScriptConstruct);
+		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(SpriteComponent, ComponentObserver::OnSpriteConstruct);
+		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(AnimatedSpriteComponent, ComponentObserver::OnAnimatedSpriteConstruct);
+		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(SortingGroupComponent, ComponentObserver::OnSortingGroupConstruct);
+		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(DefaultGroupComponent, ComponentObserver::OnDefaultGroupComponentConstruct);
+		
 		// on_destroy
-		ENTT_REGISTER_COMPONENT_ON_DESTROY(QuadComponent, OnQuadDestruct);
-		ENTT_REGISTER_COMPONENT_ON_DESTROY(CircleComponent, OnCircleDestruct);
-		ENTT_REGISTER_COMPONENT_ON_DESTROY(CameraComponent, OnCameraDestruct);
-		ENTT_REGISTER_COMPONENT_ON_DESTROY(ScriptComponent, OnScriptDestruct);
-		ENTT_REGISTER_COMPONENT_ON_DESTROY(SpriteComponent, OnSpriteDestruct);
-		ENTT_REGISTER_COMPONENT_ON_DESTROY(AnimatedSpriteComponent, OnAnimatedSpriteDestruct);
-		ENTT_REGISTER_COMPONENT_ON_DESTROY(RigidBody2DComponent, OnRigidBody2DDestruct);
-		ENTT_REGISTER_COMPONENT_ON_DESTROY(SortingGroupComponent, OnSortingGroupDestruct);
-		ENTT_REGISTER_COMPONENT_ON_DESTROY(DefaultGroupComponent, OnDefaultGroupComponentDestruct);
+		ENTT_REGISTER_COMPONENT_ON_DESTROY(QuadComponent, ComponentObserver::OnQuadDestruct);
+		ENTT_REGISTER_COMPONENT_ON_DESTROY(CircleComponent, ComponentObserver::OnCircleDestruct);
+		ENTT_REGISTER_COMPONENT_ON_DESTROY(CameraComponent, ComponentObserver::OnCameraDestruct);
+		ENTT_REGISTER_COMPONENT_ON_DESTROY(ScriptComponent, ComponentObserver::OnScriptDestruct);
+		ENTT_REGISTER_COMPONENT_ON_DESTROY(SpriteComponent, ComponentObserver::OnSpriteDestruct);
+		ENTT_REGISTER_COMPONENT_ON_DESTROY(AnimatedSpriteComponent, ComponentObserver::OnAnimatedSpriteDestruct);
+		ENTT_REGISTER_COMPONENT_ON_DESTROY(RigidBody2DComponent, ComponentObserver::OnRigidBody2DDestruct);
+		ENTT_REGISTER_COMPONENT_ON_DESTROY(SortingGroupComponent, ComponentObserver::OnSortingGroupDestruct);
+		ENTT_REGISTER_COMPONENT_ON_DESTROY(DefaultGroupComponent, ComponentObserver::OnDefaultGroupComponentDestruct);
 	}
 
 	void ComponentObserver::DeinitConstructObservers(entt::registry& reg)
 	{
 		// on_construct
-		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(QuadComponent, OnQuadConstruct);
-		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(CircleComponent, OnCircleConstruct);
-		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(CameraComponent, OnCameraConstruct);
-		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(ScriptComponent, OnScriptConstruct);
-		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(SpriteComponent, OnSpriteConstruct);
-		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(AnimatedSpriteComponent, OnAnimatedSpriteConstruct);
-		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(SortingGroupComponent, OnSortingGroupConstruct);
+		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(QuadComponent, ComponentObserver::OnQuadConstruct);
+		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(CircleComponent, ComponentObserver::OnCircleConstruct);
+		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(CameraComponent, ComponentObserver::OnCameraConstruct);
+		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(ScriptComponent, ComponentObserver::OnScriptConstruct);
+		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(SpriteComponent, ComponentObserver::OnSpriteConstruct);
+		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(AnimatedSpriteComponent, ComponentObserver::OnAnimatedSpriteConstruct);
+		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(SortingGroupComponent, ComponentObserver::OnSortingGroupConstruct);
 
 		// on_destroy
-		ENTT_REMOVE_COMPONENT_ON_DESTROY(QuadComponent, OnQuadDestruct);
-		ENTT_REMOVE_COMPONENT_ON_DESTROY(CircleComponent, OnCircleDestruct);
-		ENTT_REMOVE_COMPONENT_ON_DESTROY(CameraComponent, OnCameraDestruct);
-		ENTT_REMOVE_COMPONENT_ON_DESTROY(SpriteComponent, OnSpriteDestruct);
-		ENTT_REMOVE_COMPONENT_ON_DESTROY(AnimatedSpriteComponent, OnAnimatedSpriteDestruct);
-		ENTT_REMOVE_COMPONENT_ON_DESTROY(RigidBody2DComponent, OnRigidBody2DDestruct);
-		ENTT_REMOVE_COMPONENT_ON_DESTROY(SortingGroupComponent, OnSortingGroupDestruct);
+		ENTT_REMOVE_COMPONENT_ON_DESTROY(QuadComponent, ComponentObserver::OnQuadDestruct);
+		ENTT_REMOVE_COMPONENT_ON_DESTROY(CircleComponent, ComponentObserver::OnCircleDestruct);
+		ENTT_REMOVE_COMPONENT_ON_DESTROY(CameraComponent, ComponentObserver::OnCameraDestruct);
+		ENTT_REMOVE_COMPONENT_ON_DESTROY(SpriteComponent, ComponentObserver::OnSpriteDestruct);
+		ENTT_REMOVE_COMPONENT_ON_DESTROY(AnimatedSpriteComponent, ComponentObserver::OnAnimatedSpriteDestruct);
+		ENTT_REMOVE_COMPONENT_ON_DESTROY(RigidBody2DComponent, ComponentObserver::OnRigidBody2DDestruct);
+		ENTT_REMOVE_COMPONENT_ON_DESTROY(SortingGroupComponent, ComponentObserver::OnSortingGroupDestruct);
 	}
 
 }

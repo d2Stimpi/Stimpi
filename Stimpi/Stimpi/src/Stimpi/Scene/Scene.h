@@ -22,6 +22,7 @@ namespace Stimpi
 {
 	class Entity;
 	class ContactListener;
+	class ComponentObserver;
 
 	enum class RuntimeState { STOPPED = 0, RUNNING, PAUSED };
 
@@ -44,6 +45,7 @@ namespace Stimpi
 		std::vector<Entity> FindAllEntitiesByName(std::string_view name);
 		bool RemoveEntity(Entity entity);
 		bool RemoveEntity(entt::entity handle);
+		void RemoveAllEntites();
 		bool IsEntityValid(Entity entity);
 
 		Entity CopyEntity(const Entity entity);
@@ -67,6 +69,9 @@ namespace Stimpi
 
 		// Component change events
 		void OnSortingLayerRemove(const std::string layerName);
+
+		// Scripting options
+		void SetScriptingEnabled(bool enable = true) { m_EnableScripting = enable; };
 
 		// TODO: move physics related stuff to Physics class (Wrapper around Box2D)
 		// Physics
@@ -110,7 +115,7 @@ namespace Stimpi
 
 	private:
 		entt::registry m_Registry;
-		std::vector<Entity> m_Entities;
+		std::vector<Entity> m_Entities; // TODO: remove - not really used anywhere
 		std::unordered_map<UUID, Entity> m_EntityUUIDMap;
 		RuntimeState m_RuntimeState;
 
@@ -124,8 +129,13 @@ namespace Stimpi
 
 		// Physics
 		b2World* m_PhysicsWorld = nullptr;
-		std::shared_ptr <ContactListener> m_ContactListener;
+		std::shared_ptr<ContactListener> m_ContactListener;
 		std::unordered_map<uint32_t, bool> m_PhysicsStateToBeChanged;
+
+		std::shared_ptr<ComponentObserver> m_ComponentObserver;
+
+		// Scene behavior options
+		bool m_EnableScripting = true;
 
 		friend class Entity;
 		friend class EntityManager;

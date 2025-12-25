@@ -332,6 +332,7 @@
     <ClInclude Include="src\Stimpi\Utils\YamlUtils.h">
       <Filter>Stimpi\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\Asset\SceneAssetBuilder.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Asset\AnimationImporter.cpp">
@@ -575,5 +576,6 @@
     <ClCompile Include="src\Stimpi\Utils\YamlUtils.cpp">
       <Filter>Stimpi\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Asset\SceneAssetBuilder.cpp" />
   </ItemGroup>
 </Project>

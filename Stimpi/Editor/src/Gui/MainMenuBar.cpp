@@ -22,6 +22,8 @@
 #include "Gui/Config/LayersConfigPanel.h"
 #include "Gui/Config/PhysicsConfigPanel.h"
 
+#include "Gui/Panels/PrefabInspectWindow.h"
+
 #include "ImGui/src/imgui.h"
 #include "ImGui/src/imgui_internal.h"
 
@@ -57,7 +59,22 @@ namespace Stimpi
 				{
 					if (ImGui::MenuItem("Scene...##FileNew"))
 					{
-						SceneManager::Instance()->NewScene();
+						//SceneManager::Instance()->NewScene();
+						std::string filePath = FileDialogs::SaveFile("d2S Scene (*.d2s)\0*.d2s\0");
+						if (!filePath.empty())
+						{
+							AssetMetadata sceneMetadata = { AssetType::SCENE, filePath };
+							auto assetManager = Project::GetEditorAssetManager();
+							AssetHandle sceneAssetHandle = assetManager->CreateAsset(sceneMetadata);
+							auto scene = AssetManager::GetAsset<Scene>(sceneAssetHandle);
+
+							// Save a new empty scene to make an actual asset file
+							FilePath assetFilePath = filePath;
+							SceneManager::Instance()->SaveScene(scene.get(), assetFilePath);
+
+							// Register scene
+							SceneManager::Instance()->LoadScene(assetFilePath);
+						}
 					}
 
 					if (ImGui::MenuItem("Project...##FileNew"))
@@ -176,6 +193,11 @@ namespace Stimpi
 				if (ImGui::MenuItem("Node Panel", nullptr, NGraphPanel::IsVisible()))
 				{
 					NGraphPanel::ShowWindow(!NGraphPanel::IsVisible());
+				}
+
+				if (ImGui::MenuItem("Prefab inspector", nullptr, PrefabInspectWindow::IsVisible()))
+				{
+					PrefabInspectWindow::ShowWindow(!PrefabInspectWindow::IsVisible());
 				}
 
 				ImGui::EndMenu();

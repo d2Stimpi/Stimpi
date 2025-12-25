@@ -66,4 +66,12 @@ namespace Stimpi
 		return false;
 	}
 
+	void YamlUtils::NodeReplace(YAML::Node& oldNode, const YAML::Node& newNode)
+	{
+		if (oldNode.IsNull() || newNode.IsNull())
+			return;
+
+		oldNode = newNode;
+	}
+
 }

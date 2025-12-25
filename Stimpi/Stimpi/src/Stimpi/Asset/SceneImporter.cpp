@@ -8,7 +8,9 @@ namespace Stimpi
 
 	std::shared_ptr<Stimpi::Asset> SceneImporter::ImportScene(AssetHandle handle, const AssetMetadata& metadata)
 	{
-		return std::make_shared<Scene>();
+		auto sceneAsset = std::make_shared<Scene>();
+		sceneAsset->SetName(metadata.m_FilePath.GetFileName());
+		return std::static_pointer_cast<Asset>(sceneAsset);
 	}
 
 }

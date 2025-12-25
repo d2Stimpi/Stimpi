@@ -72,12 +72,13 @@ namespace Stimpi
 		ST_PROFILE_FUNCTION();
 
 		// Workaround - Create 0 value Entity and never use it. Fixes check for valid Entity
-		m_Registry.create();
-		ComponentObserver::InitComponentObservers(m_Registry, this);
+		(void)m_Registry.create();
+		m_ComponentObserver = std::make_shared<ComponentObserver>();
+		m_ComponentObserver->InitComponentObservers(m_Registry, this);
 
 		// Clear script instances - they are created in OnScriptConstruct
 		// Fixme / TODO: this following call prevents having multiple scenes active at the same time
-		ScriptEngine::ClearScriptInstances();
+		//ScriptEngine::ClearScriptInstances();
 
 		m_RuntimeState = RuntimeState::STOPPED;
 		m_DefaultShader = ShaderImporter::LoadShader(Project::GetResourcesDir() / "shaders\/shader.shader");
@@ -142,7 +143,7 @@ namespace Stimpi
 	{
 		ST_PROFILE_FUNCTION();
 
-		ComponentObserver::DeinitConstructObservers(m_Registry);
+		m_ComponentObserver->DeinitConstructObservers(m_Registry);
 	}
 
 	void Scene::OnUpdate(Timestep ts)
@@ -294,7 +295,8 @@ namespace Stimpi
 		Timestep ts = Time::Instance()->GetFrameTime();
 
 		// Update Scripts
-		UpdateScripts(ts);
+		if (m_EnableScripting)
+			UpdateScripts(ts);
 
 		// Physics
 		UpdatePhysicsSimulation(ts);
@@ -408,6 +410,11 @@ namespace Stimpi
 		return RemoveEntity(entity);
 	}
 
+	void Scene::RemoveAllEntites()
+	{
+		m_Registry.clear();
+	}
+
 	bool Scene::IsEntityValid(Entity entity)
 	{
 		return m_Registry.valid(entity.GetHandle());
@@ -445,7 +452,10 @@ namespace Stimpi
 	{
 		ST_PROFILE_FUNCTION();
 
-		InitializeScripts();
+
+		if (m_EnableScripting)
+			InitializeScripts();
+
 		InitializePhysics();
 
 		m_Registry.view<CameraComponent>().each([=](auto entity, auto& ncs)
@@ -483,7 +493,9 @@ namespace Stimpi
 	{
 		ST_PROFILE_FUNCTION();
 
-		DeinitializeScritps();
+		if (m_EnableScripting)
+			DeinitializeScritps();
+
 		DeinitializePhysics();
 
 		// Update Scene state last

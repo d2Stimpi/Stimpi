@@ -196,9 +196,11 @@ namespace Stimpi
 
 		// Accept Scene as drag-drop item to load it
 		UIPayload::BeginTarget(PAYLOAD_SCENE, [](void* data, uint32_t size) {
-			std::string strData = std::string((char*)data, size);
-			ST_CORE_INFO("Scene data dropped: {0}", strData.c_str());
-			SceneManager::Instance()->LoadScene(strData);
+			AssetHandle handle = *(AssetHandle*)data;
+			AssetMetadata metadata = Project::GetEditorAssetManager()->GetAssetMetadata(handle);
+			ST_CORE_INFO("Scene data dropped: {0}", metadata.m_FilePath.string());
+			FilePath assetFilePath = Project::GetAssestsDir() / metadata.m_FilePath;
+			SceneManager::Instance()->LoadScene(assetFilePath);
 		});
 
 		UIPayload::BeginTarget(PAYLOAD_PREFAB, [&](void* data, uint32_t size) {
@@ -302,7 +304,7 @@ namespace Stimpi
 		glm::vec2 pickPos = { mousePos.x - winPos.x, winSize.y - (mousePos.y - winPos.y) };
 		glm::vec2 worldPos = SceneUtils::WindowToWorldPoint(camera, glm::vec2{ winSize.x, winSize.y }, pickPos);
 
-		return ImVec2(worldPos.x, worldPos.y);
+		return {worldPos.x, worldPos.y};
 	}
 
 }

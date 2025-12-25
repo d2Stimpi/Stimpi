@@ -180,6 +180,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Asset\PrefabAssetBuilder.h" />
     <ClInclude Include="src\Stimpi\Asset\PrefabImporter.h" />
     <ClInclude Include="src\Stimpi\Asset\PrefabManager.h" />
+    <ClInclude Include="src\Stimpi\Asset\SceneAssetBuilder.h" />
     <ClInclude Include="src\Stimpi\Asset\SceneImporter.h" />
     <ClInclude Include="src\Stimpi\Asset\ShaderImporter.h" />
     <ClInclude Include="src\Stimpi\Asset\TextureImporter.h" />
@@ -275,6 +276,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClCompile Include="src\Stimpi\Asset\PrefabAssetBuilder.cpp" />
     <ClCompile Include="src\Stimpi\Asset\PrefabImporter.cpp" />
     <ClCompile Include="src\Stimpi\Asset\PrefabManager.cpp" />
+    <ClCompile Include="src\Stimpi\Asset\SceneAssetBuilder.cpp" />
     <ClCompile Include="src\Stimpi\Asset\SceneImporter.cpp" />
     <ClCompile Include="src\Stimpi\Asset\ShaderImporter.cpp" />
     <ClCompile Include="src\Stimpi\Asset\TextureImporter.cpp" />

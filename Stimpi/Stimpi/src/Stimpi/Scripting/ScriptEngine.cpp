@@ -481,6 +481,7 @@ namespace Stimpi
 	void ScriptEngine::ReloadAssembly()
 	{
 		// TODO: manage all .dll files in a folder
+		MakeInstanceDataSnapshot();
 
 		UnloadAssembly();
 		LoadAssembly();
@@ -499,6 +500,7 @@ namespace Stimpi
 		ScriptGlue::RegisterComponents();
 
 		CreateScriptInstances();
+
 	}
 
 	void ScriptEngine::ReloadAssetAssembly(const std::filesystem::path& assetPath)
@@ -511,6 +513,22 @@ namespace Stimpi
 		assetAssembly->m_AssemblyImage = mono_assembly_get_image(assetAssembly->m_Assembly);
 
 		LoadClassesFromAssetAssembly(assetAssembly.get());
+	}
+
+	void ScriptEngine::MakeInstanceDataSnapshot()
+	{
+		//TODO: visit all scenes and save data
+		if (s_Data->m_Scene)
+		{
+			for (auto& entity : s_Data->m_Scene->m_Entities)
+			{
+				if (entity.HasComponent<ScriptComponent>())
+				{
+					auto& scriptComponent = entity.GetComponent<ScriptComponent>();
+					scriptComponent.MakeFieldDataSnapshot();
+				}
+			}
+		}
 	}
 
 	void ScriptEngine::LoadClassesFromAssembly(MonoAssembly* assembly)
@@ -784,7 +802,6 @@ namespace Stimpi
 		{
 			for (auto entity : s_Data->m_EntitiesToRemove)
 			{
-				//s_Data->m_EntityInstances.erase(entity);
 				s_Data->m_UnorderedEntityInstances.erase(entity);
 				s_Data->m_Scene->RemoveEntity((entt::entity)entity);
 			}
@@ -810,7 +827,7 @@ namespace Stimpi
 	{
 		s_Data->m_EntityInstances.clear();
 
-		auto entities = s_Data->m_Scene->m_Entities;
+		auto& entities = s_Data->m_Scene->m_Entities;
 		for (Entity entity : entities)
 		{
 			if (entity.HasComponent<ScriptComponent>())
@@ -819,6 +836,7 @@ namespace Stimpi
 				auto scriptInstance = CreateScriptInstance(scriptComponent.m_ScriptName, entity);
 				scriptComponent.m_ScriptInstance = scriptInstance;
 				// Reload and populate script instance field data
+				scriptComponent.RestoreFiledData();
 			}
 		}
 	}

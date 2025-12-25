@@ -39,7 +39,7 @@ namespace Stimpi
 
 	void FileWatcher::Clear()
 	{
-		for (auto entry : s_Data.m_WatcherEntries)
+		for (auto& entry : s_Data.m_WatcherEntries)
 		{
 			RemoveWatcher(entry.m_WatchPath);
 		}
@@ -49,7 +49,7 @@ namespace Stimpi
 	{
 		std::string path = event->GetFilePath();
 		
-		for (auto entry : s_Data.m_WatcherEntries)
+		for (auto& entry : s_Data.m_WatcherEntries)
 		{
 			if (path.find(entry.m_WatchPath.string()) != std::string::npos)
 			{

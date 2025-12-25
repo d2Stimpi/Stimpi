@@ -126,6 +126,8 @@ namespace Stimpi
 		// Prefab asset update handler registration
 		auto assetManager = Project::GetEditorAssetManager();
 		assetManager->RegisterAssetReloadHandler(new AssetReloadHandler(PrefabManager::OnPrefabAssetReload));
+
+		m_SceneHierarchyWindow.SetPrefabInspectorWindowRef(&m_PrefabInspectWindow);
 	}
 
 	EditorLayer::~EditorLayer()
@@ -292,6 +294,8 @@ namespace Stimpi
 		m_ContentBrowserWindow.OnImGuiRender();
 		/* Scene Hierarchy */
 		m_SceneHierarchyWindow.OnImGuiRender();
+		/* Prefab Inspector */
+		m_PrefabInspectWindow.OnImGuiRender(ts);
 		/* Sprite & Animation */
 		m_SpriteAnimPanel.OnUpdate(ts);
 		m_SpriteAnimPanel.OnImGuiRender();
@@ -316,8 +320,8 @@ namespace Stimpi
 		}
 
 		// Custom Rendering stuff
-		auto canvasWidth = Stimpi::Renderer2D::Instance()->GetCanvasWidth();
-		auto canvasHeight = Stimpi::Renderer2D::Instance()->GetCanvasHeight();
+		auto canvasWidth = Renderer2D::Instance()->GetCanvasWidth();
+		auto canvasHeight = Renderer2D::Instance()->GetCanvasHeight();
 
 		m_BackgroundCamera->Resize(0.0f, canvasWidth, 0.0f, canvasHeight);
 		m_ShaderChecker->SetUniform("u_Projection", m_BackgroundCamera->GetProjectionMatrix());
@@ -327,15 +331,16 @@ namespace Stimpi
 		// TODO: Fix Gizmo rendering, split to Update()/Render()
 		m_SceneViewWindow.OnImGuiRender();
 
+		// TODO: Consider if the SceneViewWindow is more suitable place for Rendering active Scene
 		auto renderer = Renderer2D::Instance();
 		renderer->StartFrame();
 		{
 			// Render Checker Background for editor
 			if (m_SceneConfigWindow.ShowCheckerboardBg())
 			{
-				Stimpi::Renderer2D::Instance()->BeginScene(m_BackgroundCamera->GetOrthoCamera());
-				Stimpi::Renderer2D::Instance()->Submit({ canvasWidth / 2.0f, canvasHeight / 2.0f, 0.0f }, { canvasWidth, canvasHeight }, 0.0f, m_ShaderChecker.get());
-				Stimpi::Renderer2D::Instance()->EndScene();
+				Renderer2D::Instance()->BeginScene(m_BackgroundCamera->GetOrthoCamera());
+				Renderer2D::Instance()->Submit({ canvasWidth / 2.0f, canvasHeight / 2.0f, 0.0f }, { canvasWidth, canvasHeight }, 0.0f, m_ShaderChecker.get());
+				Renderer2D::Instance()->EndScene();
 			}
 
 			m_Scene->OnUpdate(ts);
