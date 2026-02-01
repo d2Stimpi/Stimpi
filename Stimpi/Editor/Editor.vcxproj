@@ -157,8 +157,6 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Gui\CodeGen\ClassBuilder.h" />
-    <ClInclude Include="src\Gui\CodeGen\CodeWriter.h" />
     <ClInclude Include="src\Gui\Components\ImGuiEx.h" />
     <ClInclude Include="src\Gui\Components\Input.h" />
     <ClInclude Include="src\Gui\Components\SearchPopup.h" />
@@ -188,21 +186,6 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
     <ClInclude Include="src\Gui\NNode\NGraphStyle.h" />
     <ClInclude Include="src\Gui\NNode\NGraphVerifier.h" />
     <ClInclude Include="src\Gui\NNode\NNodeRegistry.h" />
-    <ClInclude Include="src\Gui\Nodes\CodeComponent.h" />
-    <ClInclude Include="src\Gui\Nodes\Events\OnCreateNode.h" />
-    <ClInclude Include="src\Gui\Nodes\Events\SampleEventNode.h" />
-    <ClInclude Include="src\Gui\Nodes\GraphComponents.h" />
-    <ClInclude Include="src\Gui\Nodes\GraphController.h" />
-    <ClInclude Include="src\Gui\Nodes\GraphPanel.h" />
-    <ClInclude Include="src\Gui\Nodes\GraphRenderer.h" />
-    <ClInclude Include="src\Gui\Nodes\GraphSerializer.h" />
-    <ClInclude Include="src\Gui\Nodes\Methods\SampleMethodNode.h" />
-    <ClInclude Include="src\Gui\Nodes\Methods\SetPositionNode.h" />
-    <ClInclude Include="src\Gui\Nodes\NodeBuilder.h" />
-    <ClInclude Include="src\Gui\Nodes\NodeGraph.h" />
-    <ClInclude Include="src\Gui\Nodes\Nodes.h" />
-    <ClInclude Include="src\Gui\Nodes\Variables\VariableGetNode.h" />
-    <ClInclude Include="src\Gui\Nodes\Variables\VariableSetNode.h" />
     <ClInclude Include="src\Gui\Panels\PrefabInspectWindow.h" />
     <ClInclude Include="src\Gui\Panels\SceneHierarchyWindow.h" />
     <ClInclude Include="src\Gui\Panels\ScriptFieldFragment.h" />
@@ -216,8 +199,6 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
-    <ClCompile Include="src\Gui\CodeGen\ClassBuilder.cpp" />
-    <ClCompile Include="src\Gui\CodeGen\CodeWriter.cpp" />
     <ClCompile Include="src\Gui\Components\ImGuiEx.cpp" />
     <ClCompile Include="src\Gui\Components\Input.cpp" />
     <ClCompile Include="src\Gui\Components\SearchPopup.cpp" />
@@ -247,20 +228,6 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
     <ClCompile Include="src\Gui\NNode\NGraphStyle.cpp" />
     <ClCompile Include="src\Gui\NNode\NGraphVerifier.cpp" />
     <ClCompile Include="src\Gui\NNode\NNodeRegisrty.cpp" />
-    <ClCompile Include="src\Gui\Nodes\CodeComponent.cpp" />
-    <ClCompile Include="src\Gui\Nodes\Events\OnCreateNode.cpp" />
-    <ClCompile Include="src\Gui\Nodes\Events\SampleEventNode.cpp" />
-    <ClCompile Include="src\Gui\Nodes\GraphComponents.cpp" />
-    <ClCompile Include="src\Gui\Nodes\GraphController.cpp" />
-    <ClCompile Include="src\Gui\Nodes\GraphPanel.cpp" />
-    <ClCompile Include="src\Gui\Nodes\GraphRenderer.cpp" />
-    <ClCompile Include="src\Gui\Nodes\GraphSerializer.cpp" />
-    <ClCompile Include="src\Gui\Nodes\Methods\SampleMethodNode.cpp" />
-    <ClCompile Include="src\Gui\Nodes\Methods\SetPositionNode.cpp" />
-    <ClCompile Include="src\Gui\Nodes\NodeBuilder.cpp" />
-    <ClCompile Include="src\Gui\Nodes\NodeGraph.cpp" />
-    <ClCompile Include="src\Gui\Nodes\Variables\VariableGetNode.cpp" />
-    <ClCompile Include="src\Gui\Nodes\Variables\VariableSetNode.cpp" />
     <ClCompile Include="src\Gui\Panels\PrefabInspectWindow.cpp" />
     <ClCompile Include="src\Gui\Panels\SceneHierarchyWindow.cpp" />
     <ClCompile Include="src\Gui\Panels\ScriptFieldFragment.cpp" />

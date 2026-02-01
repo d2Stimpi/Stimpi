@@ -303,7 +303,6 @@ namespace Stimpi
 		m_EditorConfigWindow.OnImGuiRender();
 		m_SceneConfigWindow.OnImGuiRender();
 		/* Node Panel */
-		m_NodePanelNew.OnImGuiRender();
 		m_NNodePanelNew.OnImGuiRender();
 		/* Edit/Project */
 		m_GraphicsConfigPanel.OnImGuiRender();

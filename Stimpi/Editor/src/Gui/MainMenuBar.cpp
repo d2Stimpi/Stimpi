@@ -28,7 +28,6 @@
 #include "ImGui/src/imgui_internal.h"
 
 // Window show toggle includes
-#include "Gui/Nodes/GraphPanel.h"
 #include "Gui/NNode/NGraphPanel.h"
 #include "Gui/NNode/NGraphRegistry.h"
 

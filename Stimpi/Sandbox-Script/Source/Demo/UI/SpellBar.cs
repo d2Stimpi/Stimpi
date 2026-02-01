@@ -35,6 +35,8 @@ namespace Demo
         public Entity IconEast;
         public Entity IconSputh;
 
+        public QuadComponent QuadSample;
+
         // Key stroke tracking
         private string _keysRegisterString = "";
         private KeyCode _lastKeyPressed = KeyCode.KEY_UNKNOWN;

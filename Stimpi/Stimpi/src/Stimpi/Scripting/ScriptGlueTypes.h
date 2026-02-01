@@ -3,6 +3,8 @@
 namespace Stimpi
 {
 	constexpr const char* s_EntityType = "Stimpi.Entity";
+	// Scripting visible/available Component types
+	constexpr const char* s_QuadComponentType = "Stimpi.QuadComponent";
 
 	constexpr const char* s_CoreNamespace	= "Stimpi";
 	constexpr const char* s_AttributeLookup = "AttributeLookup";

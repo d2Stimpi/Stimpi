@@ -22,8 +22,6 @@
 #include "Gui/Config/GraphicsConfigPanel.h"
 #include "Gui/Config/LayersConfigPanel.h"
 #include "Gui/Config/PhysicsConfigPanel.h"
-// Test - WIP
-#include "Gui/Nodes/GraphPanel.h"
 #include "Gui/NNode/NGraphPanel.h"
 
 #include "ImGui/src/imgui.h"
@@ -69,8 +67,7 @@ namespace Stimpi
 		LayersConfigPanel m_LayersConfigPanel;
 		PhysicsConfigPanel m_PhysicsConfigPanel;
 
-		//Test-WIP
-		GraphPanel m_NodePanelNew;
+		// Node graph
 		NGraphPanel m_NNodePanelNew;
 
 		//Scene data

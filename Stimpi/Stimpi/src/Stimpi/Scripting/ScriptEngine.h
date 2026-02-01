@@ -25,6 +25,7 @@ namespace Stimpi
 	class ScriptInstance;
 	class ScriptObject;
 	class ScriptField;
+	class ScriptProperty;
 
 	struct ClassIdentifier
 	{
@@ -81,6 +82,8 @@ namespace Stimpi
 		static std::shared_ptr<ScriptClass> GetClassByName(const std::string& className);
 		static std::shared_ptr<ScriptClass> GetClassByClassIdentifier(const ClassIdentifier& identifier);
 		static std::unordered_map<std::string, std::shared_ptr<ScriptClass>> GetEntityClasses();	// Not used
+
+		static std::shared_ptr<ScriptClass> GetScriptClassFromCoreAssembly(const std::string& className);
 
 		static MonoImage* GetCoreAssemblyImage();
 		static MonoDomain* GetAppDomain();
@@ -142,10 +145,11 @@ namespace Stimpi
 		friend ScriptClass;
 	};
 
-	class ScriptClass
+	class ST_API ScriptClass
 	{
 	public:
 		ScriptClass() = default;
+		ScriptClass(MonoClass* monoClass);
 		ScriptClass(const std::string& namespaceName, const std::string& className, MonoAssembly* monoAssembly);
 
 		MonoObject* Instantiate();
@@ -159,6 +163,8 @@ namespace Stimpi
 
 		MonoClassField* GetMonoField(const std::string& fieldName);
 		std::vector<MonoClassField*>& GetAllMonoFields() { return m_Fields; }
+
+		std::shared_ptr<ScriptProperty> GetPropertyByName(const std::string& propName);
 	private:
 		void LoadFields();
 		void LoadProperties();
@@ -230,6 +236,10 @@ namespace Stimpi
 		void GetFieldValue(const std::string& fieldName, void* data);
 		void SetFieldValue(const std::string& fieldName, void* data);
 		std::shared_ptr<ScriptObject> GetFieldAsObject(const std::string& fieldName, bool createNew);
+		std::shared_ptr<ScriptObject> GetParentPropertyAsObject(const std::string& propName, bool createNew);
+
+		std::shared_ptr<ScriptObject> GetParent();
+		std::shared_ptr<ScriptClass> GetParentClass();
 
 		std::unordered_map<std::string, std::shared_ptr<ScriptField>>& GetFields();
 		std::shared_ptr<ScriptField> GetFieldByName(const std::string& fieldName);
@@ -277,5 +287,21 @@ namespace Stimpi
 		std::string m_FieldTypeName;
 		std::string m_FieldTypeShortName;
 		FieldType m_Type;
+	};
+
+	// Unlike Filed, we can't actually give it a parent monoObject at the point of its creation
+	// Once we get to read the value of a property it is then when we pass an monoObject ref to read from
+	class ST_API ScriptProperty
+	{
+	public:
+		ScriptProperty(MonoProperty* monoProp);
+
+		std::shared_ptr<ScriptObject> GetData(ScriptObject* ownerObject);
+		void SetData(ScriptObject* ownerObject, ScriptObject* dataObject);
+	private:
+		MonoProperty* m_MonoProperty;
+		std::string m_Name;
+		MonoMethod* m_GetMethod;
+		MonoMethod* m_SetMethod;
 	};
 }

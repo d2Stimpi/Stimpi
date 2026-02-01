@@ -709,9 +709,10 @@ namespace Stimpi
 		return s_Data->m_EntityClasses;
 	}
 
-
-
-
+	std::shared_ptr<Stimpi::ScriptClass> ScriptEngine::GetScriptClassFromCoreAssembly(const std::string& className)
+	{
+		return std::make_shared<ScriptClass>("Stimpi", className, s_Data->m_CoreAssembly);
+	}
 
 	void ScriptEngine::InitMono()
 	{
@@ -1097,6 +1098,16 @@ namespace Stimpi
 		LoadFields();
 	}
 
+	ScriptClass::ScriptClass(MonoClass* monoClass)
+		: m_Class(monoClass)
+	{
+		ST_CORE_ASSERT(!m_Class);
+		m_Namespace = mono_class_get_namespace(m_Class);
+		m_Name = mono_class_get_name(m_Class);
+
+		LoadFields();
+	}
+
 	MonoObject* ScriptClass::Instantiate()
 	{
 		ST_CORE_ASSERT(!m_Class);
@@ -1134,6 +1145,17 @@ namespace Stimpi
 	MonoClassField* ScriptClass::GetMonoField(const std::string& fieldName)
 	{
 		return mono_class_get_field_from_name(m_Class, fieldName.c_str());
+	}
+
+	std::shared_ptr<ScriptProperty> ScriptClass::GetPropertyByName(const std::string& propName)
+	{
+		std::shared_ptr<ScriptProperty> retProperty = nullptr;
+		MonoProperty* prop = mono_class_get_property_from_name(m_Class, propName.c_str());
+		if (prop)
+		{
+			retProperty = std::make_shared<ScriptProperty>(prop);
+		}
+		return retProperty;
 	}
 
 	void ScriptClass::LoadFields()
@@ -1392,6 +1414,83 @@ namespace Stimpi
 		return retObject;
 	}
 
+	std::shared_ptr<ScriptObject> ScriptObject::GetParentPropertyAsObject(const std::string& propName, bool createNew)
+	{
+		std::shared_ptr<ScriptObject> retObject = nullptr;
+
+		MonoClass* klass = mono_object_get_class(m_MonoObject);
+		// Cast to the desired sublcassName type
+		MonoClass* parent = mono_class_get_parent(klass);
+		if (parent)
+		{
+			MonoProperty* prop = mono_class_get_property_from_name(parent, propName.c_str());
+			if (prop)
+			{
+				MonoMethod* propGet = mono_property_get_get_method(prop);
+				if (propGet)
+				{
+					MonoObject* result;
+					result = mono_runtime_invoke(propGet, m_MonoObject, nullptr, nullptr);
+					if (result)
+					{
+						retObject = std::make_shared<ScriptObject>(result);
+					}
+					else if (createNew)
+					{
+						retObject = std::make_shared<ScriptObject>(std::string("Stimpi.").append(propName));
+						MonoMethod* propSet = mono_property_get_set_method(prop);
+						if (propSet)
+						{
+							void* param = retObject->GetMonoObject();
+							mono_runtime_invoke(propSet, m_MonoObject, &param, nullptr);
+						}
+						int val = 10;
+						retObject->GetFieldValue("ID", &val);
+						val++;
+					}
+				}
+			}
+		}
+		
+
+		return retObject;
+	}
+
+	/*
+	1) get parent class
+	2) get property
+	3) get/set value
+	*/
+
+	std::shared_ptr<ScriptObject> ScriptObject::GetParent()
+	{
+		std::shared_ptr<ScriptObject> parentObj = nullptr;
+
+		MonoClass* klass = mono_object_get_class(m_MonoObject);
+		MonoClass* parentClass = mono_class_get_parent(klass);
+		if (parentClass)
+		{
+			MonoObject* castObj = mono_object_castclass_mbyref(m_MonoObject, parentClass);
+			parentObj = std::make_shared<ScriptObject>(castObj);
+		}
+
+		return parentObj;
+	}
+
+	std::shared_ptr<ScriptClass> ScriptObject::GetParentClass()
+	{
+		std::shared_ptr<ScriptClass> retClass = nullptr;
+
+		MonoClass* klass = mono_object_get_class(m_MonoObject);
+		MonoClass* parentClass = mono_class_get_parent(klass);
+		if (parentClass)
+		{
+			retClass = std::make_shared<ScriptClass>(parentClass);
+		}
+
+		return retClass;
+	}
+
 	std::unordered_map<std::string, std::shared_ptr<ScriptField>>& ScriptObject::GetFields()
 	{
 		return m_Fields;
@@ -1427,6 +1526,79 @@ namespace Stimpi
 				m_Fields[fieldName] = std::make_shared<ScriptField>(this, field);
 			}
 		}
+
+		// TODO: make a wrapper type for script properties
+		/*MonoProperty* prop;
+		iter = nullptr;
+		while ((prop = mono_class_get_properties(klass, &iter)) != nullptr)
+		{
+			std::string propName = mono_property_get_name(prop);
+			ST_INFO("--- property name: {}", propName);
+		}*/
+
+		/*MonoClass* nested;
+		iter = nullptr;
+		while ((nested = mono_class_get_nested_types(klass, &iter)) != nullptr)
+		{
+			std::string nestedName = mono_class_get_name(nested);
+			ST_INFO("--- nested name: {}", nestedName);
+		}*/
+
+		/*MonoClass* iface;
+		iter = nullptr;
+		while ((iface = mono_class_get_interfaces(klass, &iter)) != nullptr)
+		{
+			std::string ifeceName = mono_class_get_name(iface);
+			ST_INFO("--- iface name: {}", ifeceName);
+		}*/
+
+		MonoType* classType = mono_class_get_type(klass);
+		MonoType* underType = mono_type_get_underlying_type(classType);
+		std::string underTypeName = mono_type_get_name(underType);
+		//ST_INFO("--- underType name: {}", underTypeName);
+
+		MonoClass* parent = mono_class_get_parent(klass);
+		if (parent)
+		{
+			MonoProperty* prop = mono_class_get_property_from_name(parent, "Entity");
+			// TODO: Move to populateProperties method, check if property is initialized (created object)
+
+			if (prop)
+			{
+				MonoMethod* propGet = mono_property_get_get_method(prop);
+				if (propGet)
+				{
+					MonoObject* result;
+					result = mono_runtime_invoke(propGet, m_MonoObject, nullptr, nullptr);
+				}
+			}
+		}
+
+
+		MonoImage* image = mono_assembly_get_image(s_Data->m_CoreAssembly);
+		MonoClass* testClass = mono_class_from_name(image, "Stimpi", "Component");
+		if (testClass != nullptr)
+		{
+			MonoObject* propValObj;
+
+
+			MonoObject* castObj = mono_object_castclass_mbyref(m_MonoObject, testClass);
+			if (castObj)
+			{
+				MonoClass* castClass = mono_object_get_class(castObj);
+				std::string casObjName = mono_class_get_name(castClass);
+				//ST_INFO("--- cast class name: {}", casObjName);
+			}
+
+			MonoProperty* sprop;
+			iter = nullptr;
+			while ((sprop = mono_class_get_properties(testClass, &iter)) != nullptr)
+			{
+				std::string spropName = mono_property_get_name(sprop);
+				//ST_INFO("--- s property name: {}", spropName);
+			}
+		}
+
 	}
 
 	/* ======== ScriptField ======== */
@@ -1472,6 +1644,41 @@ namespace Stimpi
 		}
 
 		return false;
+	}
+
+	/* ======== ScriptProperty ======== */
+
+	ScriptProperty::ScriptProperty(MonoProperty* monoProp)
+		: m_MonoProperty(monoProp)
+	{
+		m_Name = mono_property_get_name(m_MonoProperty);
+
+		m_GetMethod = mono_property_get_get_method(m_MonoProperty);
+		m_SetMethod = mono_property_get_set_method(m_MonoProperty);
+	}
+
+	std::shared_ptr<ScriptObject> ScriptProperty::GetData(ScriptObject* ownerObject)
+	{
+		std::shared_ptr<ScriptObject> retObject = nullptr;
+
+		if (m_GetMethod && ownerObject)
+		{
+			MonoObject* result;
+			result = mono_runtime_invoke(m_GetMethod, ownerObject->GetMonoObject(), nullptr, nullptr);
+			if (result)
+				retObject = std::make_shared<ScriptObject>(result);
+		}
+
+		return retObject;
+	}
+
+	void ScriptProperty::SetData(ScriptObject* ownerObject, ScriptObject* dataObject)
+	{
+		if (m_SetMethod && ownerObject)
+		{
+			void* param = (void*)dataObject->GetMonoObject();
+			mono_runtime_invoke(m_SetMethod, ownerObject->GetMonoObject(), &param, nullptr);
+		}
 	}
 
 }
