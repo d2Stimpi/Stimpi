@@ -100,6 +100,25 @@ namespace Stimpi
 			}
 		}
 
+		template <typename TComponent>
+		bool HasComponent()
+		{
+			std::string_view typeName = typeid(TComponent).name();
+			size_t pos = typeName.find_last_of(':');
+			std::string_view componentName = typeName.substr(pos + 1);
+			YAML::Node entityList = m_Data["EntityList"];
+
+			if (entityList.IsDefined())
+			{
+				for (YAML::const_iterator it = entityList.begin(); it != entityList.end(); it++)
+				{
+					YAML::Node entityNode = it->second;
+					if (entityNode[componentName])
+						return true;
+				}
+			}
+		}
+
 		// Asset
 		static AssetType GetTypeStatic() { return AssetType::PREFAB; }
 		AssetType GetType() override { return GetTypeStatic(); }

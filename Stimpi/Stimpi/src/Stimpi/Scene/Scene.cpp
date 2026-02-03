@@ -424,8 +424,17 @@ namespace Stimpi
 	{
 		Entity newEntity = { m_Registry.create(), this };
 		auto dst = newEntity.GetHandle();
+
+		// Prevent "out-of-order" component creation issue. Ex: SortingGroup created before DefaultGroup
+		// This way we make sure that dependent components are available at right time
+		newEntity.AddComponent<DefaultGroupComponent>();
+
 		for (auto [id, storage] : m_Registry.storage())
 		{
+			// Skip the following component copy
+			if (id == entt::type_hash<DefaultGroupComponent>::value())
+				continue;
+
 			auto src = entity.GetHandle();
 			if (storage.contains(src))
 			{
@@ -561,87 +570,6 @@ namespace Stimpi
 				}
 			}
 		}
-
-		/*GraphicsConfig graphicsConfig = Project::GetGraphicsConfig();
-		auto& sortingLayers = Project::GetSortingLayers();
-		auto& entityGroups = m_EntitySorter.GetEntityGroups();
-		for (auto& riter = sortingLayers.rbegin(); riter != sortingLayers.rend(); riter++)
-		{
-			auto& layer = *riter;
-			auto& entityLayerGroup = entityGroups[layer->m_Name];
-			if (!entityLayerGroup.m_Entities.empty())
-			{
-				// Reverse iterate trough entities and select first "hit"
-				for (auto& reiter = entityLayerGroup.m_Entities.rbegin(); reiter != entityLayerGroup.m_Entities.rend(); reiter++)
-				{
-					Entity entity = Entity((entt::entity)reiter->m_EntityID, this);
-					if (entity.HasComponent<QuadComponent>())
-					{
-						QuadComponent quad = entity.GetComponent<QuadComponent>();
-						if (quad.m_PickEnabled && SceneUtils::IsPointInRotatedSquare({ x, y }, quad.Center(), quad.m_Size, quad.m_Rotation))
-						{
-							picked = entity;
-							break;
-						}
-					}
-				}
-			}
-
-			// Stop if we already found a "hit" in layers
-			if (picked)
-				break;
-
-			// Check Axis sorted Entities
-			if (layer->m_Name == "Default")
-			{
-				for (auto& reiter = m_EntitySorter.m_AxisSortedEntites.rbegin(); reiter != m_EntitySorter.m_AxisSortedEntites.rend(); reiter++)
-				{
-					Entity entity = Entity((entt::entity)*reiter, this);
-					if (entity.HasComponent<QuadComponent>())
-					{
-						QuadComponent quad = entity.GetComponent<QuadComponent>();
-						if (quad.m_PickEnabled && SceneUtils::IsPointInRotatedSquare({ x, y }, quad.Center(), quad.m_Size, quad.m_Rotation))
-						{
-							picked = entity;
-							break;
-						}
-					}
-				}
-			}
-
-			// Stop if we already found a "hit" in Axis sorted Entities
-			if (picked)
-				break;
-		}
-
-		m_Registry.view<CircleComponent>().each([this, &picked, x, y](auto e, auto& circle)
-			{
-				if (SceneUtils::IsPointInCircle({ x, y }, circle.Center(), circle.MaxRadius() / 2.0f))
-				{
-					picked = Entity(e, this);
-				}
-			});
-
-		// Collider box only entities will have priority to be selected, acting as always on top as they are rendered last.
-		// This is only if the debug option is enabled and colliders are visible
-		if (Physics::ShowColliderOutlineEnabled())
-		{
-			m_Registry.view<BoxCollider2DComponent, QuadComponent>().each([this, &picked, x, y](auto e, auto& collider, auto& quad)
-			{
-				if (SceneUtils::IsPointInRotatedSquare({ x, y }, quad.Center(), quad.m_Size, quad.m_Rotation))
-				{
-					picked = Entity(e, this);
-				}
-			});
-
-			m_Registry.view<BoxCollider2DComponent, CircleComponent>().each([this, &picked, x, y](auto e, auto& collider, auto& circle)
-			{
-				if (SceneUtils::IsPointInCircle({ x, y }, circle.Center(), circle.MaxRadius() / 2.0f))
-				{
-					picked = Entity(e, this);
-				}
-			});
-		}*/
 
 		return picked;
 	}

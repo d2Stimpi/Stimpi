@@ -15,7 +15,7 @@ namespace Stimpi
 	{
 	}
 
-	UUID::UUID(uint64_t uuid)
+	UUID::UUID(UUIDType uuid)
 		: m_UUID(uuid)
 	{
 	}

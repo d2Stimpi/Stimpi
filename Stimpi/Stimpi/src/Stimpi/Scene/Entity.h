@@ -7,6 +7,8 @@
 #include <entt/entt.hpp>
 #include <yaml-cpp/yaml.h>
 
+#define INVALID_ENTITY_HANDLE	0
+
 namespace Stimpi
 {
 	class Entity
@@ -58,7 +60,7 @@ namespace Stimpi
 		// TODO: remove when GUID is implemented
 		operator uint32_t() const { return (uint32_t)m_Handle; }
 	private:
-		entt::entity m_Handle{ 0 };
+		entt::entity m_Handle{ INVALID_ENTITY_HANDLE };
 		Scene* m_Scene{ nullptr };
 	};
 }

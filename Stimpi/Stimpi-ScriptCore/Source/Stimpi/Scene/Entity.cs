@@ -12,17 +12,25 @@ namespace Stimpi
     public class Entity
     {
         private readonly bool _debug = true;
+        // Entity can hold either valid ID (Instantiated Object) or Prefab Asset Handle (Not Instantiated Object)
         public readonly uint ID;
+        public readonly ulong PrefabHandle;
 
         internal Entity(uint id)
         {
             ID = id;
-            //Console.WriteLine($"Created Entity with id {ID}");
+            PrefabHandle = 0;
+        }
+
+        internal Entity(ulong prefabHandle)
+        {
+            PrefabHandle = prefabHandle;
         }
 
         protected Entity()
         {
             ID = 0;
+            PrefabHandle = 0;
         }
 
         public bool HasComponent<T>() where T : Component, new()
@@ -106,7 +114,30 @@ namespace Stimpi
             return null;
         }
 
-        // TODO: move to EntityManager class
+        public Entity Instantiate(Entity entity, Vector2 position, float rotation)
+        {
+            if (entity != null)
+            {
+                // Handle instantiating of an Entity - make a copy
+                if (entity.ID != 0)
+                {
+                    uint newEntityID = InternalCalls.Entity_Instantiate(entity.ID, ref position, ref rotation);
+                    if (newEntityID != 0)
+                        return new Entity(newEntityID);
+                }
+                // Handle instantiating a Prefab asset
+                if (entity.PrefabHandle != 0)
+                {
+                    uint newEntityID = InternalCalls.Entity_InstantiatePrefab(entity.PrefabHandle, ref position, ref rotation);
+                    if (newEntityID != 0)
+                        return new Entity(newEntityID);
+                }
+            }
+
+            return null;
+        }
+
+        // TODO: consider moving to EntityManager class
         public static T Create<T>() where T : Entity, new()
         {
             object instance = InternalCalls.CreateScriptInstance(typeof(T).FullName);
@@ -116,7 +147,7 @@ namespace Stimpi
             return null;
         }
 
-        // TODO: move to EntityManager class
+        // TODO: consider moving to EntityManager class
         public static bool Destroy(uint ID)
         {
             return InternalCalls.Entity_Remove(ID);

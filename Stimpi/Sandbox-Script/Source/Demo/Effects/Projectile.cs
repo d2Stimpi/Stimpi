@@ -18,7 +18,7 @@ namespace Demo
         private AnimatedSpriteComponent _anim;
         private bool _enableUpdate = true;
         private bool _enableCollision = true;
-        private float _fileSpan = 0.0f;
+        private float _lifeSpan = 0.0f;
         private Vector2 _velocity;
         private Vector2 _velocityUnit;
         private ProjectileType _type;
@@ -34,7 +34,7 @@ namespace Demo
             LifeSpan = 1.0f;
 
             _enableUpdate = true;
-            _fileSpan = LifeSpan;
+            _lifeSpan = LifeSpan;
             _owner = owner;
 
             // Get owner Position
@@ -164,8 +164,8 @@ namespace Demo
             if (_enableUpdate)
             {
                 Physics.SetLinearVelocity(ID, _velocityUnit * Velocity);
-                _fileSpan -= ts;
-                if (_fileSpan <= 0)
+                _lifeSpan -= ts;
+                if (_lifeSpan <= 0)
                 {
                     Console.WriteLine($"Projectile's lifespan elapsed");
                     ProjectileFactory.Release(this);

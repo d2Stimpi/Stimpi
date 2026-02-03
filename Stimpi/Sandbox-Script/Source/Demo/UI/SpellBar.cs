@@ -117,14 +117,6 @@ namespace Demo
 
                 UpdateIconsVisibility(_elementCount);
             }
-
-            /*if (Input.IsKeyDown(KeyCode.KEY_SPACE))
-            {
-                _elementCount = 0;
-                UpdateIconsVisibility(_elementCount);
-
-                ConsumeRegiseredKeyPattern();
-            }*/
         }
 
         /* Private methods */

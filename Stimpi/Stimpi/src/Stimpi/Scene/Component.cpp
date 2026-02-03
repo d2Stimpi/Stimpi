@@ -140,6 +140,7 @@ namespace Stimpi
 	// DefaultGroupComponent
 	void ComponentObserver::OnDefaultGroupComponentConstruct(entt::registry& reg, entt::entity ent)
 	{
+		Entity entity = { ent, m_Scene };
 	}
 
 	void ComponentObserver::OnDefaultGroupComponentDestruct(entt::registry& reg, entt::entity ent)

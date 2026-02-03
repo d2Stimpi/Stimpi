@@ -169,6 +169,37 @@ namespace Stimpi
 		return scene->IsEntityValid(entity);
 	}
 
+	static uint32_t Entity_Instantiate(uint32_t entityID, glm::vec2* position, float* rotation)
+	{
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->CopyEntity(Entity((entt::entity)entityID, scene));
+		if (entity.HasComponent<QuadComponent>())
+		{
+			QuadComponent& quad = entity.GetComponent<QuadComponent>();
+			quad.m_Position = { position->x, position->y, 0.0f };
+			quad.m_Rotation = *rotation;
+		}
+
+		return entity;
+	}
+
+
+	static uint32_t Entity_InstantiatePrefab(AssetHandle prefabHandle, glm::vec2* position, float* rotation)
+	{
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->CreateEntity(prefabHandle);
+		if (entity.HasComponent<QuadComponent>())
+		{
+			QuadComponent& quad = entity.GetComponent<QuadComponent>();
+			quad.m_Position = { position->x, position->y, 0.0f };
+			quad.m_Rotation = *rotation;
+		}
+
+		return entity;
+	}
+
 	static MonoObject* GetScriptInstace(uint32_t entityID)
 	{
 		return ScriptEngine::GetManagedInstance(entityID);
@@ -1458,7 +1489,8 @@ namespace Stimpi
 		{
 			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
 			b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
-			body->SetLinearVelocity({velocity->x, velocity->y});
+			if (body)
+				body->SetLinearVelocity({velocity->x, velocity->y});
 		}
 
 		return hasComponent;
@@ -1614,6 +1646,8 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(Entity_FindAllEntitiesByName);
 		ST_ADD_INTERNAL_CALL(Entity_Remove);
 		ST_ADD_INTERNAL_CALL(Entity_IsValidEntityID);
+		ST_ADD_INTERNAL_CALL(Entity_Instantiate);
+		ST_ADD_INTERNAL_CALL(Entity_InstantiatePrefab);
 		ST_ADD_INTERNAL_CALL(GetScriptInstace);
 		ST_ADD_INTERNAL_CALL(CreateScriptInstance);
 

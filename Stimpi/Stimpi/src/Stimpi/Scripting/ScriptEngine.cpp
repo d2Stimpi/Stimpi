@@ -1414,54 +1414,6 @@ namespace Stimpi
 		return retObject;
 	}
 
-	std::shared_ptr<ScriptObject> ScriptObject::GetParentPropertyAsObject(const std::string& propName, bool createNew)
-	{
-		std::shared_ptr<ScriptObject> retObject = nullptr;
-
-		MonoClass* klass = mono_object_get_class(m_MonoObject);
-		// Cast to the desired sublcassName type
-		MonoClass* parent = mono_class_get_parent(klass);
-		if (parent)
-		{
-			MonoProperty* prop = mono_class_get_property_from_name(parent, propName.c_str());
-			if (prop)
-			{
-				MonoMethod* propGet = mono_property_get_get_method(prop);
-				if (propGet)
-				{
-					MonoObject* result;
-					result = mono_runtime_invoke(propGet, m_MonoObject, nullptr, nullptr);
-					if (result)
-					{
-						retObject = std::make_shared<ScriptObject>(result);
-					}
-					else if (createNew)
-					{
-						retObject = std::make_shared<ScriptObject>(std::string("Stimpi.").append(propName));
-						MonoMethod* propSet = mono_property_get_set_method(prop);
-						if (propSet)
-						{
-							void* param = retObject->GetMonoObject();
-							mono_runtime_invoke(propSet, m_MonoObject, &param, nullptr);
-						}
-						int val = 10;
-						retObject->GetFieldValue("ID", &val);
-						val++;
-					}
-				}
-			}
-		}
-		
-
-		return retObject;
-	}
-
-	/*
-	1) get parent class
-	2) get property
-	3) get/set value
-	*/
-
 	std::shared_ptr<ScriptObject> ScriptObject::GetParent()
 	{
 		std::shared_ptr<ScriptObject> parentObj = nullptr;
@@ -1551,54 +1503,6 @@ namespace Stimpi
 			std::string ifeceName = mono_class_get_name(iface);
 			ST_INFO("--- iface name: {}", ifeceName);
 		}*/
-
-		MonoType* classType = mono_class_get_type(klass);
-		MonoType* underType = mono_type_get_underlying_type(classType);
-		std::string underTypeName = mono_type_get_name(underType);
-		//ST_INFO("--- underType name: {}", underTypeName);
-
-		MonoClass* parent = mono_class_get_parent(klass);
-		if (parent)
-		{
-			MonoProperty* prop = mono_class_get_property_from_name(parent, "Entity");
-			// TODO: Move to populateProperties method, check if property is initialized (created object)
-
-			if (prop)
-			{
-				MonoMethod* propGet = mono_property_get_get_method(prop);
-				if (propGet)
-				{
-					MonoObject* result;
-					result = mono_runtime_invoke(propGet, m_MonoObject, nullptr, nullptr);
-				}
-			}
-		}
-
-
-		MonoImage* image = mono_assembly_get_image(s_Data->m_CoreAssembly);
-		MonoClass* testClass = mono_class_from_name(image, "Stimpi", "Component");
-		if (testClass != nullptr)
-		{
-			MonoObject* propValObj;
-
-
-			MonoObject* castObj = mono_object_castclass_mbyref(m_MonoObject, testClass);
-			if (castObj)
-			{
-				MonoClass* castClass = mono_object_get_class(castObj);
-				std::string casObjName = mono_class_get_name(castClass);
-				//ST_INFO("--- cast class name: {}", casObjName);
-			}
-
-			MonoProperty* sprop;
-			iter = nullptr;
-			while ((sprop = mono_class_get_properties(testClass, &iter)) != nullptr)
-			{
-				std::string spropName = mono_property_get_name(sprop);
-				//ST_INFO("--- s property name: {}", spropName);
-			}
-		}
-
 	}
 
 	/* ======== ScriptField ======== */
@@ -1657,6 +1561,7 @@ namespace Stimpi
 		m_SetMethod = mono_property_get_set_method(m_MonoProperty);
 	}
 
+	// TODO: move this to ScriptObject - GetProperty(ScriptProperty*)
 	std::shared_ptr<ScriptObject> ScriptProperty::GetData(ScriptObject* ownerObject)
 	{
 		std::shared_ptr<ScriptObject> retObject = nullptr;
@@ -1672,6 +1577,7 @@ namespace Stimpi
 		return retObject;
 	}
 
+	// TODO: move this to ScriptObject - SetProperty(ScriptProperty*, ScriptObject*)
 	void ScriptProperty::SetData(ScriptObject* ownerObject, ScriptObject* dataObject)
 	{
 		if (m_SetMethod && ownerObject)

@@ -29,11 +29,13 @@ namespace Stimpi
 
 	static std::string EntityFieldTypeFragment(ScriptObject* ownerObj, ScriptField* field)
 	{
-		uint32_t fieldData = 0;
+		uint32_t fieldData = INVALID_ENTITY_HANDLE;
+		AssetHandle prefabHandle = INVALID_ASSET_HANDLE;
 		auto entityObj = ownerObj->GetFieldAsObject(field->GetName(), false);
 		if (entityObj)
 		{
 			entityObj->GetFieldValue("ID", &fieldData);
+			entityObj->GetFieldValue("PrefabHandle", &prefabHandle);
 		}
 
 		auto activeScene = SceneManager::Instance()->GetActiveScene();
@@ -43,6 +45,14 @@ namespace Stimpi
 		{
 			TagComponent tag = entity.GetComponent<TagComponent>();
 			tagStr = tag.m_Tag;
+		}
+		else if (prefabHandle)
+		{
+			auto prefabAsset = AssetManager::GetAsset<Prefab>(prefabHandle);
+			if (prefabAsset->GetType() == Prefab::GetTypeStatic())
+			{
+				tagStr = prefabAsset->GetName();
+			}
 		}
 
 		return tagStr;
@@ -52,8 +62,18 @@ namespace Stimpi
 	{
 		UIPayload::BeginTarget(PAYLOAD_DATA_TYPE_ENTITY, [&ownerObj, &field](void* data, uint32_t size)
 			{
+				AssetHandle handle = INVALID_ASSET_HANDLE;
 				auto entityObj = ownerObj->GetFieldAsObject(field->GetName(), true);
 				entityObj->SetFieldValue("ID", data);
+				entityObj->SetFieldValue("PrefabHandle", &handle);
+			});
+
+		UIPayload::BeginTarget(PAYLOAD_PREFAB, [&ownerObj, &field](void* data, uint32_t size)
+			{
+				uint32_t handle = INVALID_ENTITY_HANDLE;
+				auto entityObj = ownerObj->GetFieldAsObject(field->GetName(), true);
+				entityObj->SetFieldValue("ID", &handle);
+				entityObj->SetFieldValue("PrefabHandle", data);
 			});
 	}
 
@@ -61,12 +81,16 @@ namespace Stimpi
 
 	static std::string ComponentFieldTypeFragment(ScriptObject* ownerObj, ScriptField* field)
 	{
-		uint32_t fieldData = 0;
-		auto entityObj = ownerObj->GetFieldAsObject(field->GetName(), true);
-		auto propertyObj = entityObj->GetParentPropertyAsObject("Entity", true);
+		uint32_t fieldData = INVALID_ENTITY_HANDLE;
+		AssetHandle prefabHandle = INVALID_ASSET_HANDLE;
+		std::shared_ptr<ScriptObject> entityObj = ownerObj->GetFieldAsObject(field->GetName(), true);
+		std::shared_ptr<ScriptClass> parent = entityObj->GetParentClass();
+		std::shared_ptr<ScriptProperty> property = parent->GetPropertyByName("Entity");
+		std::shared_ptr<ScriptObject> propertyObj = property->GetData(entityObj.get());
 		if (propertyObj)
 		{
 			propertyObj->GetFieldValue("ID", &fieldData);
+			propertyObj->GetFieldValue("PrefabHandle", &prefabHandle);
 		}
 
 		auto activeScene = SceneManager::Instance()->GetActiveScene();
@@ -76,6 +100,14 @@ namespace Stimpi
 		{
 			TagComponent tag = entity.GetComponent<TagComponent>();
 			tagStr = tag.m_Tag;
+		}
+		else if (prefabHandle)
+		{
+			auto prefabAsset = AssetManager::GetAsset<Prefab>(prefabHandle);
+			if (prefabAsset->GetType() == Prefab::GetTypeStatic())
+			{
+				tagStr = prefabAsset->GetName();
+			}
 		}
 
 		return tagStr;
@@ -92,6 +124,7 @@ namespace Stimpi
 	{
 		UIPayload::BeginTarget(PAYLOAD_DATA_TYPE_ENTITY, [&ownerObj, &field](void* data, uint32_t size)
 			{
+				AssetHandle handle = INVALID_ASSET_HANDLE;
 				Entity entity = *(Entity*)data;
 				std::string fieldTypeName = field->GetFieldTypeName();
 
@@ -106,8 +139,10 @@ namespace Stimpi
 
 				// Get parent from the Component type field
 				std::shared_ptr<ScriptClass> parent = entityObj->GetParentClass();
+
 				// Get the Entity data, defined as C# Property type
 				std::shared_ptr<ScriptProperty> property = parent->GetPropertyByName("Entity");
+
 				// Get Entity data from Component object
 				std::shared_ptr<ScriptObject> propertyObj = property->GetData(entityObj.get());
 				if (propertyObj == nullptr)
@@ -115,10 +150,43 @@ namespace Stimpi
 					propertyObj = std::make_shared<ScriptObject>("Stimpi.Entity");
 				}
 				propertyObj->SetFieldValue("ID", data);
- 				property->SetData(ownerObj, propertyObj.get());
+				propertyObj->SetFieldValue("PrefabHandle", &handle);
+				property->SetData(entityObj.get(), propertyObj.get());
+			});
 
-				//auto propertyObj = entityObj->GetParentPropertyAsObject("Entity", true);
-				//propertyObj->SetFieldValue("ID", data);
+		UIPayload::BeginTarget(PAYLOAD_PREFAB, [&ownerObj, &field](void* data, uint32_t size)
+			{
+				uint32_t handle = INVALID_ENTITY_HANDLE;
+				std::string fieldTypeName = field->GetFieldTypeName();
+				AssetHandle prefabHandle = *(AssetHandle*)data;
+				auto prefabAsset = AssetManager::GetAsset<Prefab>(prefabHandle);
+
+				if (prefabAsset->GetType() == Prefab::GetTypeStatic())
+				{
+					if (fieldTypeName == s_QuadComponentType)
+					{
+						if (!prefabAsset->HasComponent<QuadComponent>())
+							return;
+					}
+				}
+
+				auto entityObj = ownerObj->GetFieldAsObject(field->GetName(), true);
+				std::shared_ptr<ScriptClass> parent = entityObj->GetParentClass();
+				std::shared_ptr<ScriptProperty> property = parent->GetPropertyByName("Entity");
+				std::shared_ptr<ScriptObject> propertyObj = property->GetData(entityObj.get());
+
+				if (propertyObj == nullptr)
+				{
+					propertyObj = std::make_shared<ScriptObject>("Stimpi.Entity");
+				}
+				propertyObj->SetFieldValue("ID", &handle);
+				propertyObj->SetFieldValue("PrefabHandle", data);
+				property->SetData(entityObj.get(), propertyObj.get());
+
+				AssetHandle assetH = INVALID_ASSET_HANDLE;
+				propertyObj->GetFieldValue("PrefabHandle", &assetH);
+				assetH;
+
 			});
 	}
 
@@ -172,6 +240,19 @@ namespace Stimpi
 	void ScriptFieldFragment::HandlePayloadType(ScriptObject* ownerObj, ScriptField* field)
 	{
 		std::string fieldTypeName = field->GetFieldTypeName();
+
+		// First check if Prefab AssetHandle can be a valid target type
+		/*std::shared_ptr<ScriptObject> entityObj = ownerObj->GetFieldAsObject(field->GetName(), true);
+		std::shared_ptr<ScriptClass> parent = entityObj->GetParentClass();
+		std::string fieldParentTypeName = parent->GetFullName();
+		if (fieldTypeName == s_EntityType || fieldParentTypeName == s_ComponentType)
+		{
+			bool handled = HandlePrefabPayload(ownerObj, field);
+			if (handled)
+				return;
+		}*/
+
+
 		if (s_ScriptFieldTypePayloadFunctions.find(fieldTypeName) != s_ScriptFieldTypePayloadFunctions.end())
 		{
 			return s_ScriptFieldTypePayloadFunctions.at(fieldTypeName)(ownerObj, field);

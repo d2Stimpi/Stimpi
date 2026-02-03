@@ -24,6 +24,10 @@ namespace Stimpi
         public extern static bool Entity_Remove(uint entityID);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool Entity_IsValidEntityID(uint entityID);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static uint Entity_Instantiate(uint entityID, ref Vector2 position, ref float rotation);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static uint Entity_InstantiatePrefab(ulong prefabHandle, ref Vector2 position, ref float rotation);
 
         /* TagComponent */
         [MethodImplAttribute(MethodImplOptions.InternalCall)]

@@ -1,3 +1,31 @@
+Prefab vs Entity
+Entity:
+-	Copying an entity makes a new entity with identical structure of Components having identical content
+-	Modifying an entity changes relevant data only for that exact entity
+Prefab:
+-	Making an entity into a Prefab asset type allows for modifying multiple copies of entities by simply chaning the asset data
+-	Modifying any instance of a Prefab will propagate all modifications to all entities that belong to that asset type
+
+==== TODO List Items ====
+
+Prefabs Editor:
+-	Replacing prefab instance's parent prefab asset, by creating a new prefab asset with identical name as the existing one,
+	preserving QuadComponent contents of all existing instances of prefab asset based on the name-basis of the asset.
+
+Prefabs Scripting:
+-	Drag-drop an entity to a valid script field should check if said entity is of a prefab type and if not prompt to create
+	a prefab from the original drag-dropped entity
+-	Drag-drop a Prefab asset on to Entity/Component script field
+
+General Scripting:
+-	Like Entity as a type field, any Comonent can be used as a reference to an Entity that has that specific Component
+-	Entity as a type can hold any entity object reference and therefore instantiate it trough Instatiate API
+	as a prefab (non asset?)
+
+=========================
+
+
+
 TODO Next:
 - Fix animatio files, frame position is now used
 - Make sure ExecTree is set when Scene is loaded

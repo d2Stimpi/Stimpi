@@ -242,6 +242,15 @@ namespace Demo
                             return;
                         }
 
+                        // Test entity instantiation
+                        if (pattern == "EE")
+                        {
+                            if (_spellBar.QuadSample != null)
+                                Instantiate(_spellBar.QuadSample.Entity, new Vector2(10.0f, 10.0f), 0.0f);
+                            else
+                                Console.WriteLine("_spellBar.QuadSample is not set");
+                        }
+
                         for (int i = 1; i < Projectiles; i++)
                             ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, MathUtils.RotatePointAroundCenter(targetPos, _quad.Position, -0.2617 * i), projSize));
                         ProjectileFactory.CreateProjectile(projType, new ProjSpawnParams(this, targetPos, projSize));

@@ -236,7 +236,6 @@ namespace Stimpi
 		void GetFieldValue(const std::string& fieldName, void* data);
 		void SetFieldValue(const std::string& fieldName, void* data);
 		std::shared_ptr<ScriptObject> GetFieldAsObject(const std::string& fieldName, bool createNew);
-		std::shared_ptr<ScriptObject> GetParentPropertyAsObject(const std::string& propName, bool createNew);
 
 		std::shared_ptr<ScriptObject> GetParent();
 		std::shared_ptr<ScriptClass> GetParentClass();

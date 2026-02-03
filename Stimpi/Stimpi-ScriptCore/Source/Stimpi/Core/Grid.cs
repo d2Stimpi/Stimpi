@@ -31,11 +31,11 @@ namespace Stimpi
     }
 
     /*
-     * Class that represents object container that acts as a Grid.
+     * Class that represents object container in form of a Grid.
      * Grid is endless, bucket index is calculated based on the bucket size.
      * Only buckets with objects exist.
      * 
-     * Grid should be updated each frame by remove-adding the objects that are moving.
+     * Grid should be updated each frame by removing-adding the objects that are moving.
      * 
      * Add: object is added to the grid based on Vector2 position provided.
      * Remove: object is removed based on internal index lookup dictionary.
@@ -48,7 +48,7 @@ namespace Stimpi
         private Dictionary<Index, Bucket<T>> _buckets = new Dictionary<Index, Bucket<T>>();
         // for internal keeping track of Object - Index for faster removal
         private Dictionary<T, Index> _indexDict = new Dictionary<T, Index>();
-        // for tracking objects to skip when looking fro next closest element
+        // for tracking objects to skip when looking for next closest element
         private HashSet<T> _skipSet = new HashSet<T>();
 
         public Grid(Vector2 bucketSize)
