@@ -11,7 +11,6 @@ namespace Player
     public class Player : Entity
     {
         public QuadComponent ProjectileObject;
-        public RigidBody2DComponent ProjB2D;
         public float Offset = 2.0f;
         public override void OnCreate()
         {

@@ -83,14 +83,14 @@ namespace Stimpi
 	{
 		uint32_t fieldData = INVALID_ENTITY_HANDLE;
 		AssetHandle prefabHandle = INVALID_ASSET_HANDLE;
-		std::shared_ptr<ScriptObject> entityObj = ownerObj->GetFieldAsObject(field->GetName(), true);
-		std::shared_ptr<ScriptClass> parent = entityObj->GetParentClass();
+		std::shared_ptr<ScriptObject> compObj = ownerObj->GetFieldAsObject(field->GetName(), true);
+		std::shared_ptr<ScriptClass> parent = compObj->GetParentClass();
 		std::shared_ptr<ScriptProperty> property = parent->GetPropertyByName("Entity");
-		std::shared_ptr<ScriptObject> propertyObj = property->GetData(entityObj.get());
-		if (propertyObj)
+		std::shared_ptr<ScriptObject> entityObj = property->GetData(compObj.get());
+		if (entityObj)
 		{
-			propertyObj->GetFieldValue("ID", &fieldData);
-			propertyObj->GetFieldValue("PrefabHandle", &prefabHandle);
+			entityObj->GetFieldValue("ID", &fieldData);
+			entityObj->GetFieldValue("PrefabHandle", &prefabHandle);
 		}
 
 		auto activeScene = SceneManager::Instance()->GetActiveScene();
@@ -134,23 +134,23 @@ namespace Stimpi
 				if (hasComponent)
 				{
 					// Get field that was inspected for having required Component type
-					auto entityObj = ownerObj->GetFieldAsObject(field->GetName(), true);
+					auto compObj = ownerObj->GetFieldAsObject(field->GetName(), true);
 
 					// Get parent from the Component type field
-					std::shared_ptr<ScriptClass> parent = entityObj->GetParentClass();
+					std::shared_ptr<ScriptClass> parent = compObj->GetParentClass();
 
 					// Get the Entity data, defined as C# Property type
 					std::shared_ptr<ScriptProperty> property = parent->GetPropertyByName("Entity");
 
 					// Get Entity data from Component object
-					std::shared_ptr<ScriptObject> propertyObj = property->GetData(entityObj.get());
-					if (propertyObj == nullptr)
+					std::shared_ptr<ScriptObject> entityObj = property->GetData(compObj.get());
+					if (entityObj == nullptr)
 					{
-						propertyObj = std::make_shared<ScriptObject>("Stimpi.Entity");
+						entityObj = std::make_shared<ScriptObject>("Stimpi.Entity");
 					}
-					propertyObj->SetFieldValue("ID", data);
-					propertyObj->SetFieldValue("PrefabHandle", &handle);
-					property->SetData(entityObj.get(), propertyObj.get());
+					entityObj->SetFieldValue("ID", data);
+					entityObj->SetFieldValue("PrefabHandle", &handle);
+					property->SetData(compObj.get(), entityObj.get());
 				}
 			});
 
@@ -170,21 +170,21 @@ namespace Stimpi
 					}
 				}
 
-				auto entityObj = ownerObj->GetFieldAsObject(field->GetName(), true);
-				std::shared_ptr<ScriptClass> parent = entityObj->GetParentClass();
+				auto compObj = ownerObj->GetFieldAsObject(field->GetName(), true);
+				std::shared_ptr<ScriptClass> parent = compObj->GetParentClass();
 				std::shared_ptr<ScriptProperty> property = parent->GetPropertyByName("Entity");
-				std::shared_ptr<ScriptObject> propertyObj = property->GetData(entityObj.get());
+				std::shared_ptr<ScriptObject> entityObj = property->GetData(compObj.get());
 
-				if (propertyObj == nullptr)
+				if (entityObj == nullptr)
 				{
-					propertyObj = std::make_shared<ScriptObject>("Stimpi.Entity");
+					entityObj = std::make_shared<ScriptObject>("Stimpi.Entity");
 				}
-				propertyObj->SetFieldValue("ID", &handle);
-				propertyObj->SetFieldValue("PrefabHandle", data);
-				property->SetData(entityObj.get(), propertyObj.get());
+				entityObj->SetFieldValue("ID", &handle);
+				entityObj->SetFieldValue("PrefabHandle", data);
+				property->SetData(compObj.get(), entityObj.get());
 
 				AssetHandle assetH = INVALID_ASSET_HANDLE;
-				propertyObj->GetFieldValue("PrefabHandle", &assetH);
+				entityObj->GetFieldValue("PrefabHandle", &assetH);
 				assetH;
 
 			});
@@ -246,9 +246,12 @@ namespace Stimpi
 	{
 		std::string fieldTypeName = field->GetFieldTypeName();
 		std::shared_ptr<ScriptObject> entityObj = ownerObj->GetFieldAsObject(field->GetName(), true);
-		std::shared_ptr<ScriptClass> parentClass = entityObj->GetParentClass();
-		if (parentClass->GetFullName() == s_ComponentType)
-			fieldTypeName = parentClass->GetFullName();
+		if (entityObj)
+		{
+			std::shared_ptr<ScriptClass> parentClass = entityObj->GetParentClass();
+			if (parentClass->GetFullName() == s_ComponentType)
+				fieldTypeName = parentClass->GetFullName();
+		}
 
 		if (s_ScriptFieldTypeFragmentFunctions.find(fieldTypeName) != s_ScriptFieldTypeFragmentFunctions.end())
 		{
@@ -262,9 +265,12 @@ namespace Stimpi
 	{
 		std::string fieldTypeName = field->GetFieldTypeName();
 		std::shared_ptr<ScriptObject> entityObj = ownerObj->GetFieldAsObject(field->GetName(), true);
-		std::shared_ptr<ScriptClass> parentClass = entityObj->GetParentClass();
-		if (parentClass->GetFullName() == s_ComponentType)
-			fieldTypeName = parentClass->GetFullName();
+		if (entityObj)
+		{
+			std::shared_ptr<ScriptClass> parentClass = entityObj->GetParentClass();
+			if (parentClass->GetFullName() == s_ComponentType)
+				fieldTypeName = parentClass->GetFullName();
+		}
 
 		if (s_ScriptFieldTypePayloadFunctions.find(fieldTypeName) != s_ScriptFieldTypePayloadFunctions.end())
 		{

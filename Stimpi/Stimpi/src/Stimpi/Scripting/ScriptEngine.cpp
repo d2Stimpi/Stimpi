@@ -324,9 +324,18 @@ namespace Stimpi
 		s_Data->m_Scene = SceneManager::Instance()->GetActiveSceneRef();
 
 		OnSceneChangedListener onScneeChanged = [&]() {
+			// TODO: This cant be here because the scene is already deserialized at this point
+			// and some script instances are created.
 			s_Data->m_Scene = SceneManager::Instance()->GetActiveSceneRef();
 		};
+
+		OnScenePreloadListener onScenePreload = [&](std::shared_ptr<Scene> scene) {
+			// TODO: use scene ptr when handling multiple scene implementation
+			ScriptEngine::ClearScriptInstances();	// For current one-scene implementation
+		};
+
 		SceneManager::Instance()->RegisterOnSceneChangeListener(onScneeChanged);
+		SceneManager::Instance()->RegisterOnScenePreCreateListener(onScenePreload);
 
 		// Note: full absolute path required for file watcher
 		s_Data->m_CoreScirptPath = std::filesystem::absolute(ResourceManager::GetScriptsPath()) / s_CoreScriptName;

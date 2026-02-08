@@ -14,11 +14,13 @@ namespace Stimpi
 
 	static void EntitySerialize(YAML::Emitter& out, ScriptObject* ownerObj, ScriptField* field)
 	{
-		uint32_t fieldData = 0;
+		uint32_t fieldData = INVALID_ENTITY_HANDLE;
+		AssetHandle prefabHandle = INVALID_ASSET_HANDLE;
 		auto entityObj = ownerObj->GetFieldAsObject(field->GetName(), false);
 		if (entityObj)
 		{
 			entityObj->GetFieldValue("ID", &fieldData);
+			entityObj->GetFieldValue("PrefabHandle", &prefabHandle);
 
 			out << YAML::Key << "Field";
 			out << YAML::BeginMap;
@@ -30,6 +32,7 @@ namespace Stimpi
 				out << YAML::BeginMap;
 				{
 					out << YAML::Key << "ID" << fieldData;
+					out << YAML::Key << "PrefabHandle" << prefabHandle;
 				}
 				out << YAML::EndMap;
 			}
@@ -39,12 +42,79 @@ namespace Stimpi
 
 	static void EntityDeserialize(const YAML::Node& node, ScriptObject* ownerObj, ScriptField* field)
 	{
-		if (!node["FieldData"]["ID"])
-			return;
+		if (node["FieldData"]["ID"])
+		{
+			uint32_t id = node["FieldData"]["ID"].as<uint32_t>();
+			auto entityObj = ownerObj->GetFieldAsObject(field->GetName(), true);
+			entityObj->SetFieldValue("ID", &id);
+		}
 
-		uint32_t id = node["FieldData"]["ID"].as<uint32_t>();
-		auto entityObj = ownerObj->GetFieldAsObject(field->GetName(), true);
+		if (node["FieldData"]["PrefabHandle"])
+		{
+			AssetHandle prefabHandle = node["FieldData"]["PrefabHandle"].as<UUIDType>();
+			auto entityObj = ownerObj->GetFieldAsObject(field->GetName(), true);
+			entityObj->SetFieldValue("PrefabHandle", &prefabHandle);
+		}
+	}
+
+	static void ComponentSerialize(YAML::Emitter& out, ScriptObject* ownerObj, ScriptField* field)
+	{
+		uint32_t fieldData = INVALID_ENTITY_HANDLE;
+		AssetHandle prefabHandle = INVALID_ASSET_HANDLE;
+
+		auto compObj = ownerObj->GetFieldAsObject(field->GetName(), true);
+		std::shared_ptr<ScriptClass> parent = compObj->GetParentClass();
+		std::shared_ptr<ScriptProperty> property = parent->GetPropertyByName("Entity");
+		std::shared_ptr<ScriptObject> entityObj = property->GetData(compObj.get());
+
+		if (entityObj)
+		{
+			entityObj->GetFieldValue("ID", &fieldData);
+			entityObj->GetFieldValue("PrefabHandle", &prefabHandle);
+
+			out << YAML::Key << "Field";
+			out << YAML::BeginMap;
+			{
+				out << YAML::Key << "Type" << ScriptSeriaizer::FieldTypeToString(field->GetType());
+				out << YAML::Key << "FieldTypeName" << field->GetFieldTypeName();
+				out << YAML::Key << "Name" << field->GetName();
+				out << YAML::Key << "FieldData";
+				out << YAML::BeginMap;
+				{
+					out << YAML::Key << "ID" << fieldData;
+					out << YAML::Key << "PrefabHandle" << prefabHandle;
+				}
+				out << YAML::EndMap;
+			}
+			out << YAML::EndMap;
+		}
+	}
+
+	static void ComponentDeserialize(const YAML::Node& node, ScriptObject* ownerObj, ScriptField* field)
+	{
+
+		auto compObj = ownerObj->GetFieldAsObject(field->GetName(), true);
+		std::shared_ptr<ScriptClass> parent = compObj->GetParentClass();
+		std::shared_ptr<ScriptProperty> property = parent->GetPropertyByName("Entity");
+		std::shared_ptr<ScriptObject> entityObj = property->GetData(compObj.get());
+
+		if (entityObj == nullptr)
+		{
+			entityObj = std::make_shared<ScriptObject>("Stimpi.Entity");
+		}
+
+		uint32_t id = INVALID_ENTITY_HANDLE;
+		if (node["FieldData"]["ID"])
+			id = node["FieldData"]["ID"].as<uint32_t>();
 		entityObj->SetFieldValue("ID", &id);
+
+		AssetHandle prefabHandle = INVALID_ASSET_HANDLE;
+		if (node["FieldData"]["PrefabHandle"])
+			prefabHandle = node["FieldData"]["PrefabHandle"].as<UUIDType>();
+		entityObj->SetFieldValue("PrefabHandle", &prefabHandle);
+
+		// Finally set the loaded Entity data 
+		property->SetData(compObj.get(), entityObj.get());
 	}
 
 	/* ======== ScriptSeriaizer generic functions ======== */
@@ -52,6 +122,14 @@ namespace Stimpi
 	static void CallSerializeByTypeFunction(YAML::Emitter& out, ScriptObject* ownerObj, ScriptField* field)
 	{
 		std::string fieldTypeName = field->GetFieldTypeName();
+		std::shared_ptr<ScriptObject> entityObj = ownerObj->GetFieldAsObject(field->GetName(), false);
+		if (entityObj)
+		{
+			std::shared_ptr<ScriptClass> parentClass = entityObj->GetParentClass();
+			if (parentClass->GetFullName() == s_ComponentType)
+				fieldTypeName = parentClass->GetFullName();
+		}
+
 		if (s_SerializeByTypeFunctions.find(fieldTypeName) != s_SerializeByTypeFunctions.end())
 		{
 			s_SerializeByTypeFunctions.at(fieldTypeName)(out, ownerObj, field);
@@ -61,6 +139,14 @@ namespace Stimpi
 	static void CallDeserializeByTypeFunction(const YAML::Node& node, ScriptObject* ownerObj, ScriptField* field)
 	{
 		std::string fieldTypeName = field->GetFieldTypeName();
+		std::shared_ptr<ScriptObject> entityObj = ownerObj->GetFieldAsObject(field->GetName(), true);
+		if (entityObj)
+		{
+			std::shared_ptr<ScriptClass> parentClass = entityObj->GetParentClass();
+			if (parentClass->GetFullName() == s_ComponentType)
+				fieldTypeName = parentClass->GetFullName();
+		}
+
 		if (s_DeserializeByTypeFunctions.find(fieldTypeName) != s_DeserializeByTypeFunctions.end())
 		{
 			s_DeserializeByTypeFunctions.at(fieldTypeName)(node, ownerObj, field);
@@ -70,7 +156,9 @@ namespace Stimpi
 	void ScriptSeriaizer::RegisterSirializableTypes()
 	{
 		ST_REGISTER_FIELD_TYPE_SERIALIZE(s_EntityType, EntitySerialize);
+		ST_REGISTER_FIELD_TYPE_SERIALIZE(s_ComponentType, ComponentSerialize);
 		ST_REGISTER_FIELD_TYPE_DESERIALIZE(s_EntityType, EntityDeserialize);
+		ST_REGISTER_FIELD_TYPE_DESERIALIZE(s_ComponentType, ComponentDeserialize);
 	}
 
 	void ScriptSeriaizer::SerializeScriptField(YAML::Emitter& out, ScriptObject* ownerObj, ScriptField* field)

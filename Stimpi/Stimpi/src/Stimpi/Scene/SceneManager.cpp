@@ -41,6 +41,7 @@ namespace Stimpi
 
 		m_ActiveScene = std::make_shared<Scene>();
 		m_ActiveScene->SetName(FilePath(filePath).GetFileNameStem());
+		NotifyOnScenePreload(m_ActiveScene);
 		SceneSerializer serializer(m_ActiveScene.get());
 		serializer.Deseriealize(filePath);
 		NotifyOnSceneChange();
@@ -74,6 +75,14 @@ namespace Stimpi
 		for (auto& listener : m_OnSceneChangeListeners)
 		{
 			listener();
+		}
+	}
+
+	void SceneManager::NotifyOnScenePreload(std::shared_ptr<Scene> scene)
+	{
+		for (auto& listener : m_OnScenePreloadListeners)
+		{
+			listener(scene);
 		}
 	}
 

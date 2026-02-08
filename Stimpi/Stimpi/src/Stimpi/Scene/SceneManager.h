@@ -8,6 +8,7 @@
 namespace Stimpi
 {
 	using OnSceneChangedListener = std::function<void(void)>;
+	using OnScenePreloadListener = std::function<void(std::shared_ptr<Scene>)>;
 
 	class ST_API SceneManager
 	{
@@ -32,13 +33,16 @@ namespace Stimpi
 		void LoadStartingScene(); // TODO: also populate SceneRegistry based on AssetRegistry
 
 		void RegisterOnSceneChangeListener(OnSceneChangedListener listener) { m_OnSceneChangeListeners.emplace_back(listener); }
+		void RegisterOnScenePreCreateListener(OnScenePreloadListener listener) { m_OnScenePreloadListeners.emplace_back(listener); }
 	
 	private:
 		void NotifyOnSceneChange();
+		void NotifyOnScenePreload(std::shared_ptr<Scene> scene);
 
 	private:
 		std::shared_ptr<Scene> m_ActiveScene;
 		FilePath m_ActiveScenePath;
 		std::vector<OnSceneChangedListener> m_OnSceneChangeListeners;
+		std::vector<OnScenePreloadListener> m_OnScenePreloadListeners;
 	};
 }

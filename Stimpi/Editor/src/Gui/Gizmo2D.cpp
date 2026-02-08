@@ -135,7 +135,7 @@ namespace Stimpi
 						{
 							//quad.m_Size.y -= translate_y * gContext.m_CameraZoom * gContext.m_ScalingScale;
 							glm::vec2 scale = { 0.0f, 0.0f };
-							scale.x -= translate_y * gContext.m_CameraZoom * gContext.m_ScalingScale;
+							scale.y -= translate_y * gContext.m_CameraZoom * gContext.m_ScalingScale;
 							EditorEntityManager::Scale(gContext.m_Entity, scale);
 						}
 					}

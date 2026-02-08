@@ -621,6 +621,10 @@ namespace Stimpi
 						}
 					}
 				}
+				else
+				{
+					ScriptEngine::CreateScriptInstance(component.m_ScriptName, s_Context.m_SelectedEntity);
+				}
 			}
 
 			ImGui::Spacing();
