@@ -211,6 +211,12 @@ namespace Stimpi
                 Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (Play {animationName})");
         }
 
+        public void Play(int index = -1)
+        {
+            if (!InternalCalls.AnimatedSpriteComponent_PlayIndex(Entity.ID, index))
+                Console.WriteLine($"Entity {Entity.ID} does not have AnimatedSpriteComponent (Play {index})");
+        }
+
         public void Stop()
         {
             if (!InternalCalls.AnimatedSpriteComponent_Stop(Entity.ID))

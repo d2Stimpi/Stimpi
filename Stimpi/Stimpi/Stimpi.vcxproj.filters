@@ -88,6 +88,9 @@
     <ClInclude Include="src\Stimpi\Asset\PrefabManager.h">
       <Filter>Stimpi\Asset</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\Asset\SceneAssetBuilder.h">
+      <Filter>Stimpi\Asset</Filter>
+    </ClInclude>
     <ClInclude Include="src\Stimpi\Asset\SceneImporter.h">
       <Filter>Stimpi\Asset</Filter>
     </ClInclude>
@@ -313,6 +316,9 @@
     <ClInclude Include="src\Stimpi\Utils\YamlCustomTypes.h">
       <Filter>Stimpi\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\Stimpi\Utils\YamlUtils.h">
+      <Filter>Stimpi\Utils</Filter>
+    </ClInclude>
     <ClInclude Include="src\Stimpi\VisualScripting\ExecTree.h">
       <Filter>Stimpi\VisualScripting</Filter>
     </ClInclude>
@@ -329,10 +335,6 @@
       <Filter>Stimpi\VisualScripting</Filter>
     </ClInclude>
     <ClInclude Include="src\stpch.h" />
-    <ClInclude Include="src\Stimpi\Utils\YamlUtils.h">
-      <Filter>Stimpi\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Stimpi\Asset\SceneAssetBuilder.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Asset\AnimationImporter.cpp">
@@ -366,6 +368,9 @@
       <Filter>Stimpi\Asset</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Asset\PrefabManager.cpp">
+      <Filter>Stimpi\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stimpi\Asset\SceneAssetBuilder.cpp">
       <Filter>Stimpi\Asset</Filter>
     </ClCompile>
     <ClCompile Include="src\Stimpi\Asset\SceneImporter.cpp">
@@ -560,6 +565,9 @@
     <ClCompile Include="src\Stimpi\Utils\YamlCustomTypes.cpp">
       <Filter>Stimpi\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="src\Stimpi\Utils\YamlUtils.cpp">
+      <Filter>Stimpi\Utils</Filter>
+    </ClCompile>
     <ClCompile Include="src\Stimpi\VisualScripting\ExecTree.cpp">
       <Filter>Stimpi\VisualScripting</Filter>
     </ClCompile>
@@ -573,9 +581,5 @@
       <Filter>Stimpi\VisualScripting</Filter>
     </ClCompile>
     <ClCompile Include="src\stpch.cpp" />
-    <ClCompile Include="src\Stimpi\Utils\YamlUtils.cpp">
-      <Filter>Stimpi\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Stimpi\Asset\SceneAssetBuilder.cpp" />
   </ItemGroup>
 </Project>

@@ -4,9 +4,6 @@
     <Filter Include="Gui">
       <UniqueIdentifier>{6AF0870B-D6F9-877C-5F75-9E7CCB7D937C}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Gui\CodeGen">
-      <UniqueIdentifier>{2E84C917-9A39-420D-232E-3CE48FE23811}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Gui\Components">
       <UniqueIdentifier>{3F7FA332-2B4D-9738-14E1-075F004E739D}</UniqueIdentifier>
     </Filter>
@@ -18,18 +15,6 @@
     </Filter>
     <Filter Include="Gui\NNode\Exec">
       <UniqueIdentifier>{A1F9FC7B-8DC7-F081-765B-61A862C8CCE6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Gui\Nodes">
-      <UniqueIdentifier>{B299BD40-1E04-72B7-6742-235DD3EB4F0C}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Gui\Nodes\Events">
-      <UniqueIdentifier>{562993D3-4222-B225-6B54-97AA57AC9131}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Gui\Nodes\Methods">
-      <UniqueIdentifier>{F5952E87-61AC-2C1D-AA23-B83E1679FDA4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Gui\Nodes\Variables">
-      <UniqueIdentifier>{BABBE6DB-261D-C4E9-AF8A-0A9C1BEBFAA8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Gui\Panels">
       <UniqueIdentifier>{7C45235C-68FD-64A9-D104-3E05BDDBFF99}</UniqueIdentifier>
@@ -129,6 +114,9 @@
     <ClInclude Include="src\Gui\NNode\NNodeRegistry.h">
       <Filter>Gui\NNode</Filter>
     </ClInclude>
+    <ClInclude Include="src\Gui\Panels\PrefabInspectWindow.h">
+      <Filter>Gui\Panels</Filter>
+    </ClInclude>
     <ClInclude Include="src\Gui\Panels\SceneHierarchyWindow.h">
       <Filter>Gui\Panels</Filter>
     </ClInclude>
@@ -155,9 +143,6 @@
     </ClInclude>
     <ClInclude Include="src\Gui\Utils\YamlCustomTypesEditor.h">
       <Filter>Gui\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Gui\Panels\PrefabInspectWindow.h">
-      <Filter>Gui\Panels</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -249,6 +234,9 @@
     <ClCompile Include="src\Gui\NNode\NNodeRegisrty.cpp">
       <Filter>Gui\NNode</Filter>
     </ClCompile>
+    <ClCompile Include="src\Gui\Panels\PrefabInspectWindow.cpp">
+      <Filter>Gui\Panels</Filter>
+    </ClCompile>
     <ClCompile Include="src\Gui\Panels\SceneHierarchyWindow.cpp">
       <Filter>Gui\Panels</Filter>
     </ClCompile>
@@ -272,9 +260,6 @@
     </ClCompile>
     <ClCompile Include="src\Gui\Utils\YamlCustomTypesEditor.cpp">
       <Filter>Gui\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Gui\Panels\PrefabInspectWindow.cpp">
-      <Filter>Gui\Panels</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

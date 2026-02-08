@@ -76,6 +76,8 @@ namespace Stimpi
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool AnimatedSpriteComponent_Play(uint entityID, string animationName);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool AnimatedSpriteComponent_PlayIndex(uint entityID, int index);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool AnimatedSpriteComponent_Stop(uint entityID);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool AnimatedSpriteComponent_Pause(uint entityID);

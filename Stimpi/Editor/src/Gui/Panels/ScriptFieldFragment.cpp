@@ -128,30 +128,30 @@ namespace Stimpi
 				Entity entity = *(Entity*)data;
 				std::string fieldTypeName = field->GetFieldTypeName();
 
-				if (fieldTypeName == s_QuadComponentType)
+				std::string name = s_ComponentTypeBaseStr;
+				name.append(field->GetFieldTypeShortName());
+				bool hasComponent = entity.HasComponent(name);
+				if (hasComponent)
 				{
-					if (!entity.HasComponent<QuadComponent>())
-						return;
+					// Get field that was inspected for having required Component type
+					auto entityObj = ownerObj->GetFieldAsObject(field->GetName(), true);
+
+					// Get parent from the Component type field
+					std::shared_ptr<ScriptClass> parent = entityObj->GetParentClass();
+
+					// Get the Entity data, defined as C# Property type
+					std::shared_ptr<ScriptProperty> property = parent->GetPropertyByName("Entity");
+
+					// Get Entity data from Component object
+					std::shared_ptr<ScriptObject> propertyObj = property->GetData(entityObj.get());
+					if (propertyObj == nullptr)
+					{
+						propertyObj = std::make_shared<ScriptObject>("Stimpi.Entity");
+					}
+					propertyObj->SetFieldValue("ID", data);
+					propertyObj->SetFieldValue("PrefabHandle", &handle);
+					property->SetData(entityObj.get(), propertyObj.get());
 				}
-
-				// Get field that was inspected for having required Component type
-				auto entityObj = ownerObj->GetFieldAsObject(field->GetName(), true);
-
-				// Get parent from the Component type field
-				std::shared_ptr<ScriptClass> parent = entityObj->GetParentClass();
-
-				// Get the Entity data, defined as C# Property type
-				std::shared_ptr<ScriptProperty> property = parent->GetPropertyByName("Entity");
-
-				// Get Entity data from Component object
-				std::shared_ptr<ScriptObject> propertyObj = property->GetData(entityObj.get());
-				if (propertyObj == nullptr)
-				{
-					propertyObj = std::make_shared<ScriptObject>("Stimpi.Entity");
-				}
-				propertyObj->SetFieldValue("ID", data);
-				propertyObj->SetFieldValue("PrefabHandle", &handle);
-				property->SetData(entityObj.get(), propertyObj.get());
 			});
 
 		UIPayload::BeginTarget(PAYLOAD_PREFAB, [&ownerObj, &field](void* data, uint32_t size)
@@ -200,12 +200,28 @@ namespace Stimpi
 		// QuadComponent
 		ST_REGISTER_FIELD_FRAGMENT_TYPE(s_QuadComponentType, ComponentFieldTypeFragment);
 		ST_REGISTER_FIELD_PAYLOAD_TYPE(s_QuadComponentType, ComponentFieldTypePayload);
-		
+		// Generic Component type
+		ST_REGISTER_FIELD_FRAGMENT_TYPE(s_ComponentType, ComponentFieldTypeFragment);
+		ST_REGISTER_FIELD_PAYLOAD_TYPE(s_ComponentType, ComponentFieldTypePayload);		
 	}
 
-	bool ScriptFieldFragment::IsFieldTypeSupported(const std::string& typeName)
+	bool ScriptFieldFragment::IsFieldTypeSupported(ScriptObject* ownerObj, ScriptField* field)
 	{
-		return s_ScriptFieldTypeFragmentFunctions.find(typeName) != s_ScriptFieldTypeFragmentFunctions.end();
+		if (ownerObj && field)
+		{
+			std::string fieldTypeName = field->GetFieldTypeName();
+			std::shared_ptr<ScriptObject> entityObj = ownerObj->GetFieldAsObject(field->GetName(), true);
+			if (entityObj)
+			{
+				std::shared_ptr<ScriptClass> parentClass = entityObj->GetParentClass();
+				if (parentClass->GetFullName() == "Stimpi.Component")
+					fieldTypeName = parentClass->GetFullName();
+			}
+			
+			return s_ScriptFieldTypeFragmentFunctions.find(fieldTypeName) != s_ScriptFieldTypeFragmentFunctions.end();
+		}
+
+		return false;
 	}
 
 	void ScriptFieldFragment::ScriptFieldInput(ScriptObject* ownerObj, ScriptField* field)
@@ -229,6 +245,11 @@ namespace Stimpi
 	std::string ScriptFieldFragment::CallFragmentFunction(ScriptObject* ownerObj, ScriptField* field)
 	{
 		std::string fieldTypeName = field->GetFieldTypeName();
+		std::shared_ptr<ScriptObject> entityObj = ownerObj->GetFieldAsObject(field->GetName(), true);
+		std::shared_ptr<ScriptClass> parentClass = entityObj->GetParentClass();
+		if (parentClass->GetFullName() == s_ComponentType)
+			fieldTypeName = parentClass->GetFullName();
+
 		if (s_ScriptFieldTypeFragmentFunctions.find(fieldTypeName) != s_ScriptFieldTypeFragmentFunctions.end())
 		{
 			return s_ScriptFieldTypeFragmentFunctions.at(fieldTypeName)(ownerObj, field);
@@ -240,18 +261,10 @@ namespace Stimpi
 	void ScriptFieldFragment::HandlePayloadType(ScriptObject* ownerObj, ScriptField* field)
 	{
 		std::string fieldTypeName = field->GetFieldTypeName();
-
-		// First check if Prefab AssetHandle can be a valid target type
-		/*std::shared_ptr<ScriptObject> entityObj = ownerObj->GetFieldAsObject(field->GetName(), true);
-		std::shared_ptr<ScriptClass> parent = entityObj->GetParentClass();
-		std::string fieldParentTypeName = parent->GetFullName();
-		if (fieldTypeName == s_EntityType || fieldParentTypeName == s_ComponentType)
-		{
-			bool handled = HandlePrefabPayload(ownerObj, field);
-			if (handled)
-				return;
-		}*/
-
+		std::shared_ptr<ScriptObject> entityObj = ownerObj->GetFieldAsObject(field->GetName(), true);
+		std::shared_ptr<ScriptClass> parentClass = entityObj->GetParentClass();
+		if (parentClass->GetFullName() == s_ComponentType)
+			fieldTypeName = parentClass->GetFullName();
 
 		if (s_ScriptFieldTypePayloadFunctions.find(fieldTypeName) != s_ScriptFieldTypePayloadFunctions.end())
 		{

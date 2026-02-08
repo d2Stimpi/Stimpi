@@ -152,11 +152,6 @@ namespace Stimpi
 #define ENTT_REGISTER_COMPONENT_ON_DESTROY(component, function)		reg.on_destroy<component>().connect<&function>(this)
 #define ENTT_REMOVE_COMPONENT_ON_DESTROY(component, function)		reg.on_destroy<component>().disconnect<&function>(this)
 
-	static void TestMethod(entt::registry& reg, entt::entity ent)
-	{
-
-	}
-
 	void ComponentObserver::InitComponentObservers(entt::registry& reg, Scene* scene)
 	{
 		m_Scene = scene;

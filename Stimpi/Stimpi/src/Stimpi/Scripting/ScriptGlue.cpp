@@ -583,6 +583,25 @@ namespace Stimpi
 		return hasComponent;
 	}
 
+	static bool AnimatedSpriteComponent_PlayIndex(uint32_t entityID, int index)
+	{
+		bool hasComponent = false;
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+		auto entity = scene->GetEntityByHandle((entt::entity)entityID);
+		ST_CORE_ASSERT(!entity);
+
+		hasComponent = entity.HasComponent<AnimatedSpriteComponent>();
+		if (hasComponent)
+		{
+			auto& anim = entity.GetComponent<AnimatedSpriteComponent>();
+			anim.SetAnimation(index);
+			anim.Start();
+		}
+
+		return hasComponent;
+	}
+
 	static bool AnimatedSpriteComponent_Stop(uint32_t entityID)
 	{
 		bool hasComponent = false;
@@ -1677,6 +1696,7 @@ namespace Stimpi
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_AnimStop);
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_GetAnimState);
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_Play);
+		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_PlayIndex);
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_Pause);
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_Stop);
 		ST_ADD_INTERNAL_CALL(AnimatedSpriteComponent_AddAnimation);

@@ -256,13 +256,13 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Utils\SystemUtils.h" />
     <ClInclude Include="src\Stimpi\Utils\ThreadPool.h" />
     <ClInclude Include="src\Stimpi\Utils\YamlCustomTypes.h" />
+    <ClInclude Include="src\Stimpi\Utils\YamlUtils.h" />
     <ClInclude Include="src\Stimpi\VisualScripting\ExecTree.h" />
     <ClInclude Include="src\Stimpi\VisualScripting\ExecTreeRegistry.h" />
     <ClInclude Include="src\Stimpi\VisualScripting\ExecTreeSerializer.h" />
     <ClInclude Include="src\Stimpi\VisualScripting\NNodeMethodRegistry.h" />
     <ClInclude Include="src\Stimpi\VisualScripting\NNodeNames.h" />
     <ClInclude Include="src\stpch.h" />
-    <ClInclude Include="src\Stimpi\Utils\YamlUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stimpi\Asset\AnimationImporter.cpp" />
@@ -341,6 +341,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClCompile Include="src\Stimpi\Utils\SystemUtils.cpp" />
     <ClCompile Include="src\Stimpi\Utils\ThreadPool.cpp" />
     <ClCompile Include="src\Stimpi\Utils\YamlCustomTypes.cpp" />
+    <ClCompile Include="src\Stimpi\Utils\YamlUtils.cpp" />
     <ClCompile Include="src\Stimpi\VisualScripting\ExecTree.cpp" />
     <ClCompile Include="src\Stimpi\VisualScripting\ExecTreeRegistry.cpp" />
     <ClCompile Include="src\Stimpi\VisualScripting\ExecTreeSerializer.cpp" />
@@ -348,7 +349,6 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClCompile Include="src\stpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Stimpi\Utils\YamlUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GLAD\GLAD.vcxproj">

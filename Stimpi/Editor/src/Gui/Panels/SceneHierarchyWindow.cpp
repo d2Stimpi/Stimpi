@@ -601,10 +601,7 @@ namespace Stimpi
 					for (auto& item : fields)
 					{
 						auto& field = item.second;
-						std::string& fieldName = field->GetName();
-						std::string& fieldTypeName = field->GetFieldTypeName();
-
-						if (ScriptFieldFragment::IsFieldTypeSupported(fieldTypeName))
+						if (ScriptFieldFragment::IsFieldTypeSupported(scriptInstance->GetInstance().get(), field.get()))
 						{
 							ScriptFieldFragment::ScriptFieldInput(scriptInstance->GetInstance().get(), field.get());
 						}

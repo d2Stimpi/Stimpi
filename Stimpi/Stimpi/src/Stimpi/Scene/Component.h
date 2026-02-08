@@ -551,6 +551,19 @@ namespace Stimpi
 			}
 		}
 
+		void SetAnimation(int index)
+		{
+			if (index < 0)
+				index = 0;	// if negative number is set for index, select first anim from the unordered_map
+
+			index %= m_Animations.size();
+			auto iter = m_Animations.begin();
+			while (index--)
+				iter++;
+
+			m_AnimSprite->SetAnimation(iter->second);
+		}
+
 		std::string GetActiveAnimationName()
 		{
 			auto& anim = m_AnimSprite->GetAnimation();

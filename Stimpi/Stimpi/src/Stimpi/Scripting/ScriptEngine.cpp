@@ -1398,6 +1398,10 @@ namespace Stimpi
 		if (m_Fields.find(fieldName) != m_Fields.end())
 		{
 			auto& field = m_Fields.at(fieldName);
+			// Make sure that field is of expected type
+			if (field->GetType() != FieldType::FIELD_TYPE_CLASS && field->GetType() != FieldType::FIELD_TYPE_STRUCT)
+				return nullptr;
+
 			void* fieldData = nullptr;
 			GetFieldValue(fieldName, &fieldData);
 			if (fieldData)

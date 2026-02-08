@@ -9,7 +9,7 @@ namespace Stimpi
 	public:
 		static void RegisterScriptFieldFunctions();
 
-		static bool IsFieldTypeSupported(const std::string& typeName);
+		static bool IsFieldTypeSupported(ScriptObject* ownerObj, ScriptField* field);
 		static void ScriptFieldInput(ScriptObject* ownerObj, ScriptField* field);
 
 	private:
