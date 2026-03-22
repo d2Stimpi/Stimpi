@@ -1,12 +1,13 @@
 #pragma once
 
+#include "Stimpi/Core/Core.h"
 #include "Stimpi/Scripting/ScriptEngine.h"
 
 #include <yaml-cpp/yaml.h>
 
 namespace Stimpi
 {
-	class ScriptSeriaizer
+	class ST_API ScriptSeriaizer
 	{
 	public:
 		static void RegisterSirializableTypes();

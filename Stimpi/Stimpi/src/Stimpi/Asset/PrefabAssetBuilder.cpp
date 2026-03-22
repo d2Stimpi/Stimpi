@@ -6,8 +6,8 @@ namespace Stimpi
 
 	std::shared_ptr<Stimpi::Asset> PrefabAssetBuilder::CreatePrefabAsset(const AssetMetadata& metadata)
 	{
-		std::string name = metadata.m_FilePath.GetFileName();
-		std::shared_ptr<Prefab> prefabAsset = Prefab::Create(name);
+		std::string assetFileName = metadata.m_FilePath.GetFileName();
+		std::shared_ptr<Prefab> prefabAsset = Prefab::Create(assetFileName);
 		return std::static_pointer_cast<Asset>(prefabAsset);
 	}
 

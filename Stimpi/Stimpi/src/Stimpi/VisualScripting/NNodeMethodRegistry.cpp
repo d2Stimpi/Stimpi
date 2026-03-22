@@ -362,7 +362,7 @@ namespace Stimpi
 			Entity e = method->m_ExecTree->m_Entity;
 			if (e.HasComponent<AnimatedSpriteComponent>())
 			{
-				AnimatedSpriteComponent anim = e.GetComponent<AnimatedSpriteComponent>();
+				AnimatedSpriteComponent& anim = e.GetComponent<AnimatedSpriteComponent>();
 				auto shader = anim.m_Material->GetShader();
 				ShaderLayout& layout = shader->GetInfo().m_ShaderLayout;
 				// Skip "default" shader layouts

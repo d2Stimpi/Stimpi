@@ -32,6 +32,9 @@ namespace Stimpi
 	static std::unordered_map<MonoType*, std::function<void(Entity)>> s_EntityAddComponentFucntions;
 	static std::unordered_map<MonoType*, std::function<void(Entity)>> s_EntityRemoveComponentFucntions;
 
+	/* Forwards */
+	static bool RigidBody2DComponent_SetTransform(uint32_t entityID, glm::vec2* position, float angle);
+
 	/* Components */
 	template <typename TComponent>
 	static void RegisterComponent()
@@ -169,33 +172,37 @@ namespace Stimpi
 		return scene->IsEntityValid(entity);
 	}
 
-	static uint32_t Entity_Instantiate(uint32_t entityID, glm::vec2* position, float* rotation)
+	static void Instantiate_SetComponentsData(Entity entity, glm::vec2* position, float rotation)
 	{
-		auto scene = SceneManager::Instance()->GetActiveScene();
-		ST_CORE_ASSERT(!scene);
-		auto entity = scene->CopyEntity(Entity((entt::entity)entityID, scene));
 		if (entity.HasComponent<QuadComponent>())
 		{
 			QuadComponent& quad = entity.GetComponent<QuadComponent>();
 			quad.m_Position = { position->x, position->y, 0.0f };
-			quad.m_Rotation = *rotation;
+			quad.m_Rotation = rotation;
 		}
+
+		// Updates RB2D if available
+		RigidBody2DComponent_SetTransform(entity, position, rotation);
+	}
+
+	static uint32_t Entity_Instantiate(uint32_t entityID, glm::vec2* position, float* rotation)
+	{
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		ST_CORE_ASSERT(!scene);
+
+		auto entity = scene->CopyEntity(Entity((entt::entity)entityID, scene));
+		Instantiate_SetComponentsData(entity, position, *rotation);
 
 		return entity;
 	}
-
 
 	static uint32_t Entity_InstantiatePrefab(AssetHandle prefabHandle, glm::vec2* position, float* rotation)
 	{
 		auto scene = SceneManager::Instance()->GetActiveScene();
 		ST_CORE_ASSERT(!scene);
+
 		auto entity = scene->CreateEntity(prefabHandle);
-		if (entity.HasComponent<QuadComponent>())
-		{
-			QuadComponent& quad = entity.GetComponent<QuadComponent>();
-			quad.m_Position = { position->x, position->y, 0.0f };
-			quad.m_Rotation = *rotation;
-		}
+		Instantiate_SetComponentsData(entity, position, *rotation);
 
 		return entity;
 	}
@@ -1488,7 +1495,7 @@ namespace Stimpi
 		{
 			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
 			b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
-			auto value = body->GetLinearVelocity();
+			auto& value = body->GetLinearVelocity();
 			*velocity = { value.x, value.y };
 		}
 

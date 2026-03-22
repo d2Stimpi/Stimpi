@@ -958,6 +958,12 @@ namespace Stimpi
 		}
 
 		auto classInstance = std::make_shared<ScriptInstance>(scriptClass, entity);
+		if (entity.HasComponent<ScriptComponent>())
+		{
+			ScriptComponent& scriptComponent = entity.GetComponent<ScriptComponent>();
+			scriptComponent.RestoreFiledData();
+		}
+
 		if (s_Data->m_Scene)
 		{
 			// When Scene is STOPPED we are using main m_EntityInstances collection set

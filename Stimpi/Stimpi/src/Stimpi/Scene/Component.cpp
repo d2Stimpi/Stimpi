@@ -106,7 +106,9 @@ namespace Stimpi
 	// RigidBody2D
 	void ComponentObserver::OnRigidBody2DConstruct(entt::registry& reg, entt::entity ent)
 	{
-
+		Entity entity = { ent, m_Scene };
+		if (m_Scene->GetRuntimeState() != RuntimeState::STOPPED)
+			m_Scene->CreatePhysicsBody(entity);
 	}
 
 	void ComponentObserver::OnRigidBody2DDestruct(entt::registry& reg, entt::entity ent)
@@ -163,6 +165,7 @@ namespace Stimpi
 		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(ScriptComponent, ComponentObserver::OnScriptConstruct);
 		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(SpriteComponent, ComponentObserver::OnSpriteConstruct);
 		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(AnimatedSpriteComponent, ComponentObserver::OnAnimatedSpriteConstruct);
+		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(RigidBody2DComponent, ComponentObserver::OnRigidBody2DConstruct);
 		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(SortingGroupComponent, ComponentObserver::OnSortingGroupConstruct);
 		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(DefaultGroupComponent, ComponentObserver::OnDefaultGroupComponentConstruct);
 		

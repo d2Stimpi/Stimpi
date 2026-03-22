@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\Player\Player.cs" />
+    <Compile Include="Source\Player\Projectile.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Stimpi-ScriptCore\Stimpi-ScriptCore.csproj">

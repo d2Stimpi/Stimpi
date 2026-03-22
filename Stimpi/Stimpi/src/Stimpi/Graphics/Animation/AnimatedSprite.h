@@ -26,6 +26,7 @@ namespace Stimpi
 
 		void SetAnimation(AssetHandle animationHandle);
 		std::shared_ptr<Animation> GetAnimation();
+		AssetHandle GetAnimationHandle() { return m_AnimationHandle; }
 		
 		void Update(Timestep ts);
 		void SetCurrentFrame(uint32_t frame);

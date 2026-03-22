@@ -48,7 +48,7 @@ namespace Stimpi
 		void RemoveAllEntites();
 		bool IsEntityValid(Entity entity);
 
-		Entity CopyEntity(const Entity entity);
+		Entity CopyEntity(Entity entity);
 
 		void SetCamera(Camera* camera);
 		Camera* GetCamera() { return m_SceneCamera; }

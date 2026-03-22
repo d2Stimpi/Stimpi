@@ -521,10 +521,36 @@ namespace Stimpi
 		std::shared_ptr<Material> m_Material; // TOOD: make an asset
 		bool m_UseCustomShader = false;
 
-		AnimatedSpriteComponent(const AnimatedSpriteComponent&) = default;
+		AnimatedSpriteComponent(const AnimatedSpriteComponent& other) :
+			m_DefaultAnimation(other.m_DefaultAnimation),
+			m_Animations(other.m_Animations),
+			m_AutoPlay(other.m_AutoPlay),
+			m_Material(other.m_Material),
+			m_UseCustomShader(other.m_UseCustomShader)
+		{
+			m_AnimSprite = std::make_shared<AnimatedSprite>();
+			if (other.m_AnimSprite)
+				m_AnimSprite->SetAnimation(other.m_AnimSprite->GetAnimationHandle());
+		}
+
 		AnimatedSpriteComponent()
 		{
 			m_AnimSprite = std::make_shared<AnimatedSprite>();
+		}
+
+		AnimatedSpriteComponent& operator=(const AnimatedSpriteComponent& other)
+		{
+			m_AnimSprite = std::make_shared<AnimatedSprite>();
+			if (other.m_AnimSprite)
+				m_AnimSprite->SetAnimation(other.m_AnimSprite->GetAnimationHandle());
+
+			m_DefaultAnimation = other.m_DefaultAnimation;
+			m_Animations = other.m_Animations;
+			m_AutoPlay = other.m_AutoPlay;
+			m_Material = other.m_Material;
+			m_UseCustomShader = other.m_UseCustomShader;
+			
+			return *this;
 		}
 
 		// name - Shader asset name
@@ -536,6 +562,11 @@ namespace Stimpi
 		bool IsAnimationSet()
 		{
 			return m_AnimSprite != nullptr;
+		}
+
+		void SelectDefaultAnimation()
+		{
+			m_AnimSprite->SetAnimation(m_DefaultAnimation);
 		}
 
 		void SetAnimation(const std::string& name)
@@ -556,12 +587,17 @@ namespace Stimpi
 			if (index < 0)
 				index = 0;	// if negative number is set for index, select first anim from the unordered_map
 
-			index %= m_Animations.size();
-			auto iter = m_Animations.begin();
-			while (index--)
-				iter++;
+			if (m_Animations.empty())
+				m_AnimSprite->SetAnimation(m_DefaultAnimation);
+			else
+			{
+				index %= m_Animations.size();
+				auto iter = m_Animations.begin();
+				while (index--)
+					iter++;
 
-			m_AnimSprite->SetAnimation(iter->second);
+				m_AnimSprite->SetAnimation(iter->second);
+			}
 		}
 
 		std::string GetActiveAnimationName()
@@ -820,15 +856,22 @@ namespace Stimpi
 		std::string m_ScriptName;
 		std::shared_ptr<ScriptInstance> m_ScriptInstance;
 
+		// Internal use only, for saving field values when reloading assembly
+		YAML::Node m_FieldsSnapshot;
+
 		ScriptComponent() = default;
-		ScriptComponent(const ScriptComponent&) = default;
+		ScriptComponent(const ScriptComponent& other) :
+			m_ScriptName(other.m_ScriptName),
+			m_ScriptInstance(other.m_ScriptInstance),	// This will be replaced with new instance after ComponentObserver::OnScriptConstruct
+			m_FieldsSnapshot(other.m_FieldsSnapshot)
+		{
+			MakeFieldDataSnapshot();
+		}
+
 		ScriptComponent(const std::string& scriptName)
 			: m_ScriptName(scriptName)
 		{
 		}
-
-		// Internal use only, for saving field values when reloading assembly
-		YAML::Node m_FieldsSnapshot;
 
 		void MakeFieldDataSnapshot()
 		{

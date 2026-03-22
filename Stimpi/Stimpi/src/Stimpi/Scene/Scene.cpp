@@ -420,7 +420,7 @@ namespace Stimpi
 		return m_Registry.valid(entity.GetHandle());
 	}
 
-	Entity Scene::CopyEntity(const Entity entity)
+	Entity Scene::CopyEntity(Entity entity)
 	{
 		Entity newEntity = { m_Registry.create(), this };
 		auto dst = newEntity.GetHandle();
@@ -431,8 +431,10 @@ namespace Stimpi
 
 		for (auto [id, storage] : m_Registry.storage())
 		{
-			// Skip the following component copy
-			if (id == entt::type_hash<DefaultGroupComponent>::value())
+			// Skip the following components copy,
+			// since order of creation needs to be reliably controlled
+			if (id == entt::type_hash<DefaultGroupComponent>::value() ||
+				id == entt::type_hash<ScriptComponent>::value())
 				continue;
 
 			auto src = entity.GetHandle();
@@ -440,6 +442,13 @@ namespace Stimpi
 			{
 				storage.push(dst, storage.value(src));
 			}
+		}
+
+		// Copy ScriptComponent after all other components, because OnCreate will be invoked then
+		if (entity.HasComponent<ScriptComponent>())
+		{
+			auto* storage = m_Registry.storage(entt::type_hash<ScriptComponent>::value());
+			storage->push(dst, storage->value(entity.GetHandle()));
 		}
 
 		// Generate a new UUID for the copy Entity
@@ -472,6 +481,17 @@ namespace Stimpi
 				if (ncs.m_IsMain)
 				{
 					m_RenderCamera = ncs.m_Camera.get();
+				}
+			});
+
+		// Start the default animation if set
+		m_Registry.view<AnimatedSpriteComponent>().each([&](auto entity, AnimatedSpriteComponent& anim)
+			{
+				if (anim.m_AutoPlay)
+				{
+					// Make the defaultAnimation active and play it
+					anim.SelectDefaultAnimation();
+					anim.Start();
 				}
 			});
 
@@ -594,7 +614,7 @@ namespace Stimpi
 	{
 		ST_PROFILE_FUNCTION();
 
-		m_Registry.view<AnimatedSpriteComponent>().each([&ts](auto e, AnimatedSpriteComponent anim)
+		m_Registry.view<AnimatedSpriteComponent>().each([&ts](auto e, AnimatedSpriteComponent& anim)
 			{
 				if (anim.m_AnimSprite)
 				{

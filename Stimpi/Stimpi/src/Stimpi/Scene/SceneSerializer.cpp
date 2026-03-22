@@ -60,48 +60,48 @@ namespace Stimpi
 
 				if (entityNode["HierarchyComponent"])
 				{
-					entity.AddComponent<HierarchyComponent>(HierarchyComponent(entityNode["HierarchyComponent"]));
+					entity.AddComponent<HierarchyComponent>(entityNode["HierarchyComponent"]);
 				}
 				if (entityNode["QuadComponent"])
 				{
-					entity.AddComponent<QuadComponent>(QuadComponent(entityNode["QuadComponent"]));
+					entity.AddComponent<QuadComponent>(entityNode["QuadComponent"]);
 				}
 				if (entityNode["CircleComponent"])
 				{
-					entity.AddComponent<CircleComponent>(CircleComponent(entityNode["CircleComponent"]));
+					entity.AddComponent<CircleComponent>(entityNode["CircleComponent"]);
 				}
 				if (entityNode["SpriteComponent"])
 				{
-					entity.AddComponent<SpriteComponent>(SpriteComponent(entityNode["SpriteComponent"]));
+					entity.AddComponent<SpriteComponent>(entityNode["SpriteComponent"]);
 				}
 				if (entityNode["SortingGroupComponent"])
 				{
-					entity.AddComponent<SortingGroupComponent>(SortingGroupComponent(entityNode["SortingGroupComponent"]));
+					entity.AddComponent<SortingGroupComponent>(entityNode["SortingGroupComponent"]);
 				}
 				if (entityNode["AnimatedSpriteComponent"])
 				{
-					entity.AddComponent<AnimatedSpriteComponent>(AnimatedSpriteComponent(entityNode["AnimatedSpriteComponent"]));
+					entity.AddComponent<AnimatedSpriteComponent>(entityNode["AnimatedSpriteComponent"]);
 				}
 				if (entityNode["ScriptComponent"])
 				{
-					ScriptComponent& scriptComponent = entity.AddComponent<ScriptComponent>(ScriptComponent(entityNode["ScriptComponent"]));
+					ScriptComponent& scriptComponent = entity.AddComponent<ScriptComponent>(entityNode["ScriptComponent"]);
 					scriptComponent.PopulateScriptInstanceData(entityNode["ScriptComponent"]);
 				}
 				if (entityNode["CameraComponent"])
 				{
-					entity.AddComponent<CameraComponent>(CameraComponent(entityNode["CameraComponent"]));
+					entity.AddComponent<CameraComponent>(entityNode["CameraComponent"]);
 				}
 				if (entityNode["RigidBody2DComponent"])
 				{
-					entity.AddComponent<RigidBody2DComponent>(RigidBody2DComponent(entityNode["RigidBody2DComponent"]));
+					entity.AddComponent<RigidBody2DComponent>(entityNode["RigidBody2DComponent"]);
 				}
 				if (entityNode["BoxCollider2DComponent"])
 				{
-					entity.AddComponent<BoxCollider2DComponent>(BoxCollider2DComponent(entityNode["BoxCollider2DComponent"]));
+					entity.AddComponent<BoxCollider2DComponent>(entityNode["BoxCollider2DComponent"]);
 				}
 				if (entityNode["PrefabComponent"])
 				{
-					entity.AddComponent<PrefabComponent>(PrefabComponent(entityNode["PrefabComponent"]));
+					entity.AddComponent<PrefabComponent>(entityNode["PrefabComponent"]);
 				}
 			}
 		}
