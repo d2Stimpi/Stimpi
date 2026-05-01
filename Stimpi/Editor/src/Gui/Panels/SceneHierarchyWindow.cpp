@@ -7,6 +7,7 @@
 #include "Gui/Components/ImGuiEx.h"
 #include "Gui/EditorUtils.h"
 #include "Gui/EditorEntityManager.h"
+#include "Gui/Event/EditorEventManager.h"
 #include "Gui/NNode/NGraphPanel.h"
 #include "Gui/NNode/NGraphBuilder.h"
 #include "Gui/NNode/NGraphRegistry.h"
@@ -145,6 +146,18 @@ namespace Stimpi
 
 		m_ActiveScene = SceneManager::Instance()->GetActiveScene();
 
+		EditorEventManager::AddEditorEventHandler(new EditorEventHandler([this](EditorEvent* e) -> bool {
+			if (e->GetType() == EditorEventType::PREFAB_INSPECT_REQUEST)
+			{
+				// TODO: [globally] should be reworked - switching the display of focused entities or whole scene
+
+				auto assetManager = Project::GetEditorAssetManager();
+				AssetHandle prefabHandle = assetManager->GetAssetHandle(*static_cast<FilePath*>(e->GetData()));
+				Entity prefabEntity = SceneManager::Instance()->GetActiveScene()->CreateEntity(prefabHandle);
+				SetPrefabDisplayMode(prefabEntity);
+			}
+			return false;
+			}));
 	}
 
 	SceneHierarchyWindow::~SceneHierarchyWindow()
@@ -331,7 +344,10 @@ namespace Stimpi
 
 		ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen;
 		ImGuiTreeNodeFlags leaf_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-		auto& entityTag = entity.GetComponent<TagComponent>().m_Tag;
+
+		std::string entityTag = "UnknownName";
+		if (entity.HasComponent<TagComponent>())
+			entityTag = entity.GetComponent<TagComponent>().m_Tag;
 
 		ImGui::PushID((uint32_t)entity);
 
@@ -1567,19 +1583,6 @@ namespace Stimpi
 					auto prefab = AssetManager::GetAsset<Prefab>(prefabComponent.m_PrefabHandle);
 					if (prefab)
 					{
-						// Instead, create temp prefab instance for data editing purpose
-						// 1. Create prefab instance
-						//Entity rootEntity = PrefabManager::InstantiatePrefab(prefabComponent.m_PrefabHandle);
-						
-						// 2. Set it as "rootPrefabEntity" for display mode
-						//SetPrefabDisplayMode(rootEntity);
-
-						// 3. When exiting inspect prefab mode destroy temp instance
-						// 3a. Check for any changes and ask user to update prefab data before closing view
-						// 3b. What to do with the temp prefab instance when simulation starts/stops?
-						//		- set disabled flag for Render component
-						//		- set disabled flag for Script component (TODO: add the flag)
-
 						// New stuff, TODO: remove prefabViewEntity related code from here and move it to PrefabInspectWinodw
 						if (s_Context.m_PrefabInspectWindow)
 						{
@@ -1633,7 +1636,7 @@ namespace Stimpi
 				FilePath prefabDataPath = Project::GetAssestsDir() / metadata.m_FilePath;
 
 				// Make sure that the new updated asset has the same prefab UUID
-				s_Context.m_ModalPopupPrefab->SetAssetDataValue<UUIDComponent>(UUIDComponent(component.m_PrefabEntityID));
+				//s_Context.m_ModalPopupPrefab->SetAssetDataValue<UUIDComponent>(UUIDComponent(component.m_PrefabEntityID));
 				s_Context.m_ModalPopupPrefab->Save(prefabDataPath);
 
 				ImGui::CloseCurrentPopup();
@@ -1667,6 +1670,8 @@ namespace Stimpi
 	{
 		// Clear temp prefab instance if still available
 		RemoveInspectedPrefabEntity();
+		// Update prefab view by removing displayed entities
+		s_Context.m_PrefabInspectWindow->ClearPrefabEntity();
 
 		s_Context.m_ActiveMode = ContentMode::SCENE;
 		s_Context.m_PrefabViewEntity = {};
@@ -1700,7 +1705,9 @@ namespace Stimpi
 			PrefabComponent& component = s_Context.m_PrefabViewEntity.GetComponent<PrefabComponent>();
 			auto& metadata = Project::GetEditorAssetManager()->GetAssetMetadata(component.m_PrefabHandle);
 			FilePath prefabDataPath = Project::GetAssestsDir() / metadata.m_FilePath;
-			if (ResourceManager::Instance()->CompareYamlFileContent(prefabDataPath, tempAssetDataPath, {"UUIDComponent", "TagComponent", "QuadComponent"}))
+			std::vector<std::string> ignoreComponentNameList = { "UUIDComponent", "TagComponent", "QuadComponent",
+				"HierarchyComponent", "EntityHierarchyData"};
+			if (ResourceManager::Instance()->CompareYamlFileContent(prefabDataPath, tempAssetDataPath, ignoreComponentNameList))
 			{
 				ST_INFO("Prefab data not changed - todo handling");
 				std::shared_ptr<Prefab> viewPrefab = AssetManager::GetAsset<Prefab>(component.m_PrefabHandle);
@@ -1717,6 +1724,16 @@ namespace Stimpi
 							ST_INFO("Prefab data actually did changed - size/rotation");
 							ImGui::OpenPopup("ConfirmPrefabChangesPopup");
 						}
+						else
+						{
+							// No changes, change the display mode
+							SetSceneDisplayMode();
+						}
+					}
+					else
+					{
+						// No changes, change the display mode
+						SetSceneDisplayMode();
 					}
 				}
 			}

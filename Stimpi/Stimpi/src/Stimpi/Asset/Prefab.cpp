@@ -5,6 +5,7 @@
 #include "Stimpi/Scene/Entity.h"
 #include "Stimpi/Scene/ResourceManager.h"
 #include "Stimpi/Scene/Component.h"
+#include "Stimpi/Utils/Serializer.h"
 
 #define SERIALIZE_ENTITY_COMPONENT(Entity, ComponentName, Emitter)			\
 		if (Entity.HasComponent<ComponentName>())					\
@@ -33,6 +34,7 @@ namespace Stimpi
 		ParseAssetData();
 	}
 
+	// TODO: change to BuildFromEntity or something, or make a method that provides YAML data from entity
 	void Prefab::Initialize(Entity entity)
 	{
 		YAML::Emitter out;
@@ -43,8 +45,9 @@ namespace Stimpi
 		ParseAssetData();
 	}
 
-	void Prefab::Save(const FilePath& filePath) const
+	void Prefab::Save(const FilePath& filePath)
 	{
+		ParseAssetData();
 		ResourceManager::Instance()->WriteToFile(filePath, m_Data);
 	}
 
@@ -53,6 +56,9 @@ namespace Stimpi
 		Entity root = scene->CreateEntity(m_Name);
 		auto& node = m_EntityDataMap[m_RootEntityUUID];
 		BuildComponents(root, node);
+
+		PrefabComponent& prefabComponent = root.GetComponent<PrefabComponent>();
+		prefabComponent.m_IsRootObject = true;
 
 		if (root.HasComponent<HierarchyComponent>())
 		{
@@ -142,15 +148,18 @@ namespace Stimpi
 		}
 	}
 
-	void Prefab::UpdateComponents(Entity entity)
+	void Prefab::UpdateComponents(Entity entity, Scene* scene)
 	{
-		// Save the current entity position in order to restore it after update.
-		// Provided that the entity has QuadComponent
-		glm::vec3 position = { 0.0f, 0.0f, 0.0f };
-		if (entity.HasComponent<QuadComponent>())
+		ST_CORE_ASSERT(scene == nullptr);
+
+		// Remove all hierarchy - child entities if any
+		if (entity.HasComponent<HierarchyComponent>())
 		{
-			QuadComponent& quad = entity.GetComponent<QuadComponent>();
-			position = quad.m_Position;
+			HierarchyComponent& hierarchyComponent = entity.GetComponent<HierarchyComponent>();
+			for (auto& childUUID : hierarchyComponent.m_Children)
+			{
+				scene->RemoveEntity(childUUID);
+			}
 		}
 
 		REMOVE_ENTITY_COMPONENT(entity, HierarchyComponent);
@@ -164,17 +173,31 @@ namespace Stimpi
 		REMOVE_ENTITY_COMPONENT(entity, RigidBody2DComponent);
 		REMOVE_ENTITY_COMPONENT(entity, BoxCollider2DComponent);
 
-		UUID prefabDataUUID = entity.GetComponent<PrefabComponent>().m_PrefabEntityID;
-		BuildComponents(entity, m_EntityDataMap[prefabDataUUID]);
+		/*UUID prefabDataUUID = entity.GetComponent<PrefabComponent>().m_PrefabEntityID;
+		BuildComponents(entity, m_EntityDataMap[prefabDataUUID]);*/
 
-		//Re-initialize internal "map" data with data from updated entity
-		//Initialize(entity);
+		auto& node = m_EntityDataMap[m_RootEntityUUID];
+		BuildComponents(entity, node);
 
-		// Restore the entity's position
-		if (entity.HasComponent<QuadComponent>())
+		if (entity.HasComponent<HierarchyComponent>())
 		{
-			QuadComponent& quad = entity.GetComponent<QuadComponent>();
-			quad.m_Position = position;
+			HierarchyComponent& hierarchy = entity.GetComponent<HierarchyComponent>();
+			hierarchy.m_Children = m_HierarchyMap[m_RootEntityUUID];
+
+			std::vector<UUID> newChildrenIDs;
+			// Create direct child nodes of root node
+			for (auto& childUUID : hierarchy.m_Children)
+			{
+				Entity child = CreateEntity(scene, childUUID, m_RootEntityUUID);
+				newChildrenIDs.push_back(child.GetComponent<UUIDComponent>().m_UUID);
+
+				if (child.HasComponent<HierarchyComponent>())
+				{
+					HierarchyComponent& hierarcyChild = child.GetComponent<HierarchyComponent>();
+					hierarcyChild.m_Parent = entity.GetComponent<UUIDComponent>().m_UUID;
+				}
+			}
+			hierarchy.m_Children = newChildrenIDs;
 		}
 	}
 
@@ -217,6 +240,20 @@ namespace Stimpi
 	{
 		out << YAML::Key << "EntityData" << YAML::Value;
 		out << YAML::BeginMap;
+
+		/*
+		PrefabDataBuilder builder = Prefab::CreateDataBuilder(entity);
+		builder.BeginMap("EntityData");
+		builder.Add(Component.UUID)
+			.Add(Component.Tag);
+		builder.EndMap();
+		*/
+
+		/*
+		std::shared_ptr<DataBuilder> builder{Serializer::CreateDataBuilder()};
+		builder->BeginMap("EntityData");
+		builder->AddComponent<UUIDComponent>(entity);
+		*/
 
 		SERIALIZE_ENTITY_COMPONENT(entity, UUIDComponent, out);
 		SERIALIZE_ENTITY_COMPONENT(entity, TagComponent, out);

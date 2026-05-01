@@ -41,7 +41,7 @@ namespace Stimpi
 		void BuildLayoutData(std::vector<LayoutData> list)
 		{
 			m_Stride = 0;
-			for (auto item : list)
+			for (auto& item : list)
 			{
 				item.m_Offset = m_Stride;
 				m_Stride += ShaderDataTypeSize(item.m_Type);

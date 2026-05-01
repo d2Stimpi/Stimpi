@@ -36,7 +36,7 @@ namespace Stimpi
 	{
 		if (handler != nullptr)
 		{
-			m_KeyboardEventHandlers.erase(std::remove(m_KeyboardEventHandlers.begin(), m_KeyboardEventHandlers.end(), handler));
+			m_KeyboardEventHandlers.erase(std::remove(m_KeyboardEventHandlers.begin(), m_KeyboardEventHandlers.end(), handler), m_KeyboardEventHandlers.end());
 		}
 	}
 

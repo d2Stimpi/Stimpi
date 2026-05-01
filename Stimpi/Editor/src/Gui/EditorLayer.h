@@ -42,6 +42,7 @@ namespace Stimpi
 		void SetDarkThemeStyle();
 		void SetupComponentContext(Scene* scene);
 		bool HandleUndoRedoKey();
+		void ProcessEditorEvents();
 	private:
 		ImGuiIO* m_IO{ nullptr };
 		WindowSDL* m_Window{ nullptr };

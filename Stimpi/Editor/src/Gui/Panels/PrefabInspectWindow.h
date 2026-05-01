@@ -22,6 +22,7 @@ namespace Stimpi
 		static bool IsVisible();
 
 		void SetPrefabEntity(AssetHandle prefabHandle);
+		void ClearPrefabEntity();
 		Entity GetPrefabEntity();
 		Scene* GetScene();
 

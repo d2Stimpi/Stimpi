@@ -1,0 +1,97 @@
+Scene:
+  Entity:
+    UUIDComponent:
+      UUID: 17383428115796304180
+    TagComponent:
+      Tag: PlayerObj
+    QuadComponent:
+      - 24.6419201
+      - 26.4814396
+      - 0
+      - 10
+      - 10
+      - 0
+    SpriteComponent:
+      AssetHandle: 0
+      Enabled: false
+      Color:
+        - 0.796460152
+        - 0.137442231
+        - 0.137442231
+        - 1
+    ScriptComponent:
+      ScriptName: DemoScript.Player
+      ScriptFields:
+        Field:
+          Type: FIELD_TYPE_CLASS
+          FieldTypeName: Stimpi.QuadComponent
+          Name: ProjectileObject
+          FieldData:
+            ID: 3
+            PrefabHandle: 0
+    RigidBody2DComponent:
+      Type: Dynamic
+      FixedRotation: false
+  Entity:
+    UUIDComponent:
+      UUID: 14586323381754485315
+    TagComponent:
+      Tag: Camera_Object
+    QuadComponent:
+      - 0
+      - 0
+      - 0
+      - 128
+      - 72
+      - 0
+    CameraComponent:
+      Position:
+        - 0
+        - 0
+        - 0
+      Rotation: 0
+      Zoom: 1
+      ViewQuad:
+        - 0
+        - 128
+        - 0
+        - 72
+      IsMain: true
+  Entity:
+    UUIDComponent:
+      UUID: 3743155017780706102
+    TagComponent:
+      Tag: Projectile
+    QuadComponent:
+      - 55.4155807
+      - 40.6994133
+      - 0
+      - 9
+      - 9
+      - 0
+    AnimatedSpriteComponent:
+      DefaultAnimationHandle: 4797646646277876960
+      Animations:
+        Animation:
+          AnimationHandle: 4797646646277876960
+      AutoPlay: false
+    ScriptComponent:
+      ScriptName: DemoScript.Projectile
+      ScriptFields:
+        {}
+    RigidBody2DComponent:
+      Type: Dynamic
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Shape: 1
+      Offset:
+        - 1
+        - 0
+      Size:
+        - 0.25
+        - 0.25
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+      GroupIndex: 0

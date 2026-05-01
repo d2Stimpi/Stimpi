@@ -1,15 +1,20 @@
 EntityList:
   EntityData:
     UUIDComponent:
-      UUID: 17428536547676656400
+      UUID: 7852513866758147282
     TagComponent:
-      Tag: Player
+      Tag: Player.fab
+    HierarchyComponent:
+      Parent: 0
+      Children:
+        - 7907495136839409086
+        - 4657373515691628351
     QuadComponent:
-      - 64
-      - 36
       - 0
-      - 24
-      - 24
+      - 0
+      - 0
+      - 32
+      - 32
       - 0
     AnimatedSpriteComponent:
       DefaultAnimationHandle: 7469747603640462214
@@ -32,12 +37,14 @@ EntityList:
           Name: Cursor
           FieldData:
             ID: 4
+            PrefabHandle: 0
         Field:
           Type: FIELD_TYPE_CLASS
           FieldTypeName: Stimpi.Entity
           Name: Camera
           FieldData:
             ID: 1
+            PrefabHandle: 0
     RigidBody2DComponent:
       Type: Dynamic
       FixedRotation: true
@@ -54,5 +61,61 @@ EntityList:
       Restitution: 0
       RestitutionThreshold: 0.5
       GroupIndex: 0
+  EntityData:
+    UUIDComponent:
+      UUID: 7907495136839409086
+    TagComponent:
+      Tag: Sprite_Object
+    HierarchyComponent:
+      Parent: 7852513866758147282
+      Children: []
+    QuadComponent:
+      - 0
+      - 0
+      - 0
+      - 10
+      - 10
+      - 0
+    SpriteComponent:
+      AssetHandle: 0
+      Enabled: false
+      Color:
+        - 1
+        - 1
+        - 1
+        - 1
+  EntityData:
+    UUIDComponent:
+      UUID: 4657373515691628351
+    TagComponent:
+      Tag: Sprite_Object
+    HierarchyComponent:
+      Parent: 7852513866758147282
+      Children: []
+    QuadComponent:
+      - 0
+      - 0
+      - 0
+      - 17
+      - 4
+      - 0
+    SpriteComponent:
+      AssetHandle: 0
+      Enabled: false
+      Color:
+        - 0.572226882
+        - 0.676991165
+        - 0.053919632
+        - 1
 EntityHierarchy:
-  EntityHierarchyData: {}
+  EntityHierarchyData:
+    Owner: 7852513866758147282
+    Children:
+      - 7907495136839409086
+      - 4657373515691628351
+  EntityHierarchyData:
+    Owner: 7907495136839409086
+    Children: []
+  EntityHierarchyData:
+    Owner: 4657373515691628351
+    Children: []

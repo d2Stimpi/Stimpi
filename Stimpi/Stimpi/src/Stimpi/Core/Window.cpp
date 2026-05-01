@@ -22,8 +22,7 @@ namespace Stimpi
 			if (event.m_Event != 0)
 			{
 				ST_CORE_INFO("ShellEvet: {} - {} : {}", event.m_Event, event.m_FilePath, event.m_NewFilePath);
-				std::shared_ptr<SystemShellEvent> shEvent = std::make_shared<SystemShellEvent>();
-				shEvent.reset(SystemShellEvent::CreateSystemShellEvent(event));
+				std::shared_ptr<SystemShellEvent> shEvent{ SystemShellEvent::CreateSystemShellEvent(event) };
 				FileWatcher::ProcessShellEvent(shEvent);
 			}
 		}

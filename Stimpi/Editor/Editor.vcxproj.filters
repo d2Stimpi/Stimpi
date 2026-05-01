@@ -144,6 +144,8 @@
     <ClInclude Include="src\Gui\Utils\YamlCustomTypesEditor.h">
       <Filter>Gui\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\Gui\Event\EditorEvent.h" />
+    <ClInclude Include="src\Gui\Event\EditorEventQueue.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApplication.cpp" />
@@ -261,5 +263,7 @@
     <ClCompile Include="src\Gui\Utils\YamlCustomTypesEditor.cpp">
       <Filter>Gui\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="src\Gui\Event\EditorEvent.cpp" />
+    <ClCompile Include="src\Gui\Event\EditorEventQueue.cpp" />
   </ItemGroup>
 </Project>

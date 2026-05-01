@@ -12,6 +12,7 @@
 
 #include "Gui/Components/UIPayload.h"
 #include "Gui/Components/ImGuiEx.h"
+#include "Gui/Event/EditorEventQueue.h"
 
 #include "ImGui/src/imgui.h"
 
@@ -463,6 +464,17 @@ namespace Stimpi
 					{
 						assetManager->RegisterAsset({ assetType, s_Context.m_ThumbnailPopupContext.m_RelativePath });
 					}
+				}
+			}
+
+			if (AssetUtils::GetAssetType(s_Context.m_ThumbnailPopupContext.m_RelativePath) == AssetType::PREFAB)
+			{
+				if (ImGui::Selectable("Inspect Prefab"))
+				{
+					ST_CORE_INFO("TODO: Inspect Prefab asset {}", s_Context.m_ThumbnailPopupContext.m_RelativePath.string());
+					EditorEventQueue::PushEvent(EditorEvent::Create(
+						EditorEventType::PREFAB_INSPECT_REQUEST,
+						(void*)&s_Context.m_ThumbnailPopupContext.m_RelativePath));
 				}
 			}
 

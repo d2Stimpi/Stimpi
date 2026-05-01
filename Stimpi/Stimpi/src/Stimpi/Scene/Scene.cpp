@@ -397,7 +397,7 @@ namespace Stimpi
 
 			m_EntityUUIDMap.erase(entity.GetComponent<UUIDComponent>().m_UUID);
 			m_Registry.destroy(entity.GetHandle());
-			m_Entities.erase(std::remove(std::begin(m_Entities), std::end(m_Entities), entity));
+			m_Entities.erase(std::remove(std::begin(m_Entities), std::end(m_Entities), entity), std::end(m_Entities));
 		}
 
 		return valid;
@@ -410,9 +410,17 @@ namespace Stimpi
 		return RemoveEntity(entity);
 	}
 
+	bool Scene::RemoveEntity(const UUID& uuid)
+	{
+		Entity entity = GetEntityByUUID(uuid);
+		return RemoveEntity(entity);
+	}
+
 	void Scene::RemoveAllEntites()
 	{
+		m_EntityUUIDMap.clear();
 		m_Registry.clear();
+		m_Entities.clear();
 	}
 
 	bool Scene::IsEntityValid(Entity entity)

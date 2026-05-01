@@ -35,7 +35,7 @@ namespace Stimpi
 					// Check further up in hierarchy
 					if (parentComponent.m_Parent)
 					{
-						auto scene = SceneManager::Instance()->GetActiveScene();
+						auto scene = parent.GetScene();
 						if (scene)
 						{
 							Entity nextParent = scene->GetEntityByUUID(parentComponent.m_Parent);
@@ -80,7 +80,7 @@ namespace Stimpi
 
 			if (prevParentUUID)
 			{
-				auto scene = SceneManager::Instance()->GetActiveScene();
+				auto scene = parent.GetScene();
 				Entity& preParent = scene->m_EntityUUIDMap[prevParentUUID];
 
 				RemoveChild(preParent, child);
@@ -113,7 +113,7 @@ namespace Stimpi
 			HierarchyComponent& hierarchyComp = entity.GetComponent<HierarchyComponent>();
 			if (hierarchyComp.m_Parent)
 			{
-				auto scene = SceneManager::Instance()->GetActiveScene();
+				auto scene = entity.GetScene();
 				if (scene)
 				{
 					Entity parent = scene->m_EntityUUIDMap[hierarchyComp.m_Parent];

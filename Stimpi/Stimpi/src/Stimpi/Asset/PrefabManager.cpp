@@ -148,6 +148,24 @@ namespace Stimpi
 		return entities;
 	}
 
+	std::vector<Stimpi::Entity> PrefabManager::GetAllRootPrefabEntities(const AssetHandle& prefabHandle)
+	{
+		std::vector<Entity> entities;
+
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		if (scene)
+		{
+			auto view = scene->m_Registry.view<PrefabComponent>();
+			for (auto& entity : view)
+			{
+				const PrefabComponent& prefab = view.get<PrefabComponent>(entity);
+				if (prefab.m_PrefabHandle == prefabHandle && prefab.m_IsRootObject)
+					entities.emplace_back(entity, scene);
+			}
+		}
+		return entities;
+	}
+
 	void PrefabManager::OnPrefabAssetReload(std::shared_ptr<Asset> asset)
 	{
 		if (asset->GetType() == AssetType::PREFAB)
@@ -160,10 +178,25 @@ namespace Stimpi
 			if (scene)
 			{
 				std::shared_ptr<Prefab> prefab = AssetManager::GetAsset<Prefab>(prefabHandle);
-				auto entities = GetAllPrefabEntities(prefabHandle);
+				auto entities = GetAllRootPrefabEntities(prefabHandle);
 				for (auto& entity : entities)
 				{
-					prefab->UpdateComponents(entity);
+					// Save the current entity position in order to restore it after update.
+					// Provided that the entity has QuadComponent
+					glm::vec3 position = { 0.0f, 0.0f, 0.0f };
+					if (entity.HasComponent<QuadComponent>())
+					{
+						QuadComponent& quad = entity.GetComponent<QuadComponent>();
+						position = quad.m_Position;
+					}
+
+					prefab->UpdateComponents(entity, scene);
+
+					// Restore the entity's position
+					if (entity.HasComponent<QuadComponent>())
+					{
+						EntityManager::Translate(entity, position);
+					}
 				}
 			}
 		}

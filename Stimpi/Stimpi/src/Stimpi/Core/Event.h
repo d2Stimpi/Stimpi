@@ -11,7 +11,7 @@
 
 namespace Stimpi
 {
-	enum class EventType {None = 0, WindowEvent, KeyboardEvent, MouseEvent, PhysicsEvent, SystemShellEvent, UnknownEvent };
+	enum class EventType {None = 0, WindowEvent, KeyboardEvent, MouseEvent, PhysicsEvent, SystemShellEvent, EditorEvent, UnknownEvent };
 	enum class KeyboardEventType {NONE = 0, KEY_EVENT_DOWN, KEY_EVENT_UP, KEY_EVENT_REPEAT };
 	enum class MouseEventType { NONE = 0, MOUSE_EVENT_BUTTONDOWN, MOUSE_EVENT_BUTTONUP, MOUSE_EVENT_BUTTONHOLD, MOUSE_EVENT_WHEELUP, MOUSE_EVENT_WHEELDOWN, MOUSE_EVENT_MOTION };
 	enum class WindowEventType { NONE = 0, WINDOW_EVENT_QUIT, WINDOW_EVENT_RESIZE};
@@ -54,7 +54,7 @@ namespace Stimpi
 		KeyboardEvent(KeyboardEventType type, uint32_t repeat, uint32_t keyCode) : Event(EventType::KeyboardEvent), m_Type(type), m_Repeat(repeat), m_KeyCode(keyCode){}
 		~KeyboardEvent() { /*ST_CORE_TRACE("~KeyboardEvent: {0}, KeyCode: {1}", GetStringKeyboardEvent(m_Type), m_KeyCode);*/ };
 		
-		void LogEvent() { ST_CORE_TRACE("KeyboardEvent: {0}, KeyCode: {1}", GetStringKeyboardEvent(m_Type), m_KeyCode); }
+		void LogEvent() override { ST_CORE_TRACE("KeyboardEvent: {0}, KeyCode: {1}", GetStringKeyboardEvent(m_Type), m_KeyCode); }
 
 		static KeyboardEvent* CreateKeyboardEvent(SDL_Event e);
 
@@ -75,7 +75,7 @@ namespace Stimpi
 			: Event(EventType::MouseEvent), m_Type(type), m_X(x), m_Y(y), m_Button(button), m_ScrollX(scrollx), m_ScrollY(scrolly) {}
 		~MouseEvent() {}
 
-		void LogEvent() 
+		void LogEvent() override
 		{
 			if (m_Type == MouseEventType::MOUSE_EVENT_BUTTONDOWN || m_Type == MouseEventType::MOUSE_EVENT_BUTTONUP)
 				ST_CORE_TRACE("MouseEventType: {0}, Button: {1}, Coords: {2},{3}", GetStringMouseEvent(m_Type), m_Button, m_X, m_Y);
@@ -113,7 +113,7 @@ namespace Stimpi
 			: Event(EventType::WindowEvent), m_Type(type), m_Width(width), m_Height(height) {}
 		~WindowEvent() {}
 
-		void LogEvent() { ST_CORE_TRACE("WindowEventType: {0}", GetStringWindowEvent(m_Type)); }
+		void LogEvent() override { ST_CORE_TRACE("WindowEventType: {0}", GetStringWindowEvent(m_Type)); }
 
 		static WindowEvent* CreateWindowEvent(SDL_Event e);
 
@@ -138,7 +138,7 @@ namespace Stimpi
 		{}
 		~PhysicsEvent() {}
 
-		void LogEvent() { ST_CORE_TRACE("PhysicsEventType: {0}", GetStringPhysicsEvent(m_Type)); }
+		void LogEvent() override { ST_CORE_TRACE("PhysicsEventType: {0}", GetStringPhysicsEvent(m_Type)); }
 
 		static PhysicsEvent* CreatePhysicsEvent(PhysicsEventType type, Collision collision);
 
@@ -162,7 +162,7 @@ namespace Stimpi
 		{}
 		~SystemShellEvent() {}
 
-		void LogEvent() { ST_CORE_TRACE("SystemShellEvent: {0}", GetStringSystemShellEvent(m_Type)); }
+		void LogEvent() override { ST_CORE_TRACE("SystemShellEvent: {0}", GetStringSystemShellEvent(m_Type)); }
 
 		static SystemShellEvent* CreateSystemShellEvent(ShellEvetData eventData);
 
@@ -184,7 +184,7 @@ namespace Stimpi
 		UnknownEvent() : Event(EventType::UnknownEvent) {}
 		~UnknownEvent() {}
 
-		void LogEvent() { /*ST_CORE_TRACE("UnknownEvent");*/ }
+		void LogEvent() override { /*ST_CORE_TRACE("UnknownEvent");*/ }
 
 		static UnknownEvent* CreateUnknownEvent(SDL_Event e);
 	private:
@@ -199,7 +199,7 @@ namespace Stimpi
 
 	// Mainly used as filter of events based on sub-type 
 	template <typename T>
-	class ST_API EventDispatcher
+	class EventDispatcher
 	{
 		using EventFunc = std::function<bool(T*)>;
 	public:

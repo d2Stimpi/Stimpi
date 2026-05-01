@@ -253,6 +253,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClInclude Include="src\Stimpi\Utils\FilePath.h" />
     <ClInclude Include="src\Stimpi\Utils\FileWatcher.h" />
     <ClInclude Include="src\Stimpi\Utils\PlatformUtils.h" />
+    <ClInclude Include="src\Stimpi\Utils\Serializer.h" />
     <ClInclude Include="src\Stimpi\Utils\SystemUtils.h" />
     <ClInclude Include="src\Stimpi\Utils\ThreadPool.h" />
     <ClInclude Include="src\Stimpi\Utils\YamlCustomTypes.h" />
@@ -338,6 +339,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\Stimpi\Stimpi.dll\ (xcopy /Q /E /Y /I ..\bin
     <ClCompile Include="src\Stimpi\Scripting\ScriptSerializer.cpp" />
     <ClCompile Include="src\Stimpi\Utils\FilePath.cpp" />
     <ClCompile Include="src\Stimpi\Utils\FileWatcher.cpp" />
+    <ClCompile Include="src\Stimpi\Utils\Serializer.cpp" />
     <ClCompile Include="src\Stimpi\Utils\SystemUtils.cpp" />
     <ClCompile Include="src\Stimpi\Utils\ThreadPool.cpp" />
     <ClCompile Include="src\Stimpi\Utils\YamlCustomTypes.cpp" />

@@ -172,6 +172,9 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
     <ClInclude Include="src\Gui\EditorEntityManager.h" />
     <ClInclude Include="src\Gui\EditorLayer.h" />
     <ClInclude Include="src\Gui\EditorUtils.h" />
+    <ClInclude Include="src\Gui\Event\EditorEvent.h" />
+    <ClInclude Include="src\Gui\Event\EditorEventManager.h" />
+    <ClInclude Include="src\Gui\Event\EditorEventQueue.h" />
     <ClInclude Include="src\Gui\Gizmo2D.h" />
     <ClInclude Include="src\Gui\MainManuBar.h" />
     <ClInclude Include="src\Gui\NNode\Exec\ExecTreeBuilder.h" />
@@ -214,6 +217,9 @@ IF EXIST $(SolutionDir)\vendor\yaml-cpp\Debug\yaml-cppd.dll\ (xcopy /Q /E /Y /I 
     <ClCompile Include="src\Gui\EditorEntityManager.cpp" />
     <ClCompile Include="src\Gui\EditorLayer.cpp" />
     <ClCompile Include="src\Gui\EditorUtils.cpp" />
+    <ClCompile Include="src\Gui\Event\EditorEvent.cpp" />
+    <ClCompile Include="src\Gui\Event\EditorEventManager.cpp" />
+    <ClCompile Include="src\Gui\Event\EditorEventQueue.cpp" />
     <ClCompile Include="src\Gui\Gizmo2D.cpp" />
     <ClCompile Include="src\Gui\MainMenuBar.cpp" />
     <ClCompile Include="src\Gui\NNode\Exec\ExecTreeBuilder.cpp" />

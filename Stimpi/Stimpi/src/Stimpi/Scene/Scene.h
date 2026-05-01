@@ -45,6 +45,7 @@ namespace Stimpi
 		std::vector<Entity> FindAllEntitiesByName(std::string_view name);
 		bool RemoveEntity(Entity entity);
 		bool RemoveEntity(entt::entity handle);
+		bool RemoveEntity(const UUID& uuid);
 		void RemoveAllEntites();
 		bool IsEntityValid(Entity entity);
 

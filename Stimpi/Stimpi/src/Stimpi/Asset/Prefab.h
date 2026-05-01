@@ -32,13 +32,13 @@ namespace Stimpi
 		Prefab(const std::string& name, YAML::Node data);
 
 		void Initialize(Entity entity);
-		void Save(const FilePath& filePath) const;	// Consider moving to ExportAsset
+		void Save(const FilePath& filePath);	// Consider moving to ExportAsset
 
 		Entity CreateEntities(Scene* scene);
 		Entity CreateEntity(Scene* scene, UUID dataID, UUID parent);
 
 		void BuildComponents(Entity entity, std::shared_ptr<YAML::Node> data);
-		void UpdateComponents(Entity entity);
+		void UpdateComponents(Entity entity, Scene* scene);
 
 		static std::shared_ptr<Prefab> Create(const std::string& name);
 		static std::shared_ptr<Prefab> Create(const std::string& name, const FilePath& filePath);

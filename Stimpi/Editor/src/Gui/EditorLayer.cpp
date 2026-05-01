@@ -21,6 +21,8 @@
 #include "Gui/EditorUtils.h"
 #include "Gui/Gizmo2D.h"
 #include "Gui/Utils/EditorResources.h"
+#include "Gui/Event/EditorEventQueue.h"
+#include "Gui/Event/EditorEventManager.h"
 
 #include <SDL.h>
 #include <SDL_opengl.h>
@@ -162,10 +164,7 @@ namespace Stimpi
 		keyDispatcher.Dispatch(e, [this](KeyboardEvent* keyEvent) -> bool {
 			if (!EditorUtils::WantCaptureKeyboard())	// Bail out if we are processing some input text for example
 				return false;
-			else
-				return HandleUndoRedoKey();
-
-			return false;
+			return HandleUndoRedoKey();
 		});
 
 		if (e->GetEventType() == EventType::WindowEvent)
@@ -266,6 +265,20 @@ namespace Stimpi
 		return false;
 	}
 
+	void EditorLayer::ProcessEditorEvents()
+	{
+		Event* event = nullptr;
+		while (EditorEventQueue::PollEvent(&event))
+		{
+			EventDispatcher<EditorEvent> editorEventDispatcher;
+			editorEventDispatcher.Dispatch(event, [&](EditorEvent* e) -> bool
+			{
+				e->LogEvent();
+				return EditorEventManager::HandleEditorEvent(e);
+			});
+		}
+	}
+
 	void EditorLayer::Update(Timestep ts)
 	{
 		ImVec4 clear_color = ImVec4(0.0f, 0.55f, 0.60f, 1.00f);
@@ -277,6 +290,8 @@ namespace Stimpi
 
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
+		// Process custom Editor events before updating all UI elements
+		ProcessEditorEvents();
 
 		// FBO View sample begin
 		static ImGuiWindowFlags flags = ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoCollapse;

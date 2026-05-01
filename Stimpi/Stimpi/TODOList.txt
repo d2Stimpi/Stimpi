@@ -1,10 +1,28 @@
+03.22.2026 - Prefab refactor
+  - Decide about the usecases in more details
+  - Internal entity hierarchy handled correctly. Internal UUID data should be relevant for managing correct hierarchy relation internaly.
+    Internal UUID data is not relevant to any actual instances of the prefab in the Scene.
+
+  - Revisit prefab class and its methods, how asset is created, initialized, etc...
+  - Update SceneHierarchyWindow prefab handling and coloring
+  -- or --
+  - Take out current prefab implementation and fix issues, and continue fresh from there with new implementation
+
+
+
+
+Copy ctor for RigidBody component
+Copy ctor for Script component
+
+
 Prefab vs Entity
 Entity:
 -	Copying an entity makes a new entity with identical structure of Components having identical content
 -	Modifying an entity changes relevant data only for that exact entity
 Prefab:
--	Making an entity into a Prefab asset type allows for modifying multiple copies of entities by simply chaning the asset data
--	Modifying any instance of a Prefab will propagate all modifications to all entities that belong to that asset type
+-	Making an entity into a Prefab asset type allows for modifying multiple copies of entities by chaning the asset data
+-	Modifying any instance of a Prefab will propagate all changes to all entities that belong to that asset type ???
+	* in this case, prompt to ask for updating prefab asset data, or to make an override
 
 ==== TODO List Items ====
 

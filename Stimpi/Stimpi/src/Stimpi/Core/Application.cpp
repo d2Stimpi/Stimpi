@@ -127,19 +127,11 @@ namespace Stimpi
 				});
 
 				m_LayerStack.OnEvent(event);
+
 				// Manually delete the processed event
 				delete event;
 				event = nullptr;
 			}
 		}
-
-		// Process Event Queues
-		auto& physicsEvents = EventQueue<PhysicsEvent>::GetEvents();
-		for (auto& event : physicsEvents)
-		{
-			//event->LogEvent();
-			m_LayerStack.OnEvent(event.get());
-		}
-		EventQueue<PhysicsEvent>::Flush();
 	}
 }
