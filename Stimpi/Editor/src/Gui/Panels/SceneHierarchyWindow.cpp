@@ -74,7 +74,7 @@ namespace Stimpi
 		}
 	};
 
-	SceneHierarchyWindowContext s_Context;
+	SceneHierarchyWindowContext s_SHWContext;
 
 
 	/**
@@ -105,25 +105,25 @@ namespace Stimpi
 
 		OnSceneChangedListener onScneeChanged = [&]() {
 			ST_INFO("Scene change detected!");
-			m_ActiveScene = SceneManager::Instance()->GetActiveScene();
-			s_Context.m_SelectedEntity = {};
+			SetActiveScene(SceneManager::Instance()->GetActiveScene());
+			s_SHWContext.m_SelectedEntity = {};
 		};
 		SceneManager::Instance()->RegisterOnSceneChangeListener(onScneeChanged);
 
 		InputManager::Instance()->AddKeyboardEventHandler(new KeyboardEventHandler([&](KeyboardEvent event) -> bool 
 			{
 				// Check m_WindowFocused value in order to enable F key only when this view is focused
-				if (EditorUtils::WantCaptureKeyboard()/* && s_Context.m_WindowFocused*/)
+				if (EditorUtils::WantCaptureKeyboard()/* && s_SHWContext.m_WindowFocused*/)
 				{
 					// HierarcyWindow focused handling
-					//if (s_Context.m_WindowFocused)
+					//if (s_SHWContext.m_WindowFocused)
 					{
 						if (event.GetKeyCode() == ST_KEY_F && event.GetType() == KeyboardEventType::KEY_EVENT_DOWN)
 						{
 							if (m_ActiveScene != nullptr)
 							{
 								Camera* camera = m_ActiveScene->GetRenderCamera();
-								Entity entity = s_Context.m_SelectedEntity;
+								Entity entity = s_SHWContext.m_SelectedEntity;
 
 								if (entity && entity.HasComponent<QuadComponent>())
 								{
@@ -153,8 +153,7 @@ namespace Stimpi
 
 				auto assetManager = Project::GetEditorAssetManager();
 				AssetHandle prefabHandle = assetManager->GetAssetHandle(*static_cast<FilePath*>(e->GetData()));
-				Entity prefabEntity = SceneManager::Instance()->GetActiveScene()->CreateEntity(prefabHandle);
-				SetPrefabDisplayMode(prefabEntity);
+				SetPrefabDisplayMode(prefabHandle);
 			}
 			return false;
 			}));
@@ -177,7 +176,7 @@ namespace Stimpi
 			ImGui::Begin("Hierarchy##SceneHierarchy", &m_Show); 
 			ImGui::PopStyleVar();
 
-			s_Context.m_WindowFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
+			s_SHWContext.m_WindowFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
 
 			if (m_ActiveScene)
 			{
@@ -190,7 +189,7 @@ namespace Stimpi
 				ImGui::SetNextItemWidth(ImGui::GetWindowContentRegionWidth() - 46.0f);
 
 				// Filter Entities
-				if (ImGuiEx::SearchInput("##SceneHierarchySearchInput", s_Context.m_SearchTextBuffer, sizeof(s_Context.m_SearchTextBuffer), "All"))
+				if (ImGuiEx::SearchInput("##SceneHierarchySearchInput", s_SHWContext.m_SearchTextBuffer, sizeof(s_SHWContext.m_SearchTextBuffer), "All"))
 				{
 				}
 				// Update filtered entities regardless if search input has changed
@@ -200,10 +199,10 @@ namespace Stimpi
 				ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 12);
 				if (ImGui::Button(" - ##RemoveEntity"))
 				{
-					/*if (s_Context.m_SelectedEntity)
+					/*if (s_SHWContext.m_SelectedEntity)
 					{
-						m_ActiveScene->RemoveEntity(s_Context.m_SelectedEntity);
-						s_Context.m_SelectedEntity = {};
+						m_ActiveScene->RemoveEntity(s_SHWContext.m_SelectedEntity);
+						s_SHWContext.m_SelectedEntity = {};
 					}*/
 				}
 				ImGui::Separator();
@@ -214,11 +213,11 @@ namespace Stimpi
 				ImGui::BeginChild("##SceneHierarcyTree");
 
 				// Reset the flag that marks presence of hovered entity
-				s_Context.m_HasHoveredEntity = false;
+				s_SHWContext.m_HasHoveredEntity = false;
 				
-				if (s_Context.m_ActiveMode == ContentMode::PREFAB && PrefabManager::IsEntityValidPrefab(s_Context.m_PrefabViewEntity))
+				if (s_SHWContext.m_ActiveMode == ContentMode::PREFAB && s_SHWContext.m_PrefabViewEntity)
 				{
-					PrefabComponent& prefabComponent = s_Context.m_PrefabViewEntity.GetComponent<PrefabComponent>();
+					PrefabComponent& prefabComponent = s_SHWContext.m_PrefabViewEntity.GetComponent<PrefabComponent>();
 					auto prefab = AssetManager::GetAsset<Prefab>(prefabComponent.m_PrefabHandle);
 
 					if (ImGuiEx::PrefabHeaderIcon(prefab->GetName()))
@@ -228,7 +227,7 @@ namespace Stimpi
 						CheckAndConfirmPrefabChanges();
 					}
 
-					std::vector<Entity>& entities = strlen(s_Context.m_SearchTextBuffer) > 0 ? s_Context.m_FilteredEntites : s_Context.m_PrefabInspectWindow->GetScene()->m_Entities;
+					std::vector<Entity>& entities = strlen(s_SHWContext.m_SearchTextBuffer) > 0 ? s_SHWContext.m_FilteredEntites : s_SHWContext.m_PrefabInspectWindow->GetScene()->m_Entities;
 
 					for (auto& entity : entities)
 					{
@@ -246,7 +245,7 @@ namespace Stimpi
 				{
 					if (ImGuiEx::TreeNodeHeaderIcon((void*)&m_ActiveScene, node_flags | ImGuiTreeNodeFlags_DefaultOpen, "Scene", EDITOR_ICON_CUBE))
 					{
-						std::vector<Entity>& entities = strlen(s_Context.m_SearchTextBuffer) > 0 ? s_Context.m_FilteredEntites : m_ActiveScene->m_Entities;
+						std::vector<Entity>& entities = strlen(s_SHWContext.m_SearchTextBuffer) > 0 ? s_SHWContext.m_FilteredEntites : m_ActiveScene->m_Entities;
 
 						for (auto& entity : entities)
 						{
@@ -280,24 +279,29 @@ namespace Stimpi
 	void SceneHierarchyWindow::SetPickedEntity(Entity picked)
 	{
 		if (picked)
-			s_Context.m_SelectedEntity = picked;
+			s_SHWContext.m_SelectedEntity = picked;
 	}
 
 	Entity SceneHierarchyWindow::GetSelectedEntity()
 	{
-		return s_Context.m_SelectedEntity;
+		return s_SHWContext.m_SelectedEntity;
+	}
+
+	void SceneHierarchyWindow::SetActiveScene(Scene* scene)
+	{
+		m_ActiveScene = scene;
 	}
 
 	void SceneHierarchyWindow::SetPrefabInspectorWindowRef(PrefabInspectWindow* window)
 	{
-		s_Context.m_PrefabInspectWindow = window;
+		s_SHWContext.m_PrefabInspectWindow = window;
 	}
 
 	void SceneHierarchyWindow::ComponentInspectorWidget()
 	{
 		if (ImGui::Begin("Component inspector", &m_ShowInspect))
 		{
-			ShowSelectedEntityComponents((bool)s_Context.m_SelectedEntity);
+			ShowSelectedEntityComponents((bool)s_SHWContext.m_SelectedEntity);
 		}
 		ImGui::End();
 	}
@@ -353,10 +357,10 @@ namespace Stimpi
 
 		bool isLeafNode = !entity.HasComponent<HierarchyComponent>() ||
 			(entity.HasComponent<HierarchyComponent>() && entity.GetComponent<HierarchyComponent>().m_Children.empty());
-		bool isPrefabInstance = entity.HasComponent<PrefabComponent>() && !entity.GetComponent<PrefabComponent>().m_IsRootObject;
+		bool isPrefabInstance = entity.HasComponent<PrefabComponent>();
 
 		// Selection render
-		if (s_Context.m_SelectedEntity == entity)
+		if (s_SHWContext.m_SelectedEntity == entity)
 		{
 			EditorUtils::RenderSelection();
 		}
@@ -368,22 +372,22 @@ namespace Stimpi
 			ImGui::PushStyleColor(ImGuiCol_Text, s_BlueTextColor);
 		if (ImGuiEx::TreeNodeIcon((void*)&entity, node_flags, entityTag, GetEntityIconName(entity)))
 		{
-			if (s_Context.m_SelectedEntity == entity)
-				s_Context.m_HoveredSelectedEntity = ImGui::IsItemHovered();
+			if (s_SHWContext.m_SelectedEntity == entity)
+				s_SHWContext.m_HoveredSelectedEntity = ImGui::IsItemHovered();
 
 			if (ImGui::IsItemHovered())
 			{
 				if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
-					s_Context.m_PreSelect = entity;
+					s_SHWContext.m_PreSelect = entity;
 				else if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
-					s_Context.m_SelectedEntity = s_Context.m_PreSelect;
+					s_SHWContext.m_SelectedEntity = s_SHWContext.m_PreSelect;
 
-				if (s_Context.m_HoveredEntity.GetHandle() != entity.GetHandle())
+				if (s_SHWContext.m_HoveredEntity.GetHandle() != entity.GetHandle())
 				{
-					s_Context.m_HoveredEntity = entity;
+					s_SHWContext.m_HoveredEntity = entity;
 				}
 
-				s_Context.m_HasHoveredEntity = true;
+				s_SHWContext.m_HasHoveredEntity = true;
 			}
 
 			UIPayload::BeginTarget(PAYLOAD_DATA_TYPE_ENTITY, [&entity, &entityTag](void* data, uint32_t size)
@@ -441,7 +445,7 @@ namespace Stimpi
 
 	void SceneHierarchyWindow::PrefabComponentLayout(PrefabComponent& component)
 	{
-		if (s_Context.m_ActiveMode == ContentMode::PREFAB)
+		if (s_SHWContext.m_ActiveMode == ContentMode::PREFAB)
 		{
 
 		}
@@ -459,7 +463,7 @@ namespace Stimpi
 		{
 			ImGui::Spacing();
 			// TODO: one if block for hierarchy entity and one for ordinary handling
-			if (s_Context.m_SelectedEntity.HasComponent<HierarchyComponent>())
+			if (s_SHWContext.m_SelectedEntity.HasComponent<HierarchyComponent>())
 			{
 				glm::vec3 pos = component.m_Position;
 				bool inputDone = false;
@@ -467,11 +471,11 @@ namespace Stimpi
 				if (UI::Input::DragFloat3("Position##PositionQuad", pos, &inputDone, false))
 				{
 					glm::vec3 translate = pos - component.m_Position;
-					EditorEntityManager::Translate(s_Context.m_SelectedEntity, translate);
+					EditorEntityManager::Translate(s_SHWContext.m_SelectedEntity, translate);
 					if (inputDone)
 					{
 						Command* cmd = EntityHierarchyCommand::Create(
-							s_Context.m_SelectedEntity,
+							s_SHWContext.m_SelectedEntity,
 							HierarchyCommandType::TRANSLATE,
 							component.m_Position - UI::Input::GetStartFloat3());
 						CommandStack::Push(cmd);
@@ -482,11 +486,11 @@ namespace Stimpi
 				if (UI::Input::DragFloat2("Size##SizeQuad", size, &inputDone, false))
 				{
 					glm::vec2 scale = size - component.m_Size;
-					EditorEntityManager::Scale(s_Context.m_SelectedEntity, scale);
+					EditorEntityManager::Scale(s_SHWContext.m_SelectedEntity, scale);
 					if (inputDone)
 					{
 						Command* cmd = EntityHierarchyCommand::Create(
-							s_Context.m_SelectedEntity,
+							s_SHWContext.m_SelectedEntity,
 							HierarchyCommandType::SCALE,
 							component.m_Size - UI::Input::GetStartFloat2());
 						CommandStack::Push(cmd);
@@ -498,11 +502,11 @@ namespace Stimpi
 				if (UI::Input::DragFloat("Rotation##RotationQuad", rotation, 0.01, 0.0f, 0.0f, &inputDone, false))
 				{
 					float rotate = rotation - component.m_Rotation;
-					EditorEntityManager::Rotate(s_Context.m_SelectedEntity, rotate);
+					EditorEntityManager::Rotate(s_SHWContext.m_SelectedEntity, rotate);
 					if (inputDone)
 					{
 						Command* cmd = EntityHierarchyCommand::Create(
-							s_Context.m_SelectedEntity,
+							s_SHWContext.m_SelectedEntity,
 							HierarchyCommandType::ROTATE,
 							component.m_Rotation - UI::Input::GetStartFloat());
 						CommandStack::Push(cmd);
@@ -528,7 +532,7 @@ namespace Stimpi
 			if (ImGui::Selectable("Remove"))
 			{
 				showPoput = false;
-				s_Context.m_SelectedEntity.RemoveComponent<QuadComponent>();
+				s_SHWContext.m_SelectedEntity.RemoveComponent<QuadComponent>();
 			}
 
 			return showPoput;
@@ -563,7 +567,7 @@ namespace Stimpi
 			if (ImGui::Selectable("Remove"))
 			{
 				showPoput = false;
-				s_Context.m_SelectedEntity.RemoveComponent<CircleComponent>();
+				s_SHWContext.m_SelectedEntity.RemoveComponent<CircleComponent>();
 			}
 
 			return showPoput;
@@ -597,7 +601,7 @@ namespace Stimpi
 				if (SearchPopup::OnImGuiRender("ScriptSearch##ScriptComponent", filterData))
 				{
 					component.m_ScriptName = SearchPopup::GetSelection();
-					ScriptEngine::OnScriptComponentAdd(component.m_ScriptName, s_Context.m_SelectedEntity);
+					ScriptEngine::OnScriptComponentAdd(component.m_ScriptName, s_SHWContext.m_SelectedEntity);
 					showPopup = false;
 				}
 			}
@@ -609,11 +613,11 @@ namespace Stimpi
 				ImGuiInputTextFlags fieldInputFlags = ImGuiInputTextFlags_EnterReturnsTrue;
 
 				ImGui::Separator();
-				std::shared_ptr<ScriptInstance> scriptInstance = ScriptEngine::GetScriptInstance(s_Context.m_SelectedEntity);
+				std::shared_ptr<ScriptInstance> scriptInstance = ScriptEngine::GetScriptInstance(s_SHWContext.m_SelectedEntity);
 				if (scriptInstance != nullptr)
 				{
 					auto& fields = scriptInstance->GetFields();
-					auto& tagName = s_Context.m_SelectedEntity.GetComponent<TagComponent>().m_Tag;
+					auto& tagName = s_SHWContext.m_SelectedEntity.GetComponent<TagComponent>().m_Tag;
 					for (auto& item : fields)
 					{
 						auto& field = item.second;
@@ -639,7 +643,7 @@ namespace Stimpi
 				}
 				else
 				{
-					ScriptEngine::CreateScriptInstance(component.m_ScriptName, s_Context.m_SelectedEntity);
+					ScriptEngine::CreateScriptInstance(component.m_ScriptName, s_SHWContext.m_SelectedEntity);
 				}
 			}
 
@@ -652,8 +656,8 @@ namespace Stimpi
 			if (ImGui::Selectable("Remove"))
 			{
 				showPoput = false;
-				ScriptEngine::OnScriptComponentRemove(s_Context.m_SelectedEntity);
-				s_Context.m_SelectedEntity.RemoveComponent<ScriptComponent>();
+				ScriptEngine::OnScriptComponentRemove(s_SHWContext.m_SelectedEntity);
+				s_SHWContext.m_SelectedEntity.RemoveComponent<ScriptComponent>();
 			}
 
 			return showPoput;
@@ -710,7 +714,7 @@ namespace Stimpi
 			if (ImGui::Selectable("Remove"))
 			{
 				showPoput = false;
-				s_Context.m_SelectedEntity.RemoveComponent<SpriteComponent>();
+				s_SHWContext.m_SelectedEntity.RemoveComponent<SpriteComponent>();
 			}
 
 			return showPoput;
@@ -741,7 +745,7 @@ namespace Stimpi
 						currentSortingLayer = layer->m_Name;
 						component.m_SortingLayerName = layer->m_Name;
 						component.UpdateLayerIndex();
-						EditorEntityManager::UpdateEntitySortingLayerIndex(s_Context.m_SelectedEntity);
+						EditorEntityManager::UpdateEntitySortingLayerIndex(s_SHWContext.m_SelectedEntity);
 					}
 
 					if (isSelected)
@@ -758,7 +762,7 @@ namespace Stimpi
 					orderInLayerInput = 0;
 
 				component.m_OrderInLayer = orderInLayerInput;
-				EditorEntityManager::UpdateEntitySortingLayerIndex(s_Context.m_SelectedEntity);
+				EditorEntityManager::UpdateEntitySortingLayerIndex(s_SHWContext.m_SelectedEntity);
 			}
 			EditorUtils::SetActiveItemCaptureKeyboard(false);
 			ImGui::Spacing();
@@ -770,7 +774,7 @@ namespace Stimpi
 			if (ImGui::Selectable("Remove"))
 			{
 				showPoput = false;
-				s_Context.m_SelectedEntity.RemoveComponent<SortingGroupComponent>();
+				s_SHWContext.m_SelectedEntity.RemoveComponent<SortingGroupComponent>();
 			}
 
 			return showPoput;
@@ -1013,7 +1017,7 @@ namespace Stimpi
 			if (ImGui::Selectable("Remove"))
 			{
 				showPoput = false;
-				s_Context.m_SelectedEntity.RemoveComponent<AnimatedSpriteComponent>();
+				s_SHWContext.m_SelectedEntity.RemoveComponent<AnimatedSpriteComponent>();
 			}
 
 			return showPoput;
@@ -1141,7 +1145,7 @@ namespace Stimpi
 			if (ImGui::Selectable("Remove"))
 			{
 				showPoput = false;
-				s_Context.m_SelectedEntity.RemoveComponent<CameraComponent>();
+				s_SHWContext.m_SelectedEntity.RemoveComponent<CameraComponent>();
 			}
 
 			return showPoput;
@@ -1191,7 +1195,7 @@ namespace Stimpi
 			if (ImGui::Selectable("Remove"))
 			{
 				showPoput = false;
-				s_Context.m_SelectedEntity.RemoveComponent<RigidBody2DComponent>();
+				s_SHWContext.m_SelectedEntity.RemoveComponent<RigidBody2DComponent>();
 			}
 
 			return showPoput;
@@ -1257,7 +1261,7 @@ namespace Stimpi
 			if (ImGui::Selectable("Remove"))
 			{
 				showPoput = false;
-				s_Context.m_SelectedEntity.RemoveComponent<BoxCollider2DComponent>();
+				s_SHWContext.m_SelectedEntity.RemoveComponent<BoxCollider2DComponent>();
 			}
 
 			return showPoput;
@@ -1274,75 +1278,75 @@ namespace Stimpi
 		ImGui::PushItemWidth(100.0f);
 		if (ImGui::BeginCombo("##AddComponentWidget", selectedPreview, flags))
 		{
-			if (!s_Context.m_SelectedEntity.HasComponent<QuadComponent>())
+			if (!s_SHWContext.m_SelectedEntity.HasComponent<QuadComponent>())
 			{
 				if (ImGui::Selectable("Quad##AddComponent"))
 				{
-					s_Context.m_SelectedEntity.AddComponent<QuadComponent>();
+					s_SHWContext.m_SelectedEntity.AddComponent<QuadComponent>();
 				}
 			}
 
-			if (!s_Context.m_SelectedEntity.HasComponent<CircleComponent>())
+			if (!s_SHWContext.m_SelectedEntity.HasComponent<CircleComponent>())
 			{
 				if (ImGui::Selectable("Circle##AddComponent"))
 				{
-					s_Context.m_SelectedEntity.AddComponent<CircleComponent>();
+					s_SHWContext.m_SelectedEntity.AddComponent<CircleComponent>();
 				}
 			}
 
-			if (!s_Context.m_SelectedEntity.HasComponent<SpriteComponent>())
+			if (!s_SHWContext.m_SelectedEntity.HasComponent<SpriteComponent>())
 			{
 				if (ImGui::Selectable("Sprite##AddComponent"))
 				{
-					s_Context.m_SelectedEntity.AddComponent<SpriteComponent>();
+					s_SHWContext.m_SelectedEntity.AddComponent<SpriteComponent>();
 				}
 			}
 
-			if (!s_Context.m_SelectedEntity.HasComponent<SortingGroupComponent>())
+			if (!s_SHWContext.m_SelectedEntity.HasComponent<SortingGroupComponent>())
 			{
 				if (ImGui::Selectable("SortingGroup##AddComponent"))
 				{
-					s_Context.m_SelectedEntity.AddComponent<SortingGroupComponent>();
+					s_SHWContext.m_SelectedEntity.AddComponent<SortingGroupComponent>();
 				}
 			}
 
-			if (!s_Context.m_SelectedEntity.HasComponent<AnimatedSpriteComponent>())
+			if (!s_SHWContext.m_SelectedEntity.HasComponent<AnimatedSpriteComponent>())
 			{
 				if (ImGui::Selectable("AnimatedSprite##AddComponent"))
 				{
-					s_Context.m_SelectedEntity.AddComponent<AnimatedSpriteComponent>();
+					s_SHWContext.m_SelectedEntity.AddComponent<AnimatedSpriteComponent>();
 				}
 			}
 
-			if (!s_Context.m_SelectedEntity.HasComponent<ScriptComponent>())
+			if (!s_SHWContext.m_SelectedEntity.HasComponent<ScriptComponent>())
 			{
 				if (ImGui::Selectable("Script##AddComponent"))
 				{
-					s_Context.m_SelectedEntity.AddComponent<ScriptComponent>();
+					s_SHWContext.m_SelectedEntity.AddComponent<ScriptComponent>();
 				}
 			}
 
-			if (!s_Context.m_SelectedEntity.HasComponent<CameraComponent>())
+			if (!s_SHWContext.m_SelectedEntity.HasComponent<CameraComponent>())
 			{
 				if (ImGui::Selectable("Camera##AddComponent"))
 				{
-					s_Context.m_SelectedEntity.AddComponent<CameraComponent>(std::make_shared<Camera>(), false);
+					s_SHWContext.m_SelectedEntity.AddComponent<CameraComponent>(std::make_shared<Camera>(), false);
 				}
 			}
 
-			if (!s_Context.m_SelectedEntity.HasComponent<RigidBody2DComponent>())
+			if (!s_SHWContext.m_SelectedEntity.HasComponent<RigidBody2DComponent>())
 			{
 				if (ImGui::Selectable("RigidBody2D##AddComponent"))
 				{
-					s_Context.m_SelectedEntity.AddComponent<RigidBody2DComponent>();
+					s_SHWContext.m_SelectedEntity.AddComponent<RigidBody2DComponent>();
 				}
 			}
 
-			if (!s_Context.m_SelectedEntity.HasComponent<BoxCollider2DComponent>())
+			if (!s_SHWContext.m_SelectedEntity.HasComponent<BoxCollider2DComponent>())
 			{
 				if (ImGui::Selectable("BoxCollider2D##AddComponent"))
 				{
-					s_Context.m_SelectedEntity.AddComponent<BoxCollider2DComponent>();
+					s_SHWContext.m_SelectedEntity.AddComponent<BoxCollider2DComponent>();
 				}
 			}
 			ImGui::EndCombo();
@@ -1354,69 +1358,69 @@ namespace Stimpi
 	{
 		if (show)
 		{
-			if (s_Context.m_SelectedEntity.HasComponent<TagComponent>())
+			if (s_SHWContext.m_SelectedEntity.HasComponent<TagComponent>())
 			{
-				auto& component = s_Context.m_SelectedEntity.GetComponent<TagComponent>();
+				auto& component = s_SHWContext.m_SelectedEntity.GetComponent<TagComponent>();
 				TagComponentLayout(component);
 			}
 
-			if (s_Context.m_SelectedEntity.HasComponent<PrefabComponent>())
+			if (s_SHWContext.m_SelectedEntity.HasComponent<PrefabComponent>())
 			{
-				auto& component = s_Context.m_SelectedEntity.GetComponent<PrefabComponent>();
+				auto& component = s_SHWContext.m_SelectedEntity.GetComponent<PrefabComponent>();
 				PrefabComponentLayout(component);
 			}
 
-			if (s_Context.m_SelectedEntity.HasComponent<QuadComponent>())
+			if (s_SHWContext.m_SelectedEntity.HasComponent<QuadComponent>())
 			{
-				auto& component = s_Context.m_SelectedEntity.GetComponent<QuadComponent>();
+				auto& component = s_SHWContext.m_SelectedEntity.GetComponent<QuadComponent>();
 				QuadComponentLayout(component);
 			}
 
-			if (s_Context.m_SelectedEntity.HasComponent<CircleComponent>())
+			if (s_SHWContext.m_SelectedEntity.HasComponent<CircleComponent>())
 			{
-				auto& component = s_Context.m_SelectedEntity.GetComponent<CircleComponent>();
+				auto& component = s_SHWContext.m_SelectedEntity.GetComponent<CircleComponent>();
 				CircleComponentLayout(component);
 			}
 
-			if (s_Context.m_SelectedEntity.HasComponent<SpriteComponent>())
+			if (s_SHWContext.m_SelectedEntity.HasComponent<SpriteComponent>())
 			{
-				auto& component = s_Context.m_SelectedEntity.GetComponent<SpriteComponent>();
+				auto& component = s_SHWContext.m_SelectedEntity.GetComponent<SpriteComponent>();
 				SpriteComponentLayout(component);
 			}
 
-			if (s_Context.m_SelectedEntity.HasComponent<SortingGroupComponent>())
+			if (s_SHWContext.m_SelectedEntity.HasComponent<SortingGroupComponent>())
 			{
-				auto& component = s_Context.m_SelectedEntity.GetComponent<SortingGroupComponent>();
+				auto& component = s_SHWContext.m_SelectedEntity.GetComponent<SortingGroupComponent>();
 				SortingGroupComponentLayout(component);
 			}
 
-			if (s_Context.m_SelectedEntity.HasComponent<AnimatedSpriteComponent>())
+			if (s_SHWContext.m_SelectedEntity.HasComponent<AnimatedSpriteComponent>())
 			{
-				auto& component = s_Context.m_SelectedEntity.GetComponent<AnimatedSpriteComponent>();
+				auto& component = s_SHWContext.m_SelectedEntity.GetComponent<AnimatedSpriteComponent>();
 				AnimatedSpriteComponentLayout(component);
 			}
 
-			if (s_Context.m_SelectedEntity.HasComponent<ScriptComponent>())
+			if (s_SHWContext.m_SelectedEntity.HasComponent<ScriptComponent>())
 			{
-				auto& component = s_Context.m_SelectedEntity.GetComponent<ScriptComponent>();
+				auto& component = s_SHWContext.m_SelectedEntity.GetComponent<ScriptComponent>();
 				ScriptComponentLayout(component);
 			}
 
-			if (s_Context.m_SelectedEntity.HasComponent<CameraComponent>())
+			if (s_SHWContext.m_SelectedEntity.HasComponent<CameraComponent>())
 			{
-				auto& component = s_Context.m_SelectedEntity.GetComponent<CameraComponent>();
+				auto& component = s_SHWContext.m_SelectedEntity.GetComponent<CameraComponent>();
 				CameraComponentLayout(component);
 			}
 
-			if (s_Context.m_SelectedEntity.HasComponent<RigidBody2DComponent>())
+			if (s_SHWContext.m_SelectedEntity.HasComponent<RigidBody2DComponent>())
 			{
-				auto& component = s_Context.m_SelectedEntity.GetComponent<RigidBody2DComponent>();
+				auto& component = s_SHWContext.m_SelectedEntity.GetComponent<RigidBody2DComponent>();
 				RigidBody2DComponentLayout(component);
 			}
 
-			if (s_Context.m_SelectedEntity.HasComponent<BoxCollider2DComponent>())
+			if (s_SHWContext.m_SelectedEntity.HasComponent<BoxCollider2DComponent>())
 			{
-				auto& component = s_Context.m_SelectedEntity.GetComponent<BoxCollider2DComponent>();
+				auto& component = s_SHWContext.m_SelectedEntity.GetComponent<BoxCollider2DComponent>();
 				BoxCollider2DComponentLayout(component);
 			}
 		}
@@ -1438,7 +1442,7 @@ namespace Stimpi
 					return true;
 
 				std::string& childTag = childEntiy.GetComponent<TagComponent>().m_Tag;
-				if (childTag.find(s_Context.m_SearchTextBuffer) != std::string::npos)
+				if (childTag.find(s_SHWContext.m_SearchTextBuffer) != std::string::npos)
 				{
 					return true;
 				}
@@ -1450,44 +1454,44 @@ namespace Stimpi
 
 	void SceneHierarchyWindow::GroupFilteredEntities()
 	{
-		s_Context.m_FilteredEntites.clear();
+		s_SHWContext.m_FilteredEntites.clear();
 
-		if (strlen(s_Context.m_SearchTextBuffer) > 0)
+		if (strlen(s_SHWContext.m_SearchTextBuffer) > 0)
 		{
-			if (s_Context.m_ActiveMode == ContentMode::SCENE)
+			if (s_SHWContext.m_ActiveMode == ContentMode::SCENE)
 			{
 				for (auto& entity : m_ActiveScene->m_Entities)
 				{
 					std::string& tag = entity.GetComponent<TagComponent>().m_Tag;
-					if (tag.find(s_Context.m_SearchTextBuffer) != std::string::npos)
+					if (tag.find(s_SHWContext.m_SearchTextBuffer) != std::string::npos)
 					{
-						s_Context.m_FilteredEntites.push_back(entity);
+						s_SHWContext.m_FilteredEntites.push_back(entity);
 					}
 					else
 					{
 						// Check if entity children are filtered
 						if (FilterSubEntity(entity))
 						{
-							s_Context.m_FilteredEntites.push_back(entity);
+							s_SHWContext.m_FilteredEntites.push_back(entity);
 						}
 					}
 				}
 			}
 			else  // ContentMode::PREFAB
 			{
-				for (auto& entity : s_Context.m_PrefabEntites)
+				for (auto& entity : s_SHWContext.m_PrefabEntites)
 				{
 					std::string& tag = entity.GetComponent<TagComponent>().m_Tag;
-					if (tag.find(s_Context.m_SearchTextBuffer) != std::string::npos)
+					if (tag.find(s_SHWContext.m_SearchTextBuffer) != std::string::npos)
 					{
-						s_Context.m_FilteredEntites.push_back(entity);
+						s_SHWContext.m_FilteredEntites.push_back(entity);
 					}
 					else
 					{
 						// Check if entity children are filtered
 						if (FilterSubEntity(entity))
 						{
-							s_Context.m_FilteredEntites.push_back(entity);
+							s_SHWContext.m_FilteredEntites.push_back(entity);
 						}
 					}
 				}
@@ -1507,16 +1511,16 @@ namespace Stimpi
 		{
 			if (ImGui::Selectable("Empty Entity"))
 			{
-				s_Context.m_SelectedEntity = m_ActiveScene->CreateEntity("NewEntity");
+				s_SHWContext.m_SelectedEntity = m_ActiveScene->CreateEntity("NewEntity");
 			}
 
 			if (ImGui::BeginMenu("Scene"))
 			{
 				if (ImGui::MenuItem("Camera"))
 				{
-					s_Context.m_SelectedEntity = m_ActiveScene->CreateEntity("Camera_Object");
-					s_Context.m_SelectedEntity.AddComponent<QuadComponent>();
-					s_Context.m_SelectedEntity.AddComponent<CameraComponent>(std::make_shared<Camera>(), false);
+					s_SHWContext.m_SelectedEntity = m_ActiveScene->CreateEntity("Camera_Object");
+					s_SHWContext.m_SelectedEntity.AddComponent<QuadComponent>();
+					s_SHWContext.m_SelectedEntity.AddComponent<CameraComponent>(std::make_shared<Camera>(), false);
 				}
 
 				ImGui::EndMenu();
@@ -1526,15 +1530,15 @@ namespace Stimpi
 			{
 				if (ImGui::MenuItem("Sprite"))
 				{
-					s_Context.m_SelectedEntity = m_ActiveScene->CreateEntity("Sprite_Object");
-					s_Context.m_SelectedEntity.AddComponent<QuadComponent>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(10.0f, 10.0f), 0.0f);
-					s_Context.m_SelectedEntity.AddComponent<SpriteComponent>();
+					s_SHWContext.m_SelectedEntity = m_ActiveScene->CreateEntity("Sprite_Object");
+					s_SHWContext.m_SelectedEntity.AddComponent<QuadComponent>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(10.0f, 10.0f), 0.0f);
+					s_SHWContext.m_SelectedEntity.AddComponent<SpriteComponent>();
 				}
 
 				if (ImGui::MenuItem("Circle"))
 				{
-					s_Context.m_SelectedEntity = m_ActiveScene->CreateEntity("Circle_Object");
-					s_Context.m_SelectedEntity.AddComponent<CircleComponent>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(10.0f, 10.0f));
+					s_SHWContext.m_SelectedEntity = m_ActiveScene->CreateEntity("Circle_Object");
+					s_SHWContext.m_SelectedEntity.AddComponent<CircleComponent>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(10.0f, 10.0f));
 				}
 
 				ImGui::EndMenu();
@@ -1547,9 +1551,9 @@ namespace Stimpi
 
 	void SceneHierarchyWindow::HoveredEntityPopup()
 	{
-		if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && s_Context.m_HoveredEntity && s_Context.m_HasHoveredEntity)
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && s_SHWContext.m_HoveredEntity && s_SHWContext.m_HasHoveredEntity)
 		{
-			s_Context.m_HoveredEntityPopupContext.m_Entity = s_Context.m_HoveredEntity;
+			s_SHWContext.m_HoveredEntityPopupContext.m_Entity = s_SHWContext.m_HoveredEntity;
 			ImGui::OpenPopup("HoveredEntityPopup");
 		}
 
@@ -1557,12 +1561,12 @@ namespace Stimpi
 		{
 			if (ImGui::Selectable("Log entity ID"))
 			{
-				ST_INFO("Selected entity has ID: {}", (uint32_t)s_Context.m_HoveredEntity.GetHandle());
+				ST_INFO("Selected entity has ID: {}", (uint32_t)s_SHWContext.m_HoveredEntity.GetHandle());
 			}
 
-			if (s_Context.m_HoveredEntity.HasComponent<HierarchyComponent>())
+			Entity entity = s_SHWContext.m_HoveredEntityPopupContext.m_Entity;
+			if (entity && entity.HasComponent<HierarchyComponent>())
 			{
-				Entity entity = s_Context.m_HoveredEntityPopupContext.m_Entity;
 				HierarchyComponent& hierarchyComp = entity.GetComponent<HierarchyComponent>();
 
 				if (hierarchyComp.m_Parent)
@@ -1574,22 +1578,16 @@ namespace Stimpi
 				}
 			}
 
-			if (PrefabManager::IsEntityValidPrefab(s_Context.m_HoveredEntity))
+			if (PrefabManager::IsEntityValidPrefab(s_SHWContext.m_HoveredEntity))
 			{
 				ImGui::Separator();
 				if (ImGui::Selectable("Inspect Prefab"))
 				{
-					PrefabComponent& prefabComponent = s_Context.m_HoveredEntity.GetComponent<PrefabComponent>();
+					PrefabComponent& prefabComponent = s_SHWContext.m_HoveredEntity.GetComponent<PrefabComponent>();
 					auto prefab = AssetManager::GetAsset<Prefab>(prefabComponent.m_PrefabHandle);
 					if (prefab)
 					{
-						// New stuff, TODO: remove prefabViewEntity related code from here and move it to PrefabInspectWinodw
-						if (s_Context.m_PrefabInspectWindow)
-						{
-							s_Context.m_PrefabInspectWindow->SetPrefabEntity(prefabComponent.m_PrefabHandle);
-							Entity inspectedEntity = s_Context.m_PrefabInspectWindow->GetPrefabEntity();
-							SetPrefabDisplayMode(inspectedEntity);
-						}
+						SetPrefabDisplayMode(prefabComponent.m_PrefabHandle);
 					}
 				}
 			}
@@ -1598,15 +1596,15 @@ namespace Stimpi
 			if (ImGui::Selectable("Remove"))
 			{
 				// Make sure to detach if entity is part of hierarchy
-				EntityHierarchy::Detach(s_Context.m_HoveredEntityPopupContext.m_Entity);
+				EntityHierarchy::Detach(s_SHWContext.m_HoveredEntityPopupContext.m_Entity);
 
-				if (s_Context.m_HoveredEntityPopupContext.m_Entity)
+				if (s_SHWContext.m_HoveredEntityPopupContext.m_Entity)
 				{
-					if (s_Context.m_HoveredEntityPopupContext.m_Entity.GetHandle() == s_Context.m_SelectedEntity.GetHandle())
-						s_Context.m_SelectedEntity = {};
+					if (s_SHWContext.m_HoveredEntityPopupContext.m_Entity.GetHandle() == s_SHWContext.m_SelectedEntity.GetHandle())
+						s_SHWContext.m_SelectedEntity = {};
 
-					m_ActiveScene->RemoveEntity(s_Context.m_HoveredEntityPopupContext.m_Entity);
-					s_Context.m_HoveredEntityPopupContext.m_Entity = {};
+					m_ActiveScene->RemoveEntity(s_SHWContext.m_HoveredEntityPopupContext.m_Entity);
+					s_SHWContext.m_HoveredEntityPopupContext.m_Entity = {};
 				}
 			}
 
@@ -1631,13 +1629,13 @@ namespace Stimpi
 			if (ImGui::Button("Save", ImVec2(120, 0)))
 			{
 				// Change the file data contents when updating the prefab by writing temp prefab data over asset file
-				PrefabComponent& component = s_Context.m_PrefabViewEntity.GetComponent<PrefabComponent>();
+				PrefabComponent& component = s_SHWContext.m_PrefabViewEntity.GetComponent<PrefabComponent>();
 				auto& metadata = Project::GetEditorAssetManager()->GetAssetMetadata(component.m_PrefabHandle);
 				FilePath prefabDataPath = Project::GetAssestsDir() / metadata.m_FilePath;
 
 				// Make sure that the new updated asset has the same prefab UUID
-				//s_Context.m_ModalPopupPrefab->SetAssetDataValue<UUIDComponent>(UUIDComponent(component.m_PrefabEntityID));
-				s_Context.m_ModalPopupPrefab->Save(prefabDataPath);
+				//s_SHWContext.m_ModalPopupPrefab->SetAssetDataValue<UUIDComponent>(UUIDComponent(component.m_PrefabEntityID));
+				s_SHWContext.m_ModalPopupPrefab->Save(prefabDataPath);
 
 				ImGui::CloseCurrentPopup();
 				SetSceneDisplayMode();
@@ -1646,63 +1644,55 @@ namespace Stimpi
 		}
 	}
 
-	void SceneHierarchyWindow::SetPrefabDisplayMode(Entity prefabEntity)
+	void SceneHierarchyWindow::SetPrefabDisplayMode(AssetHandle prefabHandle)
 	{
+		auto prefabAsset = AssetManager::GetAsset<Prefab>(prefabHandle);
+
 		// Verify and set data before changing mode
-		if (PrefabManager::IsEntityValidPrefab(prefabEntity))
+		if (prefabAsset->GetType() == AssetType::PREFAB && s_SHWContext.m_PrefabInspectWindow)
 		{
-			// Clear the previously inspected temp entity data if still valid
-			RemoveInspectedPrefabEntity();
-
 			// Set the prefabInspector's scene as active scene for manipulating correct entities while in "inspect" mode
-			m_ActiveScene = s_Context.m_PrefabInspectWindow->GetScene();
+			SetActiveScene(s_SHWContext.m_PrefabInspectWindow->GetScene());
+			s_SHWContext.m_PrefabInspectWindow->SetPrefabEntity(prefabHandle);
+			Entity inspectedEntity = s_SHWContext.m_PrefabInspectWindow->GetPrefabEntity();
 
-			s_Context.m_ActiveMode = ContentMode::PREFAB;
-			s_Context.m_PrefabViewEntity = prefabEntity;
-			s_Context.m_SelectedEntity = prefabEntity;
+			s_SHWContext.m_ActiveMode = ContentMode::PREFAB;
+			s_SHWContext.m_PrefabViewEntity = inspectedEntity;
+			s_SHWContext.m_SelectedEntity = inspectedEntity;
 
-			s_Context.m_PrefabEntites = EntityManager::GetAllEntitiesInHierarchy(s_Context.m_PrefabViewEntity);
-			s_Context.m_PrefabEntites.push_back(s_Context.m_PrefabViewEntity);
+			s_SHWContext.m_PrefabEntites = EntityManager::GetAllEntitiesInHierarchy(s_SHWContext.m_PrefabViewEntity);
+			s_SHWContext.m_PrefabEntites.push_back(s_SHWContext.m_PrefabViewEntity);
 		}
 	}
 
 	void SceneHierarchyWindow::SetSceneDisplayMode()
 	{
-		// Clear temp prefab instance if still available
-		RemoveInspectedPrefabEntity();
 		// Update prefab view by removing displayed entities
-		s_Context.m_PrefabInspectWindow->ClearPrefabEntity();
+		if (s_SHWContext.m_PrefabInspectWindow)
+			s_SHWContext.m_PrefabInspectWindow->ClearPrefabEntity();
 
-		s_Context.m_ActiveMode = ContentMode::SCENE;
-		s_Context.m_PrefabViewEntity = {};
-		s_Context.m_PrefabEntites.clear();
+		s_SHWContext.m_ActiveMode = ContentMode::SCENE;
+		s_SHWContext.m_PrefabViewEntity = {};
+		s_SHWContext.m_PrefabEntites.clear();
 
 		// Make sure to move back to correct "active scene"
-		m_ActiveScene = SceneManager::Instance()->GetActiveScene();
-	}
-
-	void SceneHierarchyWindow::RemoveInspectedPrefabEntity()
-	{
-		if (s_Context.m_PrefabViewEntity)
-		{
-			EntityManager::RemoveEntity(s_Context.m_PrefabViewEntity);
-		}
+		SetActiveScene(SceneManager::Instance()->GetActiveScene());
 	}
 
 	void SceneHierarchyWindow::CheckAndConfirmPrefabChanges()
 	{
-		if (PrefabManager::IsEntityValidPrefab(s_Context.m_PrefabViewEntity))
+		if (PrefabManager::IsEntityValidPrefab(s_SHWContext.m_PrefabViewEntity))
 		{
 			FilePath tempAssetDataPath = Project::GetResourcesSubdir(Project::Subdir::Misc) / s_TempPrefabPath;
 
 			// Prefab::Save will save only internal data, we need to make new temp Prefab and initialize it with temp data
 			std::shared_ptr<Prefab> tempPrefab = std::make_shared<Prefab>();
-			tempPrefab->Initialize(s_Context.m_PrefabViewEntity);
+			tempPrefab->Initialize(s_SHWContext.m_PrefabViewEntity);
 			tempPrefab->Save(tempAssetDataPath);
-			s_Context.m_ModalPopupPrefab = tempPrefab;
+			s_SHWContext.m_ModalPopupPrefab = tempPrefab;
 
 			// Compare temp saved prefab asset data with the original
-			PrefabComponent& component = s_Context.m_PrefabViewEntity.GetComponent<PrefabComponent>();
+			PrefabComponent& component = s_SHWContext.m_PrefabViewEntity.GetComponent<PrefabComponent>();
 			auto& metadata = Project::GetEditorAssetManager()->GetAssetMetadata(component.m_PrefabHandle);
 			FilePath prefabDataPath = Project::GetAssestsDir() / metadata.m_FilePath;
 			std::vector<std::string> ignoreComponentNameList = { "UUIDComponent", "TagComponent", "QuadComponent",
@@ -1714,10 +1704,10 @@ namespace Stimpi
 				viewPrefab->Save(Project::GetResourcesSubdir(Project::Subdir::Misc) / "test.fab");
 				if (viewPrefab)
 				{
-					if (s_Context.m_PrefabViewEntity.HasComponent<QuadComponent>())
+					if (s_SHWContext.m_PrefabViewEntity.HasComponent<QuadComponent>())
 					{
 						QuadComponent assetQuad = viewPrefab->GetAssetDataValue<QuadComponent>("QuadComponent");
-						QuadComponent entityQuad = s_Context.m_PrefabViewEntity.GetComponent<QuadComponent>();
+						QuadComponent entityQuad = s_SHWContext.m_PrefabViewEntity.GetComponent<QuadComponent>();
 						// Check for other data than position since it is not relevant in this context
 						if ((assetQuad.m_Size != entityQuad.m_Size) || (assetQuad.m_Rotation != entityQuad.m_Rotation))
 						{

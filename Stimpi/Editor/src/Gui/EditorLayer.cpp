@@ -127,7 +127,15 @@ namespace Stimpi
 
 		// Prefab asset update handler registration
 		auto assetManager = Project::GetEditorAssetManager();
-		assetManager->RegisterAssetReloadHandler(new AssetReloadHandler(PrefabManager::OnPrefabAssetReload));
+		assetManager->RegisterAssetReloadHandler(new AssetReloadHandler([](AssetHandle assetHandle) -> void
+			{
+				auto assetManager = Project::GetEditorAssetManager();
+				auto asset = assetManager->GetAsset(assetHandle);
+				if (asset->GetType() == AssetType::PREFAB)
+				{
+					PrefabManager::OnPrefabAssetReload(assetHandle);
+				}
+			}));
 
 		m_SceneHierarchyWindow.SetPrefabInspectorWindowRef(&m_PrefabInspectWindow);
 	}

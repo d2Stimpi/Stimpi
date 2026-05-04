@@ -121,7 +121,7 @@ namespace Stimpi
 
 				for (auto& handler : m_AssetReloadHandlers)
 				{
-					handler->OnAssetReload(newAsset);
+					handler->OnAssetReload(newAsset->m_Handle);
 				}
 			}
 		}

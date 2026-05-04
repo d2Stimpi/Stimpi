@@ -1022,20 +1022,7 @@ namespace Stimpi
 		hasComponent = entity.HasComponent<RigidBody2DComponent>();
 		if (hasComponent)
 		{
-			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
-			if (scene->IsPhysicsWorldLocked())
-			{
-				rb2d.SetTransformDeferred(*position, angle);
-			}
-			else
-			{
-				b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
-				if (body)
-				{
-					b2Vec2 pos = b2Vec2(position->x, position->y);
-					body->SetTransform(pos, angle);
-				}
-			}
+			EntityManager::RigidBody2D_SetTransform(entity, *position, angle);
 		}
 
 		return hasComponent;

@@ -10,7 +10,6 @@
 #include "Stimpi/Scene/Camera.h"
 
 #include "Gui/Components/Toolbar.h"
-#include "Gui/Event/EditorEventManager.h"
 #include "Gui/Gizmo2D.h"
 
 namespace Stimpi
@@ -36,16 +35,6 @@ namespace Stimpi
 		s_Context.m_Scene = std::make_shared<Scene>();
 		s_Context.m_Scene->SetCamera(s_Context.m_Camera.get());
 		s_Context.m_Scene->SetScriptingEnabled(false);
-
-		EditorEventManager::AddEditorEventHandler(new EditorEventHandler([this](EditorEvent* e) -> bool {
-			if (e->GetType() == EditorEventType::PREFAB_INSPECT_REQUEST)
-			{
-				auto assetManager = Project::GetEditorAssetManager();
-				AssetHandle prefabHandle = assetManager->GetAssetHandle(*static_cast<FilePath*>(e->GetData()));
-				SetPrefabEntity(prefabHandle);
-			}
-			return false;
-		}));
 	}
 
 	PrefabInspectWindow::~PrefabInspectWindow()

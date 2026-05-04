@@ -54,6 +54,8 @@ namespace Stimpi
 		void OnSortingGroupDestruct(entt::registry& reg, entt::entity ent);
 		void OnDefaultGroupComponentConstruct(entt::registry& reg, entt::entity ent);
 		void OnDefaultGroupComponentDestruct(entt::registry& reg, entt::entity ent);
+		void OnPrefabComponentConstruct(entt::registry& reg, entt::entity ent);
+		void OnPrefabComponentDestruct(entt::registry& reg, entt::entity ent);
 
 	private:
 		Scene* m_Scene = nullptr;
@@ -129,7 +131,7 @@ namespace Stimpi
 		UUID m_InstanceID = 0;			// Unique instance ID that groups all PrefabComponents that belong to the same Prefab instance
 		bool m_IsRootObject = false;	// Weather the entity is root prefab object or not
 
-		// Internal UUID that references prefab (sub) entity ID, for easier prefab updates (TODO: still not fully used)
+		// UUID that references prefab (sub) entity ID, for easier prefab updates (TODO: still not fully used)
 		UUID m_PrefabEntityID = 0;
 
 		PrefabComponent() = default;

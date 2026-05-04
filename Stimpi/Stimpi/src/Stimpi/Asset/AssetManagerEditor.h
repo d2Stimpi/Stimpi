@@ -12,13 +12,13 @@ namespace Stimpi
 
 	class ST_API AssetReloadHandler
 	{
-		using OnAssetReloadFunction = std::function<void(std::shared_ptr<Asset>)>;
+		using OnAssetReloadFunction = std::function<void(AssetHandle)>;
 
 	public:
 		AssetReloadHandler(OnAssetReloadFunction onAssetReload)
 			: m_OnAssetReload(onAssetReload)
 		{}
-		void OnAssetReload(std::shared_ptr<Asset>  asset) { if (m_OnAssetReload) m_OnAssetReload(asset); }
+		void OnAssetReload(AssetHandle asset) { if (m_OnAssetReload) m_OnAssetReload(asset); }
 
 	private:
 		OnAssetReloadFunction m_OnAssetReload;

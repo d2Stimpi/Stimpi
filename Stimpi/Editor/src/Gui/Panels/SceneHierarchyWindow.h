@@ -22,6 +22,8 @@ namespace Stimpi
 		static void SetPickedEntity(Entity picked);
 		static Entity GetSelectedEntity();
 
+		void SetActiveScene(Scene* scene);
+
 		void SetPrefabInspectorWindowRef(PrefabInspectWindow* window);
 
 	private:
@@ -53,9 +55,8 @@ namespace Stimpi
 		void HoveredEntityPopup();
 		void ConfirmPrefabChangesPopup();
 
-		void SetPrefabDisplayMode(Entity prefab);
+		void SetPrefabDisplayMode(AssetHandle prefabHandle);
 		void SetSceneDisplayMode();
-		void RemoveInspectedPrefabEntity();
 		void CheckAndConfirmPrefabChanges();
 	private:
 		bool m_Show = true;

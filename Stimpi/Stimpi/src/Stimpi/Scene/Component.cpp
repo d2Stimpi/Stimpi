@@ -2,6 +2,7 @@
 #include "Stimpi/Scene/Component.h"
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/EntityManager.h"
+#include "Stimpi/Asset/PrefabManager.h"
 
 namespace Stimpi
 {
@@ -142,12 +143,21 @@ namespace Stimpi
 	// DefaultGroupComponent
 	void ComponentObserver::OnDefaultGroupComponentConstruct(entt::registry& reg, entt::entity ent)
 	{
-		Entity entity = { ent, m_Scene };
 	}
 
 	void ComponentObserver::OnDefaultGroupComponentDestruct(entt::registry& reg, entt::entity ent)
 	{
 	}
+
+	// PrefabComponent
+	void ComponentObserver::OnPrefabComponentConstruct(entt::registry& reg, entt::entity ent)
+	{
+	}
+
+	void ComponentObserver::OnPrefabComponentDestruct(entt::registry& reg, entt::entity ent)
+	{
+	}
+
 
 #define ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(component, function)	reg.on_construct<component>().connect<&function>(this)
 #define ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(component, function)		reg.on_construct<component>().disconnect<&function>(this)
@@ -168,6 +178,7 @@ namespace Stimpi
 		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(RigidBody2DComponent, ComponentObserver::OnRigidBody2DConstruct);
 		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(SortingGroupComponent, ComponentObserver::OnSortingGroupConstruct);
 		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(DefaultGroupComponent, ComponentObserver::OnDefaultGroupComponentConstruct);
+		ENTT_REGISTER_COMPONENT_ON_CONSTRUCT(PrefabComponent, ComponentObserver::OnPrefabComponentConstruct);
 		
 		// on_destroy
 		ENTT_REGISTER_COMPONENT_ON_DESTROY(QuadComponent, ComponentObserver::OnQuadDestruct);
@@ -179,6 +190,7 @@ namespace Stimpi
 		ENTT_REGISTER_COMPONENT_ON_DESTROY(RigidBody2DComponent, ComponentObserver::OnRigidBody2DDestruct);
 		ENTT_REGISTER_COMPONENT_ON_DESTROY(SortingGroupComponent, ComponentObserver::OnSortingGroupDestruct);
 		ENTT_REGISTER_COMPONENT_ON_DESTROY(DefaultGroupComponent, ComponentObserver::OnDefaultGroupComponentDestruct);
+		ENTT_REGISTER_COMPONENT_ON_DESTROY(PrefabComponent, ComponentObserver::OnPrefabComponentDestruct);
 	}
 
 	void ComponentObserver::DeinitConstructObservers(entt::registry& reg)
@@ -190,16 +202,22 @@ namespace Stimpi
 		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(ScriptComponent, ComponentObserver::OnScriptConstruct);
 		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(SpriteComponent, ComponentObserver::OnSpriteConstruct);
 		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(AnimatedSpriteComponent, ComponentObserver::OnAnimatedSpriteConstruct);
+		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(RigidBody2DComponent, ComponentObserver::OnRigidBody2DConstruct);
 		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(SortingGroupComponent, ComponentObserver::OnSortingGroupConstruct);
+		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(DefaultGroupComponent, ComponentObserver::OnDefaultGroupComponentConstruct);
+		ENTT_REMOVE_COMPONENT_ON_CONSTRUCT(PrefabComponent, ComponentObserver::OnPrefabComponentConstruct);
 
 		// on_destroy
 		ENTT_REMOVE_COMPONENT_ON_DESTROY(QuadComponent, ComponentObserver::OnQuadDestruct);
 		ENTT_REMOVE_COMPONENT_ON_DESTROY(CircleComponent, ComponentObserver::OnCircleDestruct);
 		ENTT_REMOVE_COMPONENT_ON_DESTROY(CameraComponent, ComponentObserver::OnCameraDestruct);
+		ENTT_REMOVE_COMPONENT_ON_DESTROY(ScriptComponent, ComponentObserver::OnScriptDestruct);
 		ENTT_REMOVE_COMPONENT_ON_DESTROY(SpriteComponent, ComponentObserver::OnSpriteDestruct);
 		ENTT_REMOVE_COMPONENT_ON_DESTROY(AnimatedSpriteComponent, ComponentObserver::OnAnimatedSpriteDestruct);
 		ENTT_REMOVE_COMPONENT_ON_DESTROY(RigidBody2DComponent, ComponentObserver::OnRigidBody2DDestruct);
 		ENTT_REMOVE_COMPONENT_ON_DESTROY(SortingGroupComponent, ComponentObserver::OnSortingGroupDestruct);
+		ENTT_REMOVE_COMPONENT_ON_DESTROY(DefaultGroupComponent, ComponentObserver::OnDefaultGroupComponentDestruct);
+		ENTT_REMOVE_COMPONENT_ON_DESTROY(PrefabComponent, ComponentObserver::OnPrefabComponentDestruct);
 	}
 
 }

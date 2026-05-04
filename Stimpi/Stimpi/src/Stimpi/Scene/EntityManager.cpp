@@ -5,6 +5,9 @@
 #include "Stimpi/Scene/SceneManager.h"
 #include "Stimpi/Scene/Component.h"
 
+#include "box2d/b2_body.h"
+#include "box2d/b2_math.h"
+
 namespace Stimpi
 {
 
@@ -214,9 +217,26 @@ namespace Stimpi
 		return entities;
 	}
 
-	void EntityManager::SubmitForRendering(std::vector<Entity>& entities)
+	void EntityManager::RigidBody2D_SetTransform(Entity entity, const glm::vec2& position, const float& angle)
 	{
-
+		auto scene = entity.GetScene();
+		if (entity.HasComponent<RigidBody2DComponent>())
+		{
+			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+			if (scene->IsPhysicsWorldLocked())
+			{
+				rb2d.SetTransformDeferred(position, angle);
+			}
+			else
+			{
+				b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+				if (body)
+				{
+					b2Vec2 pos = b2Vec2(position.x, position.y);
+					body->SetTransform(pos, angle);
+				}
+			}
+		}
 	}
 
 }

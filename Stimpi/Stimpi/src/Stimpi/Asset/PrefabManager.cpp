@@ -166,36 +166,41 @@ namespace Stimpi
 		return entities;
 	}
 
-	void PrefabManager::OnPrefabAssetReload(std::shared_ptr<Asset> asset)
+	void PrefabManager::OnPrefabAssetReload(AssetHandle prefabHandle)
 	{
-		if (asset->GetType() == AssetType::PREFAB)
-		{
-			AssetHandle prefabHandle = asset->m_Handle;
-			// Update prefab instances
-			ST_INFO("PrefabManager: Prefab asset reloaded {}", asset->m_Handle);
+		// Update prefab instances
+		ST_INFO("PrefabManager: Prefab asset reloaded {}", prefabHandle);
 
-			auto scene = SceneManager::Instance()->GetActiveScene();
-			if (scene)
+		auto scene = SceneManager::Instance()->GetActiveScene();
+		if (scene)
+		{
+			std::shared_ptr<Prefab> prefab = AssetManager::GetAsset<Prefab>(prefabHandle);
+			auto entities = GetAllRootPrefabEntities(prefabHandle);
+			for (auto& entity : entities)
 			{
-				std::shared_ptr<Prefab> prefab = AssetManager::GetAsset<Prefab>(prefabHandle);
-				auto entities = GetAllRootPrefabEntities(prefabHandle);
-				for (auto& entity : entities)
+				// Save the current entity position in order to restore it after update.
+				// Provided that the entity has QuadComponent
+				glm::vec3 position = { 0.0f, 0.0f, 0.0f };
+				float rotation = 0.0f;
+				if (entity.HasComponent<QuadComponent>())
 				{
-					// Save the current entity position in order to restore it after update.
-					// Provided that the entity has QuadComponent
-					glm::vec3 position = { 0.0f, 0.0f, 0.0f };
-					if (entity.HasComponent<QuadComponent>())
+					QuadComponent& quad = entity.GetComponent<QuadComponent>();
+					position = quad.m_Position;
+				}
+
+				prefab->UpdateComponents(entity, scene);
+
+				// Restore the entity's position
+				if (entity.HasComponent<QuadComponent>())
+				{
+					EntityManager::Translate(entity, position);
+
+					// In case the scene is not stopped, rigid body should be updated if it exists
+					if (scene->GetRuntimeState() != RuntimeState::STOPPED)
 					{
 						QuadComponent& quad = entity.GetComponent<QuadComponent>();
-						position = quad.m_Position;
-					}
-
-					prefab->UpdateComponents(entity, scene);
-
-					// Restore the entity's position
-					if (entity.HasComponent<QuadComponent>())
-					{
-						EntityManager::Translate(entity, position);
+						EntityManager::RigidBody2D_SetTransform(entity, quad.m_Position, quad.m_Rotation);
+						// TODO: handle size here as well as in scripts (runtime changes)
 					}
 				}
 			}

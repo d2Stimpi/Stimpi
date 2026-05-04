@@ -27,7 +27,7 @@ namespace Stimpi
 		static void RemoveEntity(Entity entity);
 		static std::vector<Entity> GetAllEntitiesInHierarchy(Entity parentEntity);
 
-		// Render Entities
-		static void SubmitForRendering(std::vector<Entity>& entities);
+		// Physics updates
+		static void RigidBody2D_SetTransform(Entity entity, const glm::vec2& position, const float& angle);
 	};
 }

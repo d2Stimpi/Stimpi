@@ -22,6 +22,6 @@ namespace Stimpi
 		static std::vector<Entity> GetAllPrefabEntities(const AssetHandle& prefabHandle);
 		static std::vector<Entity> GetAllRootPrefabEntities(const AssetHandle& prefabHandle);
 
-		static void OnPrefabAssetReload(std::shared_ptr<Asset> asset);
+		static void OnPrefabAssetReload(AssetHandle prefabHandle);
 	};
 }
